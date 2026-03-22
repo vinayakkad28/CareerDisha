@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+*.db
+*.sqlite3
+output/
+.env
+career_kb_part1.json
+career_kb_part2.json
