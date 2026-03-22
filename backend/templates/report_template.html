@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm 1.5cm;
+            @bottom-center {
+                content: "CareerDisha — AI Career Assessment Report";
+                font-size: 8pt;
+                color: #999;
+            }
+            @bottom-right {
+                content: "Page " counter(page);
+                font-size: 8pt;
+                color: #999;
+            }
+        }
+        @page :first {
+            @bottom-center { content: ""; }
+            @bottom-right { content: ""; }
+        }
+        {% if font_url %}
+        @font-face {
+            font-family: 'Noto Sans Devanagari';
+            src: url('{{ font_url }}') format('truetype');
+            font-weight: normal;
+        }
+        {% endif %}
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans', 'Noto Sans Devanagari', 'Helvetica Neue', Arial, sans-serif;
+            color: #2c3e50;
+            font-size: 10pt;
+            line-height: 1.5;
+        }
+        .page-break { page-break-before: always; }
+
+        /* Cover */
+        .cover {
+            text-align: center;
+            padding-top: 5cm;
+            page-break-after: always;
+        }
+        .cover .logo { font-size: 28pt; font-weight: 800; color: {{ brand.primary }}; letter-spacing: 2px; }
+        .cover .logo-accent { color: {{ brand.secondary }}; }
+        .cover .subtitle { font-size: 11pt; color: #666; margin-top: 4px; }
+        .cover .divider { width: 60%; margin: 2.5cm auto; height: 3px; background: {{ brand.secondary }}; }
+        .cover .report-title { font-size: 14pt; color: {{ brand.primary }}; font-weight: 600; text-transform: uppercase; letter-spacing: 3px; }
+        .cover .student-name { font-size: 24pt; font-weight: 700; color: {{ brand.primary }}; margin-top: 1.5cm; }
+        .cover .student-info { font-size: 11pt; color: #666; margin-top: 8px; }
+
+        /* Headings */
+        h1 { font-size: 15pt; color: {{ brand.primary }}; border-bottom: 2px solid {{ brand.secondary }}; padding-bottom: 4px; margin-bottom: 12px; }
+        h2 { font-size: 12pt; color: {{ brand.primary }}; margin: 12px 0 6px; }
+        h3 { font-size: 10.5pt; color: #2c3e50; margin: 8px 0 4px; }
+
+        /* How to Read */
+        .info-box { background: #f8f9fa; padding: 12px; border-radius: 6px; margin-bottom: 10px; font-size: 9.5pt; }
+        .info-box h3 { color: {{ brand.primary }}; margin-bottom: 4px; }
+
+        /* Charts */
+        .chart-container { text-align: center; margin: 8px 0; }
+        .chart-container img { max-width: 100%; }
+        .holland-code { text-align: center; font-size: 26pt; font-weight: 800; color: {{ brand.primary }}; letter-spacing: 10px; margin: 12px 0; padding: 10px; background: #eef5fa; border-radius: 8px; }
+
+        /* Career Cards */
+        .career-card { border: 1px solid #ddd; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; page-break-inside: avoid; }
+        .career-header { display: flex; align-items: center; margin-bottom: 4px; }
+        .rank-badge { display: inline-block; background: {{ brand.primary }}; color: white; width: 22px; height: 22px; border-radius: 50%; text-align: center; line-height: 22px; font-size: 9pt; font-weight: 700; margin-right: 8px; flex-shrink: 0; }
+        .career-name { font-size: 11pt; font-weight: 700; color: {{ brand.primary }}; }
+        .career-name-hindi { font-size: 9pt; color: #888; margin-left: 6px; font-family: 'Noto Sans Devanagari', sans-serif; }
+        .match-bar { height: 5px; background: #eee; border-radius: 3px; margin: 4px 0; }
+        .match-fill { height: 5px; background: {{ brand.accent }}; border-radius: 3px; }
+        .career-detail { font-size: 9pt; color: #555; margin: 2px 0; }
+        .career-detail strong { color: #2c3e50; }
+
+        /* Stream Recommendation */
+        .stream-box { background: #eef5fa; border-left: 4px solid {{ brand.primary }}; padding: 12px; border-radius: 0 8px 8px 0; margin: 10px 0; }
+        .stream-name { font-size: 15pt; font-weight: 700; color: {{ brand.primary }}; }
+        .confidence-badge { display: inline-block; padding: 1px 10px; border-radius: 10px; font-size: 8pt; font-weight: 600; margin-left: 6px; vertical-align: middle; }
+        .conf-high { background: #d5f5e3; color: #27ae60; }
+        .conf-medium { background: #fef9e7; color: #b7950b; }
+        .conf-low { background: #fde8e8; color: #e74c3c; }
+
+        /* Timeline */
+        .timeline-section { margin: 10px 0; }
+        .timeline-block { padding-left: 16px; border-left: 2px solid {{ brand.secondary }}; margin-bottom: 10px; }
+        .timeline-block h3 { color: {{ brand.primary }}; font-size: 10pt; }
+        .timeline-block ul { padding-left: 14px; font-size: 9.5pt; }
+        .timeline-block li { margin-bottom: 2px; }
+
+        /* Parent Section */
+        .parent-box { background: #fdf8e8; border: 1px solid {{ brand.secondary }}; border-radius: 8px; padding: 14px; }
+        .parent-box h1 { border-bottom-color: {{ brand.secondary }}; }
+        .hindi { font-family: 'Noto Sans Devanagari', sans-serif; }
+
+        .text-sm { font-size: 9pt; }
+        .text-muted { color: #888; }
+        .mb-2 { margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+
+<!-- PAGE 1: COVER -->
+<div class="cover">
+    <div class="logo">Career<span class="logo-accent">Disha</span></div>
+    <div class="subtitle">AI-Powered Career Assessment</div>
+    <div class="divider"></div>
+    <div class="report-title">Personalized Career Assessment Report</div>
+    <div class="student-name">{{ student.name }}</div>
+    <div class="student-info">
+        Class {{ student.class_level }}{% if student.section %}-{{ student.section }}{% endif %}<br>
+        {{ today }}
+    </div>
+</div>
+
+<!-- PAGE 2: HOW TO READ -->
+<div>
+    <h1>How to Read This Report</h1>
+
+    <div class="info-box">
+        <h3>What is RIASEC?</h3>
+        <p>RIASEC (also called Holland Codes) is a scientifically validated career interest model developed by psychologist John Holland. It categorizes interests into six types: <strong>Realistic, Investigative, Artistic, Social, Enterprising, and Conventional</strong>. Your unique combination of these interests points to career paths where you're most likely to thrive and find satisfaction.</p>
+    </div>
+
+    <div class="info-box">
+        <h3>Your Holland Code</h3>
+        <p>Your Holland Code is a 3-letter combination of your top three RIASEC types. For example, "IRS" means your strongest interests are Investigative, then Realistic, then Social. This code is used to match you with careers that align with your natural interests.</p>
+    </div>
+
+    <div class="info-box">
+        <h3>Career Matches</h3>
+        <p>We've matched your interest profile against 100+ career paths in the Indian education system. Each career recommendation includes education pathways, entrance exams, top colleges, salary expectations, and growth outlook — all specific to India.</p>
+    </div>
+
+    <div class="info-box">
+        <h3>For Parents (अभिभावकों के लिए)</h3>
+        <p>The last section is specifically designed for parents, with clear recommendations and action items in both English and Hindi. It addresses common concerns about job security, salary, and career viability.</p>
+    </div>
+</div>
+
+<!-- PAGE 3: RIASEC PROFILE -->
+<div class="page-break">
+    <h1>Your Interest Profile</h1>
+
+    <div class="holland-code">{{ student.holland_code }}</div>
+
+    <div class="chart-container">
+        <img src="data:image/png;base64,{{ radar_chart }}" alt="RIASEC Radar Chart" style="max-height: 280px;">
+    </div>
+
+    <div class="chart-container mb-2">
+        <img src="data:image/png;base64,{{ bar_chart }}" alt="RIASEC Score Bars" style="max-height: 160px;">
+    </div>
+
+    {% if report.riasec_profile %}
+    <h2>What Your Profile Means</h2>
+    <p style="font-size: 9.5pt;">{{ report.riasec_profile.summary }}</p>
+
+    {% if report.riasec_profile.primary_type_description %}
+    <h3>Your Strongest Interest: {{ riasec_names.get(student.holland_code[0:1], '') }}</h3>
+    <p class="text-sm">{{ report.riasec_profile.primary_type_description }}</p>
+    {% endif %}
+    {% endif %}
+</div>
+
+<!-- PAGES 4-5: CAREER MATCHES -->
+<div class="page-break">
+    <h1>Your Top Career Matches</h1>
+
+    {% if report.career_matches %}
+    {% for career in report.career_matches[:5] %}
+    <div class="career-card">
+        <div class="career-header">
+            <span class="rank-badge">{{ career.rank or loop.index }}</span>
+            <span class="career-name">{{ career.career_name }}</span>
+            {% if career.career_name_hindi %}
+            <span class="career-name-hindi hindi">{{ career.career_name_hindi }}</span>
+            {% endif %}
+        </div>
+
+        {% if career.match_score %}
+        <div class="match-bar">
+            <div class="match-fill" style="width: {{ career.match_score }}%;"></div>
+        </div>
+        <div class="text-sm text-muted">{{ career.match_score }}% match</div>
+        {% endif %}
+
+        {% if career.why_it_fits %}
+        <p class="career-detail" style="margin-top: 4px;">{{ career.why_it_fits }}</p>
+        {% endif %}
+
+        {% if career.education_pathway %}
+        <p class="career-detail"><strong>Pathway:</strong> {{ career.education_pathway }}</p>
+        {% endif %}
+
+        {% if career.entrance_exams %}
+        <p class="career-detail"><strong>Entrance Exams:</strong> {{ career.entrance_exams | join(', ') if career.entrance_exams is iterable and career.entrance_exams is not string else career.entrance_exams }}</p>
+        {% endif %}
+
+        {% if career.top_colleges %}
+        <p class="career-detail"><strong>Top Colleges:</strong> {{ career.top_colleges | join(', ') if career.top_colleges is iterable and career.top_colleges is not string else career.top_colleges }}</p>
+        {% endif %}
+
+        {% if career.salary_range %}
+        <p class="career-detail"><strong>Salary:</strong> {{ career.salary_range }}</p>
+        {% endif %}
+
+        {% if career.growth_outlook %}
+        <p class="career-detail"><strong>Growth:</strong> {{ career.growth_outlook }}</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
+<!-- PAGE 6: STREAM RECOMMENDATION / ROADMAP -->
+<div class="page-break">
+    {% if student.class_level == 10 %}
+    <h1>Stream Recommendation</h1>
+    {% elif student.class_level in [8, 9] %}
+    <h1>Streams to Explore</h1>
+    {% else %}
+    <h1>Your Career Roadmap</h1>
+    {% endif %}
+
+    {% if report.stream_recommendation %}
+    <div class="stream-box">
+        <div>
+            <span class="stream-name">{{ report.stream_recommendation.recommended_stream }}</span>
+            {% if report.stream_recommendation.confidence %}
+            <span class="confidence-badge {% if report.stream_recommendation.confidence == 'High' %}conf-high{% elif report.stream_recommendation.confidence == 'Medium' %}conf-medium{% else %}conf-low{% endif %}">
+                {{ report.stream_recommendation.confidence }} Confidence
+            </span>
+            {% endif %}
+        </div>
+
+        {% if report.stream_recommendation.reasoning %}
+        <p style="margin-top: 8px; font-size: 9.5pt;">{{ report.stream_recommendation.reasoning }}</p>
+        {% endif %}
+
+        {% if report.stream_recommendation.subject_combination %}
+        <p class="career-detail" style="margin-top: 6px;"><strong>Recommended Subjects:</strong> {{ report.stream_recommendation.subject_combination }}</p>
+        {% endif %}
+
+        {% if report.stream_recommendation.alternative_stream %}
+        <p class="career-detail"><strong>Alternative:</strong> {{ report.stream_recommendation.alternative_stream }}</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- PAGE 7: ACTION PLAN -->
+<div class="page-break">
+    <h1>Your Action Plan</h1>
+
+    {% if report.action_plan %}
+    <div class="timeline-section">
+        {% if report.action_plan.next_3_months %}
+        <div class="timeline-block">
+            <h3>Next 3 Months</h3>
+            <ul>
+                {% for item in report.action_plan.next_3_months %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if report.action_plan.next_1_year %}
+        <div class="timeline-block">
+            <h3>Next 1 Year</h3>
+            <ul>
+                {% for item in report.action_plan.next_1_year %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if report.action_plan.next_2_3_years %}
+        <div class="timeline-block">
+            <h3>Next 2-3 Years</h3>
+            <ul>
+                {% for item in report.action_plan.next_2_3_years %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- PAGE 8: PARENT SECTION -->
+<div class="page-break">
+    {% if report.parent_section %}
+    <div class="parent-box">
+        <h1>{{ report.parent_section.title or 'अभिभावकों के लिए / For Parents' }}</h1>
+
+        {% if report.parent_section.recommendation_summary %}
+        <h2>Recommendation Summary</h2>
+        <p>{{ report.parent_section.recommendation_summary }}</p>
+        {% endif %}
+
+        {% if report.parent_section.recommendation_summary_hindi %}
+        <p class="hindi" style="margin-top: 8px; color: #555;">{{ report.parent_section.recommendation_summary_hindi }}</p>
+        {% endif %}
+
+        {% if report.parent_section.what_to_do_now %}
+        <h2>What You Can Do Now</h2>
+        <ul style="padding-left: 16px;">
+            {% for item in report.parent_section.what_to_do_now %}
+            <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if report.parent_section.common_concerns_addressed %}
+        <h2>Addressing Common Concerns</h2>
+        <p>{{ report.parent_section.common_concerns_addressed }}</p>
+        {% endif %}
+
+        {% if report.parent_section.how_to_support %}
+        <h2>How to Support Your Child</h2>
+        <p>{{ report.parent_section.how_to_support }}</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- BACK COVER -->
+<div class="page-break" style="text-align: center; padding-top: 8cm;">
+    <div class="logo" style="font-size: 22pt; font-weight: 800; color: {{ brand.primary }};">Career<span style="color: {{ brand.secondary }};">Disha</span></div>
+    <p style="color: #666; margin-top: 8px;">AI-Powered Career Counselling for Indian Schools</p>
+    <p style="color: #999; margin-top: 2cm; font-size: 9pt;">
+        This report was generated using advanced AI analysis of your RIASEC assessment results.<br>
+        Career recommendations are based on India-specific data including NIRF rankings,<br>
+        entrance exam requirements, and current salary trends.<br><br>
+        For questions or follow-up counselling, please contact your school counsellor.
+    </p>
+</div>
+
+</body>
+</html>

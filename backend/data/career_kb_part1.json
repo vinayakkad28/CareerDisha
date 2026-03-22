@@ -1,0 +1,1220 @@
+[
+  {
+    "career_id": "software_engineer",
+    "career_name": "Software Engineer",
+    "career_name_hindi": "सॉफ्टवेयर इंजीनियर",
+    "riasec_code": "IRC",
+    "riasec_primary": "I",
+    "description": "Design, develop, test, and maintain software applications and systems. Software engineers apply engineering principles to build reliable, scalable, and efficient software solutions across web, mobile, enterprise, and embedded platforms.",
+    "stream_required": "Science (PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "B.Tech/BE in Computer Science or Information Technology",
+      "entrance_exams": ["JEE Main", "JEE Advanced", "BITSAT", "VITEEE", "SRMJEEE", "COMEDK"],
+      "top_colleges": [
+        {"name": "IIT Bombay", "nirf_rank": 3, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 25, "location": "Mumbai"},
+        {"name": "IIT Delhi", "nirf_rank": 2, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 24, "location": "New Delhi"},
+        {"name": "IIT Madras", "nirf_rank": 1, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 22, "location": "Chennai"},
+        {"name": "BITS Pilani", "nirf_rank": 10, "approx_fee_4yr_lakh": 20, "avg_placement_lpa": 18, "location": "Pilani"},
+        {"name": "IIIT Hyderabad", "nirf_rank": 15, "approx_fee_4yr_lakh": 8, "avg_placement_lpa": 20, "location": "Hyderabad"}
+      ],
+      "alternative_paths": ["BCA + MCA", "BSc Computer Science + MSc", "Diploma in CS → Lateral entry to B.Tech"],
+      "postgrad_options": ["M.Tech in CS/IT", "MS abroad (USA/Germany)", "MBA in IT Management"]
+    },
+    "salary_range_lpa": {"entry": "4-8", "mid_5yr": "12-25", "senior_10yr": "25-50+"},
+    "growth_outlook": "Very High — India's IT industry growing at 8-10% annually, massive demand for skilled developers",
+    "skills_needed": ["Programming (Python, Java, C++)", "Data Structures & Algorithms", "Problem Solving", "System Design", "Databases", "Version Control (Git)"],
+    "work_environment": "Office/Remote, project-based teams, agile methodology",
+    "govt_job_options": "ISRO Scientist/Engineer, DRDO, NIC, Railway IT, CDAC, NIELIT",
+    "tier2_city_availability": "High"
+  },
+  {
+    "career_id": "data_scientist",
+    "career_name": "Data Scientist",
+    "career_name_hindi": "डेटा साइंटिस्ट",
+    "riasec_code": "IRA",
+    "riasec_primary": "I",
+    "description": "Extract insights and knowledge from structured and unstructured data using statistics, machine learning, and data analysis techniques to support business decision-making.",
+    "stream_required": "Science (PCM) or Commerce with Mathematics",
+    "education_pathway": {
+      "after_10th": "Science stream with Mathematics and Computer Science (if available)",
+      "after_12th": "B.Tech in CS/IT, BSc Statistics/Mathematics, or BCA",
+      "entrance_exams": ["JEE Main", "JEE Advanced", "CUET", "ISI Admission Test", "CMI Entrance"],
+      "top_colleges": [
+        {"name": "IIT Madras", "nirf_rank": 1, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 22, "location": "Chennai"},
+        {"name": "IIT Hyderabad", "nirf_rank": 8, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 18, "location": "Hyderabad"},
+        {"name": "Indian Statistical Institute (ISI)", "nirf_rank": 12, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 20, "location": "Kolkata"},
+        {"name": "Chennai Mathematical Institute (CMI)", "nirf_rank": 20, "approx_fee_4yr_lakh": 3, "avg_placement_lpa": 16, "location": "Chennai"},
+        {"name": "IIT Kharagpur", "nirf_rank": 5, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 20, "location": "Kharagpur"}
+      ],
+      "alternative_paths": ["BSc Statistics → MSc Data Science", "BCA → PG Diploma in Data Science", "Online certifications + portfolio"],
+      "postgrad_options": ["MTech in Data Science", "MS in Data Science (abroad)", "PG Diploma from IIITs/ISB"]
+    },
+    "salary_range_lpa": {"entry": "6-12", "mid_5yr": "15-30", "senior_10yr": "30-60+"},
+    "growth_outlook": "Very High — Data-driven decision making becoming essential across all industries",
+    "skills_needed": ["Python/R Programming", "Statistics & Probability", "Machine Learning", "SQL", "Data Visualization", "Communication Skills"],
+    "work_environment": "Office/Remote, analytical teams, cross-functional collaboration",
+    "govt_job_options": "NITI Aayog data roles, Ministry of Statistics, Indian Census, RBI analytics",
+    "tier2_city_availability": "Medium"
+  },
+  {
+    "career_id": "ai_ml_engineer",
+    "career_name": "AI/ML Engineer",
+    "career_name_hindi": "एआई/एमएल इंजीनियर",
+    "riasec_code": "IRS",
+    "riasec_primary": "I",
+    "description": "Build artificial intelligence and machine learning models, design neural networks, and develop intelligent systems that can learn, reason, and make predictions from data.",
+    "stream_required": "Science (PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "B.Tech in CS/AI/ML or related branch",
+      "entrance_exams": ["JEE Main", "JEE Advanced", "BITSAT", "VITEEE"],
+      "top_colleges": [
+        {"name": "IIT Bombay", "nirf_rank": 3, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 28, "location": "Mumbai"},
+        {"name": "IIT Delhi", "nirf_rank": 2, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 26, "location": "New Delhi"},
+        {"name": "IIT Hyderabad (AI Dept)", "nirf_rank": 8, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 20, "location": "Hyderabad"},
+        {"name": "IIIT Hyderabad", "nirf_rank": 15, "approx_fee_4yr_lakh": 8, "avg_placement_lpa": 22, "location": "Hyderabad"},
+        {"name": "IISc Bangalore", "nirf_rank": 1, "approx_fee_4yr_lakh": 4, "avg_placement_lpa": 25, "location": "Bangalore"}
+      ],
+      "alternative_paths": ["BSc CS → MS in AI", "B.Tech any branch + AI specialization online", "Research internships + publications"],
+      "postgrad_options": ["M.Tech in AI/ML", "MS in AI (abroad — CMU, Stanford)", "PhD in Machine Learning"]
+    },
+    "salary_range_lpa": {"entry": "8-15", "mid_5yr": "20-40", "senior_10yr": "40-80+"},
+    "growth_outlook": "Very High — AI adoption accelerating across healthcare, finance, manufacturing, and government",
+    "skills_needed": ["Deep Learning", "Python (TensorFlow, PyTorch)", "Linear Algebra & Calculus", "NLP/Computer Vision", "Research Skills", "MLOps"],
+    "work_environment": "Office/Remote, research labs, product teams",
+    "govt_job_options": "DRDO AI Labs, ISRO, C-DAC, AIIMS (medical AI), Ministry of Electronics & IT",
+    "tier2_city_availability": "Low-Medium"
+  },
+  {
+    "career_id": "cybersecurity_analyst",
+    "career_name": "Cybersecurity Analyst",
+    "career_name_hindi": "साइबर सुरक्षा विश्लेषक",
+    "riasec_code": "ICR",
+    "riasec_primary": "I",
+    "description": "Protect organizations' computer systems, networks, and data from cyber threats, breaches, and attacks. Monitor systems, identify vulnerabilities, and implement security protocols.",
+    "stream_required": "Science (PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Mathematics and Computer Science",
+      "after_12th": "B.Tech in CS/IT or BCA with specialization in cybersecurity",
+      "entrance_exams": ["JEE Main", "JEE Advanced", "CUET", "VITEEE"],
+      "top_colleges": [
+        {"name": "IIT Kanpur", "nirf_rank": 4, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 22, "location": "Kanpur"},
+        {"name": "IIT Kharagpur", "nirf_rank": 5, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 20, "location": "Kharagpur"},
+        {"name": "IIIT Delhi", "nirf_rank": 18, "approx_fee_4yr_lakh": 12, "avg_placement_lpa": 18, "location": "New Delhi"},
+        {"name": "NIT Surathkal", "nirf_rank": 7, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 14, "location": "Mangalore"},
+        {"name": "Amrita Vishwa Vidyapeetham", "nirf_rank": 6, "approx_fee_4yr_lakh": 12, "avg_placement_lpa": 10, "location": "Coimbatore"}
+      ],
+      "alternative_paths": ["BCA + Cybersecurity certifications (CEH, CISSP)", "Diploma in IT + security certs", "BSc IT + ethical hacking courses"],
+      "postgrad_options": ["M.Tech in Cybersecurity", "MS in Information Security (abroad)", "MBA in IT Security Management"]
+    },
+    "salary_range_lpa": {"entry": "5-10", "mid_5yr": "12-25", "senior_10yr": "25-50+"},
+    "growth_outlook": "Very High — Cybercrime increasing globally, India faces massive shortage of cybersecurity professionals",
+    "skills_needed": ["Network Security", "Ethical Hacking", "Cryptography", "SIEM Tools", "Linux", "Incident Response"],
+    "work_environment": "Office/SOC centers, shift-based monitoring, high-pressure during incidents",
+    "govt_job_options": "CERT-In, NIA Cyber Cell, DRDO, Intelligence Bureau, Indian Cyber Crime Coordination Centre",
+    "tier2_city_availability": "Medium"
+  },
+  {
+    "career_id": "civil_engineer",
+    "career_name": "Civil Engineer",
+    "career_name_hindi": "सिविल इंजीनियर",
+    "riasec_code": "RIC",
+    "riasec_primary": "R",
+    "description": "Plan, design, and supervise construction of infrastructure projects including buildings, roads, bridges, dams, and water supply systems. Ensure structural safety and compliance with regulations.",
+    "stream_required": "Science (PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "B.Tech/BE in Civil Engineering",
+      "entrance_exams": ["JEE Main", "JEE Advanced", "GATE (for M.Tech/PSU)", "State CETs"],
+      "top_colleges": [
+        {"name": "IIT Roorkee", "nirf_rank": 6, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 14, "location": "Roorkee"},
+        {"name": "IIT Madras", "nirf_rank": 1, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 14, "location": "Chennai"},
+        {"name": "IIT Delhi", "nirf_rank": 2, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 13, "location": "New Delhi"},
+        {"name": "NIT Trichy", "nirf_rank": 9, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 10, "location": "Tiruchirappalli"},
+        {"name": "BITS Pilani", "nirf_rank": 10, "approx_fee_4yr_lakh": 20, "avg_placement_lpa": 12, "location": "Pilani"}
+      ],
+      "alternative_paths": ["Diploma in Civil Engineering → Lateral entry B.Tech", "B.Arch (for design-focused roles)", "Polytechnic + site experience"],
+      "postgrad_options": ["M.Tech in Structural/Environmental/Geotechnical", "MS abroad", "MBA in Construction Management"]
+    },
+    "salary_range_lpa": {"entry": "3-6", "mid_5yr": "8-15", "senior_10yr": "15-35"},
+    "growth_outlook": "High — Smart Cities Mission, infrastructure development push, highway projects driving demand",
+    "skills_needed": ["AutoCAD", "Structural Analysis", "Project Management", "Surveying", "Building Codes", "Concrete Technology"],
+    "work_environment": "Construction sites, offices, field visits; can involve travel and outdoor work",
+    "govt_job_options": "SSC JE, UPSC Engineering Services (IES), State PWD, NHAI, Railways, CPWD, Municipal Corporations",
+    "tier2_city_availability": "Very High"
+  },
+  {
+    "career_id": "mechanical_engineer",
+    "career_name": "Mechanical Engineer",
+    "career_name_hindi": "मैकेनिकल इंजीनियर",
+    "riasec_code": "RIC",
+    "riasec_primary": "R",
+    "description": "Design, analyze, manufacture, and maintain mechanical systems including engines, machines, HVAC systems, and production equipment. One of the broadest engineering disciplines.",
+    "stream_required": "Science (PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "B.Tech/BE in Mechanical Engineering",
+      "entrance_exams": ["JEE Main", "JEE Advanced", "GATE", "State CETs", "BITSAT"],
+      "top_colleges": [
+        {"name": "IIT Bombay", "nirf_rank": 3, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 18, "location": "Mumbai"},
+        {"name": "IIT Kanpur", "nirf_rank": 4, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 17, "location": "Kanpur"},
+        {"name": "IIT Kharagpur", "nirf_rank": 5, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 16, "location": "Kharagpur"},
+        {"name": "NIT Warangal", "nirf_rank": 11, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 11, "location": "Warangal"},
+        {"name": "VIT Vellore", "nirf_rank": 12, "approx_fee_4yr_lakh": 14, "avg_placement_lpa": 8, "location": "Vellore"}
+      ],
+      "alternative_paths": ["Diploma in Mechanical → Lateral entry", "ITI + Apprenticeship → Diploma", "B.Tech + GATE for PSU jobs"],
+      "postgrad_options": ["M.Tech in Thermal/Design/Manufacturing", "MS abroad", "MBA in Operations"]
+    },
+    "salary_range_lpa": {"entry": "3-7", "mid_5yr": "8-18", "senior_10yr": "18-40"},
+    "growth_outlook": "High — Manufacturing push under Make in India, EV transition, defence manufacturing",
+    "skills_needed": ["CAD/CAM (SolidWorks, CATIA)", "Thermodynamics", "Manufacturing Processes", "FEA/CFD", "Material Science", "Project Management"],
+    "work_environment": "Manufacturing plants, design offices, R&D labs; may involve factory floor work",
+    "govt_job_options": "ISRO, DRDO, Indian Railways, BHEL, ONGC, NTPC, HAL, SSC JE, IES",
+    "tier2_city_availability": "Very High"
+  },
+  {
+    "career_id": "electrical_engineer",
+    "career_name": "Electrical Engineer",
+    "career_name_hindi": "इलेक्ट्रिकल इंजीनियर",
+    "riasec_code": "RIC",
+    "riasec_primary": "R",
+    "description": "Design, develop, and maintain electrical systems including power generation, transmission, distribution, motors, and control systems for industrial and residential use.",
+    "stream_required": "Science (PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "B.Tech/BE in Electrical Engineering",
+      "entrance_exams": ["JEE Main", "JEE Advanced", "GATE", "State CETs"],
+      "top_colleges": [
+        {"name": "IIT Bombay", "nirf_rank": 3, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 18, "location": "Mumbai"},
+        {"name": "IIT Madras", "nirf_rank": 1, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 17, "location": "Chennai"},
+        {"name": "IIT Kharagpur", "nirf_rank": 5, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 16, "location": "Kharagpur"},
+        {"name": "NIT Trichy", "nirf_rank": 9, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 12, "location": "Tiruchirappalli"},
+        {"name": "Jadavpur University", "nirf_rank": 14, "approx_fee_4yr_lakh": 2, "avg_placement_lpa": 9, "location": "Kolkata"}
+      ],
+      "alternative_paths": ["Diploma in Electrical → Lateral entry", "ITI Electrician + Diploma", "GATE for PSU recruitment"],
+      "postgrad_options": ["M.Tech in Power Systems/Control Systems", "MS abroad", "MBA in Energy Management"]
+    },
+    "salary_range_lpa": {"entry": "3-7", "mid_5yr": "8-18", "senior_10yr": "18-40"},
+    "growth_outlook": "High — Renewable energy expansion, smart grid deployment, EV charging infrastructure",
+    "skills_needed": ["Circuit Analysis", "Power Systems", "MATLAB/Simulink", "Control Systems", "PLC/SCADA", "Electrical Machines"],
+    "work_environment": "Power plants, substations, manufacturing, offices; some fieldwork required",
+    "govt_job_options": "NTPC, PGCIL, BHEL, State Electricity Boards, SSC JE, IES, Indian Railways",
+    "tier2_city_availability": "Very High"
+  },
+  {
+    "career_id": "electronics_engineer",
+    "career_name": "Electronics Engineer",
+    "career_name_hindi": "इलेक्ट्रॉनिक्स इंजीनियर",
+    "riasec_code": "IRC",
+    "riasec_primary": "I",
+    "description": "Design and develop electronic circuits, semiconductor devices, embedded systems, communication equipment, and signal processing systems used in consumer electronics, telecom, and defence.",
+    "stream_required": "Science (PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "B.Tech/BE in Electronics & Communication Engineering (ECE)",
+      "entrance_exams": ["JEE Main", "JEE Advanced", "GATE", "BITSAT", "State CETs"],
+      "top_colleges": [
+        {"name": "IIT Bombay", "nirf_rank": 3, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 20, "location": "Mumbai"},
+        {"name": "IIT Delhi", "nirf_rank": 2, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 19, "location": "New Delhi"},
+        {"name": "IIT Madras", "nirf_rank": 1, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 18, "location": "Chennai"},
+        {"name": "NIT Surathkal", "nirf_rank": 7, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 13, "location": "Mangalore"},
+        {"name": "DTU Delhi", "nirf_rank": 25, "approx_fee_4yr_lakh": 8, "avg_placement_lpa": 12, "location": "New Delhi"}
+      ],
+      "alternative_paths": ["Diploma in ECE → Lateral entry", "BSc Electronics → MSc", "GATE for PSU/M.Tech"],
+      "postgrad_options": ["M.Tech in VLSI/Embedded Systems/Signal Processing", "MS abroad", "MBA in Technology Management"]
+    },
+    "salary_range_lpa": {"entry": "3-7", "mid_5yr": "8-20", "senior_10yr": "20-45"},
+    "growth_outlook": "High — Semiconductor fab setup in India, 5G rollout, IoT expansion, defence electronics",
+    "skills_needed": ["Analog/Digital Circuits", "Embedded Systems (C/C++)", "VLSI Design", "Signal Processing", "PCB Design", "Microcontrollers"],
+    "work_environment": "R&D labs, semiconductor fabs, testing facilities, offices",
+    "govt_job_options": "ISRO, DRDO, BEL, ECIL, Indian Railways, Doordarshan, SSC JE, IES",
+    "tier2_city_availability": "Medium-High"
+  },
+  {
+    "career_id": "chemical_engineer",
+    "career_name": "Chemical Engineer",
+    "career_name_hindi": "केमिकल इंजीनियर",
+    "riasec_code": "IRC",
+    "riasec_primary": "I",
+    "description": "Design and operate chemical processes in industries including petrochemicals, pharmaceuticals, food processing, paints, fertilizers, and specialty chemicals. Optimize production and ensure safety.",
+    "stream_required": "Science (PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "B.Tech/BE in Chemical Engineering",
+      "entrance_exams": ["JEE Main", "JEE Advanced", "GATE", "BITSAT"],
+      "top_colleges": [
+        {"name": "IIT Bombay", "nirf_rank": 3, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 16, "location": "Mumbai"},
+        {"name": "ICT Mumbai (UDCT)", "nirf_rank": 20, "approx_fee_4yr_lakh": 4, "avg_placement_lpa": 12, "location": "Mumbai"},
+        {"name": "IIT Madras", "nirf_rank": 1, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 14, "location": "Chennai"},
+        {"name": "IIT Kharagpur", "nirf_rank": 5, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 13, "location": "Kharagpur"},
+        {"name": "NIT Trichy", "nirf_rank": 9, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 9, "location": "Tiruchirappalli"}
+      ],
+      "alternative_paths": ["Diploma in Chemical Engineering → Lateral entry", "BSc Chemistry → MSc Chemical Engineering", "GATE for PSU/M.Tech"],
+      "postgrad_options": ["M.Tech in Chemical/Process Engineering", "MS abroad", "MBA in Operations"]
+    },
+    "salary_range_lpa": {"entry": "4-8", "mid_5yr": "10-20", "senior_10yr": "20-40"},
+    "growth_outlook": "Medium-High — Petrochemical expansion, green chemistry, pharma manufacturing growth",
+    "skills_needed": ["Process Design", "Thermodynamics", "Reaction Engineering", "ASPEN/HYSYS", "Plant Safety", "Material & Energy Balance"],
+    "work_environment": "Chemical plants, refineries, pharma units, R&D labs; may involve hazardous environments",
+    "govt_job_options": "IOCL, BPCL, HPCL, ONGC, GAIL, NTPC, Fertilizer Corporation, SSC JE, IES",
+    "tier2_city_availability": "Medium (concentrated near industrial hubs)"
+  },
+  {
+    "career_id": "aerospace_engineer",
+    "career_name": "Aerospace Engineer",
+    "career_name_hindi": "एयरोस्पेस इंजीनियर",
+    "riasec_code": "IRS",
+    "riasec_primary": "I",
+    "description": "Design, develop, and test aircraft, spacecraft, satellites, missiles, and related systems. Work on aerodynamics, propulsion, avionics, and structural design for aviation and space missions.",
+    "stream_required": "Science (PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "B.Tech/BE in Aerospace/Aeronautical Engineering",
+      "entrance_exams": ["JEE Main", "JEE Advanced", "GATE", "IIST Admission"],
+      "top_colleges": [
+        {"name": "IIT Bombay (Aerospace)", "nirf_rank": 3, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 16, "location": "Mumbai"},
+        {"name": "IIT Madras (Aerospace)", "nirf_rank": 1, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 15, "location": "Chennai"},
+        {"name": "IIT Kanpur (Aerospace)", "nirf_rank": 4, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 15, "location": "Kanpur"},
+        {"name": "IIST Thiruvananthapuram", "nirf_rank": 30, "approx_fee_4yr_lakh": 5, "avg_placement_lpa": 12, "location": "Thiruvananthapuram"},
+        {"name": "IISc Bangalore", "nirf_rank": 1, "approx_fee_4yr_lakh": 4, "avg_placement_lpa": 18, "location": "Bangalore"}
+      ],
+      "alternative_paths": ["B.Tech Mechanical → M.Tech Aerospace", "HAL/NAL apprenticeship programs", "IAF technical branch entry"],
+      "postgrad_options": ["M.Tech in Aerospace/Avionics", "MS abroad (MIT, Georgia Tech)", "PhD in Propulsion/Aerodynamics"]
+    },
+    "salary_range_lpa": {"entry": "5-10", "mid_5yr": "12-22", "senior_10yr": "22-45"},
+    "growth_outlook": "High — Gaganyaan program, private space sector (Agnikul, Skyroot), defence modernization, drone industry",
+    "skills_needed": ["Aerodynamics", "Propulsion Systems", "CFD", "MATLAB", "Structural Mechanics", "Flight Dynamics"],
+    "work_environment": "R&D labs, wind tunnels, clean rooms, launch sites; highly specialized environments",
+    "govt_job_options": "ISRO Scientist/Engineer, DRDO, HAL, NAL, Indian Air Force, ADA (Aeronautical Development Agency)",
+    "tier2_city_availability": "Low (concentrated in Bangalore, Hyderabad, Thiruvananthapuram)"
+  },
+  {
+    "career_id": "biomedical_engineer",
+    "career_name": "Biomedical Engineer",
+    "career_name_hindi": "बायोमेडिकल इंजीनियर",
+    "riasec_code": "IRS",
+    "riasec_primary": "I",
+    "description": "Apply engineering principles to healthcare by designing medical devices, prosthetics, imaging systems, diagnostic equipment, and biocompatible materials to improve patient care.",
+    "stream_required": "Science (PCM or PCB)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics/Biology",
+      "after_12th": "B.Tech/BE in Biomedical Engineering or B.Tech Biotechnology",
+      "entrance_exams": ["JEE Main", "JEE Advanced", "BITSAT", "VITEEE", "State CETs"],
+      "top_colleges": [
+        {"name": "IIT Bombay (Biomedical)", "nirf_rank": 3, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 14, "location": "Mumbai"},
+        {"name": "IIT Hyderabad (Biomedical)", "nirf_rank": 8, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 12, "location": "Hyderabad"},
+        {"name": "VIT Vellore", "nirf_rank": 12, "approx_fee_4yr_lakh": 14, "avg_placement_lpa": 7, "location": "Vellore"},
+        {"name": "SRM Institute of Science and Technology", "nirf_rank": 19, "approx_fee_4yr_lakh": 14, "avg_placement_lpa": 6, "location": "Chennai"},
+        {"name": "Manipal Institute of Technology", "nirf_rank": 16, "approx_fee_4yr_lakh": 16, "avg_placement_lpa": 7, "location": "Manipal"}
+      ],
+      "alternative_paths": ["B.Tech ECE/Mechanical + M.Tech Biomedical", "BSc Biomedical Science + MSc", "MBBS + MTech (rare dual path)"],
+      "postgrad_options": ["M.Tech in Biomedical Engineering", "MS abroad (Johns Hopkins, MIT)", "PhD in Medical Devices"]
+    },
+    "salary_range_lpa": {"entry": "3-6", "mid_5yr": "8-16", "senior_10yr": "16-35"},
+    "growth_outlook": "High — Medical device manufacturing growing under Make in India, affordable healthcare push",
+    "skills_needed": ["Medical Device Design", "Signal Processing", "Biomechanics", "Regulatory Standards (ISO 13485)", "Programming", "Anatomy Knowledge"],
+    "work_environment": "Hospitals, medical device companies, R&D labs, regulatory agencies",
+    "govt_job_options": "AIIMS Biomedical Dept, DRDO (DIPAS), CSIR labs, CDSCO (regulatory)",
+    "tier2_city_availability": "Low-Medium"
+  },
+  {
+    "career_id": "environmental_engineer",
+    "career_name": "Environmental Engineer",
+    "career_name_hindi": "पर्यावरण इंजीनियर",
+    "riasec_code": "IRS",
+    "riasec_primary": "I",
+    "description": "Develop solutions for environmental problems including water/air pollution, waste management, and sustainable development. Design treatment systems and ensure regulatory compliance.",
+    "stream_required": "Science (PCM or PCB)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "B.Tech/BE in Environmental Engineering or Civil Engineering with environmental specialization",
+      "entrance_exams": ["JEE Main", "JEE Advanced", "GATE", "State CETs"],
+      "top_colleges": [
+        {"name": "IIT Bombay (CESE)", "nirf_rank": 3, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 14, "location": "Mumbai"},
+        {"name": "IIT Delhi (Civil+Environmental)", "nirf_rank": 2, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 13, "location": "New Delhi"},
+        {"name": "IIT Roorkee", "nirf_rank": 6, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 11, "location": "Roorkee"},
+        {"name": "NIT Trichy", "nirf_rank": 9, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 8, "location": "Tiruchirappalli"},
+        {"name": "Anna University", "nirf_rank": 13, "approx_fee_4yr_lakh": 3, "avg_placement_lpa": 6, "location": "Chennai"}
+      ],
+      "alternative_paths": ["B.Tech Civil → M.Tech Environmental", "BSc Environmental Science → MSc", "Diploma + certifications in EIA"],
+      "postgrad_options": ["M.Tech in Environmental Engineering", "MS abroad in Environmental Science", "MBA in Sustainability"]
+    },
+    "salary_range_lpa": {"entry": "3-6", "mid_5yr": "7-15", "senior_10yr": "15-30"},
+    "growth_outlook": "Medium-High — Growing environmental regulations, Swachh Bharat, Namami Gange, ESG compliance",
+    "skills_needed": ["Water/Wastewater Treatment", "EIA (Environmental Impact Assessment)", "GIS/Remote Sensing", "Air Quality Monitoring", "Waste Management", "Environmental Law"],
+    "work_environment": "Field sites, treatment plants, government offices, consulting firms",
+    "govt_job_options": "CPCB/SPCB, Ministry of Environment, Municipal Corporations, NEERI, CSIR labs",
+    "tier2_city_availability": "Medium"
+  },
+  {
+    "career_id": "robotics_engineer",
+    "career_name": "Robotics Engineer",
+    "career_name_hindi": "रोबोटिक्स इंजीनियर",
+    "riasec_code": "IRC",
+    "riasec_primary": "I",
+    "description": "Design, build, program, and test robots and robotic systems for manufacturing, healthcare, agriculture, defence, and service industries. Integrate mechanical, electronic, and software systems.",
+    "stream_required": "Science (PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "B.Tech in Robotics, Mechatronics, or ECE/Mechanical/CS",
+      "entrance_exams": ["JEE Main", "JEE Advanced", "BITSAT", "VITEEE"],
+      "top_colleges": [
+        {"name": "IIT Bombay (CSRE/Mechanical)", "nirf_rank": 3, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 18, "location": "Mumbai"},
+        {"name": "IIT Delhi", "nirf_rank": 2, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 17, "location": "New Delhi"},
+        {"name": "IIT Kanpur", "nirf_rank": 4, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 16, "location": "Kanpur"},
+        {"name": "BITS Pilani (Mechatronics)", "nirf_rank": 10, "approx_fee_4yr_lakh": 20, "avg_placement_lpa": 14, "location": "Pilani"},
+        {"name": "IIIT Allahabad (Robotics)", "nirf_rank": 35, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 10, "location": "Prayagraj"}
+      ],
+      "alternative_paths": ["B.Tech Mechanical/ECE + robotics specialization", "Diploma + maker/hackathon projects", "Online robotics certifications + portfolio"],
+      "postgrad_options": ["M.Tech in Robotics", "MS in Robotics (CMU, ETH Zurich)", "PhD in Autonomous Systems"]
+    },
+    "salary_range_lpa": {"entry": "5-10", "mid_5yr": "12-25", "senior_10yr": "25-50"},
+    "growth_outlook": "High — Industrial automation, warehouse robotics, surgical robotics, and defence applications growing",
+    "skills_needed": ["ROS (Robot Operating System)", "Embedded Systems", "C++/Python", "Kinematics/Dynamics", "Sensor Integration", "Control Systems"],
+    "work_environment": "R&D labs, manufacturing floors, testing facilities; hands-on prototyping",
+    "govt_job_options": "DRDO Robotics labs, ISRO, BARC, CAIR (Centre for AI & Robotics), Defence PSUs",
+    "tier2_city_availability": "Low"
+  },
+  {
+    "career_id": "iot_specialist",
+    "career_name": "IoT Specialist",
+    "career_name_hindi": "आईओटी विशेषज्ञ",
+    "riasec_code": "IRC",
+    "riasec_primary": "I",
+    "description": "Design and implement Internet of Things systems connecting physical devices to networks. Build smart solutions for homes, cities, agriculture, healthcare, and industry using sensors, connectivity, and cloud platforms.",
+    "stream_required": "Science (PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "B.Tech in ECE, CS, or IoT specialization",
+      "entrance_exams": ["JEE Main", "JEE Advanced", "BITSAT", "VITEEE"],
+      "top_colleges": [
+        {"name": "IIT Bombay", "nirf_rank": 3, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 20, "location": "Mumbai"},
+        {"name": "IIT Hyderabad", "nirf_rank": 8, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 16, "location": "Hyderabad"},
+        {"name": "BITS Pilani", "nirf_rank": 10, "approx_fee_4yr_lakh": 20, "avg_placement_lpa": 15, "location": "Pilani"},
+        {"name": "VIT Vellore", "nirf_rank": 12, "approx_fee_4yr_lakh": 14, "avg_placement_lpa": 8, "location": "Vellore"},
+        {"name": "NIT Warangal", "nirf_rank": 11, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 10, "location": "Warangal"}
+      ],
+      "alternative_paths": ["B.Tech ECE + IoT certifications", "BCA + cloud/embedded certifications", "Diploma ECE + hands-on IoT projects"],
+      "postgrad_options": ["M.Tech in IoT/Embedded Systems", "MS abroad in Cyber-Physical Systems", "MBA in Technology"]
+    },
+    "salary_range_lpa": {"entry": "4-8", "mid_5yr": "10-22", "senior_10yr": "22-45"},
+    "growth_outlook": "Very High — Smart cities, Industry 4.0, connected healthcare, and precision agriculture driving demand",
+    "skills_needed": ["Embedded Systems (Arduino, Raspberry Pi)", "Wireless Protocols (MQTT, BLE, LoRa)", "Cloud Platforms (AWS IoT, Azure IoT)", "Python/C++", "Sensor Integration", "Edge Computing"],
+    "work_environment": "Labs, offices, field deployment sites; cross-disciplinary teams",
+    "govt_job_options": "Smart City SPVs, CDAC, C-DOT, Ministry of Electronics & IT, State IT departments",
+    "tier2_city_availability": "Medium"
+  },
+  {
+    "career_id": "cloud_architect",
+    "career_name": "Cloud Architect",
+    "career_name_hindi": "क्लाउड आर्किटेक्ट",
+    "riasec_code": "ICE",
+    "riasec_primary": "I",
+    "description": "Design and manage cloud computing infrastructure and strategy for organizations. Plan cloud migration, ensure security, optimize costs, and architect scalable solutions on AWS, Azure, or GCP.",
+    "stream_required": "Science (PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Mathematics and Computer Science",
+      "after_12th": "B.Tech in CS/IT or BCA",
+      "entrance_exams": ["JEE Main", "JEE Advanced", "BITSAT", "CUET"],
+      "top_colleges": [
+        {"name": "IIT Bombay", "nirf_rank": 3, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 25, "location": "Mumbai"},
+        {"name": "IIT Delhi", "nirf_rank": 2, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 24, "location": "New Delhi"},
+        {"name": "IIIT Hyderabad", "nirf_rank": 15, "approx_fee_4yr_lakh": 8, "avg_placement_lpa": 20, "location": "Hyderabad"},
+        {"name": "NIT Surathkal", "nirf_rank": 7, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 14, "location": "Mangalore"},
+        {"name": "BITS Pilani", "nirf_rank": 10, "approx_fee_4yr_lakh": 20, "avg_placement_lpa": 18, "location": "Pilani"}
+      ],
+      "alternative_paths": ["BCA + AWS/Azure certifications", "BSc IT + cloud certifications + experience", "Any B.Tech + cloud transition (common path)"],
+      "postgrad_options": ["M.Tech in Cloud Computing", "MS abroad", "MBA in IT Management", "AWS/Azure/GCP Professional Certifications"]
+    },
+    "salary_range_lpa": {"entry": "6-12", "mid_5yr": "18-35", "senior_10yr": "35-70+"},
+    "growth_outlook": "Very High — Cloud adoption accelerating across Indian enterprises, govt cloud (MeghRaj) initiative",
+    "skills_needed": ["AWS/Azure/GCP", "Networking & Security", "Containerization (Docker, Kubernetes)", "Infrastructure as Code (Terraform)", "Linux", "System Design"],
+    "work_environment": "Office/Remote, consulting, cross-team collaboration",
+    "govt_job_options": "NIC Cloud, MeghRaj (Govt Cloud), CDAC, State Data Centers",
+    "tier2_city_availability": "Medium (mostly remote-friendly)"
+  },
+  {
+    "career_id": "devops_engineer",
+    "career_name": "DevOps Engineer",
+    "career_name_hindi": "डेवऑप्स इंजीनियर",
+    "riasec_code": "IRC",
+    "riasec_primary": "I",
+    "description": "Bridge software development and IT operations by automating build, test, and deployment pipelines. Ensure continuous integration/delivery, infrastructure reliability, and system monitoring.",
+    "stream_required": "Science (PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Mathematics",
+      "after_12th": "B.Tech in CS/IT or BCA",
+      "entrance_exams": ["JEE Main", "JEE Advanced", "BITSAT", "CUET"],
+      "top_colleges": [
+        {"name": "IIT Bombay", "nirf_rank": 3, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 25, "location": "Mumbai"},
+        {"name": "IIT Delhi", "nirf_rank": 2, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 24, "location": "New Delhi"},
+        {"name": "IIIT Hyderabad", "nirf_rank": 15, "approx_fee_4yr_lakh": 8, "avg_placement_lpa": 20, "location": "Hyderabad"},
+        {"name": "NIT Trichy", "nirf_rank": 9, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 14, "location": "Tiruchirappalli"},
+        {"name": "IIIT Allahabad", "nirf_rank": 35, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 12, "location": "Prayagraj"}
+      ],
+      "alternative_paths": ["BCA + DevOps certifications", "Any B.Tech + Linux/cloud skills", "Diploma IT + hands-on automation experience"],
+      "postgrad_options": ["M.Tech in CS", "Cloud/DevOps professional certifications (CKA, AWS DevOps)", "MBA in IT"]
+    },
+    "salary_range_lpa": {"entry": "5-10", "mid_5yr": "14-28", "senior_10yr": "28-55"},
+    "growth_outlook": "Very High — Every software company needs DevOps; shift-left culture driving demand",
+    "skills_needed": ["CI/CD (Jenkins, GitHub Actions)", "Docker/Kubernetes", "Linux Administration", "Cloud (AWS/Azure/GCP)", "Scripting (Bash, Python)", "Monitoring (Prometheus, Grafana)"],
+    "work_environment": "Office/Remote, on-call rotations, collaborative with dev and ops teams",
+    "govt_job_options": "NIC, CDAC, ISRO (infrastructure), State IT departments",
+    "tier2_city_availability": "Medium-High (remote-friendly role)"
+  },
+  {
+    "career_id": "full_stack_developer",
+    "career_name": "Full Stack Developer",
+    "career_name_hindi": "फुल स्टैक डेवलपर",
+    "riasec_code": "ICA",
+    "riasec_primary": "I",
+    "description": "Build complete web applications handling both frontend (user interface) and backend (server, database, APIs). Work across the entire technology stack from design to deployment.",
+    "stream_required": "Science (PCM) or Any stream with aptitude",
+    "education_pathway": {
+      "after_10th": "Science stream preferred; Commerce/Arts with self-study also possible",
+      "after_12th": "B.Tech CS/IT, BCA, or BSc Computer Science",
+      "entrance_exams": ["JEE Main", "CUET", "VITEEE", "State CETs"],
+      "top_colleges": [
+        {"name": "IIT Bombay", "nirf_rank": 3, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 25, "location": "Mumbai"},
+        {"name": "IIIT Hyderabad", "nirf_rank": 15, "approx_fee_4yr_lakh": 8, "avg_placement_lpa": 20, "location": "Hyderabad"},
+        {"name": "NIT Trichy", "nirf_rank": 9, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 14, "location": "Tiruchirappalli"},
+        {"name": "IIIT Bangalore", "nirf_rank": 22, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 16, "location": "Bangalore"},
+        {"name": "DTU Delhi", "nirf_rank": 25, "approx_fee_4yr_lakh": 8, "avg_placement_lpa": 14, "location": "New Delhi"}
+      ],
+      "alternative_paths": ["BCA + bootcamp/portfolio", "Self-taught + strong GitHub portfolio", "Diploma + coding bootcamp (Masai, Newton School)"],
+      "postgrad_options": ["M.Tech in CS", "MS abroad", "PG Diploma in Full Stack (CDAC, UpGrad)"]
+    },
+    "salary_range_lpa": {"entry": "4-8", "mid_5yr": "12-25", "senior_10yr": "25-50+"},
+    "growth_outlook": "Very High — Digital transformation across all industries creating constant demand",
+    "skills_needed": ["JavaScript/TypeScript", "React/Angular/Vue", "Node.js/Python/Java", "Databases (SQL/NoSQL)", "REST APIs", "Git"],
+    "work_environment": "Office/Remote, startup or corporate teams, agile sprints",
+    "govt_job_options": "NIC, CDAC, eGovernance projects, Digital India initiatives",
+    "tier2_city_availability": "High (remote-friendly)"
+  },
+  {
+    "career_id": "game_developer",
+    "career_name": "Game Developer",
+    "career_name_hindi": "गेम डेवलपर",
+    "riasec_code": "IAR",
+    "riasec_primary": "I",
+    "description": "Design and develop video games for PC, console, and mobile platforms. Work on game mechanics, physics, graphics rendering, AI behavior, and user experience in gaming.",
+    "stream_required": "Science (PCM) or Any stream with strong programming skills",
+    "education_pathway": {
+      "after_10th": "Science stream with Mathematics; creative arts courses help",
+      "after_12th": "B.Tech CS, BSc Game Development, or BDes in Game Design",
+      "entrance_exams": ["JEE Main", "CUET", "UCEED (for design)", "NID Entrance"],
+      "top_colleges": [
+        {"name": "IIT Bombay (CS + Game Lab)", "nirf_rank": 3, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 25, "location": "Mumbai"},
+        {"name": "IIIT Hyderabad", "nirf_rank": 15, "approx_fee_4yr_lakh": 8, "avg_placement_lpa": 18, "location": "Hyderabad"},
+        {"name": "DSK International (Pune)", "nirf_rank": null, "approx_fee_4yr_lakh": 12, "avg_placement_lpa": 6, "location": "Pune"},
+        {"name": "Whistling Woods International", "nirf_rank": null, "approx_fee_4yr_lakh": 15, "avg_placement_lpa": 5, "location": "Mumbai"},
+        {"name": "MIT Pune (Game Development)", "nirf_rank": 40, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 6, "location": "Pune"}
+      ],
+      "alternative_paths": ["Self-taught Unity/Unreal + strong portfolio", "Diploma in Animation + Game Dev", "BCA + game dev specialization"],
+      "postgrad_options": ["M.Tech in CS (Graphics specialization)", "MS in Game Development (abroad — DigiPen, USC)", "MBA in Entertainment"]
+    },
+    "salary_range_lpa": {"entry": "3-7", "mid_5yr": "8-20", "senior_10yr": "20-45"},
+    "growth_outlook": "High — Indian gaming market growing 20%+ annually, mobile gaming boom, AR/VR expansion",
+    "skills_needed": ["Unity/Unreal Engine", "C#/C++", "3D Mathematics", "Game Physics", "Shader Programming", "Creative Thinking"],
+    "work_environment": "Studios, offices, remote; creative and deadline-driven",
+    "govt_job_options": "Limited — some opportunities in defence simulation (DRDO), educational gaming (NCERT)",
+    "tier2_city_availability": "Low-Medium (concentrated in Bangalore, Pune, Hyderabad)"
+  },
+  {
+    "career_id": "ev_engineer",
+    "career_name": "EV Engineer",
+    "career_name_hindi": "ईवी इंजीनियर",
+    "riasec_code": "RIC",
+    "riasec_primary": "R",
+    "description": "Design, develop, and optimize electric vehicle systems including battery management, electric motors, power electronics, charging infrastructure, and vehicle integration for the growing EV industry.",
+    "stream_required": "Science (PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "B.Tech in Electrical/Mechanical/Automobile Engineering",
+      "entrance_exams": ["JEE Main", "JEE Advanced", "GATE", "BITSAT"],
+      "top_colleges": [
+        {"name": "IIT Madras (EV Research)", "nirf_rank": 1, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 16, "location": "Chennai"},
+        {"name": "IIT Delhi", "nirf_rank": 2, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 16, "location": "New Delhi"},
+        {"name": "IIT Bombay", "nirf_rank": 3, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 16, "location": "Mumbai"},
+        {"name": "NIT Trichy", "nirf_rank": 9, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 10, "location": "Tiruchirappalli"},
+        {"name": "VIT Vellore", "nirf_rank": 12, "approx_fee_4yr_lakh": 14, "avg_placement_lpa": 8, "location": "Vellore"}
+      ],
+      "alternative_paths": ["B.Tech Mechanical/Electrical + EV certifications", "Diploma Automobile + EV specialization", "Online EV courses (IIT Kharagpur on NPTEL)"],
+      "postgrad_options": ["M.Tech in Electric Mobility/Power Electronics", "MS abroad in Automotive Engineering", "MBA in Automotive Management"]
+    },
+    "salary_range_lpa": {"entry": "4-8", "mid_5yr": "10-22", "senior_10yr": "22-45"},
+    "growth_outlook": "Very High — FAME-II policy, 30% EV sales target by 2030, Tata, Ola, Ather investments",
+    "skills_needed": ["Battery Management Systems", "Power Electronics", "Electric Motors", "MATLAB/Simulink", "Thermal Management", "Embedded Systems"],
+    "work_environment": "R&D labs, testing tracks, manufacturing plants, offices",
+    "govt_job_options": "BHEL (EV division), NTPC (charging), IOCL (energy transition), State Transport Corporations",
+    "tier2_city_availability": "Medium (growing in Pune, Chennai, Coimbatore)"
+  },
+  {
+    "career_id": "drone_technology_specialist",
+    "career_name": "Drone Technology Specialist",
+    "career_name_hindi": "ड्रोन प्रौद्योगिकी विशेषज्ञ",
+    "riasec_code": "RIC",
+    "riasec_primary": "R",
+    "description": "Design, build, operate, and maintain unmanned aerial vehicles (UAVs/drones) for applications in agriculture, surveying, delivery, surveillance, disaster management, and cinematography.",
+    "stream_required": "Science (PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "B.Tech in Aerospace/ECE/Mechanical or specialized drone technology programs",
+      "entrance_exams": ["JEE Main", "JEE Advanced", "BITSAT", "State CETs"],
+      "top_colleges": [
+        {"name": "IIT Kanpur (Aerospace)", "nirf_rank": 4, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 15, "location": "Kanpur"},
+        {"name": "IIT Bombay", "nirf_rank": 3, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 16, "location": "Mumbai"},
+        {"name": "Anna University", "nirf_rank": 13, "approx_fee_4yr_lakh": 3, "avg_placement_lpa": 6, "location": "Chennai"},
+        {"name": "NIT Surathkal", "nirf_rank": 7, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 12, "location": "Mangalore"},
+        {"name": "SRM Institute of Science and Technology", "nirf_rank": 19, "approx_fee_4yr_lakh": 14, "avg_placement_lpa": 6, "location": "Chennai"}
+      ],
+      "alternative_paths": ["DGCA Remote Pilot Licence + B.Tech any branch", "Diploma ECE + drone building projects", "Short courses from IIST/IITs + startup experience"],
+      "postgrad_options": ["M.Tech in Aerospace/Avionics", "MS abroad in UAV Systems", "Specialized drone certifications"]
+    },
+    "salary_range_lpa": {"entry": "4-8", "mid_5yr": "8-18", "senior_10yr": "18-35"},
+    "growth_outlook": "Very High — Drone Rules 2021 liberalized, PLI scheme for drones, agriculture/delivery applications booming",
+    "skills_needed": ["Flight Controller Programming", "Embedded Systems", "GIS/Mapping", "Aerodynamics", "Sensor Integration", "Regulatory Knowledge (DGCA)"],
+    "work_environment": "Outdoor testing, labs, field deployment; travel to survey sites",
+    "govt_job_options": "Survey of India, Indian Army/Navy/Air Force drone units, DRDO, Agriculture departments",
+    "tier2_city_availability": "Medium (growing rapidly in agricultural regions)"
+  },
+  {
+    "career_id": "doctor_mbbs",
+    "career_name": "Doctor (MBBS)",
+    "career_name_hindi": "डॉक्टर (एमबीबीएस)",
+    "riasec_code": "ISR",
+    "riasec_primary": "I",
+    "description": "Diagnose and treat illnesses, injuries, and diseases. Provide primary healthcare, prescribe medications, perform procedures, and guide patients on preventive care. MBBS is the foundational medical degree in India.",
+    "stream_required": "Science (PCB)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Biology",
+      "after_12th": "MBBS (5.5 years including internship)",
+      "entrance_exams": ["NEET-UG"],
+      "top_colleges": [
+        {"name": "AIIMS New Delhi", "nirf_rank": 1, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 12, "location": "New Delhi"},
+        {"name": "JIPMER Puducherry", "nirf_rank": 5, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 10, "location": "Puducherry"},
+        {"name": "CMC Vellore", "nirf_rank": 3, "approx_fee_4yr_lakh": 15, "avg_placement_lpa": 10, "location": "Vellore"},
+        {"name": "AFMC Pune", "nirf_rank": 10, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 10, "location": "Pune"},
+        {"name": "Maulana Azad Medical College", "nirf_rank": 4, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 10, "location": "New Delhi"}
+      ],
+      "alternative_paths": ["BAMS (Ayurveda)", "BDS (Dentistry)", "BHMS (Homeopathy)", "BSc Nursing"],
+      "postgrad_options": ["MD/MS (NEET-PG)", "DM/MCh Super Specialization", "DNB", "USMLE (for USA practice)"]
+    },
+    "salary_range_lpa": {"entry": "6-10", "mid_5yr": "12-25 (after MD/MS)", "senior_10yr": "25-80+ (specialist/private practice)"},
+    "growth_outlook": "Very High — Doctor-patient ratio still low in India (1:1400 vs WHO 1:1000), huge unmet demand",
+    "skills_needed": ["Clinical Knowledge", "Diagnosis & Treatment", "Communication", "Empathy", "Decision Making Under Pressure", "Continuous Learning"],
+    "work_environment": "Hospitals, clinics, emergency rooms, OPDs; long and irregular hours",
+    "govt_job_options": "Government hospitals, AIIMS, ESI, Railway hospitals, Army/Navy/Air Force Medical Corps, PHCs, CHCs",
+    "tier2_city_availability": "Very High"
+  },
+  {
+    "career_id": "dentist_bds",
+    "career_name": "Dentist (BDS)",
+    "career_name_hindi": "दंत चिकित्सक (बीडीएस)",
+    "riasec_code": "ISR",
+    "riasec_primary": "I",
+    "description": "Diagnose and treat diseases and conditions of the teeth, gums, and oral cavity. Perform procedures like fillings, root canals, extractions, and cosmetic dentistry.",
+    "stream_required": "Science (PCB)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Biology",
+      "after_12th": "BDS (5 years including internship)",
+      "entrance_exams": ["NEET-UG"],
+      "top_colleges": [
+        {"name": "Maulana Azad Institute of Dental Sciences", "nirf_rank": 1, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 6, "location": "New Delhi"},
+        {"name": "Manipal College of Dental Sciences", "nirf_rank": 2, "approx_fee_4yr_lakh": 25, "avg_placement_lpa": 5, "location": "Manipal"},
+        {"name": "SRM Dental College", "nirf_rank": 5, "approx_fee_4yr_lakh": 20, "avg_placement_lpa": 5, "location": "Chennai"},
+        {"name": "AB Shetty Memorial IDC (NITTE)", "nirf_rank": 4, "approx_fee_4yr_lakh": 22, "avg_placement_lpa": 5, "location": "Mangalore"},
+        {"name": "Government Dental College Mumbai", "nirf_rank": 3, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 5, "location": "Mumbai"}
+      ],
+      "alternative_paths": ["MBBS (if higher NEET rank)", "BSc in Dental Technology", "Diploma in Dental Hygiene"],
+      "postgrad_options": ["MDS (Orthodontics, Endodontics, Prosthodontics, etc.)", "Fellowship programs", "Dental implantology courses"]
+    },
+    "salary_range_lpa": {"entry": "3-6", "mid_5yr": "6-15 (after MDS/own clinic)", "senior_10yr": "15-40+ (own practice/specialist)"},
+    "growth_outlook": "Medium-High — Growing awareness of dental health, cosmetic dentistry demand increasing",
+    "skills_needed": ["Dental Procedures", "Manual Dexterity", "Patient Communication", "Radiology", "Pain Management", "Attention to Detail"],
+    "work_environment": "Dental clinics, hospitals; regular hours typically, own practice possible",
+    "govt_job_options": "Government dental hospitals, PHCs, Army/Navy Dental Corps, AIIMS dental departments",
+    "tier2_city_availability": "High"
+  },
+  {
+    "career_id": "pharmacist",
+    "career_name": "Pharmacist",
+    "career_name_hindi": "फार्मासिस्ट",
+    "riasec_code": "ICS",
+    "riasec_primary": "I",
+    "description": "Dispense medications, advise patients on drug usage, ensure drug safety, and work in pharmaceutical research, manufacturing, regulatory affairs, or clinical pharmacy settings.",
+    "stream_required": "Science (PCB or PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Biology/Mathematics",
+      "after_12th": "B.Pharm (4 years) or D.Pharm (2 years)",
+      "entrance_exams": ["GPAT (for M.Pharm)", "State Pharmacy Entrance Tests", "NIPER JEE"],
+      "top_colleges": [
+        {"name": "NIPER Mohali", "nirf_rank": 1, "approx_fee_4yr_lakh": 3, "avg_placement_lpa": 8, "location": "Mohali"},
+        {"name": "Jamia Hamdard", "nirf_rank": 2, "approx_fee_4yr_lakh": 8, "avg_placement_lpa": 6, "location": "New Delhi"},
+        {"name": "ICT Mumbai", "nirf_rank": 3, "approx_fee_4yr_lakh": 4, "avg_placement_lpa": 8, "location": "Mumbai"},
+        {"name": "BITS Pilani (Pharmacy)", "nirf_rank": 5, "approx_fee_4yr_lakh": 18, "avg_placement_lpa": 7, "location": "Pilani"},
+        {"name": "Manipal College of Pharmaceutical Sciences", "nirf_rank": 4, "approx_fee_4yr_lakh": 12, "avg_placement_lpa": 5, "location": "Manipal"}
+      ],
+      "alternative_paths": ["D.Pharm (Diploma — 2 years, can open retail pharmacy)", "B.Pharm + Drug Inspector exam", "BSc Chemistry → pharmaceutical industry"],
+      "postgrad_options": ["M.Pharm (Pharmacology, Pharmaceutics, etc.)", "MBA in Pharmaceutical Management", "PhD in Drug Discovery"]
+    },
+    "salary_range_lpa": {"entry": "2.5-5", "mid_5yr": "5-12", "senior_10yr": "12-30 (industry/regulatory)"},
+    "growth_outlook": "High — India is 'pharmacy of the world', generic drug manufacturing booming, clinical trial industry growing",
+    "skills_needed": ["Pharmacology", "Drug Formulation", "Quality Control", "Regulatory Knowledge", "Patient Counselling", "Analytical Chemistry"],
+    "work_environment": "Pharmacies, hospitals, pharmaceutical companies, R&D labs, regulatory offices",
+    "govt_job_options": "Drug Inspector, CDSCO, State Drug Controller, Govt Hospital Pharmacy, Army Medical Corps (Pharmacy)",
+    "tier2_city_availability": "Very High"
+  },
+  {
+    "career_id": "physiotherapist",
+    "career_name": "Physiotherapist",
+    "career_name_hindi": "फिजियोथेरेपिस्ट",
+    "riasec_code": "SIR",
+    "riasec_primary": "S",
+    "description": "Help patients recover from injuries, surgeries, or manage chronic conditions through physical exercises, manual therapy, electrotherapy, and rehabilitation programs to restore mobility and function.",
+    "stream_required": "Science (PCB)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Biology",
+      "after_12th": "BPT — Bachelor of Physiotherapy (4.5 years including internship)",
+      "entrance_exams": ["State CET for BPT", "IPU CET", "CUET (some universities)"],
+      "top_colleges": [
+        {"name": "CMC Vellore (Physiotherapy)", "nirf_rank": 3, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 5, "location": "Vellore"},
+        {"name": "AIIMS Delhi (Physiotherapy)", "nirf_rank": 1, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 5, "location": "New Delhi"},
+        {"name": "Manipal Academy of Higher Education", "nirf_rank": 8, "approx_fee_4yr_lakh": 12, "avg_placement_lpa": 4, "location": "Manipal"},
+        {"name": "ISIC New Delhi", "nirf_rank": 10, "approx_fee_4yr_lakh": 8, "avg_placement_lpa": 4, "location": "New Delhi"},
+        {"name": "KMC Mangalore (MAHE)", "nirf_rank": 8, "approx_fee_4yr_lakh": 12, "avg_placement_lpa": 4, "location": "Mangalore"}
+      ],
+      "alternative_paths": ["Diploma in Physiotherapy (limited scope)", "BSc in Sports Science + physio training", "Occupational Therapy (BOT) as alternative"],
+      "postgrad_options": ["MPT (Sports, Ortho, Neuro, Cardiopulmonary)", "PhD in Rehabilitation Science", "Sports physio certifications"]
+    },
+    "salary_range_lpa": {"entry": "2.5-5", "mid_5yr": "5-12", "senior_10yr": "12-25 (own clinic/sports physio)"},
+    "growth_outlook": "High — Rising sports culture, ageing population, post-COVID rehabilitation demand, corporate wellness",
+    "skills_needed": ["Anatomy & Physiology", "Manual Therapy", "Exercise Prescription", "Electrotherapy", "Patient Assessment", "Communication"],
+    "work_environment": "Hospitals, rehabilitation centers, sports facilities, own clinics; physically active role",
+    "govt_job_options": "Government hospitals, ESI, Railways, Defence physiotherapy, Sports Authority of India (SAI)",
+    "tier2_city_availability": "High"
+  },
+  {
+    "career_id": "nutritionist_dietitian",
+    "career_name": "Nutritionist/Dietitian",
+    "career_name_hindi": "पोषण विशेषज्ञ/आहार विशेषज्ञ",
+    "riasec_code": "SIE",
+    "riasec_primary": "S",
+    "description": "Plan and recommend dietary programs to promote health, manage diseases, and address nutritional deficiencies. Work in clinical, community, sports, or corporate wellness settings.",
+    "stream_required": "Science (PCB) or Home Science",
+    "education_pathway": {
+      "after_10th": "Science stream with Biology or Home Science stream",
+      "after_12th": "BSc in Nutrition & Dietetics, BSc Home Science, or BSc Food Technology",
+      "entrance_exams": ["CUET", "State university entrance tests", "ICAR AIEEA (for food tech)"],
+      "top_colleges": [
+        {"name": "Lady Irwin College, Delhi University", "nirf_rank": null, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 4, "location": "New Delhi"},
+        {"name": "SNDT Women's University", "nirf_rank": null, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 3, "location": "Mumbai"},
+        {"name": "Mount Carmel College", "nirf_rank": null, "approx_fee_4yr_lakh": 3, "avg_placement_lpa": 3, "location": "Bangalore"},
+        {"name": "Nirmala Niketan (University of Mumbai)", "nirf_rank": null, "approx_fee_4yr_lakh": 3, "avg_placement_lpa": 3, "location": "Mumbai"},
+        {"name": "IGNOU (Distance — BSc Dietetics)", "nirf_rank": null, "approx_fee_4yr_lakh": 0.5, "avg_placement_lpa": 2.5, "location": "Pan India"}
+      ],
+      "alternative_paths": ["BSc Home Science + PG Diploma in Dietetics", "BHMS/BAMS + Nutrition specialization", "Certified Nutrition Coach (online certifications)"],
+      "postgrad_options": ["MSc in Nutrition & Dietetics", "PG Diploma in Clinical Nutrition", "PhD in Nutrition Science"]
+    },
+    "salary_range_lpa": {"entry": "2-4", "mid_5yr": "4-10", "senior_10yr": "10-20 (own practice/celebrity nutritionist)"},
+    "growth_outlook": "High — Growing health awareness, lifestyle diseases, fitness culture, corporate wellness programs",
+    "skills_needed": ["Nutritional Science", "Meal Planning", "Clinical Nutrition", "Communication", "Counselling", "Food Safety Knowledge"],
+    "work_environment": "Hospitals, clinics, fitness centers, corporate offices, own practice; regular hours",
+    "govt_job_options": "Government hospitals dietitian, ICDS (Anganwadi), FSSAI, Public health departments, School nutrition programs",
+    "tier2_city_availability": "Medium-High"
+  },
+  {
+    "career_id": "psychologist",
+    "career_name": "Psychologist",
+    "career_name_hindi": "मनोवैज्ञानिक",
+    "riasec_code": "SIA",
+    "riasec_primary": "S",
+    "description": "Study human behavior, mental processes, and emotions. Provide counselling, therapy, and psychological assessments to help individuals cope with mental health issues, stress, and behavioral challenges.",
+    "stream_required": "Any stream (Arts/Science preferred)",
+    "education_pathway": {
+      "after_10th": "Arts or Science stream; Psychology as elective if available",
+      "after_12th": "BA/BSc in Psychology",
+      "entrance_exams": ["CUET", "DU Entrance", "BHU UET", "JMI Entrance", "State university entrances"],
+      "top_colleges": [
+        {"name": "Delhi University (Lady Shri Ram / Jesus & Mary)", "nirf_rank": 1, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 4, "location": "New Delhi"},
+        {"name": "Christ University", "nirf_rank": 15, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 4, "location": "Bangalore"},
+        {"name": "Fergusson College", "nirf_rank": 30, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 3, "location": "Pune"},
+        {"name": "Banaras Hindu University", "nirf_rank": 6, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 3, "location": "Varanasi"},
+        {"name": "Tata Institute of Social Sciences (TISS)", "nirf_rank": 10, "approx_fee_4yr_lakh": 4, "avg_placement_lpa": 6, "location": "Mumbai"}
+      ],
+      "alternative_paths": ["BA any subject + MA Psychology", "BSW (Social Work) + clinical psychology PG", "Online counselling certifications (supplementary)"],
+      "postgrad_options": ["MA/MSc in Psychology (Clinical, Counselling, Industrial)", "MPhil in Clinical Psychology (RCI recognized — required for practice)", "PhD in Psychology"]
+    },
+    "salary_range_lpa": {"entry": "2.5-5", "mid_5yr": "5-12", "senior_10yr": "12-30 (own practice/corporate)"},
+    "growth_outlook": "Very High — Mental health awareness rising, Tele-MANAS govt initiative, corporate EAPs growing",
+    "skills_needed": ["Active Listening", "Empathy", "Psychological Assessment", "Therapy Techniques (CBT, DBT)", "Research Methods", "Ethics"],
+    "work_environment": "Clinics, hospitals, schools, corporate offices, private practice; emotionally demanding",
+    "govt_job_options": "NIMHANS, Government hospitals, DISHA helplines, School counsellors (KVS/NVS), Defence psychology, UGC NET for teaching",
+    "tier2_city_availability": "Medium (growing with telehealth)"
+  },
+  {
+    "career_id": "radiologist",
+    "career_name": "Radiologist",
+    "career_name_hindi": "रेडियोलॉजिस्ट",
+    "riasec_code": "IRS",
+    "riasec_primary": "I",
+    "description": "Specialize in medical imaging (X-ray, CT, MRI, ultrasound, PET) to diagnose diseases. Interventional radiologists also perform minimally invasive procedures guided by imaging.",
+    "stream_required": "Science (PCB)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Biology",
+      "after_12th": "MBBS → MD Radiology (total ~9 years)",
+      "entrance_exams": ["NEET-UG (for MBBS)", "NEET-PG (for MD Radiology)"],
+      "top_colleges": [
+        {"name": "AIIMS New Delhi", "nirf_rank": 1, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 20, "location": "New Delhi"},
+        {"name": "PGIMER Chandigarh", "nirf_rank": 2, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 18, "location": "Chandigarh"},
+        {"name": "CMC Vellore", "nirf_rank": 3, "approx_fee_4yr_lakh": 15, "avg_placement_lpa": 16, "location": "Vellore"},
+        {"name": "KEM Hospital Mumbai", "nirf_rank": 8, "approx_fee_4yr_lakh": 2, "avg_placement_lpa": 15, "location": "Mumbai"},
+        {"name": "JIPMER Puducherry", "nirf_rank": 5, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 15, "location": "Puducherry"}
+      ],
+      "alternative_paths": ["BSc Radiology/Medical Imaging Technology (technologist role)", "Diploma in X-ray Technology", "BSc MLT + radiology specialization"],
+      "postgrad_options": ["DM in Interventional Radiology", "Fellowship in Neuroradiology/Cardiac Imaging", "AI in Radiology research"]
+    },
+    "salary_range_lpa": {"entry": "12-18 (after MD)", "mid_5yr": "20-40", "senior_10yr": "40-1,00,00,000+ (top consultants)"},
+    "growth_outlook": "Very High — Diagnostic imaging demand growing, AI-assisted radiology, shortage of radiologists in India",
+    "skills_needed": ["Anatomy", "Image Interpretation", "Physics of Imaging", "Attention to Detail", "Pattern Recognition", "Continuous Learning"],
+    "work_environment": "Hospitals, diagnostic centers, radiology labs; reading rooms with monitors, minimal patient contact",
+    "govt_job_options": "Government hospitals (AIIMS, state medical colleges), ESI, Railways, Defence hospitals",
+    "tier2_city_availability": "Medium-High (diagnostic centers spread widely)"
+  },
+  {
+    "career_id": "biotechnologist",
+    "career_name": "Biotechnologist",
+    "career_name_hindi": "जैव प्रौद्योगिकी विशेषज्ञ",
+    "riasec_code": "IRA",
+    "riasec_primary": "I",
+    "description": "Apply biological systems and living organisms to develop products and technologies in healthcare, agriculture, environmental science, and industry. Work on genetic engineering, bioinformatics, and bioprocessing.",
+    "stream_required": "Science (PCB or PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Biology/Mathematics",
+      "after_12th": "B.Tech Biotechnology, BSc Biotechnology, or Integrated MSc",
+      "entrance_exams": ["JEE Main", "ICAR AIEEA", "CUET", "GAT-B (for DBT-JRF)", "State CETs"],
+      "top_colleges": [
+        {"name": "IIT Delhi (Biotechnology)", "nirf_rank": 2, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 12, "location": "New Delhi"},
+        {"name": "IIT Madras (Biotechnology)", "nirf_rank": 1, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 10, "location": "Chennai"},
+        {"name": "JNU (School of Biotechnology)", "nirf_rank": 5, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 6, "location": "New Delhi"},
+        {"name": "Anna University (Centre for Biotechnology)", "nirf_rank": 13, "approx_fee_4yr_lakh": 3, "avg_placement_lpa": 5, "location": "Chennai"},
+        {"name": "VIT Vellore (Biotechnology)", "nirf_rank": 12, "approx_fee_4yr_lakh": 14, "avg_placement_lpa": 5, "location": "Vellore"}
+      ],
+      "alternative_paths": ["BSc Microbiology/Biochemistry → MSc Biotech", "B.Pharm → biotech industry", "BSc Biology + bioinformatics specialization"],
+      "postgrad_options": ["M.Tech/MSc in Biotechnology", "PhD (DBT-JRF funded)", "MBA in Biotech/Pharma Management"]
+    },
+    "salary_range_lpa": {"entry": "3-6", "mid_5yr": "6-15", "senior_10yr": "15-35 (industry/research)"},
+    "growth_outlook": "High — India's bioeconomy targeting $150 billion, vaccine manufacturing, biosimilars, agri-biotech",
+    "skills_needed": ["Molecular Biology", "Genetic Engineering", "Cell Culture", "Bioinformatics", "Biostatistics", "Laboratory Techniques"],
+    "work_environment": "Research labs, biotech companies, pharma firms; lab-based with strict protocols",
+    "govt_job_options": "DBT, CSIR labs (CCMB, CDRI, NCL), ICAR, Biocon-type PSUs, ICMR",
+    "tier2_city_availability": "Low-Medium (concentrated in Hyderabad, Bangalore, Pune biotech hubs)"
+  },
+  {
+    "career_id": "biomedical_scientist",
+    "career_name": "Biomedical Scientist",
+    "career_name_hindi": "जैव चिकित्सा वैज्ञानिक",
+    "riasec_code": "IRA",
+    "riasec_primary": "I",
+    "description": "Conduct research on human diseases, develop diagnostic tests, analyze biological samples, and advance understanding of disease mechanisms to improve treatments and healthcare outcomes.",
+    "stream_required": "Science (PCB)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Biology",
+      "after_12th": "BSc Biomedical Science, BSc Life Sciences, or MBBS (for clinical research)",
+      "entrance_exams": ["CUET", "JNU Entrance", "BHU UET", "State university entrances"],
+      "top_colleges": [
+        {"name": "AIIMS New Delhi (Research)", "nirf_rank": 1, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 8, "location": "New Delhi"},
+        {"name": "IISc Bangalore", "nirf_rank": 1, "approx_fee_4yr_lakh": 4, "avg_placement_lpa": 10, "location": "Bangalore"},
+        {"name": "JNU (Life Sciences)", "nirf_rank": 5, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 5, "location": "New Delhi"},
+        {"name": "University of Delhi (Biomedical Sciences)", "nirf_rank": 1, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 4, "location": "New Delhi"},
+        {"name": "Manipal Academy of Higher Education", "nirf_rank": 8, "approx_fee_4yr_lakh": 12, "avg_placement_lpa": 4, "location": "Manipal"}
+      ],
+      "alternative_paths": ["BSc Microbiology/Biochemistry → MSc", "DMLT → BSc MLT → research", "B.Pharm → pharma research"],
+      "postgrad_options": ["MSc Biomedical Science", "PhD (CSIR-JRF/ICMR-JRF funded)", "MD (Pathology/Biochemistry)"]
+    },
+    "salary_range_lpa": {"entry": "3-6", "mid_5yr": "6-14", "senior_10yr": "14-30 (senior scientist/professor)"},
+    "growth_outlook": "High — Clinical research industry growing, genomics revolution, precision medicine focus",
+    "skills_needed": ["Research Methodology", "Lab Techniques (PCR, ELISA, Sequencing)", "Scientific Writing", "Biostatistics", "Critical Thinking", "Grant Writing"],
+    "work_environment": "Research labs, universities, hospitals, diagnostic companies; academic environment",
+    "govt_job_options": "ICMR, CSIR labs, DBT, DRDO (Life Sciences), Government medical colleges (teaching/research)",
+    "tier2_city_availability": "Low-Medium"
+  },
+  {
+    "career_id": "nursing",
+    "career_name": "Nursing",
+    "career_name_hindi": "नर्सिंग",
+    "riasec_code": "SIC",
+    "riasec_primary": "S",
+    "description": "Provide direct patient care, administer medications, assist in medical procedures, monitor patient health, and educate patients on health management. Critical backbone of the healthcare system.",
+    "stream_required": "Science (PCB)",
+    "education_pathway": {
+      "after_10th": "Science stream with Biology; or GNM diploma after 12th",
+      "after_12th": "BSc Nursing (4 years) or GNM (3 years)",
+      "entrance_exams": ["NEET-UG (for AIIMS/JIPMER BSc Nursing)", "State nursing entrance exams", "RUHS Nursing", "PGIMER Nursing"],
+      "top_colleges": [
+        {"name": "AIIMS New Delhi (Nursing)", "nirf_rank": 1, "approx_fee_4yr_lakh": 0.5, "avg_placement_lpa": 5, "location": "New Delhi"},
+        {"name": "CMC Vellore (Nursing)", "nirf_rank": 3, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 4, "location": "Vellore"},
+        {"name": "JIPMER Puducherry (Nursing)", "nirf_rank": 5, "approx_fee_4yr_lakh": 0.5, "avg_placement_lpa": 4, "location": "Puducherry"},
+        {"name": "RAK College of Nursing, Delhi", "nirf_rank": 8, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 4, "location": "New Delhi"},
+        {"name": "Manipal College of Nursing", "nirf_rank": 10, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 4, "location": "Manipal"}
+      ],
+      "alternative_paths": ["GNM Diploma (3 years — faster entry)", "ANM (Auxiliary Nurse Midwife — 2 years)", "Post-Basic BSc Nursing (for GNM graduates)"],
+      "postgrad_options": ["MSc Nursing", "Nurse Practitioner programs", "PhD in Nursing", "International licensing (NCLEX for USA, IELTS for UK/Australia)"]
+    },
+    "salary_range_lpa": {"entry": "2.5-5", "mid_5yr": "4-10", "senior_10yr": "8-18 (senior/international)"},
+    "growth_outlook": "Very High — Severe nursing shortage in India and globally; international demand very strong",
+    "skills_needed": ["Patient Care", "Clinical Skills", "Medication Administration", "Communication", "Empathy", "Emergency Response"],
+    "work_environment": "Hospitals, clinics, home care, ICUs; shift-based work, physically and emotionally demanding",
+    "govt_job_options": "Government hospitals, AIIMS, ESI, Railway hospitals, Army/Navy/Air Force Nursing Services, PHCs",
+    "tier2_city_availability": "Very High"
+  },
+  {
+    "career_id": "public_health_specialist",
+    "career_name": "Public Health Specialist",
+    "career_name_hindi": "जन स्वास्थ्य विशेषज्ञ",
+    "riasec_code": "SIE",
+    "riasec_primary": "S",
+    "description": "Work on population-level health through disease prevention, health policy, epidemiology, sanitation, vaccination programs, and health education. Focus on community health outcomes rather than individual treatment.",
+    "stream_required": "Science (PCB) or Any stream (for MPH)",
+    "education_pathway": {
+      "after_10th": "Science stream with Biology preferred",
+      "after_12th": "MBBS, BDS, BAMS, BSc Nursing, or any health science degree → MPH",
+      "entrance_exams": ["NEET-UG (for MBBS route)", "CUET", "TISS entrance", "IIPH entrance exams"],
+      "top_colleges": [
+        {"name": "AIIMS New Delhi (Community Medicine)", "nirf_rank": 1, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 10, "location": "New Delhi"},
+        {"name": "TISS Mumbai (Health Systems)", "nirf_rank": 10, "approx_fee_4yr_lakh": 4, "avg_placement_lpa": 8, "location": "Mumbai"},
+        {"name": "IIPH Hyderabad (PHFI)", "nirf_rank": null, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 7, "location": "Hyderabad"},
+        {"name": "JIPMER Puducherry", "nirf_rank": 5, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 8, "location": "Puducherry"},
+        {"name": "PGIMER Chandigarh (SPH)", "nirf_rank": 2, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 8, "location": "Chandigarh"}
+      ],
+      "alternative_paths": ["BSc any life science + MPH", "BA Social Work + health focus", "Engineering + health informatics"],
+      "postgrad_options": ["MPH (Master of Public Health)", "MD Community Medicine", "DrPH", "PhD in Epidemiology"]
+    },
+    "salary_range_lpa": {"entry": "4-8", "mid_5yr": "8-18", "senior_10yr": "18-40 (WHO/UNICEF/senior govt)"},
+    "growth_outlook": "Very High — Post-COVID recognition of public health importance, Ayushman Bharat, NHM expansion",
+    "skills_needed": ["Epidemiology", "Biostatistics", "Health Policy", "Program Management", "Data Analysis", "Communication"],
+    "work_environment": "Government offices, NGOs, international organizations, fieldwork; travel to rural areas common",
+    "govt_job_options": "MOHFW, NHM, ICMR, NCDC, WHO India, State Health Departments, Municipal Health Officers",
+    "tier2_city_availability": "High (strong rural health focus)"
+  },
+  {
+    "career_id": "ayush_practitioner",
+    "career_name": "AYUSH Practitioner",
+    "career_name_hindi": "आयुष चिकित्सक",
+    "riasec_code": "SIR",
+    "riasec_primary": "S",
+    "description": "Practice traditional Indian medicine systems — Ayurveda (BAMS), Yoga & Naturopathy (BNYS), Unani (BUMS), Siddha (BSMS), or Homeopathy (BHMS). Provide holistic treatment using natural remedies and therapies.",
+    "stream_required": "Science (PCB)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Biology",
+      "after_12th": "BAMS/BHMS/BNYS/BUMS/BSMS (5.5 years including internship)",
+      "entrance_exams": ["NEET-UG"],
+      "top_colleges": [
+        {"name": "BHU (Faculty of Ayurveda)", "nirf_rank": 1, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 5, "location": "Varanasi"},
+        {"name": "National Institute of Ayurveda, Jaipur", "nirf_rank": 2, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 4, "location": "Jaipur"},
+        {"name": "Gujarat Ayurved University", "nirf_rank": 5, "approx_fee_4yr_lakh": 2, "avg_placement_lpa": 4, "location": "Jamnagar"},
+        {"name": "Father Muller Homeopathic Medical College", "nirf_rank": 3, "approx_fee_4yr_lakh": 8, "avg_placement_lpa": 3, "location": "Mangalore"},
+        {"name": "SDM College of Naturopathy & Yogic Sciences", "nirf_rank": 5, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 3, "location": "Ujire"}
+      ],
+      "alternative_paths": ["Yoga instructor certification (short-term)", "Diploma in Naturopathy", "BSc in Yoga + further studies"],
+      "postgrad_options": ["MD/MS (Ayurveda/Homeopathy)", "PhD in AYUSH disciplines", "Certificate courses in Panchakarma/specialized therapies"]
+    },
+    "salary_range_lpa": {"entry": "2.5-5", "mid_5yr": "5-12", "senior_10yr": "12-25 (own practice/wellness centers)"},
+    "growth_outlook": "High — Ministry of AYUSH promotion, global yoga/Ayurveda demand, wellness tourism growing",
+    "skills_needed": ["Traditional Medicine Knowledge", "Herbal Pharmacology", "Patient Assessment", "Holistic Diagnosis", "Yoga/Therapy Techniques", "Communication"],
+    "work_environment": "Clinics, wellness centers, hospitals, resorts; own practice common",
+    "govt_job_options": "AYUSH hospitals, PHCs (AYUSH wing), Central Council of Indian Medicine, AYUSH Ministry, Army AYUSH units",
+    "tier2_city_availability": "Very High"
+  },
+  {
+    "career_id": "chartered_accountant",
+    "career_name": "Chartered Accountant (CA)",
+    "career_name_hindi": "चार्टर्ड अकाउंटेंट (सीए)",
+    "riasec_code": "CEI",
+    "riasec_primary": "C",
+    "description": "Provide financial accounting, auditing, taxation, and advisory services to businesses and individuals. CAs are the most respected finance professionals in India with statutory recognition.",
+    "stream_required": "Commerce (preferred) or Any stream",
+    "education_pathway": {
+      "after_10th": "Commerce stream with Accountancy, Business Studies, Mathematics",
+      "after_12th": "CA Foundation → CA Intermediate → 3 years articleship → CA Final",
+      "entrance_exams": ["CA Foundation (ICAI)", "CA Intermediate", "CA Final"],
+      "top_colleges": [
+        {"name": "ICAI (Institute of Chartered Accountants of India)", "nirf_rank": null, "approx_fee_4yr_lakh": 2, "avg_placement_lpa": 9, "location": "Pan India"},
+        {"name": "Shri Ram College of Commerce (DU)", "nirf_rank": 1, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 8, "location": "New Delhi"},
+        {"name": "Loyola College Chennai", "nirf_rank": 10, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 5, "location": "Chennai"},
+        {"name": "Christ University", "nirf_rank": 15, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 6, "location": "Bangalore"},
+        {"name": "St. Xavier's College Mumbai", "nirf_rank": 12, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 5, "location": "Mumbai"}
+      ],
+      "alternative_paths": ["Direct entry to CA Intermediate after graduation", "CMA route + CA", "B.Com + MBA Finance as alternative career"],
+      "postgrad_options": ["CA + CFA", "CA + MBA", "CA + LLB (Tax Law)", "DISA (Information Systems Audit)"]
+    },
+    "salary_range_lpa": {"entry": "7-12", "mid_5yr": "15-30", "senior_10yr": "30-80+ (partner/CFO level)"},
+    "growth_outlook": "Very High — Every company needs CAs; GST/tax complexity increasing demand",
+    "skills_needed": ["Accounting Standards (Ind AS)", "Taxation (Direct & Indirect)", "Auditing", "Financial Analysis", "MS Excel", "Attention to Detail"],
+    "work_environment": "Offices, audit firms (Big 4), corporate finance departments; deadline-driven (year-end, tax season)",
+    "govt_job_options": "CAG (Comptroller & Auditor General), RBI, SEBI, Income Tax Department, PSU Finance",
+    "tier2_city_availability": "Very High"
+  },
+  {
+    "career_id": "company_secretary",
+    "career_name": "Company Secretary (CS)",
+    "career_name_hindi": "कंपनी सचिव (सीएस)",
+    "riasec_code": "CEI",
+    "riasec_primary": "C",
+    "description": "Ensure corporate governance and regulatory compliance for companies. Handle board meetings, statutory filings, shareholder relations, corporate law matters, and secretarial audits.",
+    "stream_required": "Commerce (preferred) or Any stream",
+    "education_pathway": {
+      "after_10th": "Commerce stream preferred",
+      "after_12th": "CS Foundation → CS Executive → CS Professional (ICSI pathway)",
+      "entrance_exams": ["CS Foundation (ICSI)", "CS Executive", "CS Professional"],
+      "top_colleges": [
+        {"name": "ICSI (Institute of Company Secretaries of India)", "nirf_rank": null, "approx_fee_4yr_lakh": 1.5, "avg_placement_lpa": 6, "location": "Pan India"},
+        {"name": "Shri Ram College of Commerce", "nirf_rank": 1, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 7, "location": "New Delhi"},
+        {"name": "Lady Shri Ram College", "nirf_rank": 2, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 6, "location": "New Delhi"},
+        {"name": "Narsee Monjee College of Commerce", "nirf_rank": 8, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 5, "location": "Mumbai"},
+        {"name": "Loyola College Chennai", "nirf_rank": 10, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 5, "location": "Chennai"}
+      ],
+      "alternative_paths": ["B.Com + CS", "LLB + CS (powerful combination)", "CA + CS (dual qualification)"],
+      "postgrad_options": ["CS + LLB", "CS + CA", "MBA in Corporate Governance", "Post-membership courses from ICSI"]
+    },
+    "salary_range_lpa": {"entry": "4-8", "mid_5yr": "8-18", "senior_10yr": "18-40+ (KMP in listed companies)"},
+    "growth_outlook": "High — Increasing corporate governance requirements, SEBI regulations, more companies getting listed",
+    "skills_needed": ["Corporate Law", "Companies Act 2013", "SEBI Regulations", "Drafting", "Compliance Management", "Board Meeting Procedures"],
+    "work_environment": "Corporate offices, law firms, consultancies; regular hours with periodic deadline pressure",
+    "govt_job_options": "MCA (Ministry of Corporate Affairs), SEBI, RBI, IBBI (Insolvency), PSU Company Secretaries",
+    "tier2_city_availability": "Medium-High"
+  },
+  {
+    "career_id": "cma",
+    "career_name": "Cost & Management Accountant (CMA)",
+    "career_name_hindi": "लागत एवं प्रबंधन लेखाकार (सीएमए)",
+    "riasec_code": "CEI",
+    "riasec_primary": "C",
+    "description": "Specialize in cost accounting, management accounting, financial management, and strategic management. Help organizations optimize costs, pricing, budgeting, and financial planning.",
+    "stream_required": "Commerce (preferred) or Any stream",
+    "education_pathway": {
+      "after_10th": "Commerce stream preferred",
+      "after_12th": "CMA Foundation → CMA Intermediate → CMA Final (ICMAI pathway)",
+      "entrance_exams": ["CMA Foundation (ICMAI)", "CMA Intermediate", "CMA Final"],
+      "top_colleges": [
+        {"name": "ICMAI (Institute of Cost Accountants of India)", "nirf_rank": null, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 5, "location": "Pan India"},
+        {"name": "Shri Ram College of Commerce", "nirf_rank": 1, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 7, "location": "New Delhi"},
+        {"name": "St. Xavier's College Kolkata", "nirf_rank": 15, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 4, "location": "Kolkata"},
+        {"name": "Christ University", "nirf_rank": 15, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 5, "location": "Bangalore"},
+        {"name": "Loyola College Chennai", "nirf_rank": 10, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 4, "location": "Chennai"}
+      ],
+      "alternative_paths": ["B.Com + CMA", "CA + CMA (dual qualification for costing audit)", "MBA Finance as alternative"],
+      "postgrad_options": ["CMA + CA", "CMA + MBA", "CMA + CFA", "PhD in Cost Management"]
+    },
+    "salary_range_lpa": {"entry": "4-7", "mid_5yr": "8-16", "senior_10yr": "16-35"},
+    "growth_outlook": "Medium-High — Mandatory cost audit for specified companies, growing demand in manufacturing/PSUs",
+    "skills_needed": ["Cost Accounting", "Budgeting & Forecasting", "Management Accounting", "Transfer Pricing", "Financial Analysis", "MS Excel"],
+    "work_environment": "Corporate offices, manufacturing firms, consulting; regular hours",
+    "govt_job_options": "CAG, Cost Audit Branch (MCA), PSU finance departments, Indian Cost Accounts Service",
+    "tier2_city_availability": "Medium-High"
+  },
+  {
+    "career_id": "investment_banker",
+    "career_name": "Investment Banker",
+    "career_name_hindi": "निवेश बैंकर",
+    "riasec_code": "ECI",
+    "riasec_primary": "E",
+    "description": "Advise companies on mergers & acquisitions, IPOs, fundraising, restructuring, and other complex financial transactions. Create financial models and pitch books for high-value deals.",
+    "stream_required": "Commerce or Science (with strong quantitative skills)",
+    "education_pathway": {
+      "after_10th": "Commerce or Science stream with Mathematics",
+      "after_12th": "B.Com/BBA/B.Tech followed by MBA from premier institute",
+      "entrance_exams": ["CAT", "XAT", "GMAT", "JEE Main (for B.Tech route)", "IPMAT"],
+      "top_colleges": [
+        {"name": "IIM Ahmedabad", "nirf_rank": 1, "approx_fee_4yr_lakh": 25, "avg_placement_lpa": 35, "location": "Ahmedabad"},
+        {"name": "IIM Bangalore", "nirf_rank": 2, "approx_fee_4yr_lakh": 25, "avg_placement_lpa": 34, "location": "Bangalore"},
+        {"name": "IIM Calcutta", "nirf_rank": 3, "approx_fee_4yr_lakh": 25, "avg_placement_lpa": 33, "location": "Kolkata"},
+        {"name": "ISB Hyderabad", "nirf_rank": 5, "approx_fee_4yr_lakh": 40, "avg_placement_lpa": 34, "location": "Hyderabad"},
+        {"name": "XLRI Jamshedpur", "nirf_rank": 7, "approx_fee_4yr_lakh": 28, "avg_placement_lpa": 28, "location": "Jamshedpur"}
+      ],
+      "alternative_paths": ["CA + IB internship", "B.Tech IIT + IB recruitment directly", "CFA + work experience in equity research"],
+      "postgrad_options": ["MBA (Finance specialization)", "CFA", "CA + MBA combo", "MS in Finance (abroad)"]
+    },
+    "salary_range_lpa": {"entry": "10-20", "mid_5yr": "25-50", "senior_10yr": "50-2,00,00,000+"},
+    "growth_outlook": "High — Indian M&A market growing, startup ecosystem driving IPOs and fundraising",
+    "skills_needed": ["Financial Modelling", "Valuation (DCF, Comps)", "MS Excel/PowerPoint", "Accounting", "Communication", "Deal Structuring"],
+    "work_environment": "Office (Mumbai/Bangalore), extremely long hours (80-100 hrs/week), high-pressure, travel",
+    "govt_job_options": "Limited direct roles — SEBI, RBI, SIDBI, NABARD have related functions",
+    "tier2_city_availability": "Very Low (concentrated in Mumbai, Bangalore, Delhi)"
+  },
+  {
+    "career_id": "financial_analyst",
+    "career_name": "Financial Analyst",
+    "career_name_hindi": "वित्तीय विश्लेषक",
+    "riasec_code": "CIE",
+    "riasec_primary": "C",
+    "description": "Analyze financial data, build forecasts, evaluate investments, and provide insights to help organizations or clients make informed financial decisions. Work in corporate finance, equity research, or consulting.",
+    "stream_required": "Commerce or Science with Mathematics",
+    "education_pathway": {
+      "after_10th": "Commerce stream with Mathematics",
+      "after_12th": "B.Com, BBA, or B.Tech + finance interest",
+      "entrance_exams": ["CAT", "CFA Level 1", "CUET", "IPMAT"],
+      "top_colleges": [
+        {"name": "Shri Ram College of Commerce", "nirf_rank": 1, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 8, "location": "New Delhi"},
+        {"name": "IIM Ahmedabad (MBA)", "nirf_rank": 1, "approx_fee_4yr_lakh": 25, "avg_placement_lpa": 35, "location": "Ahmedabad"},
+        {"name": "Narsee Monjee Institute of Management Studies", "nirf_rank": 12, "approx_fee_4yr_lakh": 18, "avg_placement_lpa": 18, "location": "Mumbai"},
+        {"name": "St. Xavier's College Mumbai", "nirf_rank": 12, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 5, "location": "Mumbai"},
+        {"name": "Christ University", "nirf_rank": 15, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 6, "location": "Bangalore"}
+      ],
+      "alternative_paths": ["B.Com + CFA", "BBA + financial certifications", "Any graduation + MBA Finance"],
+      "postgrad_options": ["MBA Finance", "CFA (Chartered Financial Analyst)", "MS in Finance (abroad)", "FRM (Financial Risk Manager)"]
+    },
+    "salary_range_lpa": {"entry": "4-8", "mid_5yr": "10-22", "senior_10yr": "22-50"},
+    "growth_outlook": "High — Growing financial services industry, FDI inflows, mutual fund penetration increasing",
+    "skills_needed": ["Financial Modelling", "Excel (Advanced)", "Accounting", "Valuation", "Data Analysis", "Business Communication"],
+    "work_environment": "Corporate offices, banks, consulting firms; deadline-driven, regular hours with busy periods",
+    "govt_job_options": "RBI Grade B Officer, SEBI, NABARD, SIDBI, SBI PO",
+    "tier2_city_availability": "Medium"
+  },
+  {
+    "career_id": "actuary",
+    "career_name": "Actuary",
+    "career_name_hindi": "बीमांकक",
+    "riasec_code": "CIR",
+    "riasec_primary": "C",
+    "description": "Use mathematics, statistics, and financial theory to assess and manage risk in insurance, pensions, investments, and other financial industries. One of the most intellectually demanding professions.",
+    "stream_required": "Science (PCM) or Commerce with Mathematics",
+    "education_pathway": {
+      "after_10th": "Science or Commerce stream with Mathematics (mandatory)",
+      "after_12th": "BSc Statistics/Mathematics/Actuarial Science + IAI exams, or B.Tech + IAI",
+      "entrance_exams": ["ACET (Actuarial Common Entrance Test by IAI)", "IFoA exams (UK pathway)"],
+      "top_colleges": [
+        {"name": "Indian Statistical Institute (ISI)", "nirf_rank": 12, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 16, "location": "Kolkata"},
+        {"name": "Institute of Actuaries of India (IAI)", "nirf_rank": null, "approx_fee_4yr_lakh": 3, "avg_placement_lpa": 12, "location": "Mumbai"},
+        {"name": "Delhi University (BSc Statistics/Maths)", "nirf_rank": 1, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 6, "location": "New Delhi"},
+        {"name": "Amity University (BSc Actuarial Science)", "nirf_rank": 25, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 5, "location": "Noida"},
+        {"name": "Christ University", "nirf_rank": 15, "approx_fee_4yr_lakh": 6, "avg_placement_lpa": 5, "location": "Bangalore"}
+      ],
+      "alternative_paths": ["Any degree + self-study for IAI/IFoA exams", "CA + actuarial exams", "BSc Mathematics + actuarial career"],
+      "postgrad_options": ["Fellow of IAI (FIAI)", "Fellow of IFoA (FIA)", "MS in Actuarial Science (abroad)", "CFA complement"]
+    },
+    "salary_range_lpa": {"entry": "6-12 (with 3-4 exams passed)", "mid_5yr": "15-35", "senior_10yr": "35-80+ (Fellow level)"},
+    "growth_outlook": "Very High — Insurance penetration increasing, IRDAI mandates, pension reforms, only ~500 qualified actuaries in India",
+    "skills_needed": ["Advanced Mathematics", "Probability & Statistics", "Financial Modelling", "Programming (R/Python)", "Risk Assessment", "Communication"],
+    "work_environment": "Insurance companies, consulting firms, pension funds; office-based, analytical",
+    "govt_job_options": "IRDAI, LIC (Appointed Actuary), EPFO, Pension Fund Regulatory Authority",
+    "tier2_city_availability": "Low (concentrated in Mumbai, Bangalore, Gurgaon)"
+  },
+  {
+    "career_id": "economist",
+    "career_name": "Economist",
+    "career_name_hindi": "अर्थशास्त्री",
+    "riasec_code": "ICA",
+    "riasec_primary": "I",
+    "description": "Study economic trends, analyze data, develop economic models, and provide policy recommendations. Work in research, government policy, banking, and international development.",
+    "stream_required": "Arts (Economics) or Commerce or Science with Mathematics",
+    "education_pathway": {
+      "after_10th": "Arts/Commerce/Science stream with Mathematics and Economics",
+      "after_12th": "BA/BSc Economics (Honours) with Mathematics",
+      "entrance_exams": ["CUET", "DU Entrance", "ISI Admission Test", "DSE Entrance", "JNU Entrance"],
+      "top_colleges": [
+        {"name": "Delhi School of Economics (DU)", "nirf_rank": 1, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 10, "location": "New Delhi"},
+        {"name": "Indian Statistical Institute (ISI)", "nirf_rank": 12, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 14, "location": "Kolkata/Delhi"},
+        {"name": "JNU (School of Social Sciences)", "nirf_rank": 5, "approx_fee_4yr_lakh": 0.5, "avg_placement_lpa": 8, "location": "New Delhi"},
+        {"name": "St. Stephen's College (DU)", "nirf_rank": 5, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 7, "location": "New Delhi"},
+        {"name": "Presidency University Kolkata", "nirf_rank": 20, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 5, "location": "Kolkata"}
+      ],
+      "alternative_paths": ["BA Economics + MA from DSE/ISI/JNU", "B.Com + MA Economics", "B.Tech + MA Economics (quant focus)"],
+      "postgrad_options": ["MA/MSc Economics", "PhD Economics (abroad — strong path)", "MBA", "IES (Indian Economic Service)"]
+    },
+    "salary_range_lpa": {"entry": "4-8", "mid_5yr": "10-22", "senior_10yr": "22-50 (consulting/international orgs)"},
+    "growth_outlook": "Medium-High — Policy research demand, think tanks, economic consulting, World Bank/IMF opportunities",
+    "skills_needed": ["Econometrics", "Statistics", "Mathematical Economics", "Data Analysis (Stata, R, Python)", "Research & Writing", "Policy Analysis"],
+    "work_environment": "Academic institutions, government, think tanks, consulting firms, banks; intellectually stimulating",
+    "govt_job_options": "Indian Economic Service (IES), RBI, NITI Aayog, Ministry of Finance, Economic Advisory Council, NABARD",
+    "tier2_city_availability": "Low-Medium"
+  },
+  {
+    "career_id": "tax_consultant",
+    "career_name": "Tax Consultant",
+    "career_name_hindi": "कर सलाहकार",
+    "riasec_code": "CEI",
+    "riasec_primary": "C",
+    "description": "Advise individuals and businesses on tax planning, compliance, and optimization under Indian tax laws (Income Tax, GST, International Tax). File returns, handle assessments, and represent clients before tax authorities.",
+    "stream_required": "Commerce (preferred) or Any stream",
+    "education_pathway": {
+      "after_10th": "Commerce stream with Accountancy and Business Studies",
+      "after_12th": "B.Com → CA/CMA, or LLB with Tax specialization",
+      "entrance_exams": ["CA Foundation (ICAI)", "CLAT (for law route)", "CUET"],
+      "top_colleges": [
+        {"name": "ICAI (CA Route)", "nirf_rank": null, "approx_fee_4yr_lakh": 2, "avg_placement_lpa": 9, "location": "Pan India"},
+        {"name": "National Law School, Bangalore (Tax Law)", "nirf_rank": 1, "approx_fee_4yr_lakh": 10, "avg_placement_lpa": 18, "location": "Bangalore"},
+        {"name": "Shri Ram College of Commerce", "nirf_rank": 1, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 8, "location": "New Delhi"},
+        {"name": "Gujarat National Law University", "nirf_rank": 3, "approx_fee_4yr_lakh": 8, "avg_placement_lpa": 14, "location": "Gandhinagar"},
+        {"name": "Symbiosis Law School", "nirf_rank": 10, "approx_fee_4yr_lakh": 14, "avg_placement_lpa": 10, "location": "Pune"}
+      ],
+      "alternative_paths": ["B.Com + Diploma in Taxation", "LLB + Tax practice", "CMA + GST certification", "Tax Return Preparer scheme (basic level)"],
+      "postgrad_options": ["CA + LLB", "LLM in Taxation", "MBA in Taxation", "International Tax certifications (ADIT)"]
+    },
+    "salary_range_lpa": {"entry": "3-7", "mid_5yr": "8-18", "senior_10yr": "18-40+ (own practice/Big 4 partner)"},
+    "growth_outlook": "Very High — GST complexity, increasing scrutiny, faceless assessments, international tax rules driving demand",
+    "skills_needed": ["Income Tax Act", "GST Law", "Tax Planning", "Drafting", "Analytical Skills", "Updates on Finance Act"],
+    "work_environment": "Offices, CA/law firms, Big 4 tax departments; seasonal peaks during filing deadlines",
+    "govt_job_options": "Income Tax Officer (SSC CGL/UPSC), GST Inspector, CBIC, CBDT, Tax Tribunal",
+    "tier2_city_availability": "Very High"
+  },
+  {
+    "career_id": "insurance_professional",
+    "career_name": "Insurance Professional",
+    "career_name_hindi": "बीमा पेशेवर",
+    "riasec_code": "ECS",
+    "riasec_primary": "E",
+    "description": "Work in the insurance industry across roles including underwriting, claims management, product design, risk assessment, and sales/distribution. Ensure individuals and businesses are protected against financial risks.",
+    "stream_required": "Commerce or Any stream",
+    "education_pathway": {
+      "after_10th": "Commerce stream preferred",
+      "after_12th": "B.Com, BBA, or any graduation + insurance certifications",
+      "entrance_exams": ["IRDA Agent Exam", "III (Insurance Institute of India) exams", "CAT (for MBA)"],
+      "top_colleges": [
+        {"name": "National Insurance Academy Pune", "nirf_rank": null, "approx_fee_4yr_lakh": 8, "avg_placement_lpa": 10, "location": "Pune"},
+        {"name": "IIM Ahmedabad (MBA + Insurance)", "nirf_rank": 1, "approx_fee_4yr_lakh": 25, "avg_placement_lpa": 35, "location": "Ahmedabad"},
+        {"name": "Insurance Institute of India (III)", "nirf_rank": null, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 5, "location": "Mumbai"},
+        {"name": "Birla Institute of Management Technology", "nirf_rank": 20, "approx_fee_4yr_lakh": 16, "avg_placement_lpa": 12, "location": "Greater Noida"},
+        {"name": "ICFAI Business School", "nirf_rank": 25, "approx_fee_4yr_lakh": 14, "avg_placement_lpa": 8, "location": "Hyderabad"}
+      ],
+      "alternative_paths": ["Any graduation + IRDA agent license", "B.Com + III certifications (Licentiate, Associateship, Fellowship)", "Actuarial + insurance"],
+      "postgrad_options": ["MBA in Insurance/Risk Management", "FIII (Fellow of III)", "Actuarial qualifications", "CPCU (international)"]
+    },
+    "salary_range_lpa": {"entry": "3-6", "mid_5yr": "6-15", "senior_10yr": "15-35"},
+    "growth_outlook": "High — Insurance penetration increasing (currently ~4% of GDP), IRDAI pushing expansion, health insurance boom",
+    "skills_needed": ["Risk Assessment", "Product Knowledge", "Sales & Negotiation", "Regulatory Compliance (IRDAI)", "Data Analysis", "Customer Service"],
+    "work_environment": "Offices, client visits, field work (for sales roles); target-driven in sales",
+    "govt_job_options": "LIC ADO/AAO, GIC, IRDAI, New India Assurance, United India Insurance, PSU insurance companies",
+    "tier2_city_availability": "Very High"
+  },
+  {
+    "career_id": "stock_market_analyst",
+    "career_name": "Stock Market Analyst",
+    "career_name_hindi": "शेयर बाजार विश्लेषक",
+    "riasec_code": "ICE",
+    "riasec_primary": "I",
+    "description": "Research and analyze stocks, sectors, and market trends to provide buy/sell/hold recommendations. Work in equity research, portfolio management, or trading at brokerages, asset management companies, or hedge funds.",
+    "stream_required": "Commerce or Science with Mathematics",
+    "education_pathway": {
+      "after_10th": "Commerce or Science stream with Mathematics",
+      "after_12th": "B.Com, BBA Finance, or B.Tech + CFA/MBA Finance",
+      "entrance_exams": ["CAT", "CFA Level 1", "NISM Certifications", "NSE Academy exams"],
+      "top_colleges": [
+        {"name": "IIM Ahmedabad", "nirf_rank": 1, "approx_fee_4yr_lakh": 25, "avg_placement_lpa": 35, "location": "Ahmedabad"},
+        {"name": "IIM Bangalore", "nirf_rank": 2, "approx_fee_4yr_lakh": 25, "avg_placement_lpa": 34, "location": "Bangalore"},
+        {"name": "Shri Ram College of Commerce", "nirf_rank": 1, "approx_fee_4yr_lakh": 1, "avg_placement_lpa": 8, "location": "New Delhi"},
+        {"name": "NMIMS Mumbai (MBA Capital Markets)", "nirf_rank": 12, "approx_fee_4yr_lakh": 18, "avg_placement_lpa": 16, "location": "Mumbai"},
+        {"name": "IIM Calcutta", "nirf_rank": 3, "approx_fee_4yr_lakh": 25, "avg_placement_lpa": 33, "location": "Kolkata"}
+      ],
+      "alternative_paths": ["B.Com + NISM certifications + self-trading", "CFA + work experience route", "CA + equity research transition"],
+      "postgrad_options": ["MBA in Finance", "CFA (all 3 levels)", "CMT (Chartered Market Technician)", "FRM"]
+    },
+    "salary_range_lpa": {"entry": "4-10", "mid_5yr": "12-30", "senior_10yr": "30-70+ (fund manager/portfolio manager)"},
+    "growth_outlook": "Very High — Indian retail investor base exploding (14 crore+ demat accounts), mutual fund AUM growing 20%+ annually",
+    "skills_needed": ["Equity Research", "Financial Statement Analysis", "Valuation Methods", "Technical Analysis", "Bloomberg/Reuters", "Sector Expertise"],
+    "work_environment": "Trading floors, offices (Mumbai primarily), fast-paced, market-hours driven",
+    "govt_job_options": "SEBI, RBI (Market Operations), SBI Capital Markets, LIC Investment Division",
+    "tier2_city_availability": "Low (concentrated in Mumbai financial district)"
+  }
+]

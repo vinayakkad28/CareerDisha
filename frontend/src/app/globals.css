@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cd-primary: #1a5276;
+  --cd-secondary: #d4ac0d;
+  --cd-accent: #2ecc71;
+  --cd-bg: #f8f9fa;
+  --cd-text: #2c3e50;
+}
+
+body {
+  color: var(--cd-text);
+  background: var(--cd-bg);
+  font-family: system-ui, -apple-system, sans-serif;
+}

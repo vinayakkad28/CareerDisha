@@ -1,0 +1,258 @@
+@page {
+    size: A4;
+    margin: 2cm 1.5cm;
+    @bottom-center {
+        content: "CareerDisha — AI Career Assessment Report";
+        font-size: 8pt;
+        color: #999;
+    }
+    @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+        font-size: 8pt;
+        color: #999;
+    }
+}
+
+@font-face {
+    font-family: 'Noto Sans Devanagari';
+    src: url('{{ font_url }}') format('truetype');
+    font-weight: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans', 'Noto Sans Devanagari', Arial, sans-serif;
+    color: #2c3e50;
+    font-size: 10pt;
+    line-height: 1.5;
+}
+
+.page-break {
+    page-break-before: always;
+}
+
+/* Cover Page */
+.cover {
+    text-align: center;
+    padding-top: 6cm;
+    page-break-after: always;
+}
+.cover .logo {
+    font-size: 28pt;
+    font-weight: 800;
+    color: #1a5276;
+    letter-spacing: 2px;
+}
+.cover .logo-accent {
+    color: #d4ac0d;
+}
+.cover .subtitle {
+    font-size: 11pt;
+    color: #666;
+    margin-top: 0.3cm;
+}
+.cover .report-title {
+    font-size: 18pt;
+    font-weight: 700;
+    color: #1a5276;
+    margin-top: 3cm;
+    padding: 0.5cm 0;
+    border-top: 3px solid #d4ac0d;
+    border-bottom: 3px solid #d4ac0d;
+}
+.cover .student-name {
+    font-size: 22pt;
+    font-weight: 700;
+    color: #1a5276;
+    margin-top: 1.5cm;
+}
+.cover .student-details {
+    font-size: 11pt;
+    color: #666;
+    margin-top: 0.5cm;
+}
+
+/* Section Headers */
+h1 {
+    font-size: 16pt;
+    color: #1a5276;
+    border-bottom: 2px solid #d4ac0d;
+    padding-bottom: 4px;
+    margin-bottom: 12px;
+}
+h2 {
+    font-size: 13pt;
+    color: #1a5276;
+    margin-top: 14px;
+    margin-bottom: 8px;
+}
+h3 {
+    font-size: 11pt;
+    color: #2c3e50;
+    margin-top: 10px;
+    margin-bottom: 6px;
+}
+
+/* How to Read section */
+.how-to-read {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-size: 9.5pt;
+}
+.how-to-read h3 {
+    color: #1a5276;
+    font-size: 10pt;
+}
+
+/* RIASEC Profile */
+.chart-container {
+    text-align: center;
+    margin: 10px 0;
+}
+.chart-container img {
+    max-width: 100%;
+    height: auto;
+}
+.holland-code {
+    text-align: center;
+    font-size: 24pt;
+    font-weight: 800;
+    color: #1a5276;
+    letter-spacing: 8px;
+    margin: 15px 0;
+    padding: 10px;
+    background: #eef5fa;
+    border-radius: 8px;
+}
+
+/* Career Cards */
+.career-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    page-break-inside: avoid;
+}
+.career-card .rank {
+    display: inline-block;
+    background: #1a5276;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 24px;
+    font-size: 10pt;
+    font-weight: 700;
+    margin-right: 8px;
+}
+.career-card .career-name {
+    font-size: 12pt;
+    font-weight: 700;
+    color: #1a5276;
+    display: inline;
+}
+.career-card .career-name-hindi {
+    font-size: 10pt;
+    color: #666;
+    margin-left: 6px;
+}
+.career-card .match-bar {
+    height: 6px;
+    background: #eee;
+    border-radius: 3px;
+    margin: 6px 0;
+}
+.career-card .match-bar-fill {
+    height: 6px;
+    background: #2ecc71;
+    border-radius: 3px;
+}
+.career-card .detail {
+    font-size: 9pt;
+    color: #555;
+    margin: 3px 0;
+}
+.career-card .detail strong {
+    color: #2c3e50;
+}
+
+/* Stream Recommendation */
+.stream-rec {
+    background: #eef5fa;
+    border-left: 4px solid #1a5276;
+    padding: 15px;
+    border-radius: 0 8px 8px 0;
+    margin: 12px 0;
+}
+.stream-rec .stream-name {
+    font-size: 16pt;
+    font-weight: 700;
+    color: #1a5276;
+}
+.stream-rec .confidence {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 9pt;
+    font-weight: 600;
+    margin-left: 8px;
+}
+.confidence-high { background: #d5f5e3; color: #27ae60; }
+.confidence-medium { background: #fef9e7; color: #d4ac0d; }
+.confidence-low { background: #fde8e8; color: #e74c3c; }
+
+/* Action Plan Timeline */
+.timeline {
+    margin: 12px 0;
+}
+.timeline-item {
+    padding-left: 20px;
+    border-left: 2px solid #d4ac0d;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+}
+.timeline-item h3 {
+    color: #1a5276;
+    font-size: 10pt;
+    margin-bottom: 4px;
+}
+.timeline-item ul {
+    padding-left: 15px;
+    font-size: 9.5pt;
+}
+.timeline-item li {
+    margin-bottom: 3px;
+}
+
+/* Parent Section */
+.parent-section {
+    background: #fdf8e8;
+    border: 1px solid #d4ac0d;
+    border-radius: 8px;
+    padding: 15px;
+}
+.parent-section h1 {
+    color: #1a5276;
+    border-bottom-color: #d4ac0d;
+}
+.parent-section .hindi-text {
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    color: #555;
+}
+
+/* Utility */
+.text-small { font-size: 9pt; }
+.text-muted { color: #888; }
+.text-center { text-align: center; }
+.mb-1 { margin-bottom: 4px; }
+.mb-2 { margin-bottom: 8px; }
+.mb-3 { margin-bottom: 12px; }
+.mt-2 { margin-top: 8px; }
