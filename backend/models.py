@@ -1,6 +1,6 @@
 from datetime import datetime, date
 from sqlalchemy import (
-    Column, Integer, String, Text, Float, Date, DateTime,
+    Boolean, Column, Integer, String, Text, Float, Date, DateTime,
     ForeignKey, JSON, Enum as SAEnum,
 )
 from sqlalchemy.orm import relationship
@@ -30,6 +30,7 @@ class Session(Base):
     session_date = Column(Date, nullable=False, default=date.today)
     classes_assessed = Column(JSON, default=list)  # e.g., [8, 9, 10, 12]
     counsellor_name = Column(String(255), default="")
+    counsellor_certification = Column(String(255), default="")
     total_students = Column(Integer, default=0)
     opt_in_students = Column(Integer, default=0)
     status = Column(String(20), default="draft")
@@ -70,6 +71,12 @@ class Student(Base):
     # Delivery
     delivery_status = Column(String(20), default="pending")
     delivery_timestamp = Column(DateTime, nullable=True)
+
+    # DPDPA consent tracking
+    consent_obtained = Column(Boolean, default=False)
+    consent_timestamp = Column(DateTime, nullable=True)
+    consent_parent_name = Column(String, default="")
+    consent_method = Column(String, default="")  # "paper_form", "verbal", "digital"
 
     # Cost tracking
     llm_cost = Column(Float, default=0.0)

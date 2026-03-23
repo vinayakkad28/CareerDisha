@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { AuthProvider, useAuth } from "@/lib/auth";
+import { ToastProvider } from "@/components/Toast";
 import Sidebar from "@/components/Sidebar";
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
@@ -11,7 +12,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-primary text-lg">Loading...</div>
+        <div className="w-8 h-8 border-3 border-primary/30 border-t-primary rounded-full animate-spin" />
       </div>
     );
   }
@@ -36,7 +37,9 @@ export default function ClientLayout({
 }) {
   return (
     <AuthProvider>
-      <LayoutContent>{children}</LayoutContent>
+      <ToastProvider>
+        <LayoutContent>{children}</LayoutContent>
+      </ToastProvider>
     </AuthProvider>
   );
 }

@@ -4,8 +4,9 @@ from sqlalchemy import func
 
 from database import get_db
 from models import School, Session as SessionModel, Student
+from routers.auth import get_current_user
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 
 @router.get("/stats")
@@ -35,6 +36,8 @@ def get_stats(db: Session = Depends(get_db)):
 
 @router.get("/recent")
 def get_recent_sessions(limit: int = 10, db: Session = Depends(get_db)):
+    if limit > 100:
+        limit = 100
     sessions = (
         db.query(SessionModel)
         .order_by(SessionModel.created_at.desc())

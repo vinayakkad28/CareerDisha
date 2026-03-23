@@ -3,38 +3,84 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { sessions as sessionsApi } from "@/lib/api";
+import { sessions as sessionsApi, consent as consentApi } from "@/lib/api";
+import { LoadingSpinner, ErrorState, ConfirmDialog } from "@/components/UIStates";
+import { useToast } from "@/components/Toast";
 
 export default function SessionDetailPage() {
   const params = useParams();
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState<string | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [showGenerateConfirm, setShowGenerateConfirm] = useState(false);
+  const [consentStatus, setConsentStatus] = useState<Record<number, boolean>>({});
+  const [consentLoading, setConsentLoading] = useState(false);
+  const { toast } = useToast();
 
   const loadSession = () => {
-    sessionsApi.get(Number(params.id)).then(setSession).catch(console.error);
+    setFetchError(null);
+    sessionsApi
+      .get(Number(params.id))
+      .then(setSession)
+      .catch((err: any) => setFetchError(err.message || "Failed to load session"));
+  };
+
+  const loadConsent = () => {
+    consentApi
+      .status(Number(params.id))
+      .then((data: any) => {
+        const map: Record<number, boolean> = {};
+        (data.students || []).forEach((s: any) => {
+          map[s.student_id] = s.consented;
+        });
+        setConsentStatus(map);
+      })
+      .catch(() => {});
+  };
+
+  const handleBulkConsent = async () => {
+    setConsentLoading(true);
+    try {
+      await consentApi.bulkConsent(Number(params.id));
+      toast("All students marked as consented", "success");
+      loadConsent();
+    } catch (err: any) {
+      toast(err.message || "Failed to record consent", "error");
+    } finally {
+      setConsentLoading(false);
+    }
   };
 
   useEffect(() => {
     loadSession();
+    loadConsent();
   }, [params.id]);
 
   const handleAction = async (action: string) => {
     setLoading(action);
     try {
       const id = Number(params.id);
-      if (action === "generate") await sessionsApi.generate(id);
-      else if (action === "qa") await sessionsApi.runQA(id);
-      else if (action === "pdf") await sessionsApi.generatePDFs(id);
+      if (action === "generate") {
+        await sessionsApi.generate(id);
+        toast("Report generation started", "info");
+      } else if (action === "qa") {
+        await sessionsApi.runQA(id);
+        toast("Scoring complete!", "success");
+      } else if (action === "pdf") {
+        await sessionsApi.generatePDFs(id);
+        toast("PDF generation started", "info");
+      }
       // Wait a moment for background tasks, then reload
       setTimeout(loadSession, 2000);
     } catch (err: any) {
-      alert(err.message);
+      toast(err.message || "Action failed", "error");
     } finally {
       setLoading(null);
     }
   };
 
-  if (!session) return <div className="text-gray-400">Loading...</div>;
+  if (fetchError) return <ErrorState message={fetchError} onRetry={loadSession} />;
+  if (!session) return <LoadingSpinner />;
 
   const statusColors: Record<string, string> = {
     pending: "bg-gray-200 text-gray-700",
@@ -98,7 +144,7 @@ export default function SessionDetailPage() {
         {/* Action Buttons */}
         <div className="flex gap-3 mt-6 flex-wrap">
           <button
-            onClick={() => handleAction("generate")}
+            onClick={() => setShowGenerateConfirm(true)}
             disabled={loading !== null}
             className="px-4 py-2 bg-primary text-white rounded-lg text-sm hover:bg-primary-700 disabled:opacity-50"
           >
@@ -160,6 +206,7 @@ export default function SessionDetailPage() {
                 <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Class</th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Holland Code</th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">RIASEC</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Consent</th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Report</th>
                 <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Delivery</th>
               </tr>
@@ -187,6 +234,17 @@ export default function SessionDetailPage() {
                   <td className="px-4 py-3">
                     <span
                       className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                        consentStatus[s.id]
+                          ? "bg-green-100 text-green-700"
+                          : "bg-yellow-100 text-yellow-700"
+                      }`}
+                    >
+                      {consentStatus[s.id] ? "Yes" : "Pending"}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                         statusColors[s.report_status] || "bg-gray-100"
                       }`}
                     >
@@ -202,6 +260,44 @@ export default function SessionDetailPage() {
           </table>
         </div>
       </div>
+
+      {/* Consent (DPDPA) */}
+      <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-3">Parental Consent (DPDPA)</h2>
+        {(() => {
+          const students = session.students || [];
+          const consented = students.filter((s: any) => consentStatus[s.id]).length;
+          return (
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-gray-600">
+                {consented} of {students.length} students have parental consent
+              </p>
+              <button
+                onClick={handleBulkConsent}
+                disabled={consentLoading || consented === students.length}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 disabled:opacity-50"
+              >
+                {consentLoading ? "Saving..." : "Mark All Consented (Paper Form)"}
+              </button>
+            </div>
+          );
+        })()}
+      </div>
+
+      {/* Confirm Dialog for Generate Reports */}
+      {showGenerateConfirm && (
+        <ConfirmDialog
+          title="Generate Reports"
+          message="This will call the LLM API and incur costs. Continue?"
+          confirmLabel="Generate"
+          variant="primary"
+          onConfirm={() => {
+            setShowGenerateConfirm(false);
+            handleAction("generate");
+          }}
+          onCancel={() => setShowGenerateConfirm(false)}
+        />
+      )}
     </div>
   );
 }

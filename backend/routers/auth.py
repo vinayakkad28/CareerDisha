@@ -1,5 +1,6 @@
+import logging
 from datetime import datetime, timedelta
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Header
 from pydantic import BaseModel
 import hashlib
 import json
@@ -7,6 +8,7 @@ import base64
 
 from config import ADMIN_PASSWORD, JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRY_HOURS
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -40,13 +42,16 @@ def verify_token(token: str) -> dict:
         if datetime.fromisoformat(payload["exp"]) < datetime.utcnow():
             raise ValueError("Token expired")
         return payload
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 
-def get_current_user(authorization: str = "") -> dict:
+def get_current_user(authorization: str = Header(default="")) -> dict:
+    """Extract and verify JWT from Authorization header."""
     if not authorization.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Missing authorization header")
+        raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
     token = authorization[7:]
     return verify_token(token)
 
@@ -57,6 +62,7 @@ def login(req: LoginRequest):
         raise HTTPException(status_code=401, detail="Invalid password")
     token = create_token({"role": "admin"})
     expires_at = (datetime.utcnow() + timedelta(hours=JWT_EXPIRY_HOURS)).isoformat()
+    logger.info("Admin login successful")
     return LoginResponse(token=token, expires_at=expires_at)
 
 

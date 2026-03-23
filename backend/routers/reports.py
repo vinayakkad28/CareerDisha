@@ -4,8 +4,9 @@ from pydantic import BaseModel
 
 from database import get_db
 from models import Student, Session as SessionModel
+from routers.auth import get_current_user
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 
 @router.get("/sessions/{session_id}/qa-report")

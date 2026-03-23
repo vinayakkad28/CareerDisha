@@ -4,18 +4,26 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { schools as schoolsApi } from "@/lib/api";
+import { LoadingSpinner, ErrorState } from "@/components/UIStates";
 
 export default function SchoolDetailPage() {
   const params = useParams();
   const [school, setSchool] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (params.id) {
-      schoolsApi.get(Number(params.id)).then(setSchool).catch(console.error);
+      schoolsApi
+        .get(Number(params.id))
+        .then(setSchool)
+        .catch((err) => setError(err.message || "Failed to load school"))
+        .finally(() => setLoading(false));
     }
   }, [params.id]);
 
-  if (!school) return <div className="text-gray-400">Loading...</div>;
+  if (loading) return <LoadingSpinner />;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   const statusColors: Record<string, string> = {
     draft: "bg-gray-200 text-gray-700",

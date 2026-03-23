@@ -1,9 +1,10 @@
 import io
 import csv
 import json
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 
+import logging
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, BackgroundTasks
 from fastapi.responses import StreamingResponse, FileResponse
 from sqlalchemy.orm import Session as DBSession
@@ -11,8 +12,9 @@ from pydantic import BaseModel
 
 from database import get_db
 from models import Session, Student, School
+from routers.auth import get_current_user
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 
 class SessionCreate(BaseModel):
@@ -20,6 +22,7 @@ class SessionCreate(BaseModel):
     session_date: date
     classes_assessed: list[int] = []
     counsellor_name: str = ""
+    counsellor_certification: str = ""
     llm_provider: str = "anthropic"
     notes: str = ""
 
@@ -28,6 +31,8 @@ class SessionCreate(BaseModel):
 def list_sessions(
     school_id: Optional[int] = None,
     status: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 50,
     db: DBSession = Depends(get_db),
 ):
     query = db.query(Session).order_by(Session.session_date.desc())
@@ -35,7 +40,7 @@ def list_sessions(
         query = query.filter(Session.school_id == school_id)
     if status:
         query = query.filter(Session.status == status)
-    sessions = query.all()
+    sessions = query.offset(skip).limit(limit).all()
     result = []
     for s in sessions:
         school = db.query(School).filter(School.id == s.school_id).first()
@@ -102,22 +107,45 @@ async def upload_csvs(
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
+    logger = logging.getLogger(__name__)
+
     # Parse student info CSV
-    info_content = (await student_info_csv.read()).decode("utf-8")
+    info_raw = await student_info_csv.read()
+    try:
+        info_content = info_raw.decode("utf-8")
+    except UnicodeDecodeError:
+        info_content = info_raw.decode("latin-1")
     info_reader = csv.DictReader(io.StringIO(info_content))
     student_info_map = {}
-    for row in info_reader:
+    parse_errors = []
+    for row_num, row in enumerate(info_reader, start=2):
         sid = row.get("student_id", "").strip()
+        if not sid:
+            parse_errors.append(f"Row {row_num}: missing student_id")
+            continue
+        try:
+            class_val = row.get("class", row.get("class_level", "10")).strip()
+            class_level = int(class_val) if class_val else 10
+            if class_level not in (8, 9, 10, 11, 12):
+                parse_errors.append(f"Row {row_num} (ID {sid}): invalid class '{class_val}', defaulting to 10")
+                class_level = 10
+        except (ValueError, TypeError):
+            parse_errors.append(f"Row {row_num} (ID {sid}): non-numeric class '{row.get('class', '')}', defaulting to 10")
+            class_level = 10
         student_info_map[sid] = {
             "name": row.get("name", "").strip(),
-            "class_level": int(row.get("class", row.get("class_level", "10"))),
+            "class_level": class_level,
             "section": row.get("section", "").strip(),
             "parent_name": row.get("parent_name", "").strip(),
             "parent_phone": row.get("parent_phone", "").strip(),
         }
 
     # Parse ZipGrade CSV
-    zg_content = (await zipgrade_csv.read()).decode("utf-8")
+    zg_raw = await zipgrade_csv.read()
+    try:
+        zg_content = zg_raw.decode("utf-8")
+    except UnicodeDecodeError:
+        zg_content = zg_raw.decode("latin-1")
     zg_reader = csv.DictReader(io.StringIO(zg_content))
     students_created = 0
 
@@ -164,8 +192,15 @@ async def upload_csvs(
     if classes:
         session.classes_assessed = sorted(classes)
 
+    if students_created == 0:
+        raise HTTPException(status_code=400, detail="No valid students found in the uploaded CSVs. Check column names and response format.")
+
     db.commit()
-    return {"students_created": students_created, "message": f"Uploaded {students_created} students"}
+    logger.info(f"Session {session_id}: uploaded {students_created} students, {len(parse_errors)} warnings")
+    result = {"students_created": students_created, "message": f"Uploaded {students_created} students"}
+    if parse_errors:
+        result["warnings"] = parse_errors[:20]  # Cap at 20 to avoid huge responses
+    return result
 
 
 @router.post("/{session_id}/score")
@@ -254,3 +289,119 @@ def download_all_pdfs(session_id: int, db: DBSession = Depends(get_db)):
         media_type="application/zip",
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
+
+
+@router.get("/{session_id}/school-summary")
+def school_summary(session_id: int, db: DBSession = Depends(get_db)):
+    """Generate school summary report — aggregate data for the principal."""
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    school = db.query(School).filter(School.id == session.school_id).first()
+    students = db.query(Student).filter(Student.session_id == session_id).all()
+
+    if not students:
+        raise HTTPException(status_code=404, detail="No students in this session")
+
+    # Aggregate RIASEC data per class
+    class_data = {}
+    stream_counts = {"Science (PCM)": 0, "Science (PCB)": 0, "Commerce": 0, "Arts/Humanities": 0, "Undecided": 0}
+
+    for s in students:
+        cls = s.class_level
+        if cls not in class_data:
+            class_data[cls] = {"count": 0, "scores": {t: [] for t in "RIASEC"}}
+        class_data[cls]["count"] += 1
+        scores = s.riasec_scores or {}
+        for t in "RIASEC":
+            if t in scores:
+                class_data[cls]["scores"][t].append(scores[t])
+
+        # Determine stream leaning from Holland code
+        if s.holland_code:
+            primary = s.holland_code[0] if s.holland_code else ""
+            if primary in ("R", "I"):
+                stream_counts["Science (PCM)"] += 1
+            elif primary == "S":
+                stream_counts["Science (PCB)"] += 1
+            elif primary in ("E", "C"):
+                stream_counts["Commerce"] += 1
+            elif primary == "A":
+                stream_counts["Arts/Humanities"] += 1
+            else:
+                stream_counts["Undecided"] += 1
+
+    # Calculate averages per class
+    class_summary = {}
+    for cls, data in sorted(class_data.items()):
+        avg_scores = {}
+        for t in "RIASEC":
+            vals = data["scores"][t]
+            avg_scores[t] = round(sum(vals) / len(vals), 1) if vals else 0
+        class_summary[cls] = {
+            "count": data["count"],
+            "average_scores": avg_scores,
+        }
+
+    # Top careers across all students
+    career_freq = {}
+    for s in students:
+        for mc in (s.matched_careers or [])[:3]:
+            cid = mc.get("career_name", mc.get("career_id", ""))
+            career_freq[cid] = career_freq.get(cid, 0) + 1
+    top_careers = sorted(career_freq.items(), key=lambda x: -x[1])[:10]
+
+    consented = sum(1 for s in students if s.consent_obtained)
+
+    return {
+        "school_name": school.name if school else "",
+        "school_code": school.code if school else "",
+        "city": school.city if school else "",
+        "session_date": session.session_date.isoformat() if session.session_date else "",
+        "counsellor_name": session.counsellor_name,
+        "total_students": len(students),
+        "classes_assessed": sorted(class_data.keys()),
+        "class_summary": class_summary,
+        "stream_distribution": stream_counts,
+        "top_careers": [{"career": c, "count": n} for c, n in top_careers],
+        "consent_status": {"consented": consented, "total": len(students)},
+        "reports_generated": sum(1 for s in students if s.report_status not in ("pending", "scored")),
+        "pdfs_ready": sum(1 for s in students if s.report_status in ("pdf_ready", "delivered")),
+        "delivered": sum(1 for s in students if s.delivery_status == "delivered"),
+    }
+
+
+@router.get("/{session_id}/compliance-certificate")
+def compliance_certificate(session_id: int, db: DBSession = Depends(get_db)):
+    """Generate data for a CBSE compliance certificate."""
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    school = db.query(School).filter(School.id == session.school_id).first()
+    student_count = db.query(Student).filter(Student.session_id == session_id).count()
+    consented = db.query(Student).filter(
+        Student.session_id == session_id, Student.consent_obtained == True
+    ).count()
+    reports_delivered = db.query(Student).filter(
+        Student.session_id == session_id, Student.delivery_status == "delivered"
+    ).count()
+
+    return {
+        "certificate_type": "Career Counselling Session Certificate",
+        "school_name": school.name if school else "",
+        "school_code": school.code if school else "",
+        "school_board": school.board if school else "CBSE",
+        "city": school.city if school else "",
+        "session_date": session.session_date.isoformat() if session.session_date else "",
+        "counsellor_name": session.counsellor_name,
+        "classes_assessed": session.classes_assessed,
+        "total_students_assessed": student_count,
+        "parental_consent_obtained": consented,
+        "reports_delivered": reports_delivered,
+        "assessment_tool": "RIASEC Career Interest Inventory (74 items)",
+        "report_method": "AI-assisted analysis reviewed by qualified counsellor",
+        "compliance_note": "This session was conducted in compliance with CBSE Affiliation Bye-Laws Clause 2.4.12 and NEP 2020 career guidance requirements.",
+        "generated_at": datetime.utcnow().isoformat(),
+    }

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { dashboard } from "@/lib/api";
+import { LoadingSpinner, ErrorState } from "@/components/UIStates";
 
 interface Stats {
   total_schools: number;
@@ -17,11 +18,29 @@ interface Stats {
 export default function DashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [recentSessions, setRecentSessions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [statsData, sessionsData] = await Promise.all([
+        dashboard.stats(),
+        dashboard.recent(5),
+      ]);
+      setStats(statsData);
+      setRecentSessions(sessionsData);
+    } catch (err: any) {
+      setError(err.message || "Failed to load dashboard data");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    dashboard.stats().then(setStats).catch(console.error);
-    dashboard.recent(5).then(setRecentSessions).catch(console.error);
-  }, []);
+    fetchData();
+  }, [fetchData]);
 
   const statCards = stats
     ? [
@@ -43,6 +62,40 @@ export default function DashboardPage() {
     pdf_ready: "bg-green-100 text-green-700",
     delivered: "bg-green-200 text-green-800",
   };
+
+  if (loading) {
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-2xl font-bold text-primary">Dashboard</h1>
+          <Link
+            href="/sessions/new"
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
+          >
+            + New Session
+          </Link>
+        </div>
+        <LoadingSpinner message="Loading dashboard..." />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-2xl font-bold text-primary">Dashboard</h1>
+          <Link
+            href="/sessions/new"
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
+          >
+            + New Session
+          </Link>
+        </div>
+        <ErrorState message={error} onRetry={fetchData} />
+      </div>
+    );
+  }
 
   return (
     <div>

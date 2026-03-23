@@ -4,21 +4,38 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { students as studentsApi } from "@/lib/api";
+import { LoadingSpinner, ErrorState } from "@/components/UIStates";
+import { useToast } from "@/components/Toast";
 
 export default function StudentDetailPage() {
   const params = useParams();
   const [student, setStudent] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
-    studentsApi.get(Number(params.id)).then(setStudent).catch(console.error);
+    studentsApi
+      .get(Number(params.id))
+      .then(setStudent)
+      .catch((err) => setError(err.message || "Failed to load student"))
+      .finally(() => setLoading(false));
   }, [params.id]);
 
   const handleRegenerate = async () => {
-    await studentsApi.regenerate(Number(params.id));
-    studentsApi.get(Number(params.id)).then(setStudent);
+    try {
+      toast("Regenerating report...", "info");
+      await studentsApi.regenerate(Number(params.id));
+      const updated = await studentsApi.get(Number(params.id));
+      setStudent(updated);
+      toast("Report regenerated successfully", "success");
+    } catch (err: any) {
+      toast(err.message || "Failed to regenerate report", "error");
+    }
   };
 
-  if (!student) return <div className="text-gray-400">Loading...</div>;
+  if (loading) return <LoadingSpinner />;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   const report = student.report_content || {};
   const scores = student.riasec_scores || {};

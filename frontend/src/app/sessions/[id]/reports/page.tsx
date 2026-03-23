@@ -4,13 +4,21 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { reports as reportsApi } from "@/lib/api";
+import { LoadingSpinner, ErrorState } from "@/components/UIStates";
+import { useToast } from "@/components/Toast";
 
 export default function QAReportsPage() {
   const params = useParams();
   const [qaReport, setQaReport] = useState<any>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const loadQA = () => {
-    reportsApi.qaReport(Number(params.id)).then(setQaReport).catch(console.error);
+    setFetchError(null);
+    reportsApi
+      .qaReport(Number(params.id))
+      .then(setQaReport)
+      .catch((err: any) => setFetchError(err.message || "Failed to load QA report"));
   };
 
   useEffect(() => {
@@ -19,17 +27,28 @@ export default function QAReportsPage() {
 
   const handleApproveAll = async () => {
     if (!qaReport) return;
-    const ids = qaReport.flagged_details.map((f: any) => f.student_id);
-    await reportsApi.qaApprove(Number(params.id), ids);
-    loadQA();
+    try {
+      const ids = qaReport.flagged_details.map((f: any) => f.student_id);
+      await reportsApi.qaApprove(Number(params.id), ids);
+      toast("All flagged reports approved", "success");
+      loadQA();
+    } catch (err: any) {
+      toast(err.message || "Approval failed", "error");
+    }
   };
 
   const handleApproveOne = async (studentId: number) => {
-    await reportsApi.qaApprove(Number(params.id), [studentId]);
-    loadQA();
+    try {
+      await reportsApi.qaApprove(Number(params.id), [studentId]);
+      toast("Report approved", "success");
+      loadQA();
+    } catch (err: any) {
+      toast(err.message || "Approval failed", "error");
+    }
   };
 
-  if (!qaReport) return <div className="text-gray-400">Loading QA report...</div>;
+  if (fetchError) return <ErrorState message={fetchError} onRetry={loadQA} />;
+  if (!qaReport) return <LoadingSpinner message="Loading QA report..." />;
 
   return (
     <div>

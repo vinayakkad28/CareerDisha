@@ -4,13 +4,21 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { reports as reportsApi, students as studentsApi } from "@/lib/api";
+import { LoadingSpinner, ErrorState } from "@/components/UIStates";
+import { useToast } from "@/components/Toast";
 
 export default function DeliveryPage() {
   const params = useParams();
   const [data, setData] = useState<any>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const loadData = () => {
-    reportsApi.deliveryChecklist(Number(params.id)).then(setData).catch(console.error);
+    setFetchError(null);
+    reportsApi
+      .deliveryChecklist(Number(params.id))
+      .then(setData)
+      .catch((err: any) => setFetchError(err.message || "Failed to load delivery checklist"));
   };
 
   useEffect(() => {
@@ -19,11 +27,20 @@ export default function DeliveryPage() {
 
   const toggleDelivery = async (studentId: number, currentStatus: string) => {
     const newStatus = currentStatus === "delivered" ? "pending" : "delivered";
-    await studentsApi.updateDelivery(studentId, newStatus);
-    loadData();
+    try {
+      await studentsApi.updateDelivery(studentId, newStatus);
+      toast(
+        newStatus === "delivered" ? "Marked as delivered" : "Marked as pending",
+        "success"
+      );
+      loadData();
+    } catch (err: any) {
+      toast(err.message || "Failed to update delivery status", "error");
+    }
   };
 
-  if (!data) return <div className="text-gray-400">Loading...</div>;
+  if (fetchError) return <ErrorState message={fetchError} onRetry={loadData} />;
+  if (!data) return <LoadingSpinner />;
 
   return (
     <div>

@@ -140,6 +140,11 @@
         <h3>For Parents (अभिभावकों के लिए)</h3>
         <p>The last section is specifically designed for parents, with clear recommendations and action items in both English and Hindi. It addresses common concerns about job security, salary, and career viability.</p>
     </div>
+
+    <div class="info-box" style="border-left: 3px solid {{ brand.secondary }};">
+        <h3>Important Disclaimer</h3>
+        <p>This report is based on a <strong>career interest inventory</strong>, not a diagnostic assessment. It reflects your current interests, which are developing and may change over time — this is completely normal, especially for younger students. Interests do not equal aptitude; this report should be used as <strong>one input among many</strong> in career decision-making, alongside academic performance, personal goals, and family discussions. Career recommendations are generated using AI and reviewed by a qualified counsellor.</p>
+    </div>
 </div>
 
 <!-- PAGE 3: RIASEC PROFILE -->
@@ -333,14 +338,28 @@
 </div>
 
 <!-- BACK COVER -->
-<div class="page-break" style="text-align: center; padding-top: 8cm;">
+<div class="page-break" style="text-align: center; padding-top: 5cm;">
     <div class="logo" style="font-size: 22pt; font-weight: 800; color: {{ brand.primary }};">Career<span style="color: {{ brand.secondary }};">Disha</span></div>
     <p style="color: #666; margin-top: 8px;">AI-Powered Career Counselling for Indian Schools</p>
-    <p style="color: #999; margin-top: 2cm; font-size: 9pt;">
-        This report was generated using advanced AI analysis of your RIASEC assessment results.<br>
-        Career recommendations are based on India-specific data including NIRF rankings,<br>
-        entrance exam requirements, and current salary trends.<br><br>
-        For questions or follow-up counselling, please contact your school counsellor.
+
+    {% if counsellor_name %}
+    <div style="margin-top: 2cm; padding: 16px; border: 1px solid #ddd; border-radius: 8px; display: inline-block; text-align: left;">
+        <p style="font-size: 9pt; color: #888; margin-bottom: 4px;">Reviewed & Approved by</p>
+        <p style="font-size: 12pt; font-weight: 600; color: {{ brand.primary }};">{{ counsellor_name }}</p>
+        {% if counsellor_certification %}
+        <p style="font-size: 9pt; color: #555;">{{ counsellor_certification }}</p>
+        {% endif %}
+        <p style="font-size: 9pt; color: #888; margin-top: 4px;">Career Counsellor, CareerDisha</p>
+    </div>
+    {% endif %}
+
+    <p style="color: #999; margin-top: 1.5cm; font-size: 8.5pt; max-width: 80%; margin-left: auto; margin-right: auto;">
+        This report was generated using AI-assisted analysis of your RIASEC career interest assessment.
+        Career recommendations are based on India-specific data including NIRF 2025 rankings,
+        entrance exam requirements, and current salary data from AmbitionBox.<br><br>
+        <strong>This is an interest-based guidance tool, not a definitive career prescription.</strong>
+        Interests evolve, and this report should be revisited periodically. For follow-up
+        counselling or questions, please contact your school or the counsellor listed above.
     </p>
 </div>
 

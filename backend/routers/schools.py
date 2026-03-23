@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
@@ -6,8 +7,10 @@ from datetime import datetime
 
 from database import get_db
 from models import School, Session as SessionModel
+from routers.auth import get_current_user
 
-router = APIRouter()
+logger = logging.getLogger(__name__)
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 
 class SchoolCreate(BaseModel):
@@ -44,8 +47,8 @@ class SchoolResponse(BaseModel):
 
 
 @router.get("")
-def list_schools(db: Session = Depends(get_db)):
-    schools = db.query(School).order_by(School.created_at.desc()).all()
+def list_schools(skip: int = 0, limit: int = 50, db: Session = Depends(get_db)):
+    schools = db.query(School).order_by(School.created_at.desc()).offset(skip).limit(limit).all()
     result = []
     for s in schools:
         session_count = db.query(SessionModel).filter(SessionModel.school_id == s.id).count()

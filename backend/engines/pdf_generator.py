@@ -97,7 +97,11 @@ def generate_bar_chart(riasec_scores: dict) -> str:
     return base64.b64encode(buf.read()).decode()
 
 
-def render_report_html(student: Student) -> str:
+def render_report_html(
+    student: Student,
+    counsellor_name: str = "",
+    counsellor_certification: str = "",
+) -> str:
     """Render the full HTML report from student data."""
     env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)))
     template = env.get_template("report_template.html")
@@ -129,19 +133,26 @@ def render_report_html(student: Student) -> str:
         "riasec_names": RIASEC_TYPE_NAMES,
         "today": date.today().strftime("%d %B %Y"),
         "font_url": font_url,
+        "counsellor_name": counsellor_name,
+        "counsellor_certification": counsellor_certification,
     }
 
     return template.render(**context)
 
 
-def generate_student_pdf(student: Student, output_dir: Path = None) -> Path:
+def generate_student_pdf(
+    student: Student,
+    output_dir: Path = None,
+    counsellor_name: str = "",
+    counsellor_certification: str = "",
+) -> Path:
     """Generate PDF for a single student. Returns the output file path."""
     if output_dir is None:
         output_dir = OUTPUT_DIR
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    html_content = render_report_html(student)
+    html_content = render_report_html(student, counsellor_name, counsellor_certification)
 
     # Build filename
     safe_name = student.name.replace(" ", "_").replace("/", "_")

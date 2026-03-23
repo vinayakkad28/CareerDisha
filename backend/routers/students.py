@@ -8,8 +8,9 @@ from pathlib import Path
 
 from database import get_db
 from models import Student
+from routers.auth import get_current_user
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(get_current_user)])
 
 
 class DeliveryUpdate(BaseModel):

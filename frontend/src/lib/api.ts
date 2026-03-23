@@ -94,7 +94,7 @@ export const sessions = {
     const form = new FormData();
     form.append("zipgrade_csv", zipgradeCsv);
     form.append("student_info_csv", studentInfoCsv);
-    return request<{ students_created: number; message: string }>(
+    return request<{ students_created: number; message: string; warnings?: string[] }>(
       `/sessions/${sessionId}/upload-csvs`,
       { method: "POST", body: form }
     );
@@ -134,6 +134,20 @@ export const reports = {
     }),
   deliveryChecklist: (sessionId: number) =>
     request<any>(`/reports/sessions/${sessionId}/delivery-checklist`),
+};
+
+// Consent (DPDPA)
+export const consent = {
+  status: (sessionId: number) => request<any>(`/consent/sessions/${sessionId}/consent-status`),
+  recordConsent: (sessionId: number, studentIds: number[], method: string = "paper_form") =>
+    request<any>(`/consent/sessions/${sessionId}/record-consent`, {
+      method: "POST",
+      body: JSON.stringify({ student_ids: studentIds, consent_method: method }),
+    }),
+  bulkConsent: (sessionId: number) =>
+    request<any>(`/consent/sessions/${sessionId}/bulk-consent`, { method: "POST" }),
+  deleteStudentData: (studentId: number) =>
+    request<any>(`/consent/students/${studentId}/data`, { method: "DELETE" }),
 };
 
 // Dashboard

@@ -2,13 +2,22 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { sessions as sessionsApi } from "@/lib/api";
+import { LoadingSpinner, ErrorState, EmptyState } from "@/components/UIStates";
 
 export default function SessionsPage() {
+  const router = useRouter();
   const [sessionList, setSessionList] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    sessionsApi.list().then(setSessionList).catch(console.error);
+    sessionsApi
+      .list()
+      .then(setSessionList)
+      .catch((err) => setError(err.message || "Failed to load sessions"))
+      .finally(() => setLoading(false));
   }, []);
 
   const statusColors: Record<string, string> = {
@@ -20,6 +29,9 @@ export default function SessionsPage() {
     pdf_ready: "bg-green-100 text-green-700",
     delivered: "bg-green-200 text-green-800",
   };
+
+  if (loading) return <LoadingSpinner />;
+  if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   return (
     <div>
@@ -33,16 +45,16 @@ export default function SessionsPage() {
         </Link>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm divide-y divide-gray-100">
-        {sessionList.length === 0 ? (
-          <div className="px-6 py-8 text-center text-gray-400">
-            No sessions yet.{" "}
-            <Link href="/sessions/new" className="text-primary underline">
-              Create one
-            </Link>
-          </div>
-        ) : (
-          sessionList.map((s) => (
+      {sessionList.length === 0 ? (
+        <EmptyState
+          title="No sessions yet"
+          description="Create a session to start assessing students"
+          actionLabel="New Session"
+          onAction={() => router.push("/sessions/new")}
+        />
+      ) : (
+        <div className="bg-white rounded-xl shadow-sm divide-y divide-gray-100">
+          {sessionList.map((s) => (
             <Link
               key={s.id}
               href={`/sessions/${s.id}`}
@@ -68,9 +80,9 @@ export default function SessionsPage() {
                 </span>
               </div>
             </Link>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

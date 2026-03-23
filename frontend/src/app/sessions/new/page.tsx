@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { schools as schoolsApi, sessions as sessionsApi } from "@/lib/api";
+import { useToast } from "@/components/Toast";
 
 export default function NewSessionPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { toast } = useToast();
   const [schoolList, setSchoolList] = useState<any[]>([]);
   const [step, setStep] = useState<"create" | "upload">("create");
   const [sessionId, setSessionId] = useState<number | null>(null);
@@ -53,8 +55,10 @@ export default function NewSessionPage() {
       });
       setSessionId(session.id);
       setStep("upload");
+      toast("Session created. Now upload the CSV files.", "success");
     } catch (err: any) {
       setError(err.message);
+      toast(err.message || "Failed to create session", "error");
     }
   };
 
@@ -64,12 +68,20 @@ export default function NewSessionPage() {
     setUploading(true);
     setError("");
     try {
-      await sessionsApi.uploadCSVs(sessionId, zipgradeFile, studentInfoFile);
+      const uploadResult = await sessionsApi.uploadCSVs(sessionId, zipgradeFile, studentInfoFile);
+      if (uploadResult?.warnings && uploadResult.warnings.length > 0) {
+        uploadResult.warnings.forEach((w: string) =>
+          toast(w, "warning")
+        );
+      }
+      toast("Files uploaded. Scoring students...", "info");
       // Auto-score after upload
       await sessionsApi.score(sessionId);
+      toast("Scoring complete!", "success");
       router.push(`/sessions/${sessionId}`);
     } catch (err: any) {
       setError(err.message);
+      toast(err.message || "Upload failed", "error");
     } finally {
       setUploading(false);
     }
