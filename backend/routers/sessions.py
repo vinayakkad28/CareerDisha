@@ -434,5 +434,53 @@ def compliance_certificate(session_id: int, db: DBSession = Depends(get_db)):
         "assessment_tool": "RIASEC Career Interest Inventory (74 items)",
         "report_method": "AI-assisted analysis reviewed by qualified counsellor",
         "compliance_note": "This session was conducted in compliance with CBSE Affiliation Bye-Laws Clause 2.4.12 and NEP 2020 career guidance requirements.",
-        "generated_at": datetime.utcnow().isoformat(),
+        "generated_at": datetime.now().isoformat(),
     }
+
+
+@router.get("/{session_id}/compliance-certificate/pdf")
+def compliance_certificate_pdf(session_id: int, db: DBSession = Depends(get_db)):
+    """Generate and download CBSE compliance certificate as PDF."""
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    school = db.query(School).filter(School.id == session.school_id).first()
+    student_count = db.query(Student).filter(Student.session_id == session_id).count()
+    consented = db.query(Student).filter(
+        Student.session_id == session_id, Student.consent_obtained == True
+    ).count()
+    reports_done = db.query(Student).filter(
+        Student.session_id == session_id,
+        Student.report_status.in_(["pdf_ready", "delivered"]),
+    ).count()
+    delivered = db.query(Student).filter(
+        Student.session_id == session_id, Student.delivery_status == "delivered"
+    ).count()
+
+    session_date_str = session.session_date.strftime("%d %B %Y") if session.session_date else ""
+    session_date_short = session.session_date.strftime("%Y%m%d") if session.session_date else ""
+
+    from engines.compliance_generator import generate_compliance_pdf
+    pdf_path = generate_compliance_pdf(
+        school_name=school.name if school else "",
+        school_code=school.code if school else "",
+        school_city=school.city if school else "",
+        school_board=school.board if school else "CBSE",
+        session_date_str=session_date_str,
+        session_date_short=session_date_short,
+        counsellor_name=session.counsellor_name or "",
+        counsellor_certification=session.counsellor_certification or "",
+        classes_assessed=", ".join(f"Class {c}" for c in (session.classes_assessed or [])),
+        total_students=student_count,
+        reports_done=reports_done,
+        delivered=delivered,
+        consent_count=consented,
+        session_id=session_id,
+    )
+
+    return FileResponse(
+        str(pdf_path),
+        media_type="application/pdf",
+        filename=f"CBSE_Compliance_Certificate_{school.code if school else ''}_{session_date_short}.pdf",
+    )

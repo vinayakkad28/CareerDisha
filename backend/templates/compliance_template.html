@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+    @page { size: A4; margin: 2cm; }
+    body { font-family: 'Noto Sans', Arial, sans-serif; color: #2c3e50; font-size: 11pt; line-height: 1.6; }
+    .header { text-align: center; border-bottom: 3px solid #1a5276; padding-bottom: 16px; margin-bottom: 24px; }
+    .header .logo { font-size: 22pt; font-weight: 800; color: #1a5276; }
+    .header .logo-accent { color: #d4ac0d; }
+    .title { text-align: center; font-size: 16pt; font-weight: 700; color: #1a5276; margin: 20px 0 10px; text-transform: uppercase; letter-spacing: 2px; }
+    .subtitle { text-align: center; font-size: 10pt; color: #666; margin-bottom: 24px; }
+    .field { margin: 8px 0; }
+    .field-label { font-weight: 600; color: #1a5276; display: inline-block; width: 200px; }
+    .section { margin: 20px 0; }
+    .section-title { font-size: 12pt; font-weight: 700; color: #1a5276; border-bottom: 1px solid #ddd; padding-bottom: 4px; margin-bottom: 10px; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 10pt; }
+    th { background: #1a5276; color: white; padding: 8px 10px; text-align: left; }
+    td { padding: 6px 10px; border-bottom: 1px solid #eee; }
+    .stamp-area { margin-top: 50px; }
+    .stamp-row { display: flex; justify-content: space-between; }
+    .stamp-box { width: 45%; text-align: center; }
+    .stamp-line { border-top: 1px solid #333; margin-top: 60px; padding-top: 4px; font-size: 9pt; }
+    .footer { margin-top: 40px; font-size: 8pt; color: #888; text-align: center; border-top: 1px solid #ddd; padding-top: 10px; }
+    .ref-number { font-size: 9pt; color: #888; text-align: right; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">Career<span class="logo-accent">Disha</span></div>
+    <div style="font-size: 9pt; color: #666;">AI-Powered Career Counselling for Indian Schools</div>
+</div>
+
+<div class="title">Certificate of Career Counselling</div>
+<div class="subtitle">
+    Issued in compliance with CBSE Affiliation Bye-Laws 2018, Clause 2.4.12<br>
+    (As amended by CBSE Circular dated January 19, 2026)
+</div>
+
+<div class="ref-number">Ref: CD/{{ school_code }}/{{ session_date_short }}/{{ ref_number }}</div>
+
+<div class="section">
+    <div class="section-title">School Details</div>
+    <div class="field"><span class="field-label">School Name:</span> {{ school_name }}</div>
+    <div class="field"><span class="field-label">School Code:</span> {{ school_code }}</div>
+    <div class="field"><span class="field-label">City:</span> {{ school_city }}</div>
+    <div class="field"><span class="field-label">Board Affiliation:</span> {{ school_board }}</div>
+</div>
+
+<div class="section">
+    <div class="section-title">Session Details</div>
+    <div class="field"><span class="field-label">Date of Session:</span> {{ session_date }}</div>
+    <div class="field"><span class="field-label">Career Counsellor:</span> {{ counsellor_name }}</div>
+    {% if counsellor_certification %}
+    <div class="field"><span class="field-label">Certification:</span> {{ counsellor_certification }}</div>
+    {% endif %}
+    <div class="field"><span class="field-label">Classes Assessed:</span> {{ classes_assessed }}</div>
+    <div class="field"><span class="field-label">Total Students:</span> {{ total_students }}</div>
+    <div class="field"><span class="field-label">Assessment Method:</span> RIASEC Career Interest Inventory (74 items, standardized OMR format)</div>
+</div>
+
+<div class="section">
+    <div class="section-title">Services Provided</div>
+    <table>
+        <tr><th>Service</th><th>Description</th><th>Status</th></tr>
+        <tr><td>Group Career Awareness Session</td><td>80-minute interactive session covering career landscape, self-assessment, and pathway exploration</td><td>Completed</td></tr>
+        <tr><td>Individual RIASEC Assessment</td><td>Standardized career interest inventory administered to each student</td><td>Completed</td></tr>
+        <tr><td>AI-Assisted Career Analysis</td><td>Personalized career matching using India-specific career database (100+ careers, NIRF data)</td><td>Completed</td></tr>
+        <tr><td>Individual Career Report</td><td>Personalized PDF report with career recommendations, education pathways, and action plan</td><td>{{ report_status }}</td></tr>
+        <tr><td>Parent Communication</td><td>Report delivered to parents with bilingual (Hindi-English) guidance section</td><td>{{ delivery_status }}</td></tr>
+    </table>
+</div>
+
+<div class="section">
+    <div class="section-title">Certification</div>
+    <p>This is to certify that a comprehensive career counselling session was conducted at the above-mentioned school on the date specified. The session was designed in alignment with the National Education Policy (NEP) 2020 guidelines on career guidance and the CBSE mandate for career counselling in schools.</p>
+    <p>All student data has been processed in accordance with the Digital Personal Data Protection Act (DPDPA) 2023. Parental consent obtained: {{ consent_count }}/{{ total_students }} students.</p>
+</div>
+
+<div class="stamp-area">
+    <table style="border: none;"><tr>
+        <td style="width: 50%; text-align: center; border: none; padding-top: 60px;">
+            <div style="border-top: 1px solid #333; display: inline-block; padding-top: 4px; min-width: 200px;">
+                Career Counsellor<br>{{ counsellor_name }}<br>CareerDisha
+            </div>
+        </td>
+        <td style="width: 50%; text-align: center; border: none; padding-top: 60px;">
+            <div style="border-top: 1px solid #333; display: inline-block; padding-top: 4px; min-width: 200px;">
+                School Principal<br>(Name & Stamp)
+            </div>
+        </td>
+    </tr></table>
+</div>
+
+<div class="footer">
+    This certificate is generated by CareerDisha — AI-Powered Career Counselling Platform.<br>
+    For verification: Ref CD/{{ school_code }}/{{ session_date_short }}/{{ ref_number }} | www.careerdisha.com
+</div>
+
+</body>
+</html>
