@@ -7,6 +7,9 @@ import { sessions as sessionsApi, consent as consentApi } from "@/lib/api";
 import { LoadingSpinner, ErrorState, ConfirmDialog } from "@/components/UIStates";
 import { useToast } from "@/components/Toast";
 import SessionTimeline from "@/components/SessionTimeline";
+import PageHeader from "@/components/PageHeader";
+import StatCard from "@/components/StatCard";
+import StatusBadge from "@/components/StatusBadge";
 
 export default function SessionDetailPage() {
   const params = useParams();
@@ -83,90 +86,122 @@ export default function SessionDetailPage() {
   if (fetchError) return <ErrorState message={fetchError} onRetry={loadSession} />;
   if (!session) return <LoadingSpinner />;
 
-  const statusColors: Record<string, string> = {
-    pending: "bg-gray-200 text-gray-700",
-    scored: "bg-blue-100 text-blue-700",
-    report_generated: "bg-purple-100 text-purple-700",
-    qa_passed: "bg-green-100 text-green-700",
-    qa_flagged: "bg-red-100 text-red-700",
-    pdf_ready: "bg-green-200 text-green-800",
-    delivered: "bg-green-300 text-green-900",
-  };
-
-  const sessionStatusColors: Record<string, string> = {
-    draft: "bg-gray-200 text-gray-700",
-    scored: "bg-blue-100 text-blue-700",
-    generating: "bg-yellow-100 text-yellow-700",
-    generated: "bg-purple-100 text-purple-700",
-    qa_review: "bg-orange-100 text-orange-700",
-    pdf_ready: "bg-green-100 text-green-700",
-    delivered: "bg-green-200 text-green-800",
-  };
+  const students = session.students || [];
+  const sessionStats = session.stats || {};
+  const consented = students.filter((s: any) => consentStatus[s.id]).length;
 
   return (
-    <div>
-      <div className="mb-6">
-        <Link href="/sessions" className="text-sm text-gray-500 hover:text-primary">
-          &larr; Sessions
-        </Link>
+    <div className="space-y-6">
+      {/* Page Header with breadcrumbs */}
+      <PageHeader
+        title={session.school_name}
+        subtitle={`${session.school_city} · ${session.session_date} · Classes ${(session.classes_assessed || []).join(", ")}`}
+        breadcrumbs={[
+          { label: "Sessions", href: "/sessions" },
+          { label: session.school_name, href: `/sessions/${params.id}` },
+          { label: `Session ${params.id}` },
+        ]}
+        actions={
+          <StatusBadge status={session.status} size="md" />
+        }
+      />
+
+      {/* Session Timeline */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-4">
+        <SessionTimeline currentStatus={session.status} />
       </div>
 
-      {/* Session Header */}
-      <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-primary">{session.school_name}</h1>
-            <p className="text-sm text-gray-500 mt-1">
-              {session.school_city} &middot; {session.session_date} &middot; Classes{" "}
-              {(session.classes_assessed || []).join(", ")}
-            </p>
-          </div>
-          <span
-            className={`px-3 py-1.5 rounded-full text-sm font-medium ${
-              sessionStatusColors[session.status] || "bg-gray-100"
-            }`}
-          >
-            {session.status}
-          </span>
+      {/* Stats Row */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          label="Total Students"
+          value={sessionStats.total || students.length}
+          icon="👨‍🎓"
+          accent="primary"
+        />
+        <StatCard
+          label="Scored"
+          value={sessionStats.scored || 0}
+          icon="✅"
+          accent="secondary"
+        />
+        <StatCard
+          label="Reports Generated"
+          value={sessionStats.report_generated || sessionStats.generated || 0}
+          icon="📄"
+          accent="accent"
+        />
+        <StatCard
+          label="PDFs Ready"
+          value={sessionStats.pdf_ready || 0}
+          icon="📑"
+          accent="gray"
+          subtitle={
+            session.total_cost > 0
+              ? `Cost: $${session.total_cost.toFixed(4)} (${session.llm_provider})`
+              : undefined
+          }
+        />
+      </div>
+
+      {/* Action Toolbar */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-4">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+            Actions
+          </h2>
         </div>
-
-        {/* Session Timeline */}
-        <SessionTimeline currentStatus={session.status} />
-
-        {/* Stats */}
-        {session.stats && (
-          <div className="grid grid-cols-3 md:grid-cols-7 gap-3 mt-4">
-            {Object.entries(session.stats).map(([key, val]) => (
-              <div key={key} className="text-center">
-                <p className="text-lg font-bold text-gray-900">{val as number}</p>
-                <p className="text-xs text-gray-500">{key.replace(/_/g, " ")}</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Action Buttons */}
-        <div className="flex gap-3 mt-6 flex-wrap">
+        <div className="flex gap-3 flex-wrap">
           <button
             onClick={() => setShowGenerateConfirm(true)}
             disabled={loading !== null}
-            className="px-4 py-2 bg-primary text-white rounded-lg text-sm hover:bg-primary-700 disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50 transition-colors shadow-sm"
           >
-            {loading === "generate" ? "Generating..." : "Generate Reports"}
+            {loading === "generate" ? (
+              <>
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <span>📝</span>
+                Generate Reports
+              </>
+            )}
           </button>
           <button
             onClick={() => handleAction("qa")}
             disabled={loading !== null}
-            className="px-4 py-2 bg-orange-500 text-white rounded-lg text-sm hover:bg-orange-600 disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-white rounded-lg text-sm font-medium hover:bg-amber-600 disabled:opacity-50 transition-colors shadow-sm"
           >
-            {loading === "qa" ? "Running QA..." : "Run QA"}
+            {loading === "qa" ? (
+              <>
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Running QA...
+              </>
+            ) : (
+              <>
+                <span>🔍</span>
+                Run QA
+              </>
+            )}
           </button>
           <button
             onClick={() => handleAction("pdf")}
             disabled={loading !== null}
-            className="px-4 py-2 bg-accent text-white rounded-lg text-sm hover:bg-accent-600 disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50 transition-colors shadow-sm"
           >
-            {loading === "pdf" ? "Generating PDFs..." : "Generate PDFs"}
+            {loading === "pdf" ? (
+              <>
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Generating PDFs...
+              </>
+            ) : (
+              <>
+                <span>📄</span>
+                Generate PDFs
+              </>
+            )}
           </button>
           <button
             onClick={async () => {
@@ -181,93 +216,130 @@ export default function SessionDetailPage() {
                 toast(err.message || "Download failed", "error");
               }
             }}
-            className="px-4 py-2 bg-secondary text-white rounded-lg text-sm hover:bg-secondary-500"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-yellow-600 text-white rounded-lg text-sm font-medium hover:bg-yellow-700 transition-colors shadow-sm"
           >
+            <span>📦</span>
             Download ZIP
           </button>
+
+          <div className="w-px bg-gray-200 mx-1 self-stretch" />
+
           <Link
             href={`/sessions/${params.id}/reports`}
-            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50"
+            className="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
           >
+            <span>📋</span>
             QA Review
           </Link>
           <Link
             href={`/sessions/${params.id}/delivery`}
-            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50"
+            className="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
           >
-            Delivery Checklist
+            <span>🚚</span>
+            Delivery
           </Link>
         </div>
-
-        {session.total_cost > 0 && (
-          <p className="text-sm text-gray-500 mt-3">
-            LLM Cost: ${session.total_cost.toFixed(4)} ({session.llm_provider})
-          </p>
-        )}
       </div>
 
       {/* Student Table */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">
-            Students ({(session.students || []).length})
+            Students
+            <span className="ml-2 text-sm font-normal text-gray-400">
+              ({students.length})
+            </span>
           </h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Name</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Class</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Holland Code</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">RIASEC</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Consent</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Report</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Delivery</th>
+            <thead>
+              <tr className="bg-gray-50/80">
+                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Class
+                </th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Holland Code
+                </th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  RIASEC Scores
+                </th>
+                <th className="text-center px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Consent
+                </th>
+                <th className="text-center px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Report
+                </th>
+                <th className="text-center px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Delivery
+                </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
-              {(session.students || []).map((s: any) => (
-                <tr key={s.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3">
-                    <Link href={`/students/${s.id}`} className="text-primary hover:underline font-medium text-sm">
+            <tbody className="divide-y divide-gray-50">
+              {students.map((s: any) => (
+                <tr
+                  key={s.id}
+                  className="hover:bg-gray-50/60 transition-colors"
+                >
+                  <td className="px-5 py-3.5">
+                    <Link
+                      href={`/students/${s.id}`}
+                      className="text-primary hover:text-primary-700 hover:underline font-medium text-sm transition-colors"
+                    >
                       {s.name}
                     </Link>
-                    <p className="text-xs text-gray-400">{s.parent_phone}</p>
+                    {s.parent_phone && (
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        {s.parent_phone}
+                      </p>
+                    )}
                   </td>
-                  <td className="px-4 py-3 text-sm">{s.class_level}</td>
-                  <td className="px-4 py-3 text-sm font-mono font-bold text-primary">
-                    {s.holland_code || "—"}
-                  </td>
-                  <td className="px-4 py-3 text-xs text-gray-500">
-                    {s.riasec_scores
-                      ? Object.entries(s.riasec_scores)
-                          .map(([k, v]) => `${k}:${v}`)
-                          .join(" ")
-                      : "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                        consentStatus[s.id]
-                          ? "bg-green-100 text-green-700"
-                          : "bg-yellow-100 text-yellow-700"
-                      }`}
-                    >
-                      {consentStatus[s.id] ? "Yes" : "Pending"}
+                  <td className="px-5 py-3.5">
+                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 text-sm font-semibold text-gray-700">
+                      {s.class_level}
                     </span>
                   </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                        statusColors[s.report_status] || "bg-gray-100"
-                      }`}
-                    >
-                      {s.report_status}
+                  <td className="px-5 py-3.5">
+                    <span className="font-mono font-bold text-primary text-sm tracking-wide">
+                      {s.holland_code || "—"}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-xs text-gray-500">
-                    {s.delivery_status}
+                  <td className="px-5 py-3.5">
+                    {s.riasec_scores ? (
+                      <div className="flex gap-1.5 flex-wrap">
+                        {Object.entries(s.riasec_scores).map(
+                          ([k, v]) => (
+                            <span
+                              key={k}
+                              className="inline-flex items-center gap-0.5 text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded font-mono"
+                            >
+                              <span className="font-semibold text-gray-800">
+                                {k}
+                              </span>
+                              :{String(v)}
+                            </span>
+                          )
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-gray-300">—</span>
+                    )}
+                  </td>
+                  <td className="px-5 py-3.5 text-center">
+                    <StatusBadge
+                      status={consentStatus[s.id] ? "consented" : "pending"}
+                    />
+                  </td>
+                  <td className="px-5 py-3.5 text-center">
+                    <StatusBadge status={s.report_status || "pending"} />
+                  </td>
+                  <td className="px-5 py-3.5 text-center">
+                    <StatusBadge
+                      status={s.delivery_status || "pending"}
+                    />
                   </td>
                 </tr>
               ))}
@@ -276,27 +348,58 @@ export default function SessionDetailPage() {
         </div>
       </div>
 
-      {/* Consent (DPDPA) */}
-      <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-3">Parental Consent (DPDPA)</h2>
-        {(() => {
-          const students = session.students || [];
-          const consented = students.filter((s: any) => consentStatus[s.id]).length;
-          return (
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-600">
-                {consented} of {students.length} students have parental consent
+      {/* DPDPA Consent Section */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Parental Consent (DPDPA)
+          </h2>
+        </div>
+        <div className="px-6 py-5">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <p className="text-sm text-gray-700">
+                <span className="font-semibold text-gray-900">{consented}</span>{" "}
+                of{" "}
+                <span className="font-semibold text-gray-900">
+                  {students.length}
+                </span>{" "}
+                students have parental consent
               </p>
-              <button
-                onClick={handleBulkConsent}
-                disabled={consentLoading || consented === students.length}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 disabled:opacity-50"
-              >
-                {consentLoading ? "Saving..." : "Mark All Consented (Paper Form)"}
-              </button>
+              {students.length > 0 && (
+                <div className="mt-2 w-64 h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-green-500 rounded-full transition-all duration-500"
+                    style={{
+                      width: `${
+                        students.length > 0
+                          ? (consented / students.length) * 100
+                          : 0
+                      }%`,
+                    }}
+                  />
+                </div>
+              )}
             </div>
-          );
-        })()}
+            <button
+              onClick={handleBulkConsent}
+              disabled={consentLoading || consented === students.length}
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50 transition-colors shadow-sm flex-shrink-0"
+            >
+              {consentLoading ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <span>✅</span>
+                  Mark All Consented (Paper Form)
+                </>
+              )}
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Confirm Dialog for Generate Reports */}

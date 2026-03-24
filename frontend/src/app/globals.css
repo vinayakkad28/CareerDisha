@@ -23,3 +23,35 @@ body {
 .animate-slide-in {
   animation: slide-in 0.2s ease-out;
 }
+
+/* ── Custom scrollbar ─────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
+
+/* ── Card hover effect ────────────────────────────────────── */
+.card-hover {
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.card-hover:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+/* ── Gradient backgrounds ─────────────────────────────────── */
+.bg-brand-gradient {
+  background: linear-gradient(135deg, #1a5276 0%, #0d2b3e 100%);
+}
+.bg-gold-gradient {
+  background: linear-gradient(135deg, #d4ac0d 0%, #b8960b 100%);
+}

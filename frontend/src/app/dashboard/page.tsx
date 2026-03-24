@@ -2,9 +2,13 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { dashboard } from "@/lib/api";
-import { LoadingSpinner, ErrorState } from "@/components/UIStates";
+import { LoadingSpinner, ErrorState, EmptyState } from "@/components/UIStates";
+import PageHeader from "@/components/PageHeader";
+import StatCard from "@/components/StatCard";
+import StatusBadge from "@/components/StatusBadge";
 
 const STATUS_COLORS = ["#1a5276", "#2ecc71", "#d4ac0d", "#e74c3c", "#95a5a6"];
 
@@ -23,6 +27,7 @@ export default function DashboardPage() {
   const [recentSessions, setRecentSessions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -45,39 +50,26 @@ export default function DashboardPage() {
     fetchData();
   }, [fetchData]);
 
-  const statCards = stats
-    ? [
-        { label: "Schools", value: stats.total_schools, color: "bg-primary" },
-        { label: "Sessions", value: stats.total_sessions, color: "bg-primary-500" },
-        { label: "Students", value: stats.total_students, color: "bg-accent" },
-        { label: "Reports", value: stats.reports_generated, color: "bg-secondary" },
-        { label: "PDFs Ready", value: stats.pdfs_ready, color: "bg-accent-600" },
-        { label: "Delivered", value: stats.delivered, color: "bg-green-600" },
-      ]
-    : [];
-
-  const statusColors: Record<string, string> = {
-    draft: "bg-gray-200 text-gray-700",
-    scored: "bg-blue-100 text-blue-700",
-    generating: "bg-yellow-100 text-yellow-700",
-    generated: "bg-purple-100 text-purple-700",
-    qa_review: "bg-orange-100 text-orange-700",
-    pdf_ready: "bg-green-100 text-green-700",
-    delivered: "bg-green-200 text-green-800",
-  };
+  const header = (
+    <PageHeader
+      title="Dashboard"
+      subtitle="Overview of your career counselling sessions"
+      actions={
+        <Link
+          href="/sessions/new"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-semibold shadow-sm"
+        >
+          <span className="text-lg leading-none">+</span>
+          New Session
+        </Link>
+      }
+    />
+  );
 
   if (loading) {
     return (
       <div>
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold text-primary">Dashboard</h1>
-          <Link
-            href="/sessions/new"
-            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
-          >
-            + New Session
-          </Link>
-        </div>
+        {header}
         <LoadingSpinner message="Loading dashboard..." />
       </div>
     );
@@ -86,147 +78,203 @@ export default function DashboardPage() {
   if (error) {
     return (
       <div>
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold text-primary">Dashboard</h1>
-          <Link
-            href="/sessions/new"
-            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
-          >
-            + New Session
-          </Link>
-        </div>
+        {header}
         <ErrorState message={error} onRetry={fetchData} />
       </div>
     );
   }
 
+  const pieData = stats
+    ? [
+        { name: "Reports Generated", value: stats.reports_generated || 0 },
+        { name: "PDFs Ready", value: stats.pdfs_ready || 0 },
+        { name: "Delivered", value: stats.delivered || 0 },
+        {
+          name: "Pending",
+          value: Math.max(
+            0,
+            (stats.total_students || 0) - (stats.reports_generated || 0)
+          ),
+        },
+      ].filter((d) => d.value > 0)
+    : [];
+
   return (
-    <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-primary">Dashboard</h1>
-        <Link
-          href="/sessions/new"
-          className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
-        >
-          + New Session
-        </Link>
-      </div>
+    <div className="space-y-8">
+      {header}
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-        {statCards.map((card) => (
-          <div key={card.label} className="bg-white rounded-xl p-4 shadow-sm">
-            <p className="text-sm text-gray-500">{card.label}</p>
-            <p className="text-2xl font-bold text-gray-900 mt-1">
-              {card.value}
-            </p>
-          </div>
-        ))}
-      </div>
+      {stats && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            label="Total Schools"
+            value={stats.total_schools}
+            icon="🏫"
+            accent="primary"
+          />
+          <StatCard
+            label="Total Students"
+            value={stats.total_students}
+            icon="👨‍🎓"
+            accent="secondary"
+          />
+          <StatCard
+            label="Reports Generated"
+            value={stats.reports_generated}
+            icon="📄"
+            accent="accent"
+          />
+          <StatCard
+            label="Total Cost"
+            value={`$${stats.total_cost_usd.toFixed(2)}`}
+            icon="💰"
+            accent="gray"
+          />
+        </div>
+      )}
 
       {/* Student Status Distribution */}
-      {stats && (() => {
-        const pieData = [
-          { name: "Reports Generated", value: stats.reports_generated || 0 },
-          { name: "PDFs Ready", value: stats.pdfs_ready || 0 },
-          { name: "Delivered", value: stats.delivered || 0 },
-          { name: "Pending", value: Math.max(0, (stats.total_students || 0) - (stats.reports_generated || 0)) },
-        ].filter(d => d.value > 0);
-
-        return pieData.length > 0 ? (
-          <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Student Status Distribution</h2>
-            <div className="flex items-center gap-8">
-              <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={90}
-                    paddingAngle={3}
-                    dataKey="value"
-                  >
-                    {pieData.map((_, idx) => (
-                      <Cell key={idx} fill={STATUS_COLORS[idx % STATUS_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => [value, "Students"]} />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="flex flex-col gap-2 min-w-[160px]">
+      {pieData.length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+          <div className="px-6 py-4 border-b border-gray-100">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Student Status Distribution
+            </h2>
+          </div>
+          <div className="p-6">
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              <div className="w-full md:w-2/3">
+                <ResponsiveContainer width="100%" height={260}>
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={55}
+                      outerRadius={95}
+                      paddingAngle={3}
+                      dataKey="value"
+                    >
+                      {pieData.map((_, idx) => (
+                        <Cell
+                          key={idx}
+                          fill={STATUS_COLORS[idx % STATUS_COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value) => [value, "Students"]}
+                      contentStyle={{
+                        borderRadius: "8px",
+                        border: "1px solid #e5e7eb",
+                        boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="flex flex-col gap-3 min-w-[180px]">
                 {pieData.map((d, idx) => (
-                  <div key={d.name} className="flex items-center gap-2 text-sm">
+                  <div key={d.name} className="flex items-center gap-3 text-sm">
                     <div
                       className="w-3 h-3 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: STATUS_COLORS[idx % STATUS_COLORS.length] }}
+                      style={{
+                        backgroundColor:
+                          STATUS_COLORS[idx % STATUS_COLORS.length],
+                      }}
                     />
-                    <span className="text-gray-600">{d.name}</span>
-                    <span className="font-semibold ml-auto">{d.value}</span>
+                    <span className="text-gray-600 flex-1">{d.name}</span>
+                    <span className="font-semibold text-gray-900 tabular-nums">
+                      {d.value}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-        ) : null;
-      })()}
-
-      {/* LLM Cost */}
-      {stats && (
-        <div className="bg-white rounded-xl p-4 shadow-sm mb-8 inline-block">
-          <p className="text-sm text-gray-500">Total LLM Cost</p>
-          <p className="text-xl font-bold text-gray-900">
-            ${stats.total_cost_usd.toFixed(4)}
-          </p>
         </div>
       )}
 
       {/* Recent Sessions */}
-      <div className="bg-white rounded-xl shadow-sm">
-        <div className="px-6 py-4 border-b border-gray-100">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">
             Recent Sessions
           </h2>
+          <Link
+            href="/sessions"
+            className="text-sm text-primary hover:text-primary-700 font-medium transition-colors"
+          >
+            View all
+          </Link>
         </div>
-        <div className="divide-y divide-gray-100">
-          {recentSessions.length === 0 ? (
-            <div className="px-6 py-8 text-center text-gray-400">
-              No sessions yet.{" "}
-              <Link href="/sessions/new" className="text-primary underline">
-                Create your first session
-              </Link>
-            </div>
-          ) : (
-            recentSessions.map((s) => (
-              <Link
-                key={s.id}
-                href={`/sessions/${s.id}`}
-                className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors"
-              >
-                <div>
-                  <p className="font-medium text-gray-900">{s.school_name}</p>
-                  <p className="text-sm text-gray-500">
-                    {s.school_city} &middot; {s.session_date} &middot; Classes{" "}
-                    {(s.classes_assessed || []).join(", ")}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-gray-500">
-                    {s.total_students} students
-                  </span>
-                  <span
-                    className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                      statusColors[s.status] || "bg-gray-100"
-                    }`}
+
+        {recentSessions.length === 0 ? (
+          <EmptyState
+            title="No sessions yet"
+            description="Create your first career counselling session to get started."
+            actionLabel="Create Session"
+            onAction={() => router.push("/sessions/new")}
+          />
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gray-50/80">
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    School
+                  </th>
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Students
+                  </th>
+                  <th className="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="text-right px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Cost
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {recentSessions.map((s) => (
+                  <tr
+                    key={s.id}
+                    onClick={() => router.push(`/sessions/${s.id}`)}
+                    className="hover:bg-gray-50/60 cursor-pointer transition-colors"
                   >
-                    {s.status}
-                  </span>
-                </div>
-              </Link>
-            ))
-          )}
-        </div>
+                    <td className="px-6 py-4">
+                      <p className="font-medium text-gray-900 text-sm">
+                        {s.school_name}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        {s.school_city}
+                        {s.classes_assessed?.length > 0 &&
+                          ` · Classes ${s.classes_assessed.join(", ")}`}
+                      </p>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {s.session_date}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-900 font-medium text-right tabular-nums">
+                      {s.total_students}
+                    </td>
+                    <td className="px-6 py-4">
+                      <StatusBadge status={s.status} />
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600 text-right tabular-nums">
+                      {s.total_cost != null
+                        ? `$${Number(s.total_cost).toFixed(2)}`
+                        : "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
