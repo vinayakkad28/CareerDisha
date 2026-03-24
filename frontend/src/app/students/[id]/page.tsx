@@ -6,6 +6,7 @@ import Link from "next/link";
 import { students as studentsApi } from "@/lib/api";
 import { LoadingSpinner, ErrorState } from "@/components/UIStates";
 import { useToast } from "@/components/Toast";
+import RiasecRadarChart from "@/components/RiasecRadarChart";
 
 export default function StudentDetailPage() {
   const params = useParams();
@@ -83,6 +84,14 @@ export default function StudentDetailPage() {
           <span>Status: {student.report_status}</span>
         </div>
       </div>
+
+      {/* RIASEC Radar Chart */}
+      {Object.keys(scores).length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+          <h2 className="text-lg font-semibold text-primary mb-4">RIASEC Interest Profile</h2>
+          <RiasecRadarChart scores={scores} size={350} />
+        </div>
+      )}
 
       {/* RIASEC Scores */}
       {Object.keys(scores).length > 0 && (

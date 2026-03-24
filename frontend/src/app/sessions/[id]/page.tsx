@@ -6,6 +6,7 @@ import Link from "next/link";
 import { sessions as sessionsApi, consent as consentApi } from "@/lib/api";
 import { LoadingSpinner, ErrorState, ConfirmDialog } from "@/components/UIStates";
 import { useToast } from "@/components/Toast";
+import SessionTimeline from "@/components/SessionTimeline";
 
 export default function SessionDetailPage() {
   const params = useParams();
@@ -128,6 +129,9 @@ export default function SessionDetailPage() {
             {session.status}
           </span>
         </div>
+
+        {/* Session Timeline */}
+        <SessionTimeline currentStatus={session.status} />
 
         {/* Stats */}
         {session.stats && (

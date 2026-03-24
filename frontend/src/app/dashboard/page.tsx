@@ -2,8 +2,11 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { dashboard } from "@/lib/api";
 import { LoadingSpinner, ErrorState } from "@/components/UIStates";
+
+const STATUS_COLORS = ["#1a5276", "#2ecc71", "#d4ac0d", "#e74c3c", "#95a5a6"];
 
 interface Stats {
   total_schools: number;
@@ -120,6 +123,54 @@ export default function DashboardPage() {
           </div>
         ))}
       </div>
+
+      {/* Student Status Distribution */}
+      {stats && (() => {
+        const pieData = [
+          { name: "Reports Generated", value: stats.reports_generated || 0 },
+          { name: "PDFs Ready", value: stats.pdfs_ready || 0 },
+          { name: "Delivered", value: stats.delivered || 0 },
+          { name: "Pending", value: Math.max(0, (stats.total_students || 0) - (stats.reports_generated || 0)) },
+        ].filter(d => d.value > 0);
+
+        return pieData.length > 0 ? (
+          <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Student Status Distribution</h2>
+            <div className="flex items-center gap-8">
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={50}
+                    outerRadius={90}
+                    paddingAngle={3}
+                    dataKey="value"
+                  >
+                    {pieData.map((_, idx) => (
+                      <Cell key={idx} fill={STATUS_COLORS[idx % STATUS_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => [value, "Students"]} />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="flex flex-col gap-2 min-w-[160px]">
+                {pieData.map((d, idx) => (
+                  <div key={d.name} className="flex items-center gap-2 text-sm">
+                    <div
+                      className="w-3 h-3 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: STATUS_COLORS[idx % STATUS_COLORS.length] }}
+                    />
+                    <span className="text-gray-600">{d.name}</span>
+                    <span className="font-semibold ml-auto">{d.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : null;
+      })()}
 
       {/* LLM Cost */}
       {stats && (
