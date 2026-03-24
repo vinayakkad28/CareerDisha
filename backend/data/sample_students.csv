@@ -1,6 +1,6 @@
-student_id,name,class,section,school,city,parent_phone,parent_name
-0001,Aarav Sharma,10,A,Delhi Public School Meerut,Meerut,919876543210,Rajesh Sharma
-0002,Priya Singh,10,A,Delhi Public School Meerut,Meerut,919876543211,Meera Singh
-0003,Rohan Gupta,8,B,Delhi Public School Meerut,Meerut,919876543212,Suresh Gupta
-0004,Ananya Verma,12,A,Delhi Public School Meerut,Meerut,919876543213,Kavita Verma
-0005,Vikram Patel,10,B,Delhi Public School Meerut,Meerut,919876543214,Dinesh Patel
+student_id,name,class,section,school,city,parent_phone,parent_name,stream_pref_parent,stream_pref_student,career_concern
+0001,Aarav Sharma,10,A,Delhi Public School Meerut,Meerut,919876543210,Rajesh Sharma,Science PCM,Science PCM,
+0002,Priya Singh,10,A,Delhi Public School Meerut,Meerut,919876543211,Meera Singh,Science PCM,Commerce,parent_pressure
+0003,Rohan Gupta,8,B,Delhi Public School Meerut,Meerut,919876543212,Suresh Gupta,,,
+0004,Ananya Verma,12,A,Delhi Public School Meerut,Meerut,919876543213,Kavita Verma,,,
+0005,Vikram Patel,10,B,Delhi Public School Meerut,Meerut,919876543214,Dinesh Patel,Commerce,Arts/Humanities,dont_know_strengths

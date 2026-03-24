@@ -138,6 +138,10 @@ async def upload_csvs(
             "section": row.get("section", "").strip(),
             "parent_name": row.get("parent_name", "").strip(),
             "parent_phone": row.get("parent_phone", "").strip(),
+            # Section D: Class 10 stream preference (optional columns)
+            "stream_pref_parent": row.get("stream_pref_parent", "").strip(),
+            "stream_pref_student": row.get("stream_pref_student", "").strip(),
+            "career_concern": row.get("career_concern", "").strip(),
         }
 
     # Parse ZipGrade CSV
@@ -179,6 +183,9 @@ async def upload_csvs(
             parent_name=info.get("parent_name", ""),
             parent_phone=info.get("parent_phone", ""),
             riasec_raw_responses=responses,
+            stream_pref_parent=info.get("stream_pref_parent", ""),
+            stream_pref_student=info.get("stream_pref_student", ""),
+            career_concern=info.get("career_concern", ""),
             report_status="pending",
         )
         db.add(student)

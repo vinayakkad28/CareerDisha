@@ -58,6 +58,21 @@ def build_user_prompt(student: Student, matched_career_details: list) -> str:
     # Class instructions
     class_instr = CLASS_INSTRUCTIONS.get(class_level, CLASS_INSTRUCTIONS[10])
 
+    # Section D: Class 10 stream preference data
+    stream_pref_section = ""
+    if class_level == 10:
+        parts = []
+        if student.stream_pref_parent:
+            parts.append(f"- Parent's suggested stream: {student.stream_pref_parent}")
+        if student.stream_pref_student:
+            parts.append(f"- Student's own preference: {student.stream_pref_student}")
+        if student.stream_pref_parent and student.stream_pref_student and student.stream_pref_parent != student.stream_pref_student:
+            parts.append(f"- NOTE: There is a GAP between parent suggestion ({student.stream_pref_parent}) and student preference ({student.stream_pref_student}). Address this directly in the parent section.")
+        if student.career_concern:
+            parts.append(f"- Student's biggest career concern: {student.career_concern}")
+        if parts:
+            stream_pref_section = "\n\nSTREAM PREFERENCE DATA (from student's own assessment):\n" + "\n".join(parts)
+
     # Build career details section
     career_json = json.dumps(matched_career_details[:5], indent=2, ensure_ascii=False)
 
@@ -68,7 +83,7 @@ def build_user_prompt(student: Student, matched_career_details: list) -> str:
 - City: (assessment session city)
 - RIASEC Scores: R={scores.get('R', 0)}%, I={scores.get('I', 0)}%, A={scores.get('A', 0)}%, S={scores.get('S', 0)}%, E={scores.get('E', 0)}%, C={scores.get('C', 0)}%
 - Holland Code: {student.holland_code}
-- Top Work Values: {top_values_str}
+- Top Work Values: {top_values_str}{stream_pref_section}
 
 MATCHED CAREERS FROM DATABASE (use ONLY these facts for career details):
 {career_json}

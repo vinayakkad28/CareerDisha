@@ -62,6 +62,11 @@ class Student(Base):
     work_values = Column(JSON, default=dict)
     matched_careers = Column(JSON, default=list)
 
+    # Section D: Class 10 stream preference (from OMR form)
+    stream_pref_parent = Column(String(50), default="")
+    stream_pref_student = Column(String(50), default="")
+    career_concern = Column(String(100), default="")
+
     # Report data
     report_content = Column(JSON, default=dict)  # Full LLM-generated report
     report_status = Column(String(20), default="pending")
