@@ -36,3 +36,6 @@ Thumbs.db
 
 # Misc
 *.log
+keys/
+CLAUDE_CODE_BUILD_PROMPT.md
+*.docx

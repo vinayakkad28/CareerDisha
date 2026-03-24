@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime, timedelta, timezone
-from fastapi import APIRouter, HTTPException, Depends, Header
+from fastapi import APIRouter, HTTPException, Depends, Header, Request
 from pydantic import BaseModel
 from typing import Optional
 import jwt
@@ -9,6 +9,7 @@ import json
 import base64
 
 from config import ADMIN_PASSWORD, JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRY_HOURS, JWT_PRIVATE_KEY, JWT_PUBLIC_KEY
+from rate_limit import limiter
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -85,7 +86,8 @@ def get_current_user(authorization: str = Header(default="")) -> dict:
 
 
 @router.post("/login", response_model=LoginResponse)
-def login(req: LoginRequest):
+@limiter.limit("5/minute")
+def login(request: Request, req: LoginRequest):
     # Legacy password-only login (backward compatible)
     if req.password == ADMIN_PASSWORD:
         token = create_token({"role": "admin", "user_id": 0})

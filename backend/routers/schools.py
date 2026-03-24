@@ -8,6 +8,7 @@ from datetime import datetime
 from database import get_db
 from models import School, Session as SessionModel
 from routers.auth import get_current_user
+from permissions import require_role
 
 logger = logging.getLogger(__name__)
 router = APIRouter(dependencies=[Depends(get_current_user)])
@@ -103,7 +104,7 @@ def update_school(school_id: int, updates: SchoolUpdate, db: Session = Depends(g
 
 
 @router.delete("/{school_id}")
-def delete_school(school_id: int, db: Session = Depends(get_db)):
+def delete_school(school_id: int, db: Session = Depends(get_db), user: dict = Depends(require_role("admin"))):
     school = db.query(School).filter(School.id == school_id).first()
     if not school:
         raise HTTPException(status_code=404, detail="School not found")

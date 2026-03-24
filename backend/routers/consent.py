@@ -5,6 +5,7 @@ from datetime import datetime
 from database import get_db
 from models import Student, Session as SessionModel
 from routers.auth import get_current_user
+from permissions import require_role
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
@@ -32,7 +33,7 @@ def record_consent(session_id: int, data: ConsentUpdate, db: Session = Depends(g
 
 
 @router.post("/sessions/{session_id}/bulk-consent")
-def bulk_consent(session_id: int, db: Session = Depends(get_db)):
+def bulk_consent(session_id: int, db: Session = Depends(get_db), user: dict = Depends(require_role("admin", "counsellor"))):
     """Mark all students in session as having paper-form consent (common for school sessions)."""
     students = db.query(Student).filter(Student.session_id == session_id).all()
     for s in students:

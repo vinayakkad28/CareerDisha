@@ -32,7 +32,7 @@ export default function SessionDetailPage() {
       .then((data: any) => {
         const map: Record<number, boolean> = {};
         (data.students || []).forEach((s: any) => {
-          map[s.student_id] = s.consented;
+          map[s.id] = s.consent_obtained;
         });
         setConsentStatus(map);
       })

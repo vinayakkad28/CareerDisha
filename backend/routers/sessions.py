@@ -5,7 +5,7 @@ from datetime import date, datetime
 from typing import Optional
 
 import logging
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, BackgroundTasks, Request
 from fastapi.responses import StreamingResponse, FileResponse
 from sqlalchemy.orm import Session as DBSession
 from pydantic import BaseModel
@@ -13,6 +13,8 @@ from pydantic import BaseModel
 from database import get_db
 from models import Session, Student, School
 from routers.auth import get_current_user
+from rate_limit import limiter
+from permissions import scope_query_by_school
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
@@ -110,7 +112,9 @@ def get_session(session_id: int, db: DBSession = Depends(get_db)):
 
 
 @router.post("/{session_id}/upload-csvs")
+@limiter.limit("10/minute")
 async def upload_csvs(
+    request: Request,
     session_id: int,
     zipgrade_csv: UploadFile = File(...),
     student_info_csv: UploadFile = File(...),
@@ -238,7 +242,9 @@ def score_session(session_id: int, background_tasks: BackgroundTasks, db: DBSess
 
 
 @router.post("/{session_id}/generate")
+@limiter.limit("2/5minutes")
 def generate_reports(
+    request: Request,
     session_id: int,
     background_tasks: BackgroundTasks,
     db: DBSession = Depends(get_db),
