@@ -1,0 +1,3508 @@
+[
+  {
+    "career_id": "ias_officer",
+    "career_name": "IAS Officer (UPSC CSE)",
+    "career_name_hindi": "आईएएस अधिकारी",
+    "riasec_code": "ESC",
+    "riasec_primary": "Enterprising",
+    "description": "The Indian Administrative Service (IAS) is the premier civil service of India, recruited through the UPSC Civil Services Examination. IAS officers serve as District Magistrates, Secretaries, and Chief Secretaries, managing governance and public policy at district, state, and central levels. Age limit: 21-32 years (General), with relaxations for OBC (+3), SC/ST (+5). Maximum 6 attempts for General, 9 for OBC, unlimited for SC/ST.",
+    "stream_required": "Any Stream",
+    "education_pathway": {
+      "after_10th": "Any stream — UPSC accepts graduates from all disciplines",
+      "after_12th": "BA/BSc/BCom/BTech — any graduation qualifies for UPSC CSE",
+      "entrance_exams": [
+        "UPSC CSE Prelims (Objective)",
+        "UPSC CSE Mains (Descriptive)",
+        "UPSC Personality Test (Interview)"
+      ],
+      "top_colleges": [
+        {
+          "name": "LBSNAA Mussoorie (Training Academy)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "Mussoorie, Uttarakhand"
+        },
+        {
+          "name": "Jamia Millia Islamia (Coaching/Graduation)",
+          "nirf_rank": 6,
+          "approx_fee_4yr_lakh": 1,
+          "avg_placement_lpa": null,
+          "location": "New Delhi"
+        },
+        {
+          "name": "Delhi University (Graduation)",
+          "nirf_rank": 4,
+          "approx_fee_4yr_lakh": 1,
+          "avg_placement_lpa": null,
+          "location": "New Delhi"
+        },
+        {
+          "name": "Jawaharlal Nehru University",
+          "nirf_rank": 3,
+          "approx_fee_4yr_lakh": 0.5,
+          "avg_placement_lpa": null,
+          "location": "New Delhi"
+        }
+      ],
+      "alternative_paths": [
+        "State PCS as stepping stone to UPSC",
+        "SSC CGL → deputation to IAS cadre (rare)",
+        "Indian Engineering Services → lateral move"
+      ],
+      "postgrad_options": [
+        "Mid-career training at IIMs",
+        "Public Policy from IIPA Delhi",
+        "MPA/MPP from abroad on government fellowship"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "8-10 (7th CPC Level 10)",
+      "mid_5yr": "12-18 (Level 12-13)",
+      "senior_10yr": "18-30+ (Level 14-17, plus perks like housing, car, staff)"
+    },
+    "growth_outlook": "Permanent demand — India recruits ~180 IAS officers annually via UPSC CSE. Job security is absolute with constitutional protection. Career spans 30+ years from Sub-Divisional Magistrate to Cabinet Secretary.",
+    "skills_needed": [
+      "General knowledge and current affairs",
+      "Analytical and critical thinking",
+      "Essay and answer writing",
+      "Decision making under pressure",
+      "Ethics and integrity",
+      "Leadership and people management",
+      "Public speaking"
+    ],
+    "work_environment": "Government offices, field postings in districts, transfers every 3-5 years across the state cadre. Mix of office administration and field visits. High-pressure decision-making with public accountability.",
+    "govt_job_options": "This IS the premier government job — District Magistrate, SDM, Commissioner, Secretary to Government of India, Chief Secretary, Cabinet Secretary",
+    "tier2_city_availability": "High — posted across India including rural district headquarters and tier-2/3 cities"
+  },
+  {
+    "career_id": "ips_officer",
+    "career_name": "IPS Officer",
+    "career_name_hindi": "आईपीएस अधिकारी",
+    "riasec_code": "ESR",
+    "riasec_primary": "Enterprising",
+    "description": "Indian Police Service (IPS) officers lead law enforcement at district, state, and national levels. Recruited through UPSC CSE, they serve as SP, DIG, IG, and DGP. IPS officers also serve in CBI, NIA, RAW, IB, and CRPF. Same eligibility as IAS: age 21-32 (General), graduation in any discipline required. Physical standards must be met.",
+    "stream_required": "Any Stream",
+    "education_pathway": {
+      "after_10th": "Any stream — focus on physical fitness alongside academics",
+      "after_12th": "Any graduation — BA, BSc, BCom, BTech all qualify",
+      "entrance_exams": [
+        "UPSC CSE Prelims",
+        "UPSC CSE Mains",
+        "UPSC Personality Test",
+        "Physical Fitness Test"
+      ],
+      "top_colleges": [
+        {
+          "name": "Sardar Vallabhbhai Patel National Police Academy (SVPNPA)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "Hyderabad, Telangana"
+        },
+        {
+          "name": "Delhi University",
+          "nirf_rank": 4,
+          "approx_fee_4yr_lakh": 1,
+          "avg_placement_lpa": null,
+          "location": "New Delhi"
+        },
+        {
+          "name": "Allahabad University",
+          "nirf_rank": 35,
+          "approx_fee_4yr_lakh": 0.5,
+          "avg_placement_lpa": null,
+          "location": "Prayagraj, Uttar Pradesh"
+        }
+      ],
+      "alternative_paths": [
+        "State Police Service → promotion to IPS after 8-10 years",
+        "CAPF (AC) exam → join paramilitary as Assistant Commandant",
+        "NDA → Army → deputation to police roles"
+      ],
+      "postgrad_options": [
+        "Criminology and Police Science courses",
+        "National Security studies at IDSA",
+        "FBI National Academy (on deputation)"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "8-10 (7th CPC Level 10)",
+      "mid_5yr": "12-18 (Level 12-13, SP rank)",
+      "senior_10yr": "18-30+ (Level 14-17, DIG/IG rank, plus official residence and vehicle)"
+    },
+    "growth_outlook": "Stable demand — ~150 IPS officers recruited annually. Growing importance due to cyber crime, national security concerns, and internal security challenges.",
+    "skills_needed": [
+      "Physical fitness and endurance",
+      "Leadership and command presence",
+      "Investigation and analytical skills",
+      "Crisis management",
+      "Law and legal knowledge",
+      "Communication skills",
+      "Emotional resilience"
+    ],
+    "work_environment": "Police stations, district headquarters, field operations. Irregular hours, high-stress situations. Transfers every 2-3 years. Posting in districts, state HQ, or central agencies like CBI/NIA.",
+    "govt_job_options": "This IS a top government job — SP, DIG, IG, DGP, CBI Director, IB Director, NSA",
+    "tier2_city_availability": "High — posted across all districts including rural and semi-urban areas"
+  },
+  {
+    "career_id": "ifs_officer_foreign_service",
+    "career_name": "IFS Officer (Foreign Service)",
+    "career_name_hindi": "आईएफएस अधिकारी (विदेश सेवा)",
+    "riasec_code": "ESA",
+    "riasec_primary": "Enterprising",
+    "description": "Indian Foreign Service officers represent India abroad as diplomats, serving in embassies and consulates worldwide. They handle bilateral relations, trade negotiations, consular services, and protect Indian interests overseas. Recruited via UPSC CSE with same eligibility — age 21-32 (General), any graduation. Approximately 30-35 IFS officers recruited annually.",
+    "stream_required": "Any Stream",
+    "education_pathway": {
+      "after_10th": "Any stream — Humanities preferred by many aspirants for UPSC optional subjects",
+      "after_12th": "BA in Political Science/History/International Relations, or any graduation",
+      "entrance_exams": [
+        "UPSC CSE Prelims",
+        "UPSC CSE Mains",
+        "UPSC Personality Test"
+      ],
+      "top_colleges": [
+        {
+          "name": "Foreign Service Institute (Training)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "New Delhi"
+        },
+        {
+          "name": "Jawaharlal Nehru University",
+          "nirf_rank": 3,
+          "approx_fee_4yr_lakh": 0.5,
+          "avg_placement_lpa": null,
+          "location": "New Delhi"
+        },
+        {
+          "name": "St. Stephen's College, Delhi University",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 1.5,
+          "avg_placement_lpa": null,
+          "location": "New Delhi"
+        }
+      ],
+      "alternative_paths": [
+        "IAS/IPS → deputation to MEA",
+        "Indian Trade Service → trade diplomacy",
+        "UN careers after relevant experience"
+      ],
+      "postgrad_options": [
+        "International Relations from JNU/DU",
+        "Diplomacy and Foreign Policy programs abroad",
+        "Language training in posting country"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "8-10 (plus foreign allowance when posted abroad)",
+      "mid_5yr": "15-25 (including foreign posting allowances, tax-free abroad)",
+      "senior_10yr": "25-40+ (Ambassador rank, official residence abroad, full perks)"
+    },
+    "growth_outlook": "Niche but stable — ~30-35 recruited annually. India's growing global role increases importance. Postings in 190+ countries.",
+    "skills_needed": [
+      "Foreign languages",
+      "Diplomacy and negotiation",
+      "International affairs knowledge",
+      "Cultural sensitivity",
+      "Public speaking and protocol",
+      "Writing and analytical skills",
+      "Adaptability to different cultures"
+    ],
+    "work_environment": "Indian embassies and consulates worldwide, Ministry of External Affairs in Delhi. Postings rotate every 3-4 years across different countries. Glamorous but demanding — protocol-heavy, frequent travel, representing India 24/7.",
+    "govt_job_options": "This IS a Group A central service — Third Secretary → Ambassador/High Commissioner. Can serve as Foreign Secretary of India.",
+    "tier2_city_availability": "Low in India — primarily Delhi-based when not posted abroad. Passport offices in tier-2 cities."
+  },
+  {
+    "career_id": "state_pcs_officer",
+    "career_name": "State PCS Officer",
+    "career_name_hindi": "राज्य पीसीएस अधिकारी",
+    "riasec_code": "ESC",
+    "riasec_primary": "Enterprising",
+    "description": "State Provincial Civil Service officers manage governance at district and state level including roles like SDM, ADM, and state department heads. Each state conducts its own PCS exam (UPPSC, MPPSC, BPSC, RPSC etc.). Age limits and attempts vary by state — typically 21-40 years with relaxations. Easier than UPSC but offers excellent state-level administrative power.",
+    "stream_required": "Any Stream",
+    "education_pathway": {
+      "after_10th": "Any stream — graduation in any discipline required",
+      "after_12th": "BA/BSc/BCom/BTech — any graduation qualifies",
+      "entrance_exams": [
+        "UPPSC PCS (Uttar Pradesh)",
+        "MPPSC (Madhya Pradesh)",
+        "BPSC (Bihar)",
+        "RPSC RAS (Rajasthan)",
+        "MPSC (Maharashtra)",
+        "WBPSC (West Bengal)"
+      ],
+      "top_colleges": [
+        {
+          "name": "Delhi University",
+          "nirf_rank": 4,
+          "approx_fee_4yr_lakh": 1,
+          "avg_placement_lpa": null,
+          "location": "New Delhi"
+        },
+        {
+          "name": "Allahabad University",
+          "nirf_rank": 35,
+          "approx_fee_4yr_lakh": 0.5,
+          "avg_placement_lpa": null,
+          "location": "Prayagraj, Uttar Pradesh"
+        },
+        {
+          "name": "Patna University",
+          "nirf_rank": 80,
+          "approx_fee_4yr_lakh": 0.3,
+          "avg_placement_lpa": null,
+          "location": "Patna, Bihar"
+        }
+      ],
+      "alternative_paths": [
+        "Clear state PCS → get promoted to IAS after 8-12 years",
+        "SSC CGL → state deputation",
+        "Attempt both UPSC and State PCS simultaneously"
+      ],
+      "postgrad_options": [
+        "Public Administration courses",
+        "Law degree for better understanding of governance",
+        "UPSC CSE while in service for IAS upgrade"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "5-8 (varies by state, 7th CPC Level 8-10)",
+      "mid_5yr": "8-14",
+      "senior_10yr": "14-22 (plus housing, vehicle, and allowances)"
+    },
+    "growth_outlook": "High demand — each state recruits 100-500 PCS officers annually. Excellent stepping stone to IAS via promotion quota (33% seats).",
+    "skills_needed": [
+      "State-specific general knowledge",
+      "Hindi/regional language proficiency",
+      "Administrative aptitude",
+      "Public dealing skills",
+      "Current affairs",
+      "Decision making",
+      "Report writing"
+    ],
+    "work_environment": "District offices, tehsil offices, state secretariat. Field postings with regular public interaction. Transfers within the state every 2-4 years.",
+    "govt_job_options": "This IS a state government job — SDM, ADM, District Magistrate (on promotion), Director of state departments",
+    "tier2_city_availability": "Very High — posted in districts, tehsils, and block-level offices across the state"
+  },
+  {
+    "career_id": "ssc_cgl_officer",
+    "career_name": "SSC CGL Officer",
+    "career_name_hindi": "एसएससी सीजीएल अधिकारी",
+    "riasec_code": "CES",
+    "riasec_primary": "Conventional",
+    "description": "SSC Combined Graduate Level exam recruits for various Group B and C posts in central government ministries and departments — Income Tax Inspector, Excise Inspector, Auditor, Accountant, and Assistant in ministries. Age limit: 18-32 years (varies by post). One of the most popular government exams with ~30 lakh applicants annually for ~7000-8000 vacancies.",
+    "stream_required": "Any Stream",
+    "education_pathway": {
+      "after_10th": "Any stream — graduation in any discipline required",
+      "after_12th": "Any graduation (BA/BSc/BCom/BCA) — some posts prefer Commerce/Maths background",
+      "entrance_exams": [
+        "SSC CGL Tier 1 (Computer-based)",
+        "SSC CGL Tier 2 (Computer-based)",
+        "SSC CGL Document Verification"
+      ],
+      "top_colleges": [
+        {
+          "name": "Any recognized university",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 1,
+          "avg_placement_lpa": null,
+          "location": "Across India"
+        },
+        {
+          "name": "IGNOU (Distance Education)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0.3,
+          "avg_placement_lpa": null,
+          "location": "Pan India"
+        }
+      ],
+      "alternative_paths": [
+        "SSC CHSL for 12th-pass government jobs",
+        "State SSC exams for state government posts",
+        "Banking exams (IBPS Clerk/PO) alongside"
+      ],
+      "postgrad_options": [
+        "Departmental exams for promotion",
+        "MBA/LLB while in service for career advancement",
+        "UPSC CSE attempt while in service"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "4-6 (7th CPC Level 4-7 depending on post)",
+      "mid_5yr": "6-10",
+      "senior_10yr": "10-16 (with promotions to Group B gazetted)"
+    },
+    "growth_outlook": "Very stable — SSC CGL is conducted annually with 7000-8000 vacancies. Government's expansion of digital services creates new administrative positions.",
+    "skills_needed": [
+      "Quantitative aptitude",
+      "English language proficiency",
+      "General awareness",
+      "Reasoning ability",
+      "Basic computer skills",
+      "Accounting (for Auditor/Accountant posts)"
+    ],
+    "work_environment": "Government offices — ministries, tax offices, audit offices, railways. Regular 9-5 hours with weekends off. Desk-based work with occasional field duties for Inspector posts.",
+    "govt_job_options": "Direct recruitment to — Income Tax Inspector, Central Excise Inspector, CBI Sub-Inspector, Auditor in CAG, Assistant in MEA/MHA, Statistical Investigator",
+    "tier2_city_availability": "Very High — postings across all government offices in India including tier-2 and tier-3 cities"
+  },
+  {
+    "career_id": "bank_po",
+    "career_name": "Bank PO (IBPS/SBI)",
+    "career_name_hindi": "बैंक पीओ",
+    "riasec_code": "CES",
+    "riasec_primary": "Conventional",
+    "description": "Bank Probationary Officers manage bank branches, handle credit, lead teams, and oversee banking operations in public sector banks. Recruited through IBPS PO (for 11 PSBs) and SBI PO exams. Age limit: 20-30 years (General), relaxation for reserved categories. Approximately 4000-6000 PO vacancies annually across all PSBs.",
+    "stream_required": "Any Stream",
+    "education_pathway": {
+      "after_10th": "Any stream — Commerce preferred but not mandatory",
+      "after_12th": "Any graduation — BCom/BBA preferred but BA/BSc/BTech also eligible",
+      "entrance_exams": [
+        "IBPS PO Prelims",
+        "IBPS PO Mains",
+        "IBPS PO Interview",
+        "SBI PO Prelims",
+        "SBI PO Mains",
+        "SBI PO Group Exercise & Interview"
+      ],
+      "top_colleges": [
+        {
+          "name": "Any recognized university",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 1,
+          "avg_placement_lpa": null,
+          "location": "Across India"
+        },
+        {
+          "name": "National Institute of Bank Management (Post-selection training)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "Pune, Maharashtra"
+        }
+      ],
+      "alternative_paths": [
+        "IBPS Clerk → promotion to PO after 3-5 years",
+        "RRB Office Assistant → scale up",
+        "Cooperative bank recruitment"
+      ],
+      "postgrad_options": [
+        "CAIIB/JAIIB banking certifications (mandatory for promotion)",
+        "MBA in Banking & Finance while in service",
+        "Certified Financial Planner (CFP)"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "5-7 (Basic + DA + HRA + other allowances)",
+      "mid_5yr": "8-12 (Manager/Senior Manager)",
+      "senior_10yr": "14-22 (Chief Manager/AGM, plus subsidized loans and perks)"
+    },
+    "growth_outlook": "Stable — banking sector always needs officers. Digital banking transformation creating new specialist roles. 12 PSBs + SBI recruit every year.",
+    "skills_needed": [
+      "Quantitative aptitude and data interpretation",
+      "Reasoning and logical thinking",
+      "English language skills",
+      "Banking and financial awareness",
+      "Customer service orientation",
+      "Computer literacy",
+      "Sales and relationship management"
+    ],
+    "work_environment": "Bank branches across India, regional/zonal offices. Customer-facing role with target-based performance. Regular hours but can extend during quarter-ends. Transfers every 3-5 years within the zone.",
+    "govt_job_options": "Bank PO is a quasi-government job — PO → Manager → Senior Manager → Chief Manager → AGM → DGM → GM → ED → MD & CEO",
+    "tier2_city_availability": "Very High — bank branches in every town, initial posting often in semi-urban/rural branches"
+  },
+  {
+    "career_id": "rbi_grade_b_officer",
+    "career_name": "RBI Grade B Officer",
+    "career_name_hindi": "आरबीआई ग्रेड बी अधिकारी",
+    "riasec_code": "CIE",
+    "riasec_primary": "Conventional",
+    "description": "RBI Grade B Officers work in India's central bank handling monetary policy, banking regulation, foreign exchange management, and financial supervision. One of the most prestigious banking jobs in India. Age limit: 21-30 years (General). Approximately 300-400 vacancies annually. Significantly higher salary than commercial bank POs.",
+    "stream_required": "Any Stream",
+    "education_pathway": {
+      "after_10th": "Any stream — Commerce/Economics background advantageous",
+      "after_12th": "BA Economics/BCom/BBA/BTech — any graduation with 60% marks (55% for SC/ST)",
+      "entrance_exams": [
+        "RBI Grade B Phase 1 (Objective)",
+        "RBI Grade B Phase 2 (Descriptive — Economics, Finance, Management)",
+        "RBI Grade B Interview"
+      ],
+      "top_colleges": [
+        {
+          "name": "Delhi School of Economics, DU",
+          "nirf_rank": 4,
+          "approx_fee_4yr_lakh": 1,
+          "avg_placement_lpa": null,
+          "location": "New Delhi"
+        },
+        {
+          "name": "Jawaharlal Nehru University",
+          "nirf_rank": 3,
+          "approx_fee_4yr_lakh": 0.5,
+          "avg_placement_lpa": null,
+          "location": "New Delhi"
+        },
+        {
+          "name": "Gokhale Institute of Politics and Economics",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 2,
+          "avg_placement_lpa": null,
+          "location": "Pune, Maharashtra"
+        }
+      ],
+      "alternative_paths": [
+        "RBI Grade A (Assistant) → promotion to Grade B",
+        "SEBI Grade A → lateral regulatory career",
+        "NABARD Grade A → rural banking regulation"
+      ],
+      "postgrad_options": [
+        "In-service training at RBI's CAB Pune",
+        "PhD in Economics/Finance with RBI scholarship",
+        "Overseas study leave for Masters programs"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "12-15 (Grade B basic + DA + HRA + special allowances)",
+      "mid_5yr": "18-25 (Grade C/D)",
+      "senior_10yr": "30-45+ (CGM/ED level, plus RBI housing and perks)"
+    },
+    "growth_outlook": "Stable and prestigious — RBI recruits 300-400 officers annually. Growing importance with fintech regulation, digital currency (e-Rupee), and expanding financial sector oversight.",
+    "skills_needed": [
+      "Economics and monetary policy understanding",
+      "Financial analysis",
+      "Quantitative skills",
+      "Report writing and policy drafting",
+      "Regulatory knowledge",
+      "Data analysis",
+      "Research aptitude"
+    ],
+    "work_environment": "RBI offices in metros (Mumbai HQ, Delhi, Chennai, Kolkata) and regional offices. Policy-oriented desk work. Regular office hours. Very professional and academic environment.",
+    "govt_job_options": "This IS a top regulatory job — Grade B → Grade C → Grade D → CGM → ED → Deputy Governor → Governor of RBI",
+    "tier2_city_availability": "Low-Medium — RBI has regional offices in ~30 cities but most policy roles are in Mumbai"
+  },
+  {
+    "career_id": "indian_railway_services",
+    "career_name": "Indian Railway Services (IRMS)",
+    "career_name_hindi": "भारतीय रेलवे सेवा (आईआरएमएस)",
+    "riasec_code": "RCE",
+    "riasec_primary": "Realistic",
+    "description": "Indian Railway Management Service (IRMS) is the unified Group A service for Indian Railways, the world's 4th largest railway network. Officers manage train operations, infrastructure, signaling, mechanical maintenance, and commercial functions. Recruited through UPSC Engineering Services Examination (ESE) or UPSC CSE. Age limit: 21-30 for ESE (General).",
+    "stream_required": "Science (PCM) / Engineering",
+    "education_pathway": {
+      "after_10th": "Science stream with PCM for engineering entrance",
+      "after_12th": "BTech/BE in Mechanical/Electrical/Civil/Electronics Engineering",
+      "entrance_exams": [
+        "UPSC Engineering Services Exam (ESE/IES)",
+        "UPSC CSE (for administrative posts)",
+        "RRB NTPC (for non-technical posts)"
+      ],
+      "top_colleges": [
+        {
+          "name": "IIT Roorkee",
+          "nirf_rank": 6,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 18,
+          "location": "Roorkee, Uttarakhand"
+        },
+        {
+          "name": "IIT BHU Varanasi",
+          "nirf_rank": 11,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 16,
+          "location": "Varanasi, Uttar Pradesh"
+        },
+        {
+          "name": "National Academy of Indian Railways (Training)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "Vadodara, Gujarat"
+        }
+      ],
+      "alternative_paths": [
+        "RRB JE (Junior Engineer) → promotion to Group A over time",
+        "RRB NTPC → non-technical railway posts",
+        "Diploma engineers can enter via RRB JE"
+      ],
+      "postgrad_options": [
+        "MTech from IITs/NITs while in service",
+        "Railway Staff College advanced training",
+        "Management programs at IIMs (sponsored)"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "8-10 (7th CPC Level 10)",
+      "mid_5yr": "12-18 (Senior Scale/JAG)",
+      "senior_10yr": "18-28+ (SAG/HAG, plus railway housing and travel passes)"
+    },
+    "growth_outlook": "Stable — Indian Railways employs 13 lakh+ people, largest employer. Massive modernization with Vande Bharat, Bullet Train, and signaling upgrades creating new technical roles.",
+    "skills_needed": [
+      "Engineering fundamentals",
+      "Project management",
+      "Safety management",
+      "Operations planning",
+      "Team leadership",
+      "Technical problem solving",
+      "Public service orientation"
+    ],
+    "work_environment": "Railway divisions, zonal headquarters, Railway Board Delhi. Mix of office and field work (track inspections, station management). Transfers across India every 3-4 years. Free railway travel pass for family.",
+    "govt_job_options": "This IS a Group A government service — Assistant Divisional Engineer → Divisional Engineer → Additional General Manager → General Manager → Railway Board Member",
+    "tier2_city_availability": "Very High — railway divisions and stations across all cities and towns"
+  },
+  {
+    "career_id": "defence_officer_nda",
+    "career_name": "Defence Officer (NDA)",
+    "career_name_hindi": "सैन्य अधिकारी (एनडीए)",
+    "riasec_code": "RES",
+    "riasec_primary": "Realistic",
+    "description": "National Defence Academy (NDA) is the joint services academy that trains officers for the Indian Army, Navy, and Air Force. Entry after 12th, with rigorous 3-year training at NDA Khadakwasla followed by 1 year at respective service academy. Age limit: 16.5-19.5 years at time of entry. Only unmarried male candidates (for NDA); women can join through CDS/AFCAT after graduation.",
+    "stream_required": "Science (PCM) for Navy/Air Force, Any Stream for Army",
+    "education_pathway": {
+      "after_10th": "Science stream with PCM (mandatory for Navy and Air Force wings)",
+      "after_12th": "Direct entry to NDA — no separate graduation required (NDA grants BSc/BA/BCS degree)",
+      "entrance_exams": [
+        "UPSC NDA & NA Exam (Written)",
+        "SSB Interview (5-day process)",
+        "Medical Fitness Test"
+      ],
+      "top_colleges": [
+        {
+          "name": "National Defence Academy (NDA)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "Khadakwasla, Pune"
+        },
+        {
+          "name": "Indian Military Academy (IMA)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "Dehradun, Uttarakhand"
+        },
+        {
+          "name": "Indian Naval Academy (INA)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "Ezhimala, Kerala"
+        }
+      ],
+      "alternative_paths": [
+        "CDS exam after graduation for direct commission",
+        "AFCAT for Air Force after graduation",
+        "TGC/UES entry for engineering graduates",
+        "SSC (Short Service Commission) for 10+4 years",
+        "NCC Special Entry for NCC C-certificate holders"
+      ],
+      "postgrad_options": [
+        "MTech from DIAT Pune (Defence Institute)",
+        "Defence Services Staff College Wellington",
+        "National Defence College New Delhi",
+        "Foreign military training exchanges"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "8-10 (Lieutenant level, 7th CPC Level 10 + Military Service Pay)",
+      "mid_5yr": "12-16 (Captain/Major)",
+      "senior_10yr": "18-28+ (Colonel/Brigadier, plus free housing, canteen, medical, and pension)"
+    },
+    "growth_outlook": "Permanent demand — Indian Armed Forces recruit ~1500 officers via NDA annually. Growing with modernization, cyber warfare units, and space command.",
+    "skills_needed": [
+      "Physical fitness and stamina",
+      "Leadership and team management",
+      "Quick decision making",
+      "Courage and discipline",
+      "Communication skills",
+      "Strategic thinking",
+      "Adaptability and mental toughness"
+    ],
+    "work_environment": "Military cantonments, field postings (including borders and conflict zones), peace stations. Structured military life with high camaraderie. Frequent postings every 2-3 years. Adventurous and physically demanding.",
+    "govt_job_options": "This IS a prestigious government career — Lieutenant → Captain → Major → Colonel → Brigadier → Major General → Lieutenant General → General/COAS",
+    "tier2_city_availability": "High — cantonments and military stations across India in both metros and smaller cities"
+  },
+  {
+    "career_id": "indian_air_force_pilot",
+    "career_name": "Indian Air Force Pilot",
+    "career_name_hindi": "भारतीय वायुसेना पायलट",
+    "riasec_code": "RIE",
+    "riasec_primary": "Realistic",
+    "description": "IAF pilots fly fighter jets, transport aircraft, and helicopters for national defense. Entry through NDA (after 12th with PCM) or AFCAT (after graduation with Physics and Maths in 12th). Must pass rigorous CPSS (Computerised Pilot Selection System) and medical tests including PABT. Age: 19-24 for AFCAT Flying branch. One of the most coveted and challenging career paths.",
+    "stream_required": "Science (PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics mandatory",
+      "after_12th": "NDA entry (3 years at NDA + 1.5 years at Air Force Academy) OR graduation then AFCAT",
+      "entrance_exams": [
+        "UPSC NDA Exam (after 12th)",
+        "AFCAT (Air Force Common Admission Test, after graduation)",
+        "CPSS (Computerised Pilot Selection System)",
+        "SSB Interview",
+        "AFSB Medical (stringent eye/health tests)"
+      ],
+      "top_colleges": [
+        {
+          "name": "Air Force Academy (AFA)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "Dundigal, Hyderabad"
+        },
+        {
+          "name": "National Defence Academy",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "Khadakwasla, Pune"
+        }
+      ],
+      "alternative_paths": [
+        "NCC Air Wing → NCC Special Entry",
+        "Commercial Pilot License after IAF service",
+        "Air Force ground duty branches (non-flying)",
+        "Indian Navy pilot through naval aviation"
+      ],
+      "postgrad_options": [
+        "Test Pilot School (ASTE Bangalore)",
+        "Defence Services Staff College",
+        "MTech from DIAT Pune",
+        "Transition to commercial aviation after service"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "9-12 (Flying Officer, Level 10 + Flying Allowance)",
+      "mid_5yr": "14-20 (Squadron Leader, significant flying allowance)",
+      "senior_10yr": "22-35+ (Wing Commander/Group Captain, plus free housing and full military benefits)"
+    },
+    "growth_outlook": "Strong demand — IAF expanding fleet with Rafale, Tejas LCA, and new-gen aircraft. ~150 pilots recruited annually. Retiring pilots have excellent commercial aviation prospects.",
+    "skills_needed": [
+      "Exceptional spatial awareness",
+      "Quick reflexes and hand-eye coordination",
+      "Physics and mathematics aptitude",
+      "Physical fitness (high G-force tolerance)",
+      "Decision making under extreme pressure",
+      "Perfect eyesight (6/6 correctable)",
+      "Mental resilience and composure"
+    ],
+    "work_environment": "Air Force stations across India, cockpit time in fighter/transport aircraft, simulator training. High-adrenaline career with real combat readiness. Stationed at air bases, some in remote locations. Regular flying hours with strict medical fitness requirements.",
+    "govt_job_options": "This IS a government career — Flying Officer → Flight Lieutenant → Squadron Leader → Wing Commander → Group Captain → Air Commodore → Air Marshal → Air Chief Marshal",
+    "tier2_city_availability": "Medium — Air Force stations in metros and some smaller towns (Ambala, Jodhpur, Bareilly, Tezpur, etc.)"
+  },
+  {
+    "career_id": "indian_navy_officer",
+    "career_name": "Indian Navy Officer",
+    "career_name_hindi": "भारतीय नौसेना अधिकारी",
+    "riasec_code": "RES",
+    "riasec_primary": "Realistic",
+    "description": "Indian Navy officers serve on warships, submarines, and naval aviation, protecting India's maritime interests across the Indian Ocean. Entry through NDA (after 12th with PCM), INET (Indian Navy Entrance Test after BTech), or CDS. Age limit: 16.5-19.5 for NDA, 19-25 for other entries. Women eligible through SSC and now Permanent Commission in all branches.",
+    "stream_required": "Science (PCM) / Engineering",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "NDA entry or BTech in Mechanical/Electrical/Electronics → INET",
+      "entrance_exams": [
+        "UPSC NDA Exam",
+        "INET (Indian Navy Entrance Test)",
+        "CDS Exam (after graduation)",
+        "SSB Interview",
+        "Medical Fitness Test"
+      ],
+      "top_colleges": [
+        {
+          "name": "Indian Naval Academy (INA)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "Ezhimala, Kerala"
+        },
+        {
+          "name": "National Defence Academy",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "Khadakwasla, Pune"
+        }
+      ],
+      "alternative_paths": [
+        "Merchant Navy experience → Navy Special Entry",
+        "10+2 BTech entry (permanent commission)",
+        "University Entry Scheme (UES) for engineering students"
+      ],
+      "postgrad_options": [
+        "MTech from IITs (Navy-sponsored)",
+        "Naval War College Goa",
+        "Defence Services Staff College",
+        "Foreign naval courses (UK, USA)"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "8-11 (Sub-Lieutenant, Level 10 + Naval allowances)",
+      "mid_5yr": "14-18 (Lieutenant Commander)",
+      "senior_10yr": "20-30+ (Commander/Captain, plus naval housing, subsidized mess, medical)"
+    },
+    "growth_outlook": "Growing — Indian Navy expanding with indigenous aircraft carrier INS Vikrant, nuclear submarines, and Project 75(I). ~300-400 officers recruited annually across branches.",
+    "skills_needed": [
+      "Physical fitness and swimming ability",
+      "Technical/engineering aptitude",
+      "Navigation and seamanship",
+      "Leadership in isolated environments",
+      "Teamwork and discipline",
+      "Adaptability to sea life",
+      "Crisis management"
+    ],
+    "work_environment": "Naval ships at sea (60-70% time on water), naval bases (Mumbai, Visakhapatnam, Kochi, Karwar). Extended deployments of 3-6 months. Unique experience of international port visits. Submarine officers spend months underwater.",
+    "govt_job_options": "This IS a prestigious government career — Sub-Lieutenant → Lieutenant → Lt Commander → Commander → Captain → Commodore → Rear Admiral → Vice Admiral → Admiral/CNS",
+    "tier2_city_availability": "Low — primarily posted at naval bases in coastal cities (Mumbai, Vizag, Kochi, Karwar, Goa)"
+  },
+  {
+    "career_id": "isro_scientist",
+    "career_name": "ISRO Scientist",
+    "career_name_hindi": "इसरो वैज्ञानिक",
+    "riasec_code": "IRC",
+    "riasec_primary": "Investigative",
+    "description": "ISRO Scientists/Engineers design and develop rockets, satellites, and space systems for India's space program. Work areas include launch vehicle design, satellite communication, remote sensing, propulsion systems, and mission planning. Recruited through ISRO Centralised Recruitment Board (ICRB) exam for Scientist/Engineer-SC level. Age limit: 28 years (General), 33 for OBC, 36 for SC/ST.",
+    "stream_required": "Science (PCM) / Engineering",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "BTech/BE in Mechanical/Electrical/Electronics/CS/Aerospace Engineering OR MSc Physics/Maths",
+      "entrance_exams": [
+        "ISRO ICRB Scientist/Engineer Exam",
+        "JEE Main/Advanced (for BTech at IITs/NITs)",
+        "GATE (for direct recruitment at higher levels)"
+      ],
+      "top_colleges": [
+        {
+          "name": "IIT Madras",
+          "nirf_rank": 1,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 22,
+          "location": "Chennai"
+        },
+        {
+          "name": "IIT Bombay",
+          "nirf_rank": 3,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 25,
+          "location": "Mumbai"
+        },
+        {
+          "name": "IISc Bangalore",
+          "nirf_rank": 1,
+          "approx_fee_4yr_lakh": 2,
+          "avg_placement_lpa": 18,
+          "location": "Bangalore"
+        },
+        {
+          "name": "IIST Thiruvananthapuram (ISRO's own institute)",
+          "nirf_rank": 50,
+          "approx_fee_4yr_lakh": 6,
+          "avg_placement_lpa": 12,
+          "location": "Thiruvananthapuram, Kerala"
+        }
+      ],
+      "alternative_paths": [
+        "IIST direct entry → guaranteed ISRO placement",
+        "MSc Physics/Maths → ISRO Scientist recruitment",
+        "GATE score → ISRO/VSSC/SAC recruitment"
+      ],
+      "postgrad_options": [
+        "MTech/PhD at ISRO centers (ISITE program)",
+        "PhD at IISc/IITs with ISRO sponsorship",
+        "Space studies at International Space University"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "7-10 (Scientist/Engineer-SC, Level 10)",
+      "mid_5yr": "12-16 (Scientist/Engineer-SD/SE)",
+      "senior_10yr": "18-28+ (Scientist/Engineer-SF/SG, Distinguished Scientist)"
+    },
+    "growth_outlook": "Very High — India's space program expanding rapidly with Gaganyaan, Chandrayaan, Aditya missions. ISRO recruits 200-300 scientists annually. Private space sector (Agnikul, Skyroot) also growing.",
+    "skills_needed": [
+      "Strong fundamentals in physics/engineering",
+      "Mathematical and analytical skills",
+      "Research aptitude",
+      "Systems engineering",
+      "Programming (C, MATLAB, Python)",
+      "Problem solving and innovation",
+      "Teamwork and patience"
+    ],
+    "work_environment": "ISRO centers across India — VSSC Trivandrum, ISAC Bangalore, SAC Ahmedabad, SDSC Sriharikota. Research-oriented, mission-driven. Work intensifies before launches. Collaborative scientific environment.",
+    "govt_job_options": "This IS a central government scientific position — Scientist SC → SD → SE → SF → SG → Outstanding Scientist → Distinguished Scientist → ISRO Chairman",
+    "tier2_city_availability": "Low-Medium — ISRO centers in specific cities (Bangalore, Trivandrum, Ahmedabad, Sriharikota, Hyderabad)"
+  },
+  {
+    "career_id": "drdo_scientist",
+    "career_name": "DRDO Scientist",
+    "career_name_hindi": "डीआरडीओ वैज्ञानिक",
+    "riasec_code": "IRC",
+    "riasec_primary": "Investigative",
+    "description": "DRDO Scientists develop defence technologies including missiles, radar, electronic warfare, combat aircraft, naval systems, and military communication. India's premier defence R&D organization with 50+ laboratories. Recruited through DRDO RAC (Recruitment and Assessment Centre) via GATE score or DRDO SET. Age limit: 28 years (General), relaxations for reserved categories.",
+    "stream_required": "Science (PCM) / Engineering",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "BTech/BE in relevant engineering branches (Mechanical, Electronics, Aerospace, CS, etc.) or MSc Physics/Chemistry",
+      "entrance_exams": [
+        "GATE (used for DRDO Scientist-B recruitment)",
+        "DRDO SET (DRDO Scientist Entry Test)",
+        "JEE Main/Advanced (for BTech admission)"
+      ],
+      "top_colleges": [
+        {
+          "name": "IIT Delhi",
+          "nirf_rank": 2,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 24,
+          "location": "New Delhi"
+        },
+        {
+          "name": "IIT Kanpur",
+          "nirf_rank": 4,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 20,
+          "location": "Kanpur, Uttar Pradesh"
+        },
+        {
+          "name": "IISc Bangalore",
+          "nirf_rank": 1,
+          "approx_fee_4yr_lakh": 2,
+          "avg_placement_lpa": 18,
+          "location": "Bangalore"
+        },
+        {
+          "name": "NIT Trichy",
+          "nirf_rank": 9,
+          "approx_fee_4yr_lakh": 6,
+          "avg_placement_lpa": 12,
+          "location": "Tiruchirappalli, Tamil Nadu"
+        }
+      ],
+      "alternative_paths": [
+        "DRDO Apprenticeship → absorption as Technical staff",
+        "MSc/MTech → direct Scientist-C entry",
+        "ISRO/HAL → lateral to DRDO"
+      ],
+      "postgrad_options": [
+        "MTech/PhD at DRDO labs with DIAT Pune affiliation",
+        "PhD at IITs/IISc with DRDO funding",
+        "Post-doctoral research at international defence labs"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "7-10 (Scientist-B, Level 10)",
+      "mid_5yr": "12-16 (Scientist-D/E)",
+      "senior_10yr": "18-28+ (Scientist-F/G, Outstanding Scientist, Distinguished Scientist)"
+    },
+    "growth_outlook": "High — India's defence budget increasing, focus on Atmanirbhar Bharat in defence. DRDO recruits 300-400 scientists annually. India developing indigenous missiles, aircraft, submarines, and satellites.",
+    "skills_needed": [
+      "Engineering fundamentals and domain expertise",
+      "Research and innovation",
+      "Project management",
+      "Technical report writing",
+      "MATLAB, simulation tools",
+      "Systems integration",
+      "Classified information handling"
+    ],
+    "work_environment": "50+ DRDO labs across India — DRDL Hyderabad, ADE Bangalore, HEMRL Pune, TBRL Chandigarh, etc. Research-oriented, project-driven. Security clearance required. Mix of lab work and field trials at test ranges.",
+    "govt_job_options": "This IS a central government R&D position — Scientist-B → C → D → E → F → G → Outstanding Scientist → Distinguished Scientist → DG/SA to RM → DRDO Chairman",
+    "tier2_city_availability": "Medium — DRDO labs in various cities including Pune, Hyderabad, Dehradun, Jodhpur, Chandigarh, Mysore"
+  },
+  {
+    "career_id": "indian_revenue_service",
+    "career_name": "Indian Revenue Service (IRS)",
+    "career_name_hindi": "भारतीय राजस्व सेवा (आईआरएस)",
+    "riasec_code": "CEI",
+    "riasec_primary": "Conventional",
+    "description": "IRS officers manage India's tax administration — both direct taxes (Income Tax) and indirect taxes (Customs & GST). Recruited through UPSC CSE, IRS is one of the largest Group A services. Officers conduct tax assessments, investigate tax evasion, and formulate tax policy. Age limit: 21-32 (General). IRS (IT) and IRS (C&CE) are the two branches.",
+    "stream_required": "Any Stream",
+    "education_pathway": {
+      "after_10th": "Any stream — Commerce/CA background helpful but not required",
+      "after_12th": "Any graduation — BCom/CA preferred for domain knowledge",
+      "entrance_exams": [
+        "UPSC CSE Prelims",
+        "UPSC CSE Mains",
+        "UPSC Personality Test"
+      ],
+      "top_colleges": [
+        {
+          "name": "National Academy of Direct Taxes (NADT, Training)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "Nagpur, Maharashtra"
+        },
+        {
+          "name": "Delhi University",
+          "nirf_rank": 4,
+          "approx_fee_4yr_lakh": 1,
+          "avg_placement_lpa": null,
+          "location": "New Delhi"
+        },
+        {
+          "name": "Shri Ram College of Commerce",
+          "nirf_rank": 5,
+          "approx_fee_4yr_lakh": 1,
+          "avg_placement_lpa": null,
+          "location": "New Delhi"
+        }
+      ],
+      "alternative_paths": [
+        "SSC CGL → Income Tax Inspector → promotion track",
+        "CA → IRS through UPSC",
+        "State tax departments for state-level revenue roles"
+      ],
+      "postgrad_options": [
+        "LLM in Tax Law",
+        "MBA in Finance while in service",
+        "International tax courses at OECD"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "8-10 (7th CPC Level 10, Assistant Commissioner)",
+      "mid_5yr": "12-18 (Deputy/Additional Commissioner)",
+      "senior_10yr": "18-30+ (Commissioner/Chief Commissioner, plus government housing and car)"
+    },
+    "growth_outlook": "Stable — India's tax base expanding, digital tax infrastructure (TDS, faceless assessment) growing. ~150-200 IRS officers recruited annually through UPSC.",
+    "skills_needed": [
+      "Taxation laws and finance",
+      "Analytical and investigative skills",
+      "Accounting knowledge",
+      "Legal interpretation",
+      "Data analysis",
+      "Integrity and ethics",
+      "Communication and interrogation skills"
+    ],
+    "work_environment": "Income Tax offices across India, central revenue buildings. Mix of desk work (assessment) and field work (surveys, raids). Regular office hours but raids/investigations can be unpredictable. Transfers every 3-5 years.",
+    "govt_job_options": "This IS a Group A central service — Assistant Commissioner → Deputy Commissioner → Additional Commissioner → Commissioner → Chief Commissioner → Principal Chief Commissioner → CBDT Member/Chairman",
+    "tier2_city_availability": "High — Income Tax offices in all major cities and most district headquarters"
+  },
+  {
+    "career_id": "indian_audit_accounts_service",
+    "career_name": "Indian Audit & Accounts Service (IA&AS)",
+    "career_name_hindi": "भारतीय लेखा परीक्षा एवं लेखा सेवा",
+    "riasec_code": "CIE",
+    "riasec_primary": "Conventional",
+    "description": "IA&AS officers work under the Comptroller and Auditor General (CAG) of India, auditing government expenditure and ensuring financial accountability. They audit central/state government accounts, PSUs, railways, defence, and autonomous bodies. Recruited through UPSC CSE. One of the most powerful constitutional audit bodies globally. Age limit: 21-32 (General).",
+    "stream_required": "Any Stream",
+    "education_pathway": {
+      "after_10th": "Any stream — Commerce background advantageous",
+      "after_12th": "BCom/CA/BA/BSc — any graduation qualifies through UPSC CSE",
+      "entrance_exams": [
+        "UPSC CSE Prelims",
+        "UPSC CSE Mains",
+        "UPSC Personality Test"
+      ],
+      "top_colleges": [
+        {
+          "name": "National Academy of Audit and Accounts (Training)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "Shimla, Himachal Pradesh"
+        },
+        {
+          "name": "Shri Ram College of Commerce",
+          "nirf_rank": 5,
+          "approx_fee_4yr_lakh": 1,
+          "avg_placement_lpa": null,
+          "location": "New Delhi"
+        }
+      ],
+      "alternative_paths": [
+        "SSC CGL → Auditor in CAG → promotion to Group B/A",
+        "CA/CMA → deputation to CAG",
+        "State audit departments"
+      ],
+      "postgrad_options": [
+        "CA/CMA while in service",
+        "International audit courses (INTOSAI)",
+        "MBA Finance"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "8-10 (7th CPC Level 10)",
+      "mid_5yr": "12-18 (Senior Deputy/Deputy Accountant General)",
+      "senior_10yr": "18-28+ (Accountant General/Principal Accountant General, plus housing)"
+    },
+    "growth_outlook": "Stable — CAG is a constitutional body, demand is permanent. Digital auditing and performance auditing expanding the scope. ~50-60 IA&AS officers recruited annually.",
+    "skills_needed": [
+      "Auditing and accounting principles",
+      "Financial analysis",
+      "Attention to detail",
+      "Report writing",
+      "Constitutional and legal knowledge",
+      "Data analytics for audit",
+      "Objectivity and independence"
+    ],
+    "work_environment": "CAG offices across India — one in each state capital plus central office in Delhi. Primarily desk-based audit work with field visits to auditee organizations. Regular government hours. Intellectually stimulating work analyzing government accounts.",
+    "govt_job_options": "This IS a Group A central service under CAG — Assistant Audit/Accounts Officer → Deputy AG → AG → Principal AG → DAI → C&AG of India",
+    "tier2_city_availability": "High — CAG offices (Principal Accountant General offices) in every state capital"
+  },
+  {
+    "career_id": "indian_forest_service",
+    "career_name": "Indian Forest Service (IFoS)",
+    "career_name_hindi": "भारतीय वन सेवा (आईएफएस)",
+    "riasec_code": "RIA",
+    "riasec_primary": "Realistic",
+    "description": "Indian Forest Service officers manage India's forests, wildlife, and environment. They serve as DFO, Conservator of Forests, and Chief Wildlife Warden. Recruited through UPSC IFoS exam (separate from CSE but can also be filled from CSE). Must have graduation with at least one science subject (Botany, Zoology, Physics, Chemistry, Geology, Statistics, Maths, or Agriculture). Age: 21-32 (General).",
+    "stream_required": "Science (with at least one science subject at graduation level)",
+    "education_pathway": {
+      "after_10th": "Science stream with Biology/PCM",
+      "after_12th": "BSc in Botany/Zoology/Forestry/Agriculture/Environmental Science, or BTech in relevant fields",
+      "entrance_exams": [
+        "UPSC IFoS Prelims (same as CSE Prelims)",
+        "UPSC IFoS Mains (2 optional papers from science subjects)",
+        "UPSC IFoS Personality Test"
+      ],
+      "top_colleges": [
+        {
+          "name": "Indira Gandhi National Forest Academy (IGNFA, Training)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "Dehradun, Uttarakhand"
+        },
+        {
+          "name": "FRI Deemed University",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 3,
+          "avg_placement_lpa": 5,
+          "location": "Dehradun, Uttarakhand"
+        },
+        {
+          "name": "Kerala Agricultural University",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 4,
+          "avg_placement_lpa": 4,
+          "location": "Thrissur, Kerala"
+        }
+      ],
+      "alternative_paths": [
+        "State Forest Service (SFS) → promotion to IFoS",
+        "Forest Range Officer exam → state forest department",
+        "Wildlife Institute of India courses → research/NGO roles"
+      ],
+      "postgrad_options": [
+        "MSc Forestry/Wildlife Biology",
+        "PhD in Ecology/Conservation",
+        "International fellowships in environmental management"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "8-10 (7th CPC Level 10, DFO rank)",
+      "mid_5yr": "12-18 (Conservator of Forests)",
+      "senior_10yr": "18-28+ (PCCF/Head of Forest Force, plus forest rest houses and field allowances)"
+    },
+    "growth_outlook": "Growing importance — climate change, forest conservation, wildlife protection, and environmental policy making IFoS increasingly relevant. ~80-100 IFoS officers recruited annually.",
+    "skills_needed": [
+      "Ecology and environmental science knowledge",
+      "Physical fitness for jungle terrain",
+      "Wildlife management",
+      "Community engagement with tribal populations",
+      "Administrative and legal skills (Forest Act, Wildlife Act)",
+      "Decision making in remote areas",
+      "Passion for nature and conservation"
+    ],
+    "work_environment": "Forest divisions, national parks, wildlife sanctuaries. Heavily field-oriented — extensive travel in forested areas. Posted in remote, scenic locations. Dangerous situations possible (poachers, wild animals). Unique and adventurous career.",
+    "govt_job_options": "This IS a Group A central service — DFO → Conservator → Chief Conservator → PCCF → Head of Forest Force. Also serves as Chief Wildlife Warden, Directors of National Parks (Jim Corbett, Kaziranga, etc.)",
+    "tier2_city_availability": "Very High — posted in forest divisions across India, often in remote and scenic locations away from cities"
+  },
+  {
+    "career_id": "customs_central_excise",
+    "career_name": "Customs & Central Excise Officer",
+    "career_name_hindi": "सीमा शुल्क और केंद्रीय उत्पाद शुल्क अधिकारी",
+    "riasec_code": "CER",
+    "riasec_primary": "Conventional",
+    "description": "Customs officers manage import/export at ports, airports, and land borders, while Central Excise (now GST) officers enforce indirect tax compliance. Recruited at various levels — Group A through UPSC CSE (IRS-C&CE), Group B/C through SSC CGL (Inspector level). Customs Inspectors work at airports, seaports, and international borders preventing smuggling and collecting duties.",
+    "stream_required": "Any Stream",
+    "education_pathway": {
+      "after_10th": "Any stream — Commerce background helpful",
+      "after_12th": "Any graduation for SSC CGL (Inspector level); any graduation for UPSC CSE (IRS level)",
+      "entrance_exams": [
+        "SSC CGL (for Inspector/Preventive Officer)",
+        "UPSC CSE (for IRS Customs & Central Excise, Group A)",
+        "Departmental exams for promotion"
+      ],
+      "top_colleges": [
+        {
+          "name": "National Academy of Customs, Indirect Taxes & Narcotics (NACIN, Training)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "Faridabad, Haryana"
+        },
+        {
+          "name": "Any recognized university",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 1,
+          "avg_placement_lpa": null,
+          "location": "Across India"
+        }
+      ],
+      "alternative_paths": [
+        "SSC CGL → Customs Inspector → Superintendent → Assistant Commissioner (promotion)",
+        "State GST department recruitment",
+        "CA/CMA → tax consultancy → government deputation"
+      ],
+      "postgrad_options": [
+        "LLB/LLM in Tax Law",
+        "MBA in International Trade",
+        "Customs and trade facilitation courses (WCO)"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "4-6 (Inspector level via SSC, Level 7) / 8-10 (IRS Group A, Level 10)",
+      "mid_5yr": "7-12 (Superintendent) / 12-18 (Deputy Commissioner)",
+      "senior_10yr": "12-18 (Assistant Commissioner via promotion) / 18-30 (Commissioner, IRS)"
+    },
+    "growth_outlook": "Stable — India's trade volumes growing, customs automation (ICEGATE, faceless assessment) modernizing operations. Anti-smuggling and narcotics enforcement expanding.",
+    "skills_needed": [
+      "Knowledge of customs laws and tariffs",
+      "Analytical and investigative skills",
+      "Vigilance and attention to detail",
+      "International trade knowledge",
+      "Computer skills (ICEGATE, ICES systems)",
+      "Physical readiness for raids and seizures",
+      "Integrity and ethical standards"
+    ],
+    "work_environment": "Airports (customs counters, cargo terminals), seaports, land border check-posts, customs houses in major cities. Shift-based work at ports/airports. Field operations for anti-smuggling. Exciting and varied work environment.",
+    "govt_job_options": "Inspector (Customs/Preventive Officer) → Superintendent → Assistant Commissioner → Deputy Commissioner → Commissioner → Chief Commissioner → Principal Chief Commissioner",
+    "tier2_city_availability": "Medium — concentrated at international airports, seaports, and border cities. Inland Container Depots in some tier-2 cities."
+  },
+  {
+    "career_id": "income_tax_officer",
+    "career_name": "Income Tax Officer",
+    "career_name_hindi": "आयकर अधिकारी",
+    "riasec_code": "CIE",
+    "riasec_primary": "Conventional",
+    "description": "Income Tax Officers assess and collect direct taxes, investigate tax evasion, and conduct raids/surveys on tax defaulters. Entry at Inspector level through SSC CGL (Group C) or as IRS Officer through UPSC CSE (Group A). SSC CGL route is the most common — age limit 18-30 for Inspector post. Promotion to ITO (Income Tax Officer, Group B gazetted) takes 8-10 years.",
+    "stream_required": "Any Stream",
+    "education_pathway": {
+      "after_10th": "Any stream — Commerce with Accountancy helpful",
+      "after_12th": "Any graduation — BCom preferred for accounting background",
+      "entrance_exams": [
+        "SSC CGL Tier 1 and Tier 2 (for Inspector)",
+        "UPSC CSE (for IRS, Group A direct entry)",
+        "Departmental exams for promotion to ITO"
+      ],
+      "top_colleges": [
+        {
+          "name": "Any recognized university",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 1,
+          "avg_placement_lpa": null,
+          "location": "Across India"
+        },
+        {
+          "name": "National Academy of Direct Taxes (Training)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "Nagpur, Maharashtra"
+        }
+      ],
+      "alternative_paths": [
+        "SSC CGL → IT Inspector → promotion to ITO",
+        "CA → Income Tax Practitioner → departmental recruitment",
+        "State tax department → lateral to central"
+      ],
+      "postgrad_options": [
+        "CA/CMA while in service",
+        "LLB for tax litigation understanding",
+        "MBA Finance for career advancement"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "4-6 (Inspector, Level 7 with Grade Pay) / 8-10 (IRS Group A, Level 10)",
+      "mid_5yr": "6-10 (ITO, Group B gazetted)",
+      "senior_10yr": "10-18 (Assistant Commissioner level, Group A equivalent)"
+    },
+    "growth_outlook": "Stable — India's taxpayer base growing from 7 crore to 10 crore+. Faceless assessment system reducing manual work but investigation and enforcement roles increasing.",
+    "skills_needed": [
+      "Accounting and taxation knowledge",
+      "Analytical and investigative mindset",
+      "Attention to detail",
+      "Computer and data analysis skills",
+      "Legal knowledge (Income Tax Act)",
+      "Integrity and ethical conduct",
+      "Communication and report writing"
+    ],
+    "work_environment": "Income Tax offices across India, field visits for surveys and raids. Regular office hours for assessment work, irregular hours during search operations. Digital transformation making work more tech-oriented.",
+    "govt_job_options": "Income Tax Inspector → Income Tax Officer (ITO) → Assistant Commissioner → Deputy Commissioner → Additional Commissioner → Commissioner → Chief Commissioner",
+    "tier2_city_availability": "High — Income Tax offices in all district headquarters and major towns"
+  },
+  {
+    "career_id": "gst_inspector",
+    "career_name": "GST Inspector",
+    "career_name_hindi": "जीएसटी इंस्पेक्टर",
+    "riasec_code": "CER",
+    "riasec_primary": "Conventional",
+    "description": "GST (Goods & Services Tax) Inspectors enforce India's unified indirect tax system. They verify GST returns, conduct audits of businesses, detect tax evasion, and ensure compliance. Recruited through SSC CGL for Central GST (CGST) or state PSC exams for State GST (SGST). Age limit: 18-30 for SSC CGL. One of the most in-demand SSC CGL posts due to work profile and posting locations.",
+    "stream_required": "Any Stream",
+    "education_pathway": {
+      "after_10th": "Any stream — Commerce background helpful",
+      "after_12th": "Any graduation — BCom with Taxation/Accountancy preferred",
+      "entrance_exams": [
+        "SSC CGL Tier 1 and Tier 2 (for Central GST Inspector)",
+        "State PSC exams (for State GST Inspector)",
+        "UPSC CSE (for IRS Customs & Central Excise, Group A)"
+      ],
+      "top_colleges": [
+        {
+          "name": "Any recognized university",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 1,
+          "avg_placement_lpa": null,
+          "location": "Across India"
+        },
+        {
+          "name": "NACIN (National Academy of Customs, Indirect Taxes & Narcotics, Training)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "Faridabad, Haryana"
+        }
+      ],
+      "alternative_paths": [
+        "State GST department recruitment",
+        "SSC CGL Tax Assistant → promotion to Inspector",
+        "CA/CMA → GST consultancy → government recruitment"
+      ],
+      "postgrad_options": [
+        "CA/CMA while in service",
+        "LLB for understanding tax litigation",
+        "MBA in Taxation/Finance"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "4-6 (Level 7, 7th CPC)",
+      "mid_5yr": "6-10 (Superintendent level)",
+      "senior_10yr": "10-16 (Assistant Commissioner through promotion)"
+    },
+    "growth_outlook": "Growing — GST network expanding, more businesses coming under tax net. Digital compliance (e-invoicing, e-way bills) creating need for tech-savvy officers. States also recruiting regularly.",
+    "skills_needed": [
+      "GST laws and indirect taxation",
+      "Accounting and bookkeeping",
+      "Analytical skills for audit",
+      "Computer proficiency (GSTN portal)",
+      "Investigation and vigilance",
+      "Communication with business owners",
+      "Report writing"
+    ],
+    "work_environment": "GST commissionerate offices, field visits to businesses for audits and inspections. Regular office hours with occasional anti-evasion operations. Desk + field mix. Postings in metro and tier-2 cities.",
+    "govt_job_options": "GST Inspector → Superintendent → Assistant Commissioner → Deputy Commissioner → Joint Commissioner → Additional Commissioner → Commissioner",
+    "tier2_city_availability": "High — GST offices in every state capital and many district headquarters"
+  },
+  {
+    "career_id": "food_safety_officer",
+    "career_name": "Food Safety Officer",
+    "career_name_hindi": "खाद्य सुरक्षा अधिकारी",
+    "riasec_code": "ISR",
+    "riasec_primary": "Investigative",
+    "description": "Food Safety Officers (FSOs) under FSSAI ensure food quality and safety across India. They inspect food businesses, collect samples, issue licenses, and prosecute violations under the Food Safety and Standards Act 2006. Recruited by state food safety departments and FSSAI. Qualification: BSc in Food Technology/Dairy Technology/Biotechnology/Chemistry/Microbiology or equivalent. Age limit: 21-30 (varies by state).",
+    "stream_required": "Science (PCB/PCM with Food Science/Chemistry)",
+    "education_pathway": {
+      "after_10th": "Science stream with Biology or Chemistry focus",
+      "after_12th": "BSc Food Technology/Dairy Technology/Biotechnology/Chemistry, or BTech Food Technology",
+      "entrance_exams": [
+        "State PSC exams for Food Safety Officer",
+        "FSSAI direct recruitment",
+        "Central/State Food Inspector exams"
+      ],
+      "top_colleges": [
+        {
+          "name": "CFTRI Mysuru (Central Food Technological Research Institute)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 2,
+          "avg_placement_lpa": 6,
+          "location": "Mysuru, Karnataka"
+        },
+        {
+          "name": "NIFTEM Kundli",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 5,
+          "avg_placement_lpa": 7,
+          "location": "Kundli, Haryana"
+        },
+        {
+          "name": "NDRI Karnal (National Dairy Research Institute)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 2,
+          "avg_placement_lpa": 6,
+          "location": "Karnal, Haryana"
+        }
+      ],
+      "alternative_paths": [
+        "Food Inspector at municipal/state level",
+        "FSSAI Technical Officer through direct recruitment",
+        "Quality control officer in food companies → government recruitment"
+      ],
+      "postgrad_options": [
+        "MTech Food Technology",
+        "MSc Food Science and Nutrition",
+        "PhD in Food Safety/Quality"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "4-6 (varies by state, Level 7-9)",
+      "mid_5yr": "6-10 (Senior Food Safety Officer/Designated Officer)",
+      "senior_10yr": "10-16 (Assistant Commissioner Food Safety)"
+    },
+    "growth_outlook": "Growing — FSSAI strengthening enforcement, food safety becoming a major public health priority. Online food delivery platforms and food processing industry expansion creating more regulatory roles.",
+    "skills_needed": [
+      "Food science and microbiology",
+      "Lab testing and sample analysis",
+      "Food safety laws (FSS Act 2006)",
+      "Inspection and documentation skills",
+      "Public health awareness",
+      "Communication with food business operators",
+      "Legal prosecution skills"
+    ],
+    "work_environment": "Field-intensive — visiting restaurants, food factories, markets, and retail outlets for inspections. Government office for documentation. Mix of desk and field work. Can involve unpleasant inspections of unhygienic establishments.",
+    "govt_job_options": "Food Safety Officer → Designated Officer → Assistant Commissioner → Deputy Commissioner → Joint Commissioner → Commissioner of Food Safety (state level)",
+    "tier2_city_availability": "Very High — every district requires Food Safety Officers; posted in rural, semi-urban, and urban areas"
+  },
+  {
+    "career_id": "prompt_engineer",
+    "career_name": "Prompt Engineer",
+    "career_name_hindi": "प्रॉम्प्ट इंजीनियर",
+    "riasec_code": "IAE",
+    "riasec_primary": "Investigative",
+    "description": "Prompt Engineers design, test, and optimize prompts for large language models (LLMs) like GPT, Claude, and Gemini to achieve desired outputs. They bridge the gap between AI capabilities and business needs, working on AI product development, chatbot design, and automated workflow creation. An entirely new career born from the GenAI revolution of 2023-2025.",
+    "stream_required": "Any Stream (CS/Linguistics/Psychology preferred)",
+    "education_pathway": {
+      "after_10th": "Science or Humanities stream — no strict requirement",
+      "after_12th": "BTech CS/AI, BA Linguistics/Psychology, BCA, or any graduation + AI certifications",
+      "entrance_exams": [
+        "JEE Main/Advanced (for CS at IITs)",
+        "CUET (for BA programs)",
+        "No specific entrance — mostly skill/portfolio based hiring"
+      ],
+      "top_colleges": [
+        {
+          "name": "IIT Bombay (CS/AI programs)",
+          "nirf_rank": 3,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 25,
+          "location": "Mumbai"
+        },
+        {
+          "name": "IIT Delhi (CS/AI)",
+          "nirf_rank": 2,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 24,
+          "location": "New Delhi"
+        },
+        {
+          "name": "IIIT Hyderabad",
+          "nirf_rank": 15,
+          "approx_fee_4yr_lakh": 8,
+          "avg_placement_lpa": 20,
+          "location": "Hyderabad"
+        }
+      ],
+      "alternative_paths": [
+        "Self-taught through OpenAI/Anthropic documentation and courses",
+        "Content writing/copywriting → transition to prompt engineering",
+        "Online certifications from DeepLearning.AI, Coursera",
+        "Build a portfolio of prompts and AI applications"
+      ],
+      "postgrad_options": [
+        "MTech/MS in AI/NLP",
+        "Online AI specializations",
+        "Research in LLM alignment and safety"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "6-15 (varies widely, higher in AI-focused startups)",
+      "mid_5yr": "15-30",
+      "senior_10yr": "30-60+ (Head of AI/Prompt Engineering at major companies)"
+    },
+    "growth_outlook": "Explosive growth — every company adopting GenAI needs prompt engineers. Role may evolve as AI tools become more intuitive, but core skills in AI orchestration will remain valuable. India seeing massive demand from US companies for remote roles.",
+    "skills_needed": [
+      "Understanding of LLM architectures",
+      "Clear and structured thinking",
+      "Excellent English writing skills",
+      "Python programming (for API integration)",
+      "Testing and iteration methodology",
+      "Domain knowledge in target area",
+      "Creativity and analytical thinking"
+    ],
+    "work_environment": "Fully remote or office-based at tech companies. Fast-paced, experimental work. Close collaboration with product and engineering teams. Rapidly evolving field requiring continuous learning.",
+    "govt_job_options": "Emerging — NIC, MEITY, and NITI Aayog starting AI divisions. Government AI advisory roles. DRDO/ISRO AI research positions.",
+    "tier2_city_availability": "High (remote work) — most roles are remote-friendly, enabling work from any city"
+  },
+  {
+    "career_id": "blockchain_developer",
+    "career_name": "Blockchain Developer",
+    "career_name_hindi": "ब्लॉकचेन डेवलपर",
+    "riasec_code": "IRC",
+    "riasec_primary": "Investigative",
+    "description": "Blockchain developers build decentralized applications (dApps), smart contracts, and distributed ledger solutions for finance, supply chain, healthcare, and governance. They work with platforms like Ethereum, Hyperledger, Polygon, and Solana. India's digital rupee (CBDC) and blockchain-based land records are driving government demand alongside private sector Web3 projects.",
+    "stream_required": "Science (PCM) / Any Stream with CS skills",
+    "education_pathway": {
+      "after_10th": "Science stream with Mathematics and Computer Science",
+      "after_12th": "BTech in CS/IT, BCA, or BSc Computer Science",
+      "entrance_exams": [
+        "JEE Main/Advanced",
+        "BITSAT",
+        "CUET for BSc CS",
+        "No specific blockchain entrance — skill-based hiring"
+      ],
+      "top_colleges": [
+        {
+          "name": "IIT Kanpur (Blockchain Technology Center)",
+          "nirf_rank": 4,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 20,
+          "location": "Kanpur"
+        },
+        {
+          "name": "IIT Madras",
+          "nirf_rank": 1,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 22,
+          "location": "Chennai"
+        },
+        {
+          "name": "IIIT Hyderabad",
+          "nirf_rank": 15,
+          "approx_fee_4yr_lakh": 8,
+          "avg_placement_lpa": 20,
+          "location": "Hyderabad"
+        }
+      ],
+      "alternative_paths": [
+        "Web development → transition to Web3/blockchain",
+        "Online certifications (Blockchain Council, Coursera)",
+        "Open-source contributions to blockchain projects",
+        "Hackathon participation and DeFi projects"
+      ],
+      "postgrad_options": [
+        "MTech in CS with blockchain specialization",
+        "Research in distributed systems",
+        "Fintech MBA with blockchain focus"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "8-15",
+      "mid_5yr": "20-40",
+      "senior_10yr": "40-80+ (Lead Blockchain Architect, or token/equity in Web3 startups)"
+    },
+    "growth_outlook": "High but volatile — India among top 5 countries for blockchain talent. RBI's Digital Rupee, state land registries, and supply chain blockchain driving institutional demand. Web3 startup funding cyclical but technology adoption growing.",
+    "skills_needed": [
+      "Solidity/Rust programming",
+      "Smart contract development",
+      "Cryptography fundamentals",
+      "Distributed systems architecture",
+      "Web3.js/Ethers.js",
+      "Security auditing of smart contracts",
+      "Understanding of DeFi protocols"
+    ],
+    "work_environment": "Remote-first culture dominant in Web3. Startup environment common. Global teams across time zones. High autonomy and fast-paced development cycles.",
+    "govt_job_options": "RBI CBDC (Digital Rupee) development, NIC blockchain projects, state government land registry blockchain, MEITY blockchain initiatives",
+    "tier2_city_availability": "High (remote work) — most blockchain roles are remote, enabling work from anywhere"
+  },
+  {
+    "career_id": "cloud_solutions_architect",
+    "career_name": "Cloud Solutions Architect",
+    "career_name_hindi": "क्लाउड सॉल्यूशंस आर्किटेक्ट",
+    "riasec_code": "IRC",
+    "riasec_primary": "Investigative",
+    "description": "Cloud Solutions Architects design and oversee cloud computing strategy for organizations, selecting appropriate AWS/Azure/GCP services, ensuring security, scalability, and cost optimization. They bridge business requirements with cloud infrastructure design. One of the highest-paid tech roles in India with massive demand as enterprises migrate to cloud.",
+    "stream_required": "Science (PCM) / Any Stream with CS skills",
+    "education_pathway": {
+      "after_10th": "Science stream with Mathematics and Computer Science",
+      "after_12th": "BTech in CS/IT, BCA, or BSc Computer Science",
+      "entrance_exams": [
+        "JEE Main/Advanced (for IITs/NITs)",
+        "BITSAT",
+        "VITEEE",
+        "Cloud certifications are more important than entrance exams"
+      ],
+      "top_colleges": [
+        {
+          "name": "IIT Bombay",
+          "nirf_rank": 3,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 25,
+          "location": "Mumbai"
+        },
+        {
+          "name": "IIT Delhi",
+          "nirf_rank": 2,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 24,
+          "location": "New Delhi"
+        },
+        {
+          "name": "NIT Trichy",
+          "nirf_rank": 9,
+          "approx_fee_4yr_lakh": 6,
+          "avg_placement_lpa": 12,
+          "location": "Tiruchirappalli"
+        }
+      ],
+      "alternative_paths": [
+        "System administration → cloud migration → architect role",
+        "AWS/Azure/GCP certifications (Solutions Architect, Professional level)",
+        "DevOps engineering → Cloud Architecture",
+        "BCA + cloud certifications for non-engineering entry"
+      ],
+      "postgrad_options": [
+        "MTech in Cloud Computing/Distributed Systems",
+        "AWS/Azure/GCP Professional certifications (industry gold standard)",
+        "MBA in IT Management"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "8-15 (with certifications)",
+      "mid_5yr": "20-40",
+      "senior_10yr": "40-70+ (Principal Cloud Architect)"
+    },
+    "growth_outlook": "Very High — India's cloud market growing 25-30% annually. Every enterprise moving to cloud. India is the largest cloud talent hub outside the US. AWS, Azure, and GCP all have major India offices.",
+    "skills_needed": [
+      "AWS/Azure/GCP services deep knowledge",
+      "Infrastructure as Code (Terraform, CloudFormation)",
+      "Networking and security architecture",
+      "Cost optimization strategies",
+      "Containerization (Docker, Kubernetes)",
+      "CI/CD pipelines",
+      "Solution design and stakeholder communication"
+    ],
+    "work_environment": "Office or remote — IT companies, cloud consulting firms, enterprise IT departments. Involves client-facing design sessions, architecture reviews, and POC development. Senior role requiring 5-8 years of experience typically.",
+    "govt_job_options": "NIC cloud infrastructure, MeitY cloud projects, Digital India initiatives, state government cloud migration (MeghRaj). Defence cloud projects.",
+    "tier2_city_availability": "High — remote work common, plus IT companies in Pune, Hyderabad, Chennai, Bangalore, Noida all hire"
+  },
+  {
+    "career_id": "mobile_app_developer",
+    "career_name": "Mobile App Developer",
+    "career_name_hindi": "मोबाइल ऐप डेवलपर",
+    "riasec_code": "IRA",
+    "riasec_primary": "Investigative",
+    "description": "Mobile app developers build applications for Android and iOS platforms used by billions worldwide. India is the world's largest mobile app market by downloads. Developers work on native (Kotlin/Swift), cross-platform (Flutter/React Native), or hybrid apps for e-commerce, fintech, healthcare, education, and social media.",
+    "stream_required": "Science (PCM) / Any Stream with CS skills",
+    "education_pathway": {
+      "after_10th": "Science stream or any stream with Computer Science as a subject",
+      "after_12th": "BTech CS/IT, BCA, BSc Computer Science, or Diploma in CS",
+      "entrance_exams": [
+        "JEE Main/Advanced",
+        "CUET (for BCA/BSc CS)",
+        "State engineering entrance exams",
+        "Skill-based hiring — portfolio matters more"
+      ],
+      "top_colleges": [
+        {
+          "name": "IIT Bombay",
+          "nirf_rank": 3,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 25,
+          "location": "Mumbai"
+        },
+        {
+          "name": "IIIT Hyderabad",
+          "nirf_rank": 15,
+          "approx_fee_4yr_lakh": 8,
+          "avg_placement_lpa": 20,
+          "location": "Hyderabad"
+        },
+        {
+          "name": "VIT Vellore",
+          "nirf_rank": 12,
+          "approx_fee_4yr_lakh": 14,
+          "avg_placement_lpa": 8,
+          "location": "Vellore, Tamil Nadu"
+        }
+      ],
+      "alternative_paths": [
+        "Self-taught through YouTube, Udemy, and Google's free courses",
+        "Android Developer Nanodegree (Udacity/Google)",
+        "Apple Developer Academy (free program)",
+        "BCA + published apps on Play Store/App Store"
+      ],
+      "postgrad_options": [
+        "MTech in Mobile Computing",
+        "Google/Apple developer certifications",
+        "Product Management courses"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "4-10",
+      "mid_5yr": "12-25",
+      "senior_10yr": "25-50+ (Lead Mobile Architect or freelance at global rates)"
+    },
+    "growth_outlook": "Very High — India has 800M+ smartphone users. Digital India, UPI, and government app initiatives driving demand. Freelancing opportunities globally. Flutter and React Native skills especially in demand.",
+    "skills_needed": [
+      "Kotlin/Swift or Flutter/React Native",
+      "UI/UX design principles",
+      "REST APIs and backend integration",
+      "App performance optimization",
+      "App Store/Play Store deployment",
+      "Version control (Git)",
+      "Testing and debugging"
+    ],
+    "work_environment": "Office or remote — IT companies, startups, freelancing. Creative and fast-paced. Product-oriented work with visible user impact. Agile teams with designers and backend developers.",
+    "govt_job_options": "NIC app development team, UIDAI (Aadhaar apps), Digital India app projects, state government apps (e-governance), UMANG app team",
+    "tier2_city_availability": "Very High — remote work widely available, plus freelancing enables work from any location"
+  },
+  {
+    "career_id": "game_designer",
+    "career_name": "Game Designer",
+    "career_name_hindi": "गेम डिज़ाइनर",
+    "riasec_code": "AIR",
+    "riasec_primary": "Artistic",
+    "description": "Game designers conceptualize and create video game experiences — designing game mechanics, levels, narratives, characters, and player progression systems. India's gaming industry is booming at $3.5B+ with mobile gaming leading. Work spans mobile games, PC/console AAA titles, and emerging areas like educational and metaverse games.",
+    "stream_required": "Any Stream (Arts/Science with CS preferred)",
+    "education_pathway": {
+      "after_10th": "Any stream — Science with CS or Arts with design focus",
+      "after_12th": "B.Des in Game Design, BTech CS (game development track), BFA, or dedicated game design diplomas",
+      "entrance_exams": [
+        "UCEED/NID DAT (for design programs)",
+        "JEE Main (for BTech CS at IITs/NITs)",
+        "Portfolio-based admission at game design institutes"
+      ],
+      "top_colleges": [
+        {
+          "name": "IIT Bombay (IDC School of Design)",
+          "nirf_rank": 3,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 18,
+          "location": "Mumbai"
+        },
+        {
+          "name": "DSK International Campus (Supinfogame partnership)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 15,
+          "avg_placement_lpa": 6,
+          "location": "Pune"
+        },
+        {
+          "name": "MIT Institute of Design",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 12,
+          "avg_placement_lpa": 6,
+          "location": "Pune"
+        }
+      ],
+      "alternative_paths": [
+        "Self-taught using Unity/Unreal Engine (free tools)",
+        "Online courses on Udemy, Coursera, GameDev.tv",
+        "Game jams and indie game development",
+        "Modding existing games to build portfolio"
+      ],
+      "postgrad_options": [
+        "MFA/MS in Game Design abroad (DigiPen, USC, NYU)",
+        "Unity/Unreal Engine certifications",
+        "MBA for game studio management"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "3-8",
+      "mid_5yr": "10-20",
+      "senior_10yr": "20-40+ (Lead Game Designer/Creative Director, or indie game revenue)"
+    },
+    "growth_outlook": "High — India's gaming market growing 20%+ annually. Mobile gaming dominant. Studios like Ubisoft, Rockstar, EA have India offices. Government promoting AVGC (Animation, Visual Effects, Gaming, Comics) sector.",
+    "skills_needed": [
+      "Game design theory and mechanics",
+      "Unity or Unreal Engine",
+      "Storytelling and narrative design",
+      "Level design and balancing",
+      "Player psychology understanding",
+      "Basic programming (C#/C++)",
+      "2D/3D art appreciation"
+    ],
+    "work_environment": "Game studios — creative, collaborative, often casual work culture. Can involve crunch periods before release. Small indie teams to large AAA studios. Work-from-home common for smaller studios.",
+    "govt_job_options": "Limited direct government roles — AVGC promotion by MEITY, educational game projects for NCERT/state boards, defence simulation games for military training",
+    "tier2_city_availability": "Medium — game studios concentrated in Bangalore, Pune, Hyderabad, Mumbai, but indie/remote work possible from anywhere"
+  },
+  {
+    "career_id": "drone_pilot_engineer",
+    "career_name": "Drone Pilot/Engineer",
+    "career_name_hindi": "ड्रोन पायलट/इंजीनियर",
+    "riasec_code": "RIE",
+    "riasec_primary": "Realistic",
+    "description": "Drone pilots and engineers operate, design, and maintain unmanned aerial vehicles (UAVs) for agriculture, surveying, delivery, cinematography, defence, and infrastructure inspection. India's drone policy (Drone Rules 2021) and PLI scheme are driving massive growth. DGCA Remote Pilot Certificate is mandatory for commercial operations.",
+    "stream_required": "Science (PCM) / Any Stream for pilot operations",
+    "education_pathway": {
+      "after_10th": "Science stream with PCM for engineering track; any stream for pilot certification",
+      "after_12th": "BTech Aerospace/Mechanical/Electronics for engineering, or DGCA-approved drone pilot training (6-8 weeks) for operations",
+      "entrance_exams": [
+        "JEE Main/Advanced (for engineering)",
+        "DGCA Remote Pilot Certificate exam",
+        "No entrance for DGCA-approved pilot training schools"
+      ],
+      "top_colleges": [
+        {
+          "name": "IIT Kanpur (Drone Research Center)",
+          "nirf_rank": 4,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 20,
+          "location": "Kanpur"
+        },
+        {
+          "name": "DGCA-approved RPTO (Remote Pilot Training Organizations)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0.5,
+          "avg_placement_lpa": null,
+          "location": "Multiple cities across India"
+        },
+        {
+          "name": "Bombay Flying Club (Drone Division)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0.3,
+          "avg_placement_lpa": null,
+          "location": "Mumbai"
+        }
+      ],
+      "alternative_paths": [
+        "DGCA Remote Pilot Certificate (6-8 week course, cost ~₹50K-1L)",
+        "Agricultural drone operator training (government-subsidized)",
+        "Electronics/mechanical diploma → drone assembly and maintenance",
+        "Photography/videography → aerial cinematography"
+      ],
+      "postgrad_options": [
+        "MTech in Aerospace/Robotics",
+        "Drone-specific certifications (DJI, senseFly)",
+        "GIS and remote sensing specialization"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "3-6 (drone pilot) / 5-10 (drone engineer)",
+      "mid_5yr": "8-15 (senior pilot/operations manager)",
+      "senior_10yr": "15-30+ (drone startup founder/chief pilot/head of drone operations)"
+    },
+    "growth_outlook": "Very High — India targeting $1.8B drone market by 2026. Agriculture drones, delivery drones (Zomato, Swiggy testing), survey drones for infrastructure, and defence drones all driving demand. Government PLI scheme subsidizing drone manufacturing.",
+    "skills_needed": [
+      "Drone piloting and navigation",
+      "DGCA regulations and airspace knowledge",
+      "Basic electronics and mechanics",
+      "GIS and mapping software",
+      "Photography/videography for aerial shots",
+      "Maintenance and troubleshooting",
+      "Weather assessment"
+    ],
+    "work_environment": "Outdoor field work — agricultural fields, construction sites, event venues, film sets, survey locations. Travel-intensive. Weather-dependent operations. Can be freelance or employed by drone service companies.",
+    "govt_job_options": "Indian Army/Navy/Air Force drone operators, DGCA drone division, Survey of India, Agriculture department drone programs, Smart City drone projects, state police drone units",
+    "tier2_city_availability": "Very High — agricultural drone services especially in rural areas, survey work across all cities and towns"
+  },
+  {
+    "career_id": "ev_engineer",
+    "career_name": "EV (Electric Vehicle) Engineer",
+    "career_name_hindi": "ईवी (इलेक्ट्रिक वाहन) इंजीनियर",
+    "riasec_code": "RIC",
+    "riasec_primary": "Realistic",
+    "description": "EV Engineers design and develop electric vehicles and their components — battery systems, electric motors, power electronics, charging infrastructure, and vehicle integration. India's EV market is projected to reach $100B by 2030 with FAME-II subsidies and state EV policies driving adoption. Tata, Mahindra, Ola, Ather, and many startups are hiring aggressively.",
+    "stream_required": "Science (PCM) / Engineering",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "BTech in Electrical/Mechanical/Automobile/Electronics Engineering",
+      "entrance_exams": [
+        "JEE Main/Advanced",
+        "BITSAT",
+        "State engineering entrance exams",
+        "GATE (for MTech/PSU recruitment)"
+      ],
+      "top_colleges": [
+        {
+          "name": "IIT Madras (EV research center)",
+          "nirf_rank": 1,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 22,
+          "location": "Chennai"
+        },
+        {
+          "name": "IIT Delhi",
+          "nirf_rank": 2,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 24,
+          "location": "New Delhi"
+        },
+        {
+          "name": "BITS Pilani",
+          "nirf_rank": 10,
+          "approx_fee_4yr_lakh": 20,
+          "avg_placement_lpa": 18,
+          "location": "Pilani"
+        },
+        {
+          "name": "College of Engineering Pune (COEP)",
+          "nirf_rank": 25,
+          "approx_fee_4yr_lakh": 5,
+          "avg_placement_lpa": 10,
+          "location": "Pune"
+        }
+      ],
+      "alternative_paths": [
+        "Automobile diploma → EV specialization courses",
+        "Existing auto engineers → EV upskilling certifications",
+        "Online EV courses from IIT Madras NPTEL",
+        "EV startup internships"
+      ],
+      "postgrad_options": [
+        "MTech in Electric Vehicle Technology",
+        "MS in Battery Technology/Power Electronics",
+        "Specialized EV courses at IIT Madras, IISc"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "5-10",
+      "mid_5yr": "12-25",
+      "senior_10yr": "25-50+ (Head of EV Engineering, CTO of EV startup)"
+    },
+    "growth_outlook": "Very High — India targeting 30% EV penetration by 2030. FAME-II, PLI for battery manufacturing, and state EV policies creating massive demand. Battery technology and charging infrastructure are the hottest sub-domains.",
+    "skills_needed": [
+      "Electrical/mechanical engineering fundamentals",
+      "Battery management systems (BMS)",
+      "Power electronics and motor control",
+      "Vehicle dynamics and integration",
+      "CAD/CAE tools (SolidWorks, ANSYS)",
+      "Embedded systems programming",
+      "Testing and validation"
+    ],
+    "work_environment": "R&D labs, manufacturing plants, test tracks. Mix of design office work and hands-on prototype testing. Fast-paced startup culture at companies like Ola Electric, Ather, Revolt. Larger companies like Tata Motors, M&M offer structured environments.",
+    "govt_job_options": "BHEL EV division, NTPC electric bus charging, Indian Railways electric locomotive manufacturing, ISRO (electric propulsion research), state transport EV fleet management",
+    "tier2_city_availability": "Medium-High — EV manufacturing in Chennai, Pune, Hosur, Manesar. Charging infrastructure deployment creating roles across tier-2 cities."
+  },
+  {
+    "career_id": "renewable_energy_engineer",
+    "career_name": "Renewable Energy Engineer",
+    "career_name_hindi": "नवीकरणीय ऊर्जा इंजीनियर",
+    "riasec_code": "RIC",
+    "riasec_primary": "Realistic",
+    "description": "Renewable energy engineers design, install, and maintain solar, wind, biomass, and hydroelectric power systems. India has the world's largest renewable energy expansion program — targeting 500 GW by 2030. The sector offers roles in project design, site engineering, grid integration, and energy storage. Companies like Adani Green, Tata Power Solar, ReNew, and NTPC Green hiring actively.",
+    "stream_required": "Science (PCM) / Engineering",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "BTech in Electrical/Mechanical/Energy Engineering or BSc Physics",
+      "entrance_exams": [
+        "JEE Main/Advanced",
+        "GATE (for PSU recruitment and MTech)",
+        "State engineering entrance exams"
+      ],
+      "top_colleges": [
+        {
+          "name": "IIT Delhi (Centre for Energy Studies)",
+          "nirf_rank": 2,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 24,
+          "location": "New Delhi"
+        },
+        {
+          "name": "IIT Bombay (Energy Science & Engineering)",
+          "nirf_rank": 3,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 25,
+          "location": "Mumbai"
+        },
+        {
+          "name": "TERI School of Advanced Studies",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 8,
+          "avg_placement_lpa": 6,
+          "location": "New Delhi"
+        },
+        {
+          "name": "NIT Calicut",
+          "nirf_rank": 12,
+          "approx_fee_4yr_lakh": 5,
+          "avg_placement_lpa": 10,
+          "location": "Kozhikode, Kerala"
+        }
+      ],
+      "alternative_paths": [
+        "ITI/Diploma Electrical → solar panel installation technician",
+        "Solar energy technician certifications (MNRE/NSDC approved)",
+        "Electrical engineering → renewable energy specialization",
+        "Online courses on solar design (PVsyst, Homer Pro)"
+      ],
+      "postgrad_options": [
+        "MTech in Renewable Energy/Energy Systems",
+        "MBA in Energy Management",
+        "PhD in Solar/Wind Energy Technology"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "4-8",
+      "mid_5yr": "10-20",
+      "senior_10yr": "20-40+ (VP Engineering at renewable companies, or project development head)"
+    },
+    "growth_outlook": "Very High — India adding 50+ GW renewable capacity annually. Solar and wind dominating new power additions. Green hydrogen emerging as next big area. ₹75,000 crore Green Energy Corridor project creating jobs.",
+    "skills_needed": [
+      "Electrical/mechanical engineering",
+      "Solar PV system design (PVsyst, AutoCAD)",
+      "Wind energy assessment",
+      "Grid integration and power systems",
+      "Project management",
+      "Site surveying and GIS",
+      "Environmental impact assessment"
+    ],
+    "work_environment": "Mix of office design work and field visits to solar/wind farms in rural and semi-arid locations. Project sites can be in remote areas (Rajasthan for solar, Tamil Nadu/Gujarat for wind). Travel-intensive during project execution phase.",
+    "govt_job_options": "NTPC Green Energy, SECI (Solar Energy Corporation of India), IREDA (Indian Renewable Energy Development Agency), MNRE, state renewable energy development agencies, NHPC",
+    "tier2_city_availability": "High — renewable energy projects predominantly in tier-2/3 locations and rural areas (Rajasthan, Gujarat, Karnataka, Tamil Nadu)"
+  },
+  {
+    "career_id": "climate_scientist",
+    "career_name": "Climate Scientist",
+    "career_name_hindi": "जलवायु वैज्ञानिक",
+    "riasec_code": "IRS",
+    "riasec_primary": "Investigative",
+    "description": "Climate scientists study Earth's climate systems, model climate change impacts, and develop adaptation/mitigation strategies. They work on monsoon prediction, glacier monitoring, carbon cycle modeling, and extreme weather event analysis. India is highly vulnerable to climate change, making this field increasingly critical for national policy and disaster preparedness.",
+    "stream_required": "Science (PCM/PCB)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics (or Biology for ecology focus)",
+      "after_12th": "BSc Physics/Environmental Science/Atmospheric Science, or BTech Environmental Engineering",
+      "entrance_exams": [
+        "IIT JAM (for MSc at IITs)",
+        "JEE Main/Advanced (for BTech Environmental Engineering)",
+        "GATE Earth Sciences/Environmental Science",
+        "CSIR NET Earth Sciences"
+      ],
+      "top_colleges": [
+        {
+          "name": "IISc Bangalore (Centre for Atmospheric & Oceanic Sciences)",
+          "nirf_rank": 1,
+          "approx_fee_4yr_lakh": 2,
+          "avg_placement_lpa": 18,
+          "location": "Bangalore"
+        },
+        {
+          "name": "IIT Bombay (Centre for Climate Studies)",
+          "nirf_rank": 3,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 15,
+          "location": "Mumbai"
+        },
+        {
+          "name": "Cochin University of Science and Technology",
+          "nirf_rank": 30,
+          "approx_fee_4yr_lakh": 1,
+          "avg_placement_lpa": 5,
+          "location": "Kochi, Kerala"
+        }
+      ],
+      "alternative_paths": [
+        "BSc Physics/Geography → MSc Atmospheric Science",
+        "Environmental NGO research roles → academic research",
+        "GIS/Remote Sensing specialization → climate data analysis",
+        "Journalism/Communication + climate knowledge → climate reporting"
+      ],
+      "postgrad_options": [
+        "PhD in Climate Science/Atmospheric Physics",
+        "MSc/MTech in Atmospheric Science",
+        "MS abroad at leading climate labs (MIT, Stanford, Max Planck)"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "4-8 (research positions, JRF/SRF fellowships ₹31K-35K/month)",
+      "mid_5yr": "8-15 (Scientist at IMD/IITM, or university faculty)",
+      "senior_10yr": "15-30+ (Senior Scientist, Professor, Lead Researcher at international orgs)"
+    },
+    "growth_outlook": "Growing — climate change impact assessment becoming mandatory for infrastructure projects. India's National Action Plan on Climate Change driving research funding. International opportunities with IPCC, UNFCCC, World Bank climate programs.",
+    "skills_needed": [
+      "Atmospheric physics and thermodynamics",
+      "Climate modeling (GCMs, regional models)",
+      "Statistical analysis and data science",
+      "Python/R/MATLAB programming",
+      "GIS and remote sensing",
+      "Scientific paper writing",
+      "Interdisciplinary collaboration"
+    ],
+    "work_environment": "Research institutes (IITM Pune, IMD, NCMRWF), universities, international organizations (IPCC, WMO). Academic research environment with fieldwork for data collection. Involves scientific conferences, publications, and policy advisory roles.",
+    "govt_job_options": "India Meteorological Department (IMD), Indian Institute of Tropical Meteorology (IITM Pune), NCMRWF, Ministry of Environment, ISRO (earth observation), National Centre for Polar and Ocean Research",
+    "tier2_city_availability": "Low — primarily Pune (IITM, IMD HQ), Delhi, Bangalore, and select university towns"
+  },
+  {
+    "career_id": "space_technology_engineer",
+    "career_name": "Space Technology Engineer",
+    "career_name_hindi": "अंतरिक्ष प्रौद्योगिकी इंजीनियर",
+    "riasec_code": "IRC",
+    "riasec_primary": "Investigative",
+    "description": "Space technology engineers work on satellite systems, launch vehicles, space communication, propulsion, and mission design. Beyond ISRO, India's private space sector is booming with startups like Agnikul Cosmos, Skyroot Aerospace, Pixxel, and Dhruva Space. The Indian Space Policy 2023 has opened up commercial space activities, creating unprecedented opportunities.",
+    "stream_required": "Science (PCM) / Engineering",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "BTech Aerospace/Mechanical/Electronics Engineering or BSc Physics",
+      "entrance_exams": [
+        "JEE Main/Advanced",
+        "IIST Entrance (ISRO's own institute)",
+        "GATE (for ISRO/VSSC recruitment)",
+        "ISRO ICRB Scientist exam"
+      ],
+      "top_colleges": [
+        {
+          "name": "IIST Thiruvananthapuram (Indian Institute of Space Science & Technology)",
+          "nirf_rank": 50,
+          "approx_fee_4yr_lakh": 6,
+          "avg_placement_lpa": 12,
+          "location": "Thiruvananthapuram, Kerala"
+        },
+        {
+          "name": "IIT Madras (Aerospace Engineering)",
+          "nirf_rank": 1,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 22,
+          "location": "Chennai"
+        },
+        {
+          "name": "IISc Bangalore",
+          "nirf_rank": 1,
+          "approx_fee_4yr_lakh": 2,
+          "avg_placement_lpa": 18,
+          "location": "Bangalore"
+        }
+      ],
+      "alternative_paths": [
+        "IIST direct entry → guaranteed ISRO placement",
+        "BTech Mechanical/Electrical → space startup recruitment",
+        "MSc Physics → ISRO Scientist recruitment",
+        "Space internships at ISRO/IN-SPACe"
+      ],
+      "postgrad_options": [
+        "MTech/PhD in Aerospace Engineering",
+        "MS at Caltech, MIT, Stanford (space systems)",
+        "ISRO's RESPOND program for research"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "6-12 (ISRO: 7-10, space startups: 8-15)",
+      "mid_5yr": "12-25",
+      "senior_10yr": "25-50+ (Project Director at ISRO, or CTO at space startup)"
+    },
+    "growth_outlook": "Very High — India's space economy targeting $100B by 2040. Private space sector growing exponentially after Space Policy 2023. Satellite internet (OneWeb), earth observation, and small satellite launches creating new opportunities.",
+    "skills_needed": [
+      "Aerospace/mechanical engineering",
+      "Orbital mechanics",
+      "Propulsion systems",
+      "Satellite communication systems",
+      "Embedded systems and control",
+      "Simulation tools (MATLAB, STK)",
+      "Systems engineering approach"
+    ],
+    "work_environment": "ISRO centers (VSSC, ISAC, SDSC) or space startup offices and labs (mostly Bangalore, Hyderabad, Chennai). Research and development focus with milestone-driven project timelines. Launch campaigns at Sriharikota are high-intensity periods.",
+    "govt_job_options": "ISRO Scientist/Engineer (VSSC, ISAC, SAC, NRSC), IN-SPACe regulatory roles, DRDO missile/space defence programs, Antrix Corporation (ISRO's commercial arm)",
+    "tier2_city_availability": "Low — primarily Trivandrum, Bangalore, Ahmedabad, Hyderabad, Sriharikota, Chennai"
+  },
+  {
+    "career_id": "iot_solutions_architect",
+    "career_name": "IoT Solutions Architect",
+    "career_name_hindi": "आईओटी सॉल्यूशंस आर्किटेक्ट",
+    "riasec_code": "IRC",
+    "riasec_primary": "Investigative",
+    "description": "IoT Solutions Architects design connected systems that link sensors, devices, and cloud platforms for smart homes, factories, cities, agriculture, and healthcare. They work on end-to-end IoT architecture — from edge devices to cloud analytics. India's Smart Cities Mission and Industry 4.0 adoption are major demand drivers.",
+    "stream_required": "Science (PCM) / Engineering",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "BTech in Electronics/CS/IT/Electrical Engineering",
+      "entrance_exams": [
+        "JEE Main/Advanced",
+        "BITSAT",
+        "State engineering entrance exams",
+        "IoT certifications more important than entrance exams for this role"
+      ],
+      "top_colleges": [
+        {
+          "name": "IIT Madras (IoT research lab)",
+          "nirf_rank": 1,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 22,
+          "location": "Chennai"
+        },
+        {
+          "name": "IIT Bombay",
+          "nirf_rank": 3,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 25,
+          "location": "Mumbai"
+        },
+        {
+          "name": "IIIT Hyderabad",
+          "nirf_rank": 15,
+          "approx_fee_4yr_lakh": 8,
+          "avg_placement_lpa": 20,
+          "location": "Hyderabad"
+        }
+      ],
+      "alternative_paths": [
+        "Electronics diploma → embedded systems → IoT",
+        "AWS IoT/Azure IoT certifications",
+        "Arduino/Raspberry Pi projects → portfolio building",
+        "Electrical engineering → industrial IoT transition"
+      ],
+      "postgrad_options": [
+        "MTech in Embedded Systems/IoT",
+        "AWS IoT Specialty Certification",
+        "MBA in Technology Management"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "6-12",
+      "mid_5yr": "15-30",
+      "senior_10yr": "30-55+ (Principal IoT Architect)"
+    },
+    "growth_outlook": "High — India's IoT market expected to reach $15B by 2027. Smart Cities Mission, industrial IoT, and connected agriculture driving demand. 5G rollout will accelerate IoT adoption exponentially.",
+    "skills_needed": [
+      "Embedded systems and microcontrollers",
+      "Cloud platforms (AWS IoT, Azure IoT Hub)",
+      "Networking protocols (MQTT, CoAP, LoRaWAN)",
+      "Data analytics and edge computing",
+      "Security for IoT devices",
+      "Python/C/C++ programming",
+      "System integration and architecture design"
+    ],
+    "work_environment": "IT companies, consulting firms, manufacturing companies, and IoT startups. Mix of office design work and on-site deployment. Involves prototyping, testing, and large-scale deployment. Client-facing role requiring presentation skills.",
+    "govt_job_options": "Smart Cities Mission projects, ICAR smart agriculture, Indian Railways IoT for asset tracking, NTPC/power grid IoT monitoring, NIC smart governance projects",
+    "tier2_city_availability": "Medium-High — IT hubs plus Smart City projects in 100 cities across India"
+  },
+  {
+    "career_id": "ar_vr_developer",
+    "career_name": "AR/VR Developer",
+    "career_name_hindi": "एआर/वीआर डेवलपर",
+    "riasec_code": "IAR",
+    "riasec_primary": "Investigative",
+    "description": "AR/VR developers build augmented and virtual reality applications for gaming, education, healthcare training, real estate, retail, and industrial simulation. They work with Unity, Unreal Engine, ARKit, ARCore, and spatial computing platforms. India's AR/VR market is growing rapidly with applications in e-commerce (virtual try-on), education, and enterprise training.",
+    "stream_required": "Science (PCM) / Any Stream with CS and design skills",
+    "education_pathway": {
+      "after_10th": "Science stream with Mathematics and Computer Science",
+      "after_12th": "BTech CS/IT, B.Des Interaction Design, or BCA",
+      "entrance_exams": [
+        "JEE Main/Advanced (for CS at IITs)",
+        "UCEED/NID DAT (for design programs)",
+        "Portfolio-based admission at design institutes"
+      ],
+      "top_colleges": [
+        {
+          "name": "IIT Bombay (CS + IDC Design)",
+          "nirf_rank": 3,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 25,
+          "location": "Mumbai"
+        },
+        {
+          "name": "IIT Madras",
+          "nirf_rank": 1,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 22,
+          "location": "Chennai"
+        },
+        {
+          "name": "IIIT Hyderabad",
+          "nirf_rank": 15,
+          "approx_fee_4yr_lakh": 8,
+          "avg_placement_lpa": 20,
+          "location": "Hyderabad"
+        }
+      ],
+      "alternative_paths": [
+        "Game development → AR/VR specialization",
+        "Unity/Unreal Engine self-learning + Meta Spark AR projects",
+        "3D modeling/animation → VR content creation",
+        "Online AR/VR bootcamps and nanodegrees"
+      ],
+      "postgrad_options": [
+        "MS in Computer Graphics/HCI",
+        "MTech in Computer Science with VR specialization",
+        "Research at IIT XR labs"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "5-12",
+      "mid_5yr": "15-30",
+      "senior_10yr": "30-55+ (Lead XR Developer, spatial computing architect)"
+    },
+    "growth_outlook": "High — Apple Vision Pro, Meta Quest, and enterprise XR adoption driving demand. India's AVGC sector promotion by government includes AR/VR. Virtual training, telemedicine VR, and spatial commerce growing rapidly.",
+    "skills_needed": [
+      "Unity 3D or Unreal Engine",
+      "C#/C++ programming",
+      "3D mathematics and computer graphics",
+      "ARKit/ARCore development",
+      "Spatial UI/UX design",
+      "3D modeling basics (Blender, Maya)",
+      "Performance optimization for real-time rendering"
+    ],
+    "work_environment": "Tech companies, XR studios, gaming companies, enterprise training divisions. Creative and technical work. Small specialized teams. Rapid prototyping and iteration. Remote work possible for development roles.",
+    "govt_job_options": "Defence simulation and training (DRDO/Army), heritage and tourism VR (ASI, Ministry of Tourism), medical training VR at AIIMS, educational VR for NCERT",
+    "tier2_city_availability": "Medium — studios in Bangalore, Hyderabad, Pune, Mumbai. Remote work expanding availability."
+  },
+  {
+    "career_id": "quantum_computing_researcher",
+    "career_name": "Quantum Computing Researcher",
+    "career_name_hindi": "क्वांटम कंप्यूटिंग शोधकर्ता",
+    "riasec_code": "IRC",
+    "riasec_primary": "Investigative",
+    "description": "Quantum computing researchers develop quantum algorithms, build quantum hardware, and explore applications in cryptography, drug discovery, materials science, and optimization. India launched the National Quantum Mission (NQM) with ₹6,003 crore funding. This is a deep research career requiring strong foundations in physics and mathematics — currently more academic than industry-focused in India.",
+    "stream_required": "Science (PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "BSc/BS Physics/Mathematics or BTech in CS/Physics, followed by research-focused postgrad",
+      "entrance_exams": [
+        "IIT JAM Physics/Maths",
+        "JEE Advanced (for BS at IITs)",
+        "JEST (for PhD admission at research institutes)",
+        "GATE Physics/CS"
+      ],
+      "top_colleges": [
+        {
+          "name": "IISc Bangalore (Quantum Computing Lab)",
+          "nirf_rank": 1,
+          "approx_fee_4yr_lakh": 2,
+          "avg_placement_lpa": 18,
+          "location": "Bangalore"
+        },
+        {
+          "name": "IIT Madras",
+          "nirf_rank": 1,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 22,
+          "location": "Chennai"
+        },
+        {
+          "name": "IISER Pune",
+          "nirf_rank": 20,
+          "approx_fee_4yr_lakh": 5,
+          "avg_placement_lpa": null,
+          "location": "Pune"
+        },
+        {
+          "name": "Raman Research Institute",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0,
+          "avg_placement_lpa": null,
+          "location": "Bangalore"
+        }
+      ],
+      "alternative_paths": [
+        "BSc Physics → MSc Quantum Computing → PhD",
+        "Computer Science + quantum computing courses online (IBM Qiskit, Google Cirq)",
+        "Mathematics → quantum information theory",
+        "Postdoc at international quantum labs"
+      ],
+      "postgrad_options": [
+        "PhD in Quantum Computing/Quantum Information at IISc/IITs",
+        "MS/PhD abroad at leading quantum labs (MIT, Caltech, ETH Zurich)",
+        "National Quantum Mission research fellowships"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "6-10 (PhD fellowship: ₹31K-35K/month, postdoc: 6-10 LPA)",
+      "mid_5yr": "12-25 (faculty/researcher at institutes, or industry quantum roles)",
+      "senior_10yr": "25-50+ (Professor, Chief Scientist at quantum companies, or international roles at $200K+)"
+    },
+    "growth_outlook": "Emerging — India's National Quantum Mission investing ₹6,003 crore. Global quantum computing market expected to reach $65B by 2030. Currently small talent pool means early entrants will have significant advantage. IBM, Google, Microsoft hiring quantum researchers in India.",
+    "skills_needed": [
+      "Quantum mechanics and linear algebra",
+      "Quantum programming (Qiskit, Cirq, Pennylane)",
+      "Classical algorithm design",
+      "Mathematical maturity (probability, group theory)",
+      "Research methodology and paper writing",
+      "Python programming",
+      "Deep physics intuition"
+    ],
+    "work_environment": "University labs, research institutes (IISc, TIFR, RRI), corporate research labs (IBM Research, Google, TCS Innovation Lab). Academic environment with conferences, publications, and international collaboration. Long-term research projects requiring patience.",
+    "govt_job_options": "National Quantum Mission research positions, DRDO quantum communication projects, ISRO quantum computing for space applications, IISc/IIT faculty positions, C-DAC quantum simulation projects",
+    "tier2_city_availability": "Very Low — concentrated in Bangalore, Mumbai, Pune, Chennai, and select IISERs"
+  },
+  {
+    "career_id": "bioinformatics_specialist",
+    "career_name": "Bioinformatics Specialist",
+    "career_name_hindi": "जैव सूचना विज्ञान विशेषज्ञ",
+    "riasec_code": "IRC",
+    "riasec_primary": "Investigative",
+    "description": "Bioinformatics specialists use computational methods to analyze biological data — genomic sequences, protein structures, drug interactions, and evolutionary patterns. They bridge biology and computer science, working on drug discovery, precision medicine, agricultural genomics, and public health genomics. India's pharma and biotech industry increasingly depends on bioinformatics for drug development.",
+    "stream_required": "Science (PCB/PCM)",
+    "education_pathway": {
+      "after_10th": "Science stream with Biology + Mathematics (both important)",
+      "after_12th": "BSc Bioinformatics/Biotechnology/Life Sciences, or BTech Bioinformatics/Bioengineering",
+      "entrance_exams": [
+        "JEE Main/Advanced (for BTech Bioengineering at IITs)",
+        "CUET (for BSc programs)",
+        "GATE Biotechnology/Life Sciences",
+        "DBT-JRF (for PhD research fellowships)"
+      ],
+      "top_colleges": [
+        {
+          "name": "IISc Bangalore",
+          "nirf_rank": 1,
+          "approx_fee_4yr_lakh": 2,
+          "avg_placement_lpa": 15,
+          "location": "Bangalore"
+        },
+        {
+          "name": "JNU (School of Computational and Integrative Sciences)",
+          "nirf_rank": 3,
+          "approx_fee_4yr_lakh": 0.5,
+          "avg_placement_lpa": null,
+          "location": "New Delhi"
+        },
+        {
+          "name": "SASTRA University (Bioinformatics)",
+          "nirf_rank": 18,
+          "approx_fee_4yr_lakh": 6,
+          "avg_placement_lpa": 5,
+          "location": "Thanjavur, Tamil Nadu"
+        }
+      ],
+      "alternative_paths": [
+        "BSc Life Sciences → MSc Bioinformatics",
+        "BTech CS → bioinformatics upskilling",
+        "Online courses on Coursera/edX (Johns Hopkins Genomics specialization)",
+        "Pharma industry bioinformatics internships"
+      ],
+      "postgrad_options": [
+        "MSc/MTech Bioinformatics",
+        "PhD in Computational Biology",
+        "MS abroad at leading bioinformatics centers"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "4-8 (research positions and entry-level pharma)",
+      "mid_5yr": "10-20 (senior bioinformatician in pharma/biotech)",
+      "senior_10yr": "20-40+ (Head of Bioinformatics, computational biology lead at global pharma)"
+    },
+    "growth_outlook": "Growing — India's pharma industry adopting AI/ML for drug discovery. Genomics becoming cheaper (India Genome Mission planned). Precision medicine and agricultural genomics creating new demand. DBT and ICMR funding bioinformatics research.",
+    "skills_needed": [
+      "Molecular biology and genetics fundamentals",
+      "Python/R programming",
+      "Genomic analysis tools (BLAST, GATK, Bowtie)",
+      "Statistical methods",
+      "Machine learning for biological data",
+      "Database management",
+      "Scientific writing and communication"
+    ],
+    "work_environment": "Research labs, pharma R&D centers, biotech companies, and hospitals (clinical genomics). Computer-intensive work with biological context. Academic or corporate settings. Often collaborative with wet-lab biologists.",
+    "govt_job_options": "ICMR genomics projects, DBT-funded research positions, ICAR agricultural bioinformatics, CCMB Hyderabad, NCBI India, NII New Delhi, NABI Mohali",
+    "tier2_city_availability": "Low-Medium — primarily Bangalore, Hyderabad, Pune (biotech hubs), and select research institute locations"
+  },
+  {
+    "career_id": "health_tech_product_manager",
+    "career_name": "Health Tech Product Manager",
+    "career_name_hindi": "हेल्थ टेक प्रोडक्ट मैनेजर",
+    "riasec_code": "EIS",
+    "riasec_primary": "Enterprising",
+    "description": "Health Tech Product Managers lead the development of digital health products — telemedicine platforms, health apps, hospital management systems, wearable health devices, and AI diagnostic tools. They bridge clinical requirements with technology solutions. India's digital health market is booming with Ayushman Bharat Digital Mission (ABDM), Practo, PharmEasy, and 1mg driving transformation.",
+    "stream_required": "Any Stream (Science/Engineering + Healthcare domain preferred)",
+    "education_pathway": {
+      "after_10th": "Science stream preferred, but any stream viable",
+      "after_12th": "BTech CS/IT/Biomedical Engineering, or MBBS, or BPharm + product management skills",
+      "entrance_exams": [
+        "JEE Main/Advanced (for BTech)",
+        "NEET (for MBBS/medical background)",
+        "MBA entrance exams (CAT, GMAT) for management track",
+        "No specific health tech PM entrance — role requires experience"
+      ],
+      "top_colleges": [
+        {
+          "name": "IIT Bombay (Healthcare Informatics)",
+          "nirf_rank": 3,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 25,
+          "location": "Mumbai"
+        },
+        {
+          "name": "IIM Ahmedabad (Healthcare Management)",
+          "nirf_rank": 1,
+          "approx_fee_4yr_lakh": 25,
+          "avg_placement_lpa": 35,
+          "location": "Ahmedabad"
+        },
+        {
+          "name": "IIPH Hyderabad (Public Health + Tech)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 3,
+          "avg_placement_lpa": 8,
+          "location": "Hyderabad"
+        }
+      ],
+      "alternative_paths": [
+        "Software engineer → health tech company → product management",
+        "Doctor/pharmacist → health tech startup PM",
+        "Product management bootcamps + healthcare domain knowledge",
+        "MPH (Master of Public Health) → digital health policy/product"
+      ],
+      "postgrad_options": [
+        "MBA with Healthcare specialization",
+        "MPH (Master of Public Health)",
+        "Product Management certifications (Google, Meta)",
+        "MS in Health Informatics"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "8-15 (Associate PM at health tech companies)",
+      "mid_5yr": "18-35 (Senior PM at Practo, 1mg, PharmEasy, or health tech startups)",
+      "senior_10yr": "35-60+ (VP Product at health tech, or CPO of health tech startup)"
+    },
+    "growth_outlook": "Very High — India's digital health market expected to reach $37B by 2030. ABDM (Ayushman Bharat Digital Mission) creating unified health IDs. Telemedicine normalized post-COVID. AI diagnostics, wearables, and remote monitoring growing rapidly.",
+    "skills_needed": [
+      "Product management fundamentals",
+      "Healthcare domain knowledge (clinical workflows, regulations)",
+      "Data analysis and metrics-driven thinking",
+      "User research and UX understanding",
+      "Stakeholder management (doctors, patients, hospitals)",
+      "Understanding of health regulations (DPDPA, ABDM standards)",
+      "Technical literacy (APIs, data, AI basics)"
+    ],
+    "work_environment": "Health tech company offices or remote — Practo, 1mg, PharmEasy, Niramai, Qure.ai, etc. Fast-paced startup culture. Requires hospital visits for user research. Cross-functional team leadership with engineers, designers, and clinical advisors.",
+    "govt_job_options": "National Health Authority (ABDM/Ayushman Bharat), NIC Health Division, CDAC health tech projects, eSanjeevani (government telemedicine), ICMR digital health initiatives",
+    "tier2_city_availability": "Medium — roles in Bangalore, Mumbai, Delhi, Hyderabad. Remote work increasingly available. Government health tech deployable to tier-2 cities."
+  },
+  {
+    "career_id": "iti_electrician",
+    "career_name": "ITI Electrician",
+    "career_name_hindi": "आईटीआई इलेक्ट्रीशियन",
+    "riasec_code": "RCI",
+    "riasec_primary": "Realistic",
+    "description": "ITI Electricians install, maintain, and repair electrical wiring, equipment, and systems in residential, commercial, and industrial settings. This is a 2-year ITI course (after 10th) available at ~15,000 government and private ITIs across India. One of the most in-demand trades with guaranteed employment in construction, manufacturing, power distribution, and maintenance sectors.",
+    "stream_required": "10th Pass (Any Stream)",
+    "education_pathway": {
+      "after_10th": "Direct admission to ITI Electrician trade (2-year course). Fee: ₹2,000-5,000/year at government ITIs, ₹20,000-50,000/year at private ITIs",
+      "after_12th": "Not required — but can still join ITI after 12th. Can also do Diploma in Electrical Engineering (3 years)",
+      "entrance_exams": [
+        "State ITI entrance exams (merit-based in most states)",
+        "NCVT (National Council for Vocational Training) certification exam",
+        "State apprenticeship exams after ITI"
+      ],
+      "top_colleges": [
+        {
+          "name": "Government ITIs (in every district)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0.1,
+          "avg_placement_lpa": 2,
+          "location": "All districts across India"
+        },
+        {
+          "name": "Central Institute of Tool Design (CITD)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0.2,
+          "avg_placement_lpa": 3,
+          "location": "Hyderabad"
+        }
+      ],
+      "alternative_paths": [
+        "Apprenticeship under master electrician (traditional route)",
+        "PMKVY (Pradhan Mantri Kaushal Vikas Yojana) short courses",
+        "State Skill Development Mission programs",
+        "Online electrical safety certifications"
+      ],
+      "postgrad_options": [
+        "Diploma in Electrical Engineering (lateral entry after ITI)",
+        "BTech through lateral entry (ITI → Diploma → BTech)",
+        "Specialized certifications in solar panel installation, EV charging"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "1.5-3 (apprenticeship/helper level)",
+      "mid_5yr": "3-5 (skilled electrician, or government lineman)",
+      "senior_10yr": "5-10 (supervisor/contractor, or foreign employment at 8-15 LPA in Gulf countries)"
+    },
+    "growth_outlook": "Very High — electricians always in demand. India's construction boom, solar installation growth, EV charging infrastructure, and Smart City projects creating massive demand. Foreign employment opportunities in Gulf, Singapore, Europe.",
+    "skills_needed": [
+      "Electrical circuit understanding",
+      "Wiring and installation techniques",
+      "Safety protocols and electrical codes",
+      "Reading electrical blueprints",
+      "Troubleshooting and fault finding",
+      "Basic mathematics",
+      "Physical fitness for climbing and manual work"
+    ],
+    "work_environment": "Construction sites, factories, residential buildings, power substations, outdoor installations. Physical work involving heights, confined spaces, and electrical hazards. Can be self-employed or work for contractors/companies. Outdoor work in all weather conditions.",
+    "govt_job_options": "State electricity board (lineman/wireman), Railways (electrical maintenance), CPWD electrician, defence establishment electrical staff, PSU apprenticeships (BHEL, NTPC, PowerGrid)",
+    "tier2_city_availability": "Very High — electricians needed everywhere, from villages to metros. One of the most location-flexible careers."
+  },
+  {
+    "career_id": "iti_fitter_mechanic",
+    "career_name": "ITI Fitter/Mechanic",
+    "career_name_hindi": "आईटीआई फिटर/मैकेनिक",
+    "riasec_code": "RCI",
+    "riasec_primary": "Realistic",
+    "description": "ITI Fitter/Mechanics assemble, install, and maintain machinery and mechanical equipment in factories, workshops, and industrial plants. The Fitter trade is the most versatile ITI trade — graduates work in automobile, manufacturing, defence, railways, and oil & gas sectors. 2-year NCVT course after 10th. Fee at government ITIs is minimal (₹2,000-5,000/year).",
+    "stream_required": "10th Pass (Any Stream)",
+    "education_pathway": {
+      "after_10th": "Direct admission to ITI Fitter trade (2-year course). Also available: Turner, Machinist, Welder, Mechanic Motor Vehicle trades",
+      "after_12th": "Diploma in Mechanical Engineering (3 years) if not taking ITI route",
+      "entrance_exams": [
+        "State ITI entrance exams (merit-based)",
+        "NCVT final trade certification exam",
+        "Apprenticeship exams (NAPS/RDAT)"
+      ],
+      "top_colleges": [
+        {
+          "name": "Government ITIs (in every district)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0.1,
+          "avg_placement_lpa": 2,
+          "location": "All districts across India"
+        },
+        {
+          "name": "Advanced Training Institutes (ATIs)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0.2,
+          "avg_placement_lpa": 3,
+          "location": "Mumbai, Kolkata, Chennai, Ludhiana, Hyderabad, Kanpur"
+        }
+      ],
+      "alternative_paths": [
+        "Factory apprenticeship under Apprenticeship Act",
+        "PMKVY courses in manufacturing trades",
+        "Automobile workshop training (informal but common)",
+        "Skill India Mission welding/fitting short courses"
+      ],
+      "postgrad_options": [
+        "Diploma in Mechanical Engineering (lateral entry)",
+        "BTech Mechanical (lateral entry: ITI → Diploma → BTech)",
+        "CNC machine operator certification",
+        "Advanced welding certifications (AWS)"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "1.5-3 (apprenticeship/helper level in factories)",
+      "mid_5yr": "3-6 (skilled fitter in PSU/factory, or ₹15,000-25,000/month)",
+      "senior_10yr": "6-12 (supervisor/foreman, or foreign employment in Gulf/Singapore at higher pay)"
+    },
+    "growth_outlook": "Stable — manufacturing sector (Make in India) driving demand. Automobile, defence manufacturing (DPSU), railways, and oil & gas sectors consistently hiring ITI fitters. Foreign employment demand remains strong.",
+    "skills_needed": [
+      "Mechanical assembly and fitting",
+      "Blueprint reading and measurements",
+      "Hand tools and machine tools operation",
+      "Welding basics",
+      "Safety protocols",
+      "Physical strength and manual dexterity",
+      "Basic mathematics and geometry"
+    ],
+    "work_environment": "Factories, workshops, manufacturing plants, construction sites. Hands-on physical work with machines and tools. Shift work common in factories. Safety gear (helmets, gloves, goggles) mandatory. Noisy and sometimes hazardous environments.",
+    "govt_job_options": "Indian Railways (largest recruiter of ITI trades), defence ordnance factories, BHEL, HAL, BEL, NTPC, ONGC, state PWD. Recruitment through RRB, defence recruitment rallies, and PSU apprenticeships.",
+    "tier2_city_availability": "Very High — factories and workshops in industrial towns and cities across India. Railways recruit for every zone and division."
+  },
+  {
+    "career_id": "diploma_civil_engineer",
+    "career_name": "Diploma Civil Engineer",
+    "career_name_hindi": "डिप्लोमा सिविल इंजीनियर",
+    "riasec_code": "RIC",
+    "riasec_primary": "Realistic",
+    "description": "Diploma Civil Engineers supervise construction projects, manage building sites, prepare estimates, and ensure structural safety. A 3-year polytechnic diploma after 10th provides hands-on engineering skills for India's massive construction and infrastructure sector. Graduates work in roads, bridges, buildings, dams, and Smart City projects. Lower cost and faster entry than BTech, with good employment prospects.",
+    "stream_required": "10th Pass (Science/Maths preferred)",
+    "education_pathway": {
+      "after_10th": "3-year Diploma in Civil Engineering at government/private polytechnics. Fee: ₹5,000-15,000/year at government polytechnics, ₹30,000-80,000/year at private",
+      "after_12th": "Lateral entry to 2nd year of Diploma (for 12th Science), or direct BTech Civil Engineering",
+      "entrance_exams": [
+        "State Polytechnic entrance exams (Delhi CET, UP JEECUP, TN TNEA Polytechnic, etc.)",
+        "GATE/state exams for government jobs after diploma",
+        "SSC JE (Junior Engineer) exam for central government"
+      ],
+      "top_colleges": [
+        {
+          "name": "Government Polytechnics (in every state)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0.3,
+          "avg_placement_lpa": 2.5,
+          "location": "All state capitals and major cities"
+        },
+        {
+          "name": "V.P.M.'s Polytechnic Thane",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0.5,
+          "avg_placement_lpa": 3,
+          "location": "Thane, Maharashtra"
+        },
+        {
+          "name": "Government Polytechnic Mumbai",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0.2,
+          "avg_placement_lpa": 3,
+          "location": "Mumbai, Maharashtra"
+        }
+      ],
+      "alternative_paths": [
+        "ITI trades (Mason, Surveyor) → work experience → diploma lateral entry",
+        "Construction site experience → diploma through distance/part-time mode",
+        "AMIE (Associate Member of Institution of Engineers) while working"
+      ],
+      "postgrad_options": [
+        "BTech Civil Engineering (lateral entry to 2nd year)",
+        "AMIE certification (equivalent to degree)",
+        "Specialized certifications in AutoCAD, STAAD Pro, Revit BIM"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "2-4 (site supervisor/junior engineer at construction firms)",
+      "mid_5yr": "4-8 (site engineer, or JE in government through SSC JE)",
+      "senior_10yr": "8-15 (project manager/contractor, or AE/EE in government)"
+    },
+    "growth_outlook": "Very High — India's infrastructure spending at ₹11 lakh crore/year. National Infrastructure Pipeline, Bharatmala, Sagarmala, Smart Cities, and metro rail projects creating unprecedented demand for civil diploma engineers.",
+    "skills_needed": [
+      "Surveying and leveling",
+      "AutoCAD and construction drawing",
+      "Estimation and costing",
+      "Concrete technology and structural basics",
+      "Site management and supervision",
+      "Construction safety standards",
+      "Basic soil mechanics"
+    ],
+    "work_environment": "Construction sites (roads, buildings, bridges, dams), government PWD offices. Outdoor work in sun, rain, and dust. Physical job requiring site visits. Can be stationed at remote project sites for months. Mix of desk work (estimates, drawings) and field supervision.",
+    "govt_job_options": "SSC JE (Junior Engineer) in CPWD/CWC/Railways, state PWD JE, NHAI site engineer, Smart City project roles, military engineering services, state irrigation department",
+    "tier2_city_availability": "Very High — construction happening everywhere across India. Tier-2 and tier-3 cities have highest construction activity currently."
+  },
+  {
+    "career_id": "diploma_mechanical_engineer",
+    "career_name": "Diploma Mechanical Engineer",
+    "career_name_hindi": "डिप्लोमा मैकेनिकल इंजीनियर",
+    "riasec_code": "RIC",
+    "riasec_primary": "Realistic",
+    "description": "Diploma Mechanical Engineers work in manufacturing, automobile, power plant, and heavy engineering sectors handling production, maintenance, quality control, and design. A 3-year polytechnic diploma after 10th provides industry-ready skills at low cost. Excellent government job prospects through SSC JE, state PSC, and PSU recruitment. Make in India boosting manufacturing employment.",
+    "stream_required": "10th Pass (Science/Maths preferred)",
+    "education_pathway": {
+      "after_10th": "3-year Diploma in Mechanical Engineering. Fee: ₹5,000-15,000/year at government polytechnics, ₹30,000-80,000/year at private",
+      "after_12th": "Lateral entry to 2nd year of Diploma, or direct BTech Mechanical Engineering",
+      "entrance_exams": [
+        "State Polytechnic entrance exams",
+        "SSC JE (for central government after diploma)",
+        "State PSC JE exams",
+        "PSU exams through GATE (after BTech upgrade)"
+      ],
+      "top_colleges": [
+        {
+          "name": "Government Polytechnics (in every state)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0.3,
+          "avg_placement_lpa": 2.5,
+          "location": "All state capitals and major cities"
+        },
+        {
+          "name": "PSG Polytechnic College",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0.5,
+          "avg_placement_lpa": 3,
+          "location": "Coimbatore, Tamil Nadu"
+        }
+      ],
+      "alternative_paths": [
+        "ITI Fitter/Turner/Machinist → diploma lateral entry",
+        "Apprenticeship in automobile workshops → diploma part-time",
+        "AMIE (Associate Member of Institution of Engineers)"
+      ],
+      "postgrad_options": [
+        "BTech Mechanical Engineering (lateral entry to 2nd year)",
+        "AMIE certification",
+        "CNC/CAD/CAM certifications",
+        "Six Sigma/Lean Manufacturing certifications"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "2-4 (junior engineer in factories/workshops)",
+      "mid_5yr": "4-8 (production engineer, or JE in government)",
+      "senior_10yr": "8-15 (plant manager/supervisor, or AE in government)"
+    },
+    "growth_outlook": "Stable-High — Make in India, PLI schemes for electronics/auto/pharma manufacturing creating demand. Automobile, defence manufacturing (DPSUs), and industrial automation need diploma mechanical engineers consistently.",
+    "skills_needed": [
+      "Machine drawing and AutoCAD",
+      "Manufacturing processes (lathe, milling, welding)",
+      "Quality control and inspection",
+      "Hydraulics and pneumatics",
+      "Production planning",
+      "Safety management",
+      "Basic CNC programming"
+    ],
+    "work_environment": "Manufacturing plants, automobile workshops, power plants, heavy engineering factories. Shop floor work with machines. Shift work common. Safety gear required. Mix of hands-on machine work and production management.",
+    "govt_job_options": "SSC JE Mechanical in Railways/CPWD/MES, state PWD/irrigation JE, HAL/BHEL/BEL apprentice → regular, defence ordnance factories, Indian Railways largest recruiter",
+    "tier2_city_availability": "Very High — manufacturing hubs in tier-2 cities (Coimbatore, Ludhiana, Rajkot, Indore, Jamshedpur, etc.) have high demand"
+  },
+  {
+    "career_id": "professional_chef",
+    "career_name": "Professional Chef/Culinary Arts",
+    "career_name_hindi": "प्रोफेशनल शेफ/पाककला",
+    "riasec_code": "RAE",
+    "riasec_primary": "Realistic",
+    "description": "Professional chefs create, plan, and execute menus in restaurants, hotels, cruise ships, catering companies, and food startups. India's hospitality and food service industry is booming with cloud kitchens, premium dining, and international hotel chains expanding. A 1-3 year diploma/degree in culinary arts or hotel management opens doors. Celebrity chef culture and food content creation adding new dimensions to this career.",
+    "stream_required": "Any Stream (10th/12th pass)",
+    "education_pathway": {
+      "after_10th": "1-year Craft Course in Food Production, or 3-year diploma in Hotel Management",
+      "after_12th": "BSc Hotel Management (3 years) or BHM (4 years), or 1-year culinary diploma",
+      "entrance_exams": [
+        "NCHM JEE (National Council for Hotel Management Joint Entrance Exam)",
+        "CUET for BSc Hotel Management at central universities",
+        "State-level hotel management entrance exams",
+        "IHM entrance exams"
+      ],
+      "top_colleges": [
+        {
+          "name": "Institute of Hotel Management (IHM) Pusa, Delhi",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 5,
+          "avg_placement_lpa": 4,
+          "location": "New Delhi"
+        },
+        {
+          "name": "IHM Mumbai",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 5,
+          "avg_placement_lpa": 4,
+          "location": "Mumbai"
+        },
+        {
+          "name": "Welcomgroup Graduate School of Hotel Administration (WGSHA)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 18,
+          "avg_placement_lpa": 5,
+          "location": "Manipal, Karnataka"
+        }
+      ],
+      "alternative_paths": [
+        "Traditional apprenticeship under experienced chefs",
+        "Short culinary courses (3-6 months) at cooking schools",
+        "YouTube/social media food content → restaurant opportunities",
+        "Cloud kitchen entrepreneurship with minimal formal training"
+      ],
+      "postgrad_options": [
+        "PG Diploma in Culinary Arts",
+        "International culinary programs (Le Cordon Bleu, CIA)",
+        "Food & Beverage Management MBA",
+        "Food science and nutrition certifications"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "2-4 (commis chef at hotels)",
+      "mid_5yr": "5-10 (chef de partie/sous chef at premium hotels)",
+      "senior_10yr": "12-30+ (executive chef at 5-star hotels, or restaurant owner. Celebrity chefs earn much more.)"
+    },
+    "growth_outlook": "High — India's food services market growing at 15%+ annually. Cloud kitchens, premium dining, food delivery, and food tourism driving demand. International hotel chains (Marriott, Hilton, Taj, ITC) expanding in India. Cruise ships and international hotels offer global opportunities.",
+    "skills_needed": [
+      "Cooking techniques and food presentation",
+      "Menu planning and recipe development",
+      "Kitchen management and team leadership",
+      "Food safety and hygiene (FSSAI compliance)",
+      "Cost control and inventory management",
+      "Creativity and palate development",
+      "Physical stamina for long standing hours"
+    ],
+    "work_environment": "Hotel kitchens, restaurant kitchens, cruise ships, catering companies, cloud kitchens. High-pressure, fast-paced, hot environment. Long hours including weekends and holidays. Hierarchical kitchen brigade system. Can be physically demanding.",
+    "govt_job_options": "Indian Railways catering (IRCTC), Armed Forces mess/catering, government guest house management, state tourism department, Raj Bhavan kitchen staff",
+    "tier2_city_availability": "High — hotels, restaurants, and catering in every city. Heritage tourism driving culinary demand in tier-2 cities (Jaipur, Udaipur, Varanasi, Mysore)."
+  },
+  {
+    "career_id": "commercial_pilot",
+    "career_name": "Commercial Pilot (after 12th)",
+    "career_name_hindi": "कमर्शियल पायलट",
+    "riasec_code": "RIE",
+    "riasec_primary": "Realistic",
+    "description": "Commercial pilots fly passenger and cargo aircraft for airlines like IndiGo, Air India, SpiceJet, and Vistara. India needs 2,000+ new pilots annually as aviation grows at 10%+ CAGR. Training can begin after 12th (PCM) — get a CPL (Commercial Pilot License) from DGCA-approved flying schools in 18-24 months. High investment (₹25-50 lakh) but among the highest-paying careers without a college degree.",
+    "stream_required": "Science (PCM mandatory — Physics and Maths in 12th)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics mandatory",
+      "after_12th": "Directly join DGCA-approved flying training organization (FTO). Get SPL → PPL → CPL in 18-24 months. Cost: ₹25-50 lakh total",
+      "entrance_exams": [
+        "DGCA CPL Exams (Air Navigation, Meteorology, Air Regulations, Technical Specific/General)",
+        "Airline selection tests and simulator assessments",
+        "Medical fitness: DGCA Class 1 Medical Certificate"
+      ],
+      "top_colleges": [
+        {
+          "name": "Indira Gandhi Rashtriya Uran Akademi (IGRUA)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 40,
+          "avg_placement_lpa": null,
+          "location": "Fursatganj, Uttar Pradesh"
+        },
+        {
+          "name": "Rajiv Gandhi Academy for Aviation Technology",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 35,
+          "avg_placement_lpa": null,
+          "location": "Thiruvananthapuram, Kerala"
+        },
+        {
+          "name": "Bombay Flying Club",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 25,
+          "avg_placement_lpa": null,
+          "location": "Mumbai"
+        },
+        {
+          "name": "CAE Flight Training (formerly Oxford Aviation)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 50,
+          "avg_placement_lpa": null,
+          "location": "Gondia, Maharashtra"
+        }
+      ],
+      "alternative_paths": [
+        "IAF pilot → transition to commercial aviation after service",
+        "Foreign CPL (USA/South Africa/Philippines) — cheaper training, requires DGCA conversion",
+        "BTech/any degree + CPL simultaneously",
+        "Helicopter pilot license (CHPL) for charter/ONGC operations"
+      ],
+      "postgrad_options": [
+        "ATPL (Airline Transport Pilot License) for captain upgrade",
+        "Type ratings on specific aircraft (Boeing 737, Airbus A320)",
+        "Flight instructor rating (FIR) for teaching",
+        "Aviation management MBA"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "8-12 (First Officer/Co-pilot at Indian airlines)",
+      "mid_5yr": "18-30 (Senior First Officer)",
+      "senior_10yr": "35-60+ (Captain at major airlines. International airlines pay $100K-200K+)"
+    },
+    "growth_outlook": "Very High — India to become world's 3rd largest aviation market by 2027. IndiGo alone ordering 500+ aircraft. Acute pilot shortage — airlines recruiting aggressively. International demand from Middle East, Southeast Asian airlines.",
+    "skills_needed": [
+      "Strong physics and mathematics",
+      "Spatial awareness and instrument reading",
+      "Quick decision making under pressure",
+      "English communication (ICAO Level 4+)",
+      "Perfect health and eyesight (correctable to 6/6)",
+      "Discipline and procedure adherence",
+      "Multi-tasking and situational awareness"
+    ],
+    "work_environment": "Aircraft cockpit, airports, layover hotels. Shift-based work with irregular hours. International travel opportunities. Regulated duty time (FDTL limits). Physically comfortable but mentally demanding. Based at home base airport.",
+    "govt_job_options": "Air India (government airline till recently), IAF pilot (defence), helicopter pilots for ONGC/Pawan Hans (government company), DGCA licensing examiner",
+    "tier2_city_availability": "Medium — based at airline hub airports (Delhi, Mumbai, Bangalore, Hyderabad, Chennai, Kolkata) but regional airlines (IndiGo, SpiceJet) operate from tier-2 cities too"
+  },
+  {
+    "career_id": "merchant_navy_officer",
+    "career_name": "Merchant Navy Officer",
+    "career_name_hindi": "मर्चेंट नेवी अधिकारी",
+    "riasec_code": "REC",
+    "riasec_primary": "Realistic",
+    "description": "Merchant Navy officers operate commercial ships carrying cargo and passengers across global trade routes. They work in navigation (deck officers) or engineering (marine engineers). Entry after 12th (PCM) through DG Shipping-approved courses. High salary (tax-free if at sea 182+ days) with global travel. India is the world's 3rd largest supplier of merchant navy officers.",
+    "stream_required": "Science (PCM mandatory)",
+    "education_pathway": {
+      "after_10th": "Science stream with Physics, Chemistry, Mathematics",
+      "after_12th": "DNS (Diploma in Nautical Science, 1 year + 18 months sea training) for deck officers, or B.E./BTech Marine Engineering (4 years) for engineering officers",
+      "entrance_exams": [
+        "IMU CET (Indian Maritime University Common Entrance Test)",
+        "TMISAT (Tolani Maritime Institute entrance)",
+        "DG Shipping approved college entrance tests",
+        "Medical fitness test (EYE 6/6, color vision mandatory)"
+      ],
+      "top_colleges": [
+        {
+          "name": "TS Chanakya (Training Ship Chanakya)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 8,
+          "avg_placement_lpa": 10,
+          "location": "Navi Mumbai"
+        },
+        {
+          "name": "Indian Maritime University (IMU)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 10,
+          "location": "Chennai (HQ), Mumbai, Kolkata, Visakhapatnam"
+        },
+        {
+          "name": "Tolani Maritime Institute",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 15,
+          "avg_placement_lpa": 10,
+          "location": "Pune"
+        }
+      ],
+      "alternative_paths": [
+        "GP Rating course (6 months after 10th) → start as deck rating → work up to officer",
+        "BSc Nautical Science → CDC (Continuous Discharge Certificate)",
+        "Lateral entry for BTech graduates (any branch) to marine engineering"
+      ],
+      "postgrad_options": [
+        "Master Mariner certificate (highest deck qualification)",
+        "Chief Engineer certificate (highest engine qualification)",
+        "MBA in Shipping Management",
+        "Shore-based management roles in shipping companies"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "6-10 (Junior Officer/3rd Officer, tax-free if at sea 182+ days)",
+      "mid_5yr": "12-25 (2nd Officer/Chief Officer)",
+      "senior_10yr": "25-50+ (Captain/Chief Engineer earning $8,000-15,000/month, largely tax-free)"
+    },
+    "growth_outlook": "Stable — global trade depends on shipping (90% of world trade by volume). India targeting larger share of global seafarer market. Autonomous ships and green shipping creating new technical roles.",
+    "skills_needed": [
+      "Navigation and ship handling (deck)",
+      "Marine engineering and machinery (engine)",
+      "English communication (maritime English)",
+      "Physical fitness and swimming",
+      "Leadership in isolated environments",
+      "Emergency response (firefighting, survival)",
+      "Weather and sea condition assessment"
+    ],
+    "work_environment": "Commercial cargo ships on international routes. 6-9 months at sea, 2-3 months leave cycle. Isolated from family for months. Visits to global ports. Small crew (20-25 people). Can be monotonous but offers unique global travel experience. Modern ships are comfortable.",
+    "govt_job_options": "Shipping Corporation of India (SCI, government shipping company), DG Shipping regulatory roles, port authority (Mumbai/Chennai/Kolkata Port Trust), Indian Navy (for lateral entry), lighthouse and lightship service",
+    "tier2_city_availability": "Low — shipping offices in Mumbai, Chennai, Kolkata, Vizag. At sea most of the time. Shore leave at home city."
+  },
+  {
+    "career_id": "fashion_designer_diploma",
+    "career_name": "Fashion Designer (Diploma)",
+    "career_name_hindi": "फैशन डिज़ाइनर (डिप्लोमा)",
+    "riasec_code": "AER",
+    "riasec_primary": "Artistic",
+    "description": "Fashion designers create clothing, accessories, and textile designs for the Indian and global fashion industry. A 1-3 year diploma after 10th/12th provides practical skills in design, pattern making, draping, and garment construction. India's fashion industry is worth $100B+ with ready-to-wear, bridal, export garments, and sustainable fashion creating diverse opportunities.",
+    "stream_required": "Any Stream (10th/12th pass)",
+    "education_pathway": {
+      "after_10th": "1-2 year diploma in Fashion Design at state polytechnics or private institutes. Fee: ₹50K-3L",
+      "after_12th": "3-4 year B.Des/BFTech in Fashion Design, or 1-year advanced diploma",
+      "entrance_exams": [
+        "NIFT entrance exam (for NIFT colleges)",
+        "NID DAT (for NID)",
+        "UCEED (for IIT IDC)",
+        "State design entrance exams",
+        "Private institutes: portfolio + interview"
+      ],
+      "top_colleges": [
+        {
+          "name": "NIFT (National Institute of Fashion Technology)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 8,
+          "avg_placement_lpa": 6,
+          "location": "Delhi, Mumbai, Bangalore, Hyderabad (16 campuses)"
+        },
+        {
+          "name": "Pearl Academy",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 15,
+          "avg_placement_lpa": 5,
+          "location": "Delhi, Mumbai, Jaipur"
+        },
+        {
+          "name": "JD Institute of Fashion Technology",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 5,
+          "avg_placement_lpa": 3,
+          "location": "Bangalore, Mumbai, Delhi, Hyderabad"
+        }
+      ],
+      "alternative_paths": [
+        "Self-taught designers building brands on Instagram/Etsy",
+        "Tailoring/stitching skills → fashion design courses",
+        "Fashion illustration online courses → portfolio building",
+        "Apprenticeship under established designers"
+      ],
+      "postgrad_options": [
+        "M.Des in Fashion Design (NIFT/NID)",
+        "Fashion business management courses",
+        "International programs (Central Saint Martins, Parsons)",
+        "Textile design specialization"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "2-5 (assistant designer at fashion houses/export firms)",
+      "mid_5yr": "5-12 (senior designer at brands like Myntra, Zara India, ethnic wear companies)",
+      "senior_10yr": "12-30+ (head designer, creative director, or own fashion label/boutique)"
+    },
+    "growth_outlook": "High — India's fashion market growing 10%+ annually. E-commerce (Myntra, Ajio, Nykaa Fashion) expanding designer opportunities. Sustainable fashion and handloom revival creating niche markets. Export garment industry employs millions.",
+    "skills_needed": [
+      "Fashion illustration and sketching",
+      "Pattern making and draping",
+      "Sewing and garment construction",
+      "Color theory and fabric knowledge",
+      "Fashion CAD software (CLO3D, Lectra)",
+      "Trend forecasting",
+      "Brand building and marketing basics"
+    ],
+    "work_environment": "Fashion houses, garment factories, design studios, or home studio for freelancers/entrepreneurs. Creative work with tight deadlines around fashion seasons. Can be glamorous (fashion weeks) or production-focused (export units). Entrepreneurship very common.",
+    "govt_job_options": "NIFT/NID faculty positions, Handloom Board design consultant, Textile Ministry advisory roles, Khadi & Village Industries Commission, state handloom development centers",
+    "tier2_city_availability": "Medium-High — garment manufacturing hubs in Tirupur, Surat, Ludhiana, Jaipur. Boutiques and fashion businesses in every city."
+  },
+  {
+    "career_id": "fitness_trainer_sports_coach",
+    "career_name": "Fitness Trainer/Sports Coach",
+    "career_name_hindi": "फिटनेस ट्रेनर/खेल कोच",
+    "riasec_code": "SRE",
+    "riasec_primary": "Social",
+    "description": "Fitness trainers and sports coaches design exercise programs, train athletes, and promote physical wellness. India's fitness industry is booming at $32B+ with gyms, yoga studios, CrossFit boxes, and personal training expanding rapidly. Certification-based entry makes this accessible without a full degree. Sports coaching for cricket, football, badminton academies also growing.",
+    "stream_required": "Any Stream (Physical Education/Sports Science preferred)",
+    "education_pathway": {
+      "after_10th": "Focus on sports activities alongside academics",
+      "after_12th": "BPEd (Bachelor of Physical Education, 4 years), BSc Sports Science, or fitness certifications (ACE, ACSM, NSCA, K11 India)",
+      "entrance_exams": [
+        "BPEd entrance exams at state universities",
+        "SAI (Sports Authority of India) coaching diploma entrance",
+        "Fitness certification exams (ACE-CPT, ACSM-CPT, K11 Fitness)"
+      ],
+      "top_colleges": [
+        {
+          "name": "LNIPE Gwalior (Lakshmibai National Institute of Physical Education)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 2,
+          "avg_placement_lpa": 3,
+          "location": "Gwalior, Madhya Pradesh"
+        },
+        {
+          "name": "SAI Netaji Subhas National Institute of Sports (NIS)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0.5,
+          "avg_placement_lpa": null,
+          "location": "Patiala, Punjab"
+        },
+        {
+          "name": "K11 School of Fitness Sciences",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 1,
+          "avg_placement_lpa": 3,
+          "location": "Mumbai (online + offline)"
+        }
+      ],
+      "alternative_paths": [
+        "Fitness certifications (3-6 months) — ACE, NASM, K11 India",
+        "Yoga teacher training (200-hour TTC, recognized globally)",
+        "Sports-specific coaching courses (BCCI coaching for cricket, SAI for various sports)",
+        "Personal training apprenticeship at gyms"
+      ],
+      "postgrad_options": [
+        "MPEd (Master of Physical Education)",
+        "MSc Exercise Science/Sports Medicine",
+        "Specialized certifications (sports nutrition, strength & conditioning)",
+        "NIS coaching diploma for elite coaching"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "2-4 (gym trainer, assistant coach)",
+      "mid_5yr": "5-10 (head trainer at premium gym, personal trainer with clients)",
+      "senior_10yr": "10-25+ (gym owner, celebrity trainer, head coach at sports academy, or online fitness brand)"
+    },
+    "growth_outlook": "Very High — India's fitness awareness exploding post-COVID. Premium gym chains (Cult.fit, Gold's Gym), CrossFit, yoga studios, and online fitness coaching growing 20%+ annually. Corporate wellness programs adding demand.",
+    "skills_needed": [
+      "Exercise science and anatomy",
+      "Program design and periodization",
+      "Nutrition basics",
+      "Client communication and motivation",
+      "Injury prevention and first aid",
+      "Business skills for personal training",
+      "Social media for personal branding"
+    ],
+    "work_environment": "Gyms, sports academies, fitness studios, client homes (for personal trainers), online platforms. Active, physical work environment. Early morning and evening hours (peak client times). Can be self-employed with flexible schedule.",
+    "govt_job_options": "SAI (Sports Authority of India) coach positions, state sports department coaching, PET (Physical Education Teacher) at government schools, police/military physical training instructor, university physical education faculty",
+    "tier2_city_availability": "Very High — gyms and fitness centers in every city and town. Sports coaching needed everywhere. Online coaching removes location barriers."
+  },
+  {
+    "career_id": "digital_marketing_specialist",
+    "career_name": "Digital Marketing Specialist",
+    "career_name_hindi": "डिजिटल मार्केटिंग विशेषज्ञ",
+    "riasec_code": "EAI",
+    "riasec_primary": "Enterprising",
+    "description": "Digital marketing specialists plan and execute online marketing campaigns across SEO, SEM, social media, email, content marketing, and performance marketing channels. India's digital ad spend crossed ₹50,000 crore in 2024 with every business needing online presence. One of the most accessible high-growth careers — no specific degree required, certification and portfolio-based entry possible.",
+    "stream_required": "Any Stream",
+    "education_pathway": {
+      "after_10th": "Any stream — focus on building communication skills",
+      "after_12th": "BBA/BCom/BA with digital marketing certifications, or BBA in Digital Marketing (emerging programs)",
+      "entrance_exams": [
+        "No specific entrance — certification and portfolio based",
+        "Google Digital Marketing Certificate (free)",
+        "Meta Blueprint Certification",
+        "HubSpot Inbound Marketing Certification"
+      ],
+      "top_colleges": [
+        {
+          "name": "MICA Ahmedabad (for marketing/communication degree)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 20,
+          "avg_placement_lpa": 12,
+          "location": "Ahmedabad, Gujarat"
+        },
+        {
+          "name": "Symbiosis Institute of Media & Communication",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 15,
+          "avg_placement_lpa": 8,
+          "location": "Pune, Maharashtra"
+        },
+        {
+          "name": "Online platforms (Google, Coursera, Udemy)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0.1,
+          "avg_placement_lpa": null,
+          "location": "Online"
+        }
+      ],
+      "alternative_paths": [
+        "Google Digital Marketing Certificate (free, highly valued)",
+        "Run personal blog/YouTube channel as portfolio",
+        "Freelance digital marketing on Fiverr/Upwork",
+        "Internship at digital marketing agency → full-time"
+      ],
+      "postgrad_options": [
+        "MBA in Marketing/Digital Marketing",
+        "PG Diploma in Digital Marketing from MICA/Symbiosis",
+        "Advanced Google Ads/Analytics certifications",
+        "Marketing analytics specialization"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "3-6 (digital marketing executive)",
+      "mid_5yr": "8-18 (digital marketing manager, performance marketing lead)",
+      "senior_10yr": "18-35+ (VP Marketing, Head of Digital, or agency owner. Freelancers can earn ₹1-5L/month)"
+    },
+    "growth_outlook": "Very High — India's digital advertising growing 25%+ annually. Every business from local shops to MNCs needs digital marketing. Performance marketing, AI-driven marketing, and creator economy expanding opportunities.",
+    "skills_needed": [
+      "SEO (Search Engine Optimization)",
+      "Google Ads and Meta Ads management",
+      "Social media strategy and content creation",
+      "Analytics (Google Analytics, data interpretation)",
+      "Copywriting and content marketing",
+      "Email marketing automation",
+      "Basic graphic design (Canva, Figma)"
+    ],
+    "work_environment": "Agencies, in-house marketing teams, or freelance/remote. Fast-paced, creative, and data-driven. Screen-heavy work. Flexible hours but campaign deadlines can create pressure. Very remote-friendly career.",
+    "govt_job_options": "MyGov.in social media team, PIB (Press Information Bureau) digital division, state government digital communication, Indian Railways social media, Digital India initiative roles",
+    "tier2_city_availability": "Very High — fully remote work available. Local businesses in every city need digital marketing. Freelancing enables location independence."
+  },
+  {
+    "career_id": "social_media_manager",
+    "career_name": "Social Media Manager",
+    "career_name_hindi": "सोशल मीडिया मैनेजर",
+    "riasec_code": "EAS",
+    "riasec_primary": "Enterprising",
+    "description": "Social media managers create content strategies, manage brand presence, engage audiences, and grow followings across Instagram, YouTube, LinkedIn, Twitter/X, and emerging platforms. India has 500M+ social media users — brands, politicians, and celebrities all need social media management. Entry barrier is low — skills and creativity matter more than degrees.",
+    "stream_required": "Any Stream",
+    "education_pathway": {
+      "after_10th": "Any stream — develop communication and creative skills",
+      "after_12th": "BA Mass Communication/Journalism, BBA, or any graduation + social media certifications",
+      "entrance_exams": [
+        "No specific entrance — portfolio and skills based",
+        "Meta Blueprint Certification",
+        "Hootsuite Social Marketing Certification",
+        "Mass communication entrance exams (for degree programs)"
+      ],
+      "top_colleges": [
+        {
+          "name": "Indian Institute of Mass Communication (IIMC)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 1,
+          "avg_placement_lpa": 7,
+          "location": "New Delhi"
+        },
+        {
+          "name": "Symbiosis Institute of Media & Communication",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 15,
+          "avg_placement_lpa": 8,
+          "location": "Pune"
+        },
+        {
+          "name": "Xavier Institute of Communications",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 3,
+          "avg_placement_lpa": 5,
+          "location": "Mumbai"
+        }
+      ],
+      "alternative_paths": [
+        "Build personal social media following as portfolio",
+        "Manage social media for local businesses (free/low cost) as experience",
+        "Content creation internships at agencies",
+        "Freelance social media management on platforms"
+      ],
+      "postgrad_options": [
+        "MBA in Marketing/Communication",
+        "PG Diploma in Digital Communication",
+        "Advanced content strategy certifications",
+        "Influencer marketing specialization"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "2.5-5 (social media executive at agency or brand)",
+      "mid_5yr": "6-15 (social media manager/head of social at brands)",
+      "senior_10yr": "15-30+ (VP Social/Content, agency founder, or personal brand monetization)"
+    },
+    "growth_outlook": "Very High — social media is now the primary marketing channel for most brands. Creator economy, influencer marketing, and short-form video (Reels, Shorts) creating massive demand. AI content tools enhancing productivity but increasing need for strategy roles.",
+    "skills_needed": [
+      "Content creation (writing, basic video editing, graphic design)",
+      "Platform-specific strategy (Instagram, YouTube, LinkedIn, X)",
+      "Community management and engagement",
+      "Analytics and reporting",
+      "Trend awareness and cultural sensitivity",
+      "Copywriting and storytelling",
+      "Basic photography and video skills"
+    ],
+    "work_environment": "Agencies, brand marketing teams, or freelance. Creative, fast-paced, and trend-driven. Remote work very common. Requires being 'always on' for real-time engagement. Content creation may involve on-location shoots.",
+    "govt_job_options": "Government social media cells (PMO, state governments), PIB social media, MyGov.in, Indian Railways social media team, state tourism social media, election campaign management",
+    "tier2_city_availability": "Very High — fully remote, plus local businesses in every city need social media management"
+  },
+  {
+    "career_id": "professional_photographer",
+    "career_name": "Professional Photographer",
+    "career_name_hindi": "प्रोफेशनल फोटोग्राफर",
+    "riasec_code": "ARI",
+    "riasec_primary": "Artistic",
+    "description": "Professional photographers capture images for weddings, commercial brands, journalism, fashion, wildlife, and digital content. India's wedding photography market alone is worth ₹40,000 crore+. Specializations include wedding, portrait, product, food, wildlife, real estate, and drone photography. No mandatory degree — skill, portfolio, and equipment investment drive success.",
+    "stream_required": "Any Stream",
+    "education_pathway": {
+      "after_10th": "Any stream — start learning photography alongside studies",
+      "after_12th": "Diploma/degree in Photography (1-3 years) at film/art institutes, or self-taught with certifications",
+      "entrance_exams": [
+        "FTII entrance exam (Film and Television Institute of India)",
+        "AJK MCRC entrance (Jamia Millia Islamia)",
+        "Portfolio-based admission at photography schools",
+        "No entrance for many diploma programs"
+      ],
+      "top_colleges": [
+        {
+          "name": "FTII Pune (Film and Television Institute of India)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 2,
+          "avg_placement_lpa": null,
+          "location": "Pune, Maharashtra"
+        },
+        {
+          "name": "National Institute of Design (NID)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 8,
+          "avg_placement_lpa": 8,
+          "location": "Ahmedabad, Gujarat"
+        },
+        {
+          "name": "Sri Aurobindo Centre for Arts and Communication (SACAC)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 4,
+          "avg_placement_lpa": 3,
+          "location": "New Delhi"
+        }
+      ],
+      "alternative_paths": [
+        "Self-taught through YouTube and online courses (completely viable)",
+        "Assist established photographers as apprentice",
+        "Start with mobile photography → upgrade to professional gear",
+        "Stock photography (Shutterstock, Getty) as starting income"
+      ],
+      "postgrad_options": [
+        "MFA in Photography",
+        "Specialized workshops (wildlife, fashion, documentary)",
+        "International photography programs (ICP New York, London College of Communication)",
+        "Drone photography certification"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "2-4 (assistant photographer/junior photographer at studios)",
+      "mid_5yr": "5-15 (established photographer with regular clients)",
+      "senior_10yr": "15-40+ (premium wedding photographer: ₹2-10L/wedding; commercial photographer: ₹50K-5L/shoot; top photographers earn much more)"
+    },
+    "growth_outlook": "High — visual content demand exploding with social media, e-commerce product photography, food delivery apps, and real estate. Wedding photography is recession-proof in India. Drone photography and 360° virtual tours creating new niches.",
+    "skills_needed": [
+      "Camera operation and lighting techniques",
+      "Photo editing (Lightroom, Photoshop)",
+      "Composition and visual storytelling",
+      "Client communication and management",
+      "Business and marketing skills",
+      "Equipment maintenance",
+      "Adaptability to different shooting conditions"
+    ],
+    "work_environment": "Studios, outdoor locations, event venues, client premises. Freelance/self-employed is the norm. Weekend work for weddings and events. Travel for destination shoots. Physical work carrying equipment. Irregular income initially.",
+    "govt_job_options": "PIB photographer, Doordarshan/All India Radio, Archaeological Survey of India (ASI) documentation, state tourism photography, Indian Army/Navy photography unit, forensic photography in police",
+    "tier2_city_availability": "Very High — photography demand in every city and town. Wedding and event photography especially strong in tier-2/3 cities."
+  },
+  {
+    "career_id": "event_manager",
+    "career_name": "Event Manager",
+    "career_name_hindi": "इवेंट मैनेजर",
+    "riasec_code": "ESA",
+    "riasec_primary": "Enterprising",
+    "description": "Event managers plan, organize, and execute events including weddings, corporate conferences, product launches, music festivals, exhibitions, and government programs. India's event management industry is worth ₹10,000 crore+ and growing rapidly. Requires strong organizational skills, creativity, and the ability to handle logistics under pressure. Entrepreneurship opportunities are excellent.",
+    "stream_required": "Any Stream",
+    "education_pathway": {
+      "after_10th": "Any stream — develop communication, organizational, and creative skills",
+      "after_12th": "BA/BBA in Event Management (3 years), or diploma in Event Management (1-2 years), or MBA in Event Management",
+      "entrance_exams": [
+        "NAEMD entrance (National Academy of Event Management and Development)",
+        "General merit-based or aptitude tests at private institutes",
+        "No specific national entrance exam for event management"
+      ],
+      "top_colleges": [
+        {
+          "name": "National Academy of Event Management and Development (NAEMD)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 5,
+          "avg_placement_lpa": 4,
+          "location": "Mumbai, Delhi, Pune, Jaipur, Ahmedabad"
+        },
+        {
+          "name": "EMDI Institute of Media and Communication",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 6,
+          "avg_placement_lpa": 4,
+          "location": "Mumbai, Delhi, Bangalore"
+        },
+        {
+          "name": "Pearl Academy (Event Management)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 15,
+          "avg_placement_lpa": 5,
+          "location": "Delhi, Mumbai, Jaipur"
+        }
+      ],
+      "alternative_paths": [
+        "Volunteer at events → internship at event company → full-time",
+        "Wedding planning as side business → full-time event management",
+        "PR/advertising background → event management transition",
+        "College festival organizing experience → industry entry"
+      ],
+      "postgrad_options": [
+        "MBA in Event Management/Hospitality",
+        "PG Diploma in Event Management",
+        "Wedding planning certifications (international)",
+        "MICE (Meetings, Incentives, Conferences, Exhibitions) specialization"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "2.5-5 (event coordinator at event companies)",
+      "mid_5yr": "6-12 (senior event manager at agencies, or freelance with good clients)",
+      "senior_10yr": "15-30+ (event company owner, destination wedding planner: ₹5-50L per event)"
+    },
+    "growth_outlook": "High — India's wedding industry alone is ₹10 lakh crore. Corporate events, brand activations, music festivals, and government events growing. Destination weddings and experiential events are premium segments.",
+    "skills_needed": [
+      "Project management and logistics",
+      "Vendor management and negotiation",
+      "Budget planning and cost control",
+      "Creative conceptualization",
+      "Client relationship management",
+      "Problem solving under pressure",
+      "Team coordination and leadership"
+    ],
+    "work_environment": "Event venues, hotels, outdoor locations, office for planning. Extremely dynamic — no two events are the same. Long hours during event execution. Weekend and holiday work common (peak event season: Oct-Feb). Travel for destination events.",
+    "govt_job_options": "Government event management tenders (Republic Day, Independence Day events), state tourism events, election rallies management, government exhibition coordination (ITPO), municipal corporation events",
+    "tier2_city_availability": "High — events happen everywhere. Destination wedding demand in Jaipur, Udaipur, Goa, Jim Corbett. Corporate events in all business cities."
+  },
+  {
+    "career_id": "real_estate_agent",
+    "career_name": "Real Estate Agent",
+    "career_name_hindi": "रियल एस्टेट एजेंट",
+    "riasec_code": "ESC",
+    "riasec_primary": "Enterprising",
+    "description": "Real estate agents facilitate buying, selling, and renting of residential and commercial properties. Under RERA (Real Estate Regulation and Development Act 2016), agents must be registered with the state RERA authority. India's real estate market is worth $265B and growing. Commission-based earning model (1-2% of property value) offers unlimited income potential. RERA registration requires only 10th pass in many states.",
+    "stream_required": "Any Stream (10th/12th pass minimum)",
+    "education_pathway": {
+      "after_10th": "Can start working as property assistant — RERA registration requires minimum 10th pass in most states",
+      "after_12th": "Any graduation preferred but not mandatory. BCom/BBA/BA helpful for business understanding",
+      "entrance_exams": [
+        "RERA Agent Registration (state-specific, exam or direct registration)",
+        "No national entrance exam",
+        "Optional: Real estate certifications from CREDAI, NAR India"
+      ],
+      "top_colleges": [
+        {
+          "name": "RICS School of Built Environment (Amity University)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 12,
+          "avg_placement_lpa": 5,
+          "location": "Noida, Uttar Pradesh"
+        },
+        {
+          "name": "NICMAR (National Institute of Construction Management and Research)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 6,
+          "location": "Pune, Maharashtra"
+        },
+        {
+          "name": "Short-term real estate courses (CREDAI, NAR India, PropTiger Academy)",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0.2,
+          "avg_placement_lpa": null,
+          "location": "Online and major cities"
+        }
+      ],
+      "alternative_paths": [
+        "Start as property dealer assistant → learn the market → RERA registration",
+        "Online platforms (MagicBricks, 99acres) as channel partners",
+        "NoBroker, Housing.com agent programs",
+        "Construction/architecture background → real estate broking"
+      ],
+      "postgrad_options": [
+        "MBA in Real Estate/Construction Management",
+        "RICS certification (globally recognized)",
+        "Property valuation certification",
+        "Real estate investment and development courses"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "2-5 (commission-based, highly variable)",
+      "mid_5yr": "6-20 (established agent with regular deals)",
+      "senior_10yr": "20-50+ (premium property consultant/brokerage firm owner. Top agents in metros earn ₹1Cr+)"
+    },
+    "growth_outlook": "High — India's real estate market growing steadily. RERA regulation professionalizing the industry. PropTech platforms creating organized opportunities. Commercial real estate and luxury residential segments offer highest commissions.",
+    "skills_needed": [
+      "Local property market knowledge",
+      "Sales and negotiation",
+      "Client relationship building",
+      "RERA regulations and property laws",
+      "Basic financial literacy (home loans, EMI calculations)",
+      "Digital marketing for property listings",
+      "Networking and referral building"
+    ],
+    "work_environment": "Field-oriented — visiting properties, meeting clients, showing sites. Office/home-based for documentation and calls. No fixed hours — client availability driven. Weekends often busy (site visits). Vehicle necessary for mobility.",
+    "govt_job_options": "Limited direct govt roles — RERA authority staff, state housing board, DDA/CIDCO/MHADA real estate management, municipal corporation property assessment, government property auctioning",
+    "tier2_city_availability": "Very High — property transactions happen everywhere. Tier-2/3 cities often have higher growth rates in real estate than metros."
+  },
+  {
+    "career_id": "interior_designer_diploma",
+    "career_name": "Interior Designer (Diploma)",
+    "career_name_hindi": "इंटीरियर डिज़ाइनर (डिप्लोमा)",
+    "riasec_code": "ARI",
+    "riasec_primary": "Artistic",
+    "description": "Interior designers plan and create functional, aesthetically pleasing indoor spaces for homes, offices, hotels, and retail stores. A 1-3 year diploma after 10th/12th provides practical skills in space planning, materials, 3D visualization, and AutoCAD. India's interior design market is worth ₹20,000 crore+ with the housing boom, co-working spaces, and commercial fitouts driving demand.",
+    "stream_required": "Any Stream (Arts/Science preferred)",
+    "education_pathway": {
+      "after_10th": "1-2 year diploma in Interior Design at polytechnics or design institutes. Fee: ₹50K-3L",
+      "after_12th": "3-4 year B.Des/BSc in Interior Design, or 1-year advanced diploma",
+      "entrance_exams": [
+        "NID DAT (National Institute of Design)",
+        "UCEED (for IIT design programs)",
+        "NIFT entrance (some interior design programs)",
+        "State-level design entrance exams",
+        "Portfolio + aptitude test at private institutes"
+      ],
+      "top_colleges": [
+        {
+          "name": "NID Ahmedabad",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 8,
+          "avg_placement_lpa": 10,
+          "location": "Ahmedabad, Gujarat"
+        },
+        {
+          "name": "Sir JJ School of Applied Art",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 0.5,
+          "avg_placement_lpa": 5,
+          "location": "Mumbai, Maharashtra"
+        },
+        {
+          "name": "Pearl Academy",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 15,
+          "avg_placement_lpa": 5,
+          "location": "Delhi, Mumbai, Jaipur"
+        },
+        {
+          "name": "Raffles Design International",
+          "nirf_rank": null,
+          "approx_fee_4yr_lakh": 10,
+          "avg_placement_lpa": 4,
+          "location": "Mumbai"
+        }
+      ],
+      "alternative_paths": [
+        "AutoCAD + 3D Max/SketchUp self-learning → freelance design",
+        "Carpentry/civil background → interior design upskilling",
+        "Online courses (Udemy, Domestika) + portfolio building",
+        "Work under established interior designer as apprentice"
+      ],
+      "postgrad_options": [
+        "M.Des in Interior/Spatial Design",
+        "Specialized certifications in sustainable design, lighting design",
+        "International programs at Parsons, Rhode Island School of Design",
+        "BIM (Building Information Modeling) certification"
+      ]
+    },
+    "salary_range_lpa": {
+      "entry": "2-5 (junior designer at interior firms)",
+      "mid_5yr": "6-12 (senior designer/project manager, or freelance with regular clients)",
+      "senior_10yr": "15-35+ (principal designer, own studio/firm. Premium residential projects: ₹10-50L+ per project)"
+    },
+    "growth_outlook": "High — India's housing boom, commercial office buildouts, hospitality expansion, and retail store design driving steady demand. Smart home integration and sustainable design creating new specializations. Instagram/YouTube making interior design more aspirational.",
+    "skills_needed": [
+      "AutoCAD, 3D Max, SketchUp, V-Ray rendering",
+      "Space planning and ergonomics",
+      "Material and finish knowledge",
+      "Color theory and lighting design",
+      "Client presentation and communication",
+      "Budget management and vendor coordination",
+      "Basic civil/structural understanding"
+    ],
+    "work_environment": "Design studio, client sites for measurements and supervision, material markets. Mix of creative design work (office/studio) and site visits. Entrepreneurship very common — many interior designers run their own practice. Client-facing with project-based workflow.",
+    "govt_job_options": "CPWD interior division, state PWD design cells, Indian Railways station modernization, airport/government building interior projects, smart city urban design, heritage building conservation",
+    "tier2_city_availability": "High — interior design demand growing rapidly in tier-2 cities with new housing and commercial development. Freelance model enables working from any location."
+  }
+]

@@ -153,9 +153,10 @@ class TestMatchCareers:
 class TestLoadKnowledgeBase:
     """Test knowledge base loading."""
 
-    def test_loads_100_careers(self):
+    def test_loads_careers(self):
+        """KB should have at least 100 careers (expanded to 143+)."""
         kb = load_knowledge_base()
-        assert len(kb) == 100
+        assert len(kb) >= 100
 
     def test_careers_have_required_fields(self):
         kb = load_knowledge_base()
