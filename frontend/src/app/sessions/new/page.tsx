@@ -19,7 +19,7 @@ export default function NewSessionPage() {
     session_date: new Date().toISOString().split("T")[0],
     classes_assessed: [] as number[],
     counsellor_name: "",
-    llm_provider: "anthropic",
+    llm_provider: "groq",
     notes: "",
   });
 
@@ -164,6 +164,7 @@ export default function NewSessionPage() {
               onChange={(e) => setForm({ ...form, llm_provider: e.target.value })}
               className="w-full px-3 py-2 border rounded-lg"
             >
+              <option value="groq">Groq Llama 3.3 70B (Free)</option>
               <option value="anthropic">Claude Haiku</option>
               <option value="openai">GPT-4o Mini</option>
               <option value="google">Gemini Flash</option>
