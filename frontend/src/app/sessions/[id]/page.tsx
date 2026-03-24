@@ -60,6 +60,15 @@ export default function SessionDetailPage() {
     loadConsent();
   }, [params.id]);
 
+  // Auto-poll when generating or other background tasks are running
+  useEffect(() => {
+    if (!session) return;
+    const isActive = ["generating", "scoring"].includes(session.status);
+    if (!isActive) return;
+    const interval = setInterval(loadSession, 3000);
+    return () => clearInterval(interval);
+  }, [session?.status]);
+
   const handleAction = async (action: string) => {
     setLoading(action);
     try {
@@ -108,7 +117,7 @@ export default function SessionDetailPage() {
 
       {/* Session Timeline */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-4">
-        <SessionTimeline currentStatus={session.status} />
+        <SessionTimeline currentStatus={session.status} stats={session.stats} />
       </div>
 
       {/* Stats Row */}
