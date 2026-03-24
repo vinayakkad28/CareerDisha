@@ -65,10 +65,20 @@ class Student(Base):
     session_id = Column(Integer, ForeignKey("sessions.id"), nullable=False)
     student_id_external = Column(String(50), default="")
     name = Column(String(255), nullable=False)
-    class_level = Column(Integer, nullable=False)  # 8, 9, 10, 11, 12
+    class_level = Column(Integer, nullable=False)  # 9, 10, 11, 12
     section = Column(String(10), default="")
+    gender = Column(String(10), default="")  # male, female, other
     parent_name = Column(String(255), default="")
     parent_phone = Column(String(15), default="")
+
+    # Socioeconomic context (Layer 3 of 3-Layer Assessment Model)
+    family_income = Column(String(20), default="")  # "below_3l", "3_10l", "10_25l", "above_25l"
+    location_type = Column(String(20), default="")  # "metro", "tier2", "rural"
+    parental_education = Column(String(20), default="")  # "below_10th", "12th", "graduate", "postgrad"
+    first_gen_learner = Column(Boolean, nullable=True)  # True if first in family to attend college
+
+    # Self-efficacy scores (Layer 2 supplement — confidence in domains)
+    self_efficacy = Column(JSON, nullable=True)  # {"maths": 4, "science": 5, "english": 3, "arts": 2, "business": 3, "social": 4}
 
     # RIASEC data
     riasec_raw_responses = Column(JSON, default=dict)  # {"Q1": "A", "Q2": "D", ...}

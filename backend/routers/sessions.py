@@ -32,6 +32,19 @@ def _parse_academic_marks(row: dict):
     return marks if marks else None
 
 
+def _parse_self_efficacy(row: dict):
+    """Parse optional self-efficacy columns (1-5 scale per domain)."""
+    se = {}
+    for domain in ("maths", "science", "english", "arts", "business", "social"):
+        val = row.get(f"se_{domain}", "").strip()
+        if val:
+            try:
+                se[domain] = int(val)
+            except ValueError:
+                pass
+    return se if se else None
+
+
 class SessionCreate(BaseModel):
     school_id: int
     session_date: date
@@ -143,7 +156,7 @@ async def upload_csvs(
         try:
             class_val = row.get("class", row.get("class_level", "10")).strip()
             class_level = int(class_val) if class_val else 10
-            if class_level not in (8, 9, 10, 11, 12):
+            if class_level not in (9, 10, 11, 12):
                 parse_errors.append(f"Row {row_num} (ID {sid}): invalid class '{class_val}', defaulting to 10")
                 class_level = 10
         except (ValueError, TypeError):
@@ -161,6 +174,14 @@ async def upload_csvs(
             "career_concern": row.get("career_concern", "").strip(),
             # Academic marks (optional)
             "academic_marks": _parse_academic_marks(row),
+            # Socioeconomic context (Layer 3)
+            "gender": row.get("gender", "").strip().lower(),
+            "family_income": row.get("family_income", "").strip(),
+            "location_type": row.get("location_type", "").strip(),
+            "parental_education": row.get("parental_education", "").strip(),
+            "first_gen_learner": row.get("first_gen_learner", "").strip().lower() in ("yes", "true", "1"),
+            # Self-efficacy (Layer 2 supplement)
+            "self_efficacy": _parse_self_efficacy(row),
         }
 
     # Parse ZipGrade CSV
@@ -206,6 +227,12 @@ async def upload_csvs(
             stream_pref_student=info.get("stream_pref_student", ""),
             career_concern=info.get("career_concern", ""),
             academic_marks=info.get("academic_marks"),
+            gender=info.get("gender", ""),
+            family_income=info.get("family_income", ""),
+            location_type=info.get("location_type", ""),
+            parental_education=info.get("parental_education", ""),
+            first_gen_learner=info.get("first_gen_learner"),
+            self_efficacy=info.get("self_efficacy"),
             report_status="pending",
         )
         db.add(student)

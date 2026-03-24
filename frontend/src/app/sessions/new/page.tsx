@@ -130,7 +130,7 @@ export default function NewSessionPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Classes Assessed</label>
             <div className="flex gap-2">
-              {[8, 9, 10, 11, 12].map((cls) => (
+              {[9, 10, 11, 12].map((cls) => (
                 <button
                   key={cls}
                   type="button"

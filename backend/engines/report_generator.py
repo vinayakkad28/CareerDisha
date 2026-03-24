@@ -42,6 +42,22 @@ ETHICAL GUIDELINES:
 - For flat profiles (all scores 40-60%), emphasize that broad interests are normal and recommend diverse exploration rather than specific careers.
 - Never make claims about intelligence, talent, or innate ability based on RIASEC scores.
 - Address potential parent-student gaps honestly: if the profile suggests creative fields, acknowledge that parents may prefer conventional careers and provide an honest comparison.
+- Present career matches as tiers (Strong Fit / Good Fit / Worth Exploring), not precise ranked percentages.
+
+SOCIOECONOMIC AWARENESS:
+- If family income data is provided, tailor college recommendations to include affordable options (government colleges, scholarship pathways, education loans via Vidyalakshmi portal).
+- For Tier 2/3 city students, emphasize careers with strong local availability and remote work options.
+- For first-generation learners, provide extra guidance on college application processes and include mentorship suggestions.
+- Address coaching reality honestly: when coaching is essential vs optional vs unnecessary, online alternatives vs physical coaching, approximate costs.
+
+SELF-EFFICACY INTEGRATION:
+- If self-efficacy scores are provided alongside RIASEC, note any interest-confidence mismatches. Example: high Investigative interest but low science self-efficacy = recommend confidence-building activities, not just career matches.
+- When self-efficacy is low in a domain the student shows interest in, include specific suggestions to build confidence (online courses, competitions, mentors).
+
+FINANCIAL PLANNING:
+- For EACH career recommendation, include approximate total education cost (government vs private college).
+- Mention relevant scholarships (National Scholarship Portal, state scholarships, institution-specific).
+- Include a brief note on education loan options and expected ROI timeline.
 
 You MUST respond with ONLY valid JSON (no markdown, no code blocks). Follow the exact structure specified."""
 
@@ -82,6 +98,39 @@ def build_user_prompt(student: Student, matched_career_details: list) -> str:
         academic_section = "\n\nACADEMIC PERFORMANCE (self-reported marks):\n" + "\n".join(marks_parts)
         academic_section += "\nIMPORTANT: If any subject mark is below 50% but the career recommendation requires strong performance in that subject, flag this honestly. Recommend additional preparation or alternative pathways. Include a 'Realistic Pathway' alongside the 'Ideal Pathway'."
 
+    # Socioeconomic context section
+    context_section = ""
+    context_parts = []
+    if hasattr(student, 'gender') and student.gender:
+        context_parts.append(f"- Gender: {student.gender}")
+    if hasattr(student, 'family_income') and student.family_income:
+        income_labels = {"below_3l": "Below ₹3 Lakh/year", "3_10l": "₹3-10 Lakh/year", "10_25l": "₹10-25 Lakh/year", "above_25l": "Above ₹25 Lakh/year"}
+        context_parts.append(f"- Family Income: {income_labels.get(student.family_income, student.family_income)}")
+    if hasattr(student, 'location_type') and student.location_type:
+        context_parts.append(f"- Location: {student.location_type.title()} city")
+    if hasattr(student, 'parental_education') and student.parental_education:
+        context_parts.append(f"- Parental Education: {student.parental_education.replace('_', ' ').title()}")
+    if hasattr(student, 'first_gen_learner') and student.first_gen_learner:
+        context_parts.append("- First-Generation College Learner: Yes (provide extra guidance on applications)")
+    if context_parts:
+        context_section = "\n\nSOCIOECONOMIC CONTEXT:\n" + "\n".join(context_parts)
+        context_section += "\nADAPT recommendations based on this context. Include affordable college options, scholarship pathways, and locally available careers."
+
+    # Self-efficacy section
+    se_section = ""
+    se = student.self_efficacy if hasattr(student, 'self_efficacy') and student.self_efficacy else None
+    if se:
+        se_parts = [f"- {domain.title()}: {score}/5" for domain, score in se.items()]
+        se_section = "\n\nSELF-EFFICACY SCORES (student's confidence in each domain):\n" + "\n".join(se_parts)
+        # Flag interest-confidence mismatches
+        if scores:
+            riasec_to_domain = {"I": "science", "R": "maths", "A": "arts", "E": "business", "S": "social"}
+            for rtype, domain in riasec_to_domain.items():
+                interest = scores.get(rtype, 0)
+                confidence = se.get(domain, 3)
+                if interest > 70 and confidence <= 2:
+                    se_section += f"\nWARNING: High {rtype} interest ({interest}%) but LOW {domain} confidence ({confidence}/5). Address this mismatch — recommend confidence-building activities."
+
     # Build career details section
     career_json = json.dumps(matched_career_details[:5], indent=2, ensure_ascii=False)
 
@@ -92,7 +141,7 @@ def build_user_prompt(student: Student, matched_career_details: list) -> str:
 - City: (assessment session city)
 - RIASEC Scores: R={scores.get('R', 0)}%, I={scores.get('I', 0)}%, A={scores.get('A', 0)}%, S={scores.get('S', 0)}%, E={scores.get('E', 0)}%, C={scores.get('C', 0)}%
 - Holland Code: {student.holland_code}
-- Top Work Values: {top_values_str}{stream_pref_section}{academic_section}
+- Top Work Values: {top_values_str}{stream_pref_section}{academic_section}{context_section}{se_section}
 
 MATCHED CAREERS FROM DATABASE (use ONLY these facts for career details):
 {career_json}

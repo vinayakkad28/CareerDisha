@@ -31,7 +31,7 @@ export default function SettingsPage() {
         <div className="space-y-2 text-sm text-gray-600">
           <p><strong>CareerDisha</strong> — AI Career Counselling Platform</p>
           <p>Version 1.0.0</p>
-          <p>For Indian school students, Class 8-12</p>
+          <p>For Indian school students, Class 9-12</p>
         </div>
       </div>
     </div>

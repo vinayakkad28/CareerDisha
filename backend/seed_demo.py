@@ -38,7 +38,7 @@ DEMO_STUDENTS = [
     {
         "student_id_external": "D003",
         "name": "Rohan Gupta",
-        "class_level": 8,
+        "class_level": 9,
         "section": "B",
         "parent_name": "Amit Gupta",
         "parent_phone": "919876543212",
@@ -100,9 +100,9 @@ def seed():
         session = Session(
             school_id=school.id,
             session_date=date.today(),
-            classes_assessed=[8, 10, 11, 12],
+            classes_assessed=[9, 10, 11, 12],
             counsellor_name="Vinayak Kad",
-            llm_provider="anthropic",
+            llm_provider="groq",
             total_students=5,
             status="scored",
             notes="Demo session with pre-loaded sample data",

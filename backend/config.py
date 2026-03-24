@@ -90,17 +90,11 @@ BRAND_COLORS = {
     "text": "#2c3e50",
 }
 
+# Supported class levels (Class 8 removed — too young for actionable career guidance)
+SUPPORTED_CLASSES = [9, 10, 11, 12]
+
 # Class-specific prompt instructions
 CLASS_INSTRUCTIONS = {
-    8: """This student is in Class 8 (age 13-14). They are 2 years away from stream selection.
-FOCUS: Career EXPLORATION and self-discovery. Help them understand their interests.
-DO: Describe career options in simple, exciting terms. Use relatable examples.
-DO: Suggest activities, hobbies, and school projects to explore their interests further.
-DO: Recommend streams (Science/Commerce/Arts) broadly, not rigidly.
-DO NOT: List specific entrance exam cutoffs or college rankings in detail.
-DO NOT: Create urgency or pressure about career decisions.
-PARENT SECTION: "Your child has 2 years before stream selection. Here's how to help them explore." """,
-
     9: """This student is in Class 9 (age 14-15). Stream selection is 1 year away.
 FOCUS: Career EXPLORATION with stream awareness. Connect interests to broad career fields.
 DO: Explain what each stream (Science PCM, Science PCB, Commerce, Arts) opens up.
