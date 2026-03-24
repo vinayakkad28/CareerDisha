@@ -26,20 +26,43 @@ CORS_ORIGINS = [
 # Auth
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "changeme")
 JWT_SECRET = os.getenv("JWT_SECRET", "careerdisha-secret-change-in-production")
-JWT_ALGORITHM = "HS256"
 JWT_EXPIRY_HOURS = 24
+
+# JWT RS256 keys (optional — fallback to HS256 with JWT_SECRET if not set)
+_jwt_private_key_path = os.getenv("JWT_PRIVATE_KEY_PATH", "")
+_jwt_public_key_path = os.getenv("JWT_PUBLIC_KEY_PATH", "")
+JWT_PRIVATE_KEY = None
+JWT_PUBLIC_KEY = None
+JWT_ALGORITHM = "HS256"
+if _jwt_private_key_path and Path(_jwt_private_key_path).exists():
+    JWT_PRIVATE_KEY = Path(_jwt_private_key_path).read_text()
+    JWT_PUBLIC_KEY = Path(_jwt_public_key_path).read_text() if _jwt_public_key_path and Path(_jwt_public_key_path).exists() else None
+    JWT_ALGORITHM = "RS256"
+
+# Monitoring
+SENTRY_DSN = os.getenv("SENTRY_DSN", "")
+
+# WhatsApp
+WHATSAPP_PROVIDER = os.getenv("WHATSAPP_PROVIDER", "")  # "meta" or "twilio"
+META_WHATSAPP_TOKEN = os.getenv("META_WHATSAPP_TOKEN", "")
+META_PHONE_NUMBER_ID = os.getenv("META_PHONE_NUMBER_ID", "")
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")
+TWILIO_WHATSAPP_FROM = os.getenv("TWILIO_WHATSAPP_FROM", "")
 
 # LLM
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
-DEFAULT_LLM_PROVIDER = os.getenv("DEFAULT_LLM_PROVIDER", "anthropic")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+DEFAULT_LLM_PROVIDER = os.getenv("DEFAULT_LLM_PROVIDER", "groq")
 MAX_CONCURRENT_REQUESTS = int(os.getenv("MAX_CONCURRENT_REQUESTS", "5"))
 
 LLM_MODELS = {
     "anthropic": "claude-3-5-haiku-20241022",
     "openai": "gpt-4o-mini",
     "google": "gemini-2.0-flash",
+    "groq": "llama-3.3-70b-versatile",
 }
 
 # RIASEC Configuration

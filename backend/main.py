@@ -1,12 +1,16 @@
 import logging
+from datetime import datetime, timezone
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 
-from config import CORS_ORIGINS, OUTPUT_DIR
-from database import init_db
+from config import CORS_ORIGINS, OUTPUT_DIR, SENTRY_DSN
+from database import init_db, SessionLocal
 from routers import auth, schools, sessions, students, reports, dashboard, consent
 
 # Configure logging
@@ -16,6 +20,18 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 logger = logging.getLogger(__name__)
+
+# Rate limiter
+limiter = Limiter(key_func=get_remote_address)
+
+# Sentry (optional)
+if SENTRY_DSN:
+    try:
+        import sentry_sdk
+        sentry_sdk.init(dsn=SENTRY_DSN, traces_sample_rate=0.1)
+        logger.info("Sentry error tracking initialized")
+    except Exception as e:
+        logger.warning(f"Sentry init failed: {e}")
 
 
 @asynccontextmanager
@@ -32,6 +48,9 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -56,4 +75,17 @@ app.mount("/output", StaticFiles(directory=str(OUTPUT_DIR)), name="output")
 
 @app.get("/api/health")
 def health_check():
-    return {"status": "ok", "service": "CareerDisha API"}
+    """Health check with DB connectivity test."""
+    db_status = "connected"
+    try:
+        db = SessionLocal()
+        db.execute("SELECT 1" if hasattr(db, 'execute') else None)
+        db.close()
+    except Exception:
+        db_status = "error"
+    return {
+        "status": "ok",
+        "service": "CareerDisha API",
+        "db": db_status,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }

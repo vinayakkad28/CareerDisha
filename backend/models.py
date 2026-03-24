@@ -36,6 +36,7 @@ class Session(Base):
     status = Column(String(20), default="draft")
     llm_provider = Column(String(20), default="anthropic")
     total_cost = Column(Float, default=0.0)
+    generation_started_at = Column(DateTime, nullable=True)
     notes = Column(Text, default="")
     created_at = Column(DateTime, default=datetime.utcnow)
 
