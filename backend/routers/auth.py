@@ -118,6 +118,48 @@ def login(req: LoginRequest):
     raise HTTPException(status_code=401, detail="Invalid credentials")
 
 
+class RegisterRequest(BaseModel):
+    email: str
+    name: str
+    password: str
+    role: str = "counsellor"  # admin, counsellor, school_admin
+    school_id: Optional[int] = None
+
+
+@router.post("/register", status_code=201)
+def register(req: RegisterRequest, user: dict = Depends(get_current_user)):
+    """Register a new user (admin-only)."""
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Only admins can register users")
+    if req.role not in ("admin", "counsellor", "school_admin"):
+        raise HTTPException(status_code=400, detail="Invalid role")
+
+    import bcrypt as bcrypt_lib
+    from models import User
+    from database import SessionLocal
+
+    db = SessionLocal()
+    try:
+        existing = db.query(User).filter(User.email == req.email).first()
+        if existing:
+            raise HTTPException(status_code=400, detail=f"User {req.email} already exists")
+        password_hash = bcrypt_lib.hashpw(req.password.encode(), bcrypt_lib.gensalt()).decode()
+        new_user = User(
+            email=req.email,
+            name=req.name,
+            password_hash=password_hash,
+            role=req.role,
+            school_id=req.school_id,
+        )
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        logger.info(f"User registered: {req.email} (role={req.role})")
+        return {"id": new_user.id, "email": new_user.email, "role": new_user.role, "name": new_user.name}
+    finally:
+        db.close()
+
+
 @router.get("/me")
 def me(user: dict = Depends(get_current_user)):
     return {

@@ -7,6 +7,19 @@ from sqlalchemy.orm import relationship
 from database import Base
 
 
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(255), unique=True, nullable=False)
+    name = Column(String(255), nullable=False)
+    password_hash = Column(String(255), nullable=False)
+    role = Column(String(20), nullable=False, default="counsellor")  # admin, counsellor, school_admin
+    school_id = Column(Integer, ForeignKey("schools.id"), nullable=True)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
 class School(Base):
     __tablename__ = "schools"
 
@@ -37,6 +50,7 @@ class Session(Base):
     llm_provider = Column(String(20), default="anthropic")
     total_cost = Column(Float, default=0.0)
     generation_started_at = Column(DateTime, nullable=True)
+    created_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     notes = Column(Text, default="")
     created_at = Column(DateTime, default=datetime.utcnow)
 

@@ -35,12 +35,17 @@ async function request<T>(
 
 // Auth
 export const auth = {
-  login: (password: string) =>
-    request<{ token: string; expires_at: string }>("/auth/login", {
+  login: (password: string, email?: string) =>
+    request<{ token: string; expires_at: string; role: string }>("/auth/login", {
       method: "POST",
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ password, ...(email ? { email } : {}) }),
     }),
-  me: () => request<{ role: string; authenticated: boolean }>("/auth/me"),
+  me: () => request<{ role: string; user_id: number; school_id?: number; authenticated: boolean }>("/auth/me"),
+  register: (data: { email: string; name: string; password: string; role: string; school_id?: number }) =>
+    request<any>("/auth/register", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
 };
 
 // Schools
@@ -148,6 +153,15 @@ export const consent = {
     request<any>(`/consent/sessions/${sessionId}/bulk-consent`, { method: "POST" }),
   deleteStudentData: (studentId: number) =>
     request<any>(`/consent/students/${studentId}/data`, { method: "DELETE" }),
+};
+
+// WhatsApp
+export const whatsapp = {
+  status: () => request<{ configured: boolean }>("/whatsapp/status"),
+  send: (studentId: number) =>
+    request<any>(`/whatsapp/send/${studentId}`, { method: "POST" }),
+  sendBulk: (sessionId: number) =>
+    request<any>(`/whatsapp/send-bulk/${sessionId}`, { method: "POST" }),
 };
 
 // Dashboard
