@@ -1,5 +1,23 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
+/** Download a file with auth token, triggering a browser save dialog. */
+export async function downloadFile(url: string, filename: string) {
+  const token = typeof window !== "undefined" ? localStorage.getItem("cd_token") : null;
+  const res = await fetch(url, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(err.detail || `Download failed: ${res.status}`);
+  }
+  const blob = await res.blob();
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
 async function request<T>(
   path: string,
   options: RequestInit = {}

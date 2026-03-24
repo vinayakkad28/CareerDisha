@@ -168,12 +168,23 @@ export default function SessionDetailPage() {
           >
             {loading === "pdf" ? "Generating PDFs..." : "Generate PDFs"}
           </button>
-          <a
-            href={sessionsApi.downloadURL(Number(params.id))}
+          <button
+            onClick={async () => {
+              try {
+                const { downloadFile } = await import("@/lib/api");
+                await downloadFile(
+                  sessionsApi.downloadURL(Number(params.id)),
+                  `session_${params.id}_reports.zip`
+                );
+                toast("ZIP downloaded!", "success");
+              } catch (err: any) {
+                toast(err.message || "Download failed", "error");
+              }
+            }}
             className="px-4 py-2 bg-secondary text-white rounded-lg text-sm hover:bg-secondary-500"
           >
             Download ZIP
-          </a>
+          </button>
           <Link
             href={`/sessions/${params.id}/reports`}
             className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50"
