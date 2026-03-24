@@ -214,6 +214,10 @@ export default function SessionDetailPage() {
           </button>
           <button
             onClick={async () => {
+              if (!session?.stats?.pdf_ready) {
+                toast("No PDFs ready yet. Generate reports first, then run QA and generate PDFs.", "warning");
+                return;
+              }
               try {
                 const { downloadFile } = await import("@/lib/api");
                 await downloadFile(
@@ -225,7 +229,8 @@ export default function SessionDetailPage() {
                 toast(err.message || "Download failed", "error");
               }
             }}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-yellow-600 text-white rounded-lg text-sm font-medium hover:bg-yellow-700 transition-colors shadow-sm"
+            disabled={!session?.stats?.pdf_ready}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-yellow-600 text-white rounded-lg text-sm font-medium hover:bg-yellow-700 transition-colors shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <span>📦</span>
             Download ZIP
