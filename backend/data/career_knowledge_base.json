@@ -8510,7 +8510,7 @@
     "career_name": "IAS Officer (UPSC CSE)",
     "career_name_hindi": "आईएएस अधिकारी",
     "riasec_code": "ESC",
-    "riasec_primary": "Enterprising",
+    "riasec_primary": "E",
     "description": "The Indian Administrative Service (IAS) is the premier civil service of India, recruited through the UPSC Civil Services Examination. IAS officers serve as District Magistrates, Secretaries, and Chief Secretaries, managing governance and public policy at district, state, and central levels. Age limit: 21-32 years (General), with relaxations for OBC (+3), SC/ST (+5). Maximum 6 attempts for General, 9 for OBC, unlimited for SC/ST.",
     "stream_required": "Any Stream",
     "education_pathway": {
@@ -8586,7 +8586,7 @@
     "career_name": "IPS Officer",
     "career_name_hindi": "आईपीएस अधिकारी",
     "riasec_code": "ESR",
-    "riasec_primary": "Enterprising",
+    "riasec_primary": "E",
     "description": "Indian Police Service (IPS) officers lead law enforcement at district, state, and national levels. Recruited through UPSC CSE, they serve as SP, DIG, IG, and DGP. IPS officers also serve in CBI, NIA, RAW, IB, and CRPF. Same eligibility as IAS: age 21-32 (General), graduation in any discipline required. Physical standards must be met.",
     "stream_required": "Any Stream",
     "education_pathway": {
@@ -8656,7 +8656,7 @@
     "career_name": "IFS Officer (Foreign Service)",
     "career_name_hindi": "आईएफएस अधिकारी (विदेश सेवा)",
     "riasec_code": "ESA",
-    "riasec_primary": "Enterprising",
+    "riasec_primary": "E",
     "description": "Indian Foreign Service officers represent India abroad as diplomats, serving in embassies and consulates worldwide. They handle bilateral relations, trade negotiations, consular services, and protect Indian interests overseas. Recruited via UPSC CSE with same eligibility — age 21-32 (General), any graduation. Approximately 30-35 IFS officers recruited annually.",
     "stream_required": "Any Stream",
     "education_pathway": {
@@ -8725,7 +8725,7 @@
     "career_name": "State PCS Officer",
     "career_name_hindi": "राज्य पीसीएस अधिकारी",
     "riasec_code": "ESC",
-    "riasec_primary": "Enterprising",
+    "riasec_primary": "E",
     "description": "State Provincial Civil Service officers manage governance at district and state level including roles like SDM, ADM, and state department heads. Each state conducts its own PCS exam (UPPSC, MPPSC, BPSC, RPSC etc.). Age limits and attempts vary by state — typically 21-40 years with relaxations. Easier than UPSC but offers excellent state-level administrative power.",
     "stream_required": "Any Stream",
     "education_pathway": {
@@ -8797,7 +8797,7 @@
     "career_name": "RBI Grade B Officer",
     "career_name_hindi": "आरबीआई ग्रेड बी अधिकारी",
     "riasec_code": "CIE",
-    "riasec_primary": "Conventional",
+    "riasec_primary": "C",
     "description": "RBI Grade B Officers work in India's central bank handling monetary policy, banking regulation, foreign exchange management, and financial supervision. One of the most prestigious banking jobs in India. Age limit: 21-30 years (General). Approximately 300-400 vacancies annually. Significantly higher salary than commercial bank POs.",
     "stream_required": "Any Stream",
     "education_pathway": {
@@ -8866,7 +8866,7 @@
     "career_name": "Indian Railway Services (IRMS)",
     "career_name_hindi": "भारतीय रेलवे सेवा (आईआरएमएस)",
     "riasec_code": "RCE",
-    "riasec_primary": "Realistic",
+    "riasec_primary": "R",
     "description": "Indian Railway Management Service (IRMS) is the unified Group A service for Indian Railways, the world's 4th largest railway network. Officers manage train operations, infrastructure, signaling, mechanical maintenance, and commercial functions. Recruited through UPSC Engineering Services Examination (ESE) or UPSC CSE. Age limit: 21-30 for ESE (General).",
     "stream_required": "Science (PCM) / Engineering",
     "education_pathway": {
@@ -8935,7 +8935,7 @@
     "career_name": "Defence Officer (NDA)",
     "career_name_hindi": "सैन्य अधिकारी (एनडीए)",
     "riasec_code": "RES",
-    "riasec_primary": "Realistic",
+    "riasec_primary": "R",
     "description": "National Defence Academy (NDA) is the joint services academy that trains officers for the Indian Army, Navy, and Air Force. Entry after 12th, with rigorous 3-year training at NDA Khadakwasla followed by 1 year at respective service academy. Age limit: 16.5-19.5 years at time of entry. Only unmarried male candidates (for NDA); women can join through CDS/AFCAT after graduation.",
     "stream_required": "Science (PCM) for Navy/Air Force, Any Stream for Army",
     "education_pathway": {
@@ -9007,7 +9007,7 @@
     "career_name": "Indian Air Force Pilot",
     "career_name_hindi": "भारतीय वायुसेना पायलट",
     "riasec_code": "RIE",
-    "riasec_primary": "Realistic",
+    "riasec_primary": "R",
     "description": "IAF pilots fly fighter jets, transport aircraft, and helicopters for national defense. Entry through NDA (after 12th with PCM) or AFCAT (after graduation with Physics and Maths in 12th). Must pass rigorous CPSS (Computerised Pilot Selection System) and medical tests including PABT. Age: 19-24 for AFCAT Flying branch. One of the most coveted and challenging career paths.",
     "stream_required": "Science (PCM)",
     "education_pathway": {
@@ -9073,7 +9073,7 @@
     "career_name": "Indian Navy Officer",
     "career_name_hindi": "भारतीय नौसेना अधिकारी",
     "riasec_code": "RES",
-    "riasec_primary": "Realistic",
+    "riasec_primary": "R",
     "description": "Indian Navy officers serve on warships, submarines, and naval aviation, protecting India's maritime interests across the Indian Ocean. Entry through NDA (after 12th with PCM), INET (Indian Navy Entrance Test after BTech), or CDS. Age limit: 16.5-19.5 for NDA, 19-25 for other entries. Women eligible through SSC and now Permanent Commission in all branches.",
     "stream_required": "Science (PCM) / Engineering",
     "education_pathway": {
@@ -9138,7 +9138,7 @@
     "career_name": "ISRO Scientist",
     "career_name_hindi": "इसरो वैज्ञानिक",
     "riasec_code": "IRC",
-    "riasec_primary": "Investigative",
+    "riasec_primary": "I",
     "description": "ISRO Scientists/Engineers design and develop rockets, satellites, and space systems for India's space program. Work areas include launch vehicle design, satellite communication, remote sensing, propulsion systems, and mission planning. Recruited through ISRO Centralised Recruitment Board (ICRB) exam for Scientist/Engineer-SC level. Age limit: 28 years (General), 33 for OBC, 36 for SC/ST.",
     "stream_required": "Science (PCM) / Engineering",
     "education_pathway": {
@@ -9214,7 +9214,7 @@
     "career_name": "DRDO Scientist",
     "career_name_hindi": "डीआरडीओ वैज्ञानिक",
     "riasec_code": "IRC",
-    "riasec_primary": "Investigative",
+    "riasec_primary": "I",
     "description": "DRDO Scientists develop defence technologies including missiles, radar, electronic warfare, combat aircraft, naval systems, and military communication. India's premier defence R&D organization with 50+ laboratories. Recruited through DRDO RAC (Recruitment and Assessment Centre) via GATE score or DRDO SET. Age limit: 28 years (General), relaxations for reserved categories.",
     "stream_required": "Science (PCM) / Engineering",
     "education_pathway": {
@@ -9290,7 +9290,7 @@
     "career_name": "Indian Revenue Service (IRS)",
     "career_name_hindi": "भारतीय राजस्व सेवा (आईआरएस)",
     "riasec_code": "CEI",
-    "riasec_primary": "Conventional",
+    "riasec_primary": "C",
     "description": "IRS officers manage India's tax administration — both direct taxes (Income Tax) and indirect taxes (Customs & GST). Recruited through UPSC CSE, IRS is one of the largest Group A services. Officers conduct tax assessments, investigate tax evasion, and formulate tax policy. Age limit: 21-32 (General). IRS (IT) and IRS (C&CE) are the two branches.",
     "stream_required": "Any Stream",
     "education_pathway": {
@@ -9359,7 +9359,7 @@
     "career_name": "Indian Audit & Accounts Service (IA&AS)",
     "career_name_hindi": "भारतीय लेखा परीक्षा एवं लेखा सेवा",
     "riasec_code": "CIE",
-    "riasec_primary": "Conventional",
+    "riasec_primary": "C",
     "description": "IA&AS officers work under the Comptroller and Auditor General (CAG) of India, auditing government expenditure and ensuring financial accountability. They audit central/state government accounts, PSUs, railways, defence, and autonomous bodies. Recruited through UPSC CSE. One of the most powerful constitutional audit bodies globally. Age limit: 21-32 (General).",
     "stream_required": "Any Stream",
     "education_pathway": {
@@ -9421,7 +9421,7 @@
     "career_name": "Indian Forest Service (IFoS)",
     "career_name_hindi": "भारतीय वन सेवा (आईएफएस)",
     "riasec_code": "RIA",
-    "riasec_primary": "Realistic",
+    "riasec_primary": "R",
     "description": "Indian Forest Service officers manage India's forests, wildlife, and environment. They serve as DFO, Conservator of Forests, and Chief Wildlife Warden. Recruited through UPSC IFoS exam (separate from CSE but can also be filled from CSE). Must have graduation with at least one science subject (Botany, Zoology, Physics, Chemistry, Geology, Statistics, Maths, or Agriculture). Age: 21-32 (General).",
     "stream_required": "Science (with at least one science subject at graduation level)",
     "education_pathway": {
@@ -9490,7 +9490,7 @@
     "career_name": "Customs & Central Excise Officer",
     "career_name_hindi": "सीमा शुल्क और केंद्रीय उत्पाद शुल्क अधिकारी",
     "riasec_code": "CER",
-    "riasec_primary": "Conventional",
+    "riasec_primary": "C",
     "description": "Customs officers manage import/export at ports, airports, and land borders, while Central Excise (now GST) officers enforce indirect tax compliance. Recruited at various levels — Group A through UPSC CSE (IRS-C&CE), Group B/C through SSC CGL (Inspector level). Customs Inspectors work at airports, seaports, and international borders preventing smuggling and collecting duties.",
     "stream_required": "Any Stream",
     "education_pathway": {
@@ -9552,7 +9552,7 @@
     "career_name": "Income Tax Officer",
     "career_name_hindi": "आयकर अधिकारी",
     "riasec_code": "CIE",
-    "riasec_primary": "Conventional",
+    "riasec_primary": "C",
     "description": "Income Tax Officers assess and collect direct taxes, investigate tax evasion, and conduct raids/surveys on tax defaulters. Entry at Inspector level through SSC CGL (Group C) or as IRS Officer through UPSC CSE (Group A). SSC CGL route is the most common — age limit 18-30 for Inspector post. Promotion to ITO (Income Tax Officer, Group B gazetted) takes 8-10 years.",
     "stream_required": "Any Stream",
     "education_pathway": {
@@ -9614,7 +9614,7 @@
     "career_name": "GST Inspector",
     "career_name_hindi": "जीएसटी इंस्पेक्टर",
     "riasec_code": "CER",
-    "riasec_primary": "Conventional",
+    "riasec_primary": "C",
     "description": "GST (Goods & Services Tax) Inspectors enforce India's unified indirect tax system. They verify GST returns, conduct audits of businesses, detect tax evasion, and ensure compliance. Recruited through SSC CGL for Central GST (CGST) or state PSC exams for State GST (SGST). Age limit: 18-30 for SSC CGL. One of the most in-demand SSC CGL posts due to work profile and posting locations.",
     "stream_required": "Any Stream",
     "education_pathway": {
@@ -9676,7 +9676,7 @@
     "career_name": "Food Safety Officer",
     "career_name_hindi": "खाद्य सुरक्षा अधिकारी",
     "riasec_code": "ISR",
-    "riasec_primary": "Investigative",
+    "riasec_primary": "I",
     "description": "Food Safety Officers (FSOs) under FSSAI ensure food quality and safety across India. They inspect food businesses, collect samples, issue licenses, and prosecute violations under the Food Safety and Standards Act 2006. Recruited by state food safety departments and FSSAI. Qualification: BSc in Food Technology/Dairy Technology/Biotechnology/Chemistry/Microbiology or equivalent. Age limit: 21-30 (varies by state).",
     "stream_required": "Science (PCB/PCM with Food Science/Chemistry)",
     "education_pathway": {
@@ -9745,7 +9745,7 @@
     "career_name": "Prompt Engineer",
     "career_name_hindi": "प्रॉम्प्ट इंजीनियर",
     "riasec_code": "IAE",
-    "riasec_primary": "Investigative",
+    "riasec_primary": "I",
     "description": "Prompt Engineers design, test, and optimize prompts for large language models (LLMs) like GPT, Claude, and Gemini to achieve desired outputs. They bridge the gap between AI capabilities and business needs, working on AI product development, chatbot design, and automated workflow creation. An entirely new career born from the GenAI revolution of 2023-2025.",
     "stream_required": "Any Stream (CS/Linguistics/Psychology preferred)",
     "education_pathway": {
@@ -9815,7 +9815,7 @@
     "career_name": "Cloud Solutions Architect",
     "career_name_hindi": "क्लाउड सॉल्यूशंस आर्किटेक्ट",
     "riasec_code": "IRC",
-    "riasec_primary": "Investigative",
+    "riasec_primary": "I",
     "description": "Cloud Solutions Architects design and oversee cloud computing strategy for organizations, selecting appropriate AWS/Azure/GCP services, ensuring security, scalability, and cost optimization. They bridge business requirements with cloud infrastructure design. One of the highest-paid tech roles in India with massive demand as enterprises migrate to cloud.",
     "stream_required": "Science (PCM) / Any Stream with CS skills",
     "education_pathway": {
@@ -9886,7 +9886,7 @@
     "career_name": "Mobile App Developer",
     "career_name_hindi": "मोबाइल ऐप डेवलपर",
     "riasec_code": "IRA",
-    "riasec_primary": "Investigative",
+    "riasec_primary": "I",
     "description": "Mobile app developers build applications for Android and iOS platforms used by billions worldwide. India is the world's largest mobile app market by downloads. Developers work on native (Kotlin/Swift), cross-platform (Flutter/React Native), or hybrid apps for e-commerce, fintech, healthcare, education, and social media.",
     "stream_required": "Science (PCM) / Any Stream with CS skills",
     "education_pathway": {
@@ -9957,7 +9957,7 @@
     "career_name": "Drone Pilot/Engineer",
     "career_name_hindi": "ड्रोन पायलट/इंजीनियर",
     "riasec_code": "RIE",
-    "riasec_primary": "Realistic",
+    "riasec_primary": "R",
     "description": "Drone pilots and engineers operate, design, and maintain unmanned aerial vehicles (UAVs) for agriculture, surveying, delivery, cinematography, defence, and infrastructure inspection. India's drone policy (Drone Rules 2021) and PLI scheme are driving massive growth. DGCA Remote Pilot Certificate is mandatory for commercial operations.",
     "stream_required": "Science (PCM) / Any Stream for pilot operations",
     "education_pathway": {
@@ -10027,7 +10027,7 @@
     "career_name": "Renewable Energy Engineer",
     "career_name_hindi": "नवीकरणीय ऊर्जा इंजीनियर",
     "riasec_code": "RIC",
-    "riasec_primary": "Realistic",
+    "riasec_primary": "R",
     "description": "Renewable energy engineers design, install, and maintain solar, wind, biomass, and hydroelectric power systems. India has the world's largest renewable energy expansion program — targeting 500 GW by 2030. The sector offers roles in project design, site engineering, grid integration, and energy storage. Companies like Adani Green, Tata Power Solar, ReNew, and NTPC Green hiring actively.",
     "stream_required": "Science (PCM) / Engineering",
     "education_pathway": {
@@ -10104,7 +10104,7 @@
     "career_name": "Climate Scientist",
     "career_name_hindi": "जलवायु वैज्ञानिक",
     "riasec_code": "IRS",
-    "riasec_primary": "Investigative",
+    "riasec_primary": "I",
     "description": "Climate scientists study Earth's climate systems, model climate change impacts, and develop adaptation/mitigation strategies. They work on monsoon prediction, glacier monitoring, carbon cycle modeling, and extreme weather event analysis. India is highly vulnerable to climate change, making this field increasingly critical for national policy and disaster preparedness.",
     "stream_required": "Science (PCM/PCB)",
     "education_pathway": {
@@ -10175,7 +10175,7 @@
     "career_name": "Space Technology Engineer",
     "career_name_hindi": "अंतरिक्ष प्रौद्योगिकी इंजीनियर",
     "riasec_code": "IRC",
-    "riasec_primary": "Investigative",
+    "riasec_primary": "I",
     "description": "Space technology engineers work on satellite systems, launch vehicles, space communication, propulsion, and mission design. Beyond ISRO, India's private space sector is booming with startups like Agnikul Cosmos, Skyroot Aerospace, Pixxel, and Dhruva Space. The Indian Space Policy 2023 has opened up commercial space activities, creating unprecedented opportunities.",
     "stream_required": "Science (PCM) / Engineering",
     "education_pathway": {
@@ -10246,7 +10246,7 @@
     "career_name": "IoT Solutions Architect",
     "career_name_hindi": "आईओटी सॉल्यूशंस आर्किटेक्ट",
     "riasec_code": "IRC",
-    "riasec_primary": "Investigative",
+    "riasec_primary": "I",
     "description": "IoT Solutions Architects design connected systems that link sensors, devices, and cloud platforms for smart homes, factories, cities, agriculture, and healthcare. They work on end-to-end IoT architecture — from edge devices to cloud analytics. India's Smart Cities Mission and Industry 4.0 adoption are major demand drivers.",
     "stream_required": "Science (PCM) / Engineering",
     "education_pathway": {
@@ -10317,7 +10317,7 @@
     "career_name": "AR/VR Developer",
     "career_name_hindi": "एआर/वीआर डेवलपर",
     "riasec_code": "IAR",
-    "riasec_primary": "Investigative",
+    "riasec_primary": "I",
     "description": "AR/VR developers build augmented and virtual reality applications for gaming, education, healthcare training, real estate, retail, and industrial simulation. They work with Unity, Unreal Engine, ARKit, ARCore, and spatial computing platforms. India's AR/VR market is growing rapidly with applications in e-commerce (virtual try-on), education, and enterprise training.",
     "stream_required": "Science (PCM) / Any Stream with CS and design skills",
     "education_pathway": {
@@ -10387,7 +10387,7 @@
     "career_name": "Quantum Computing Researcher",
     "career_name_hindi": "क्वांटम कंप्यूटिंग शोधकर्ता",
     "riasec_code": "IRC",
-    "riasec_primary": "Investigative",
+    "riasec_primary": "I",
     "description": "Quantum computing researchers develop quantum algorithms, build quantum hardware, and explore applications in cryptography, drug discovery, materials science, and optimization. India launched the National Quantum Mission (NQM) with ₹6,003 crore funding. This is a deep research career requiring strong foundations in physics and mathematics — currently more academic than industry-focused in India.",
     "stream_required": "Science (PCM)",
     "education_pathway": {
@@ -10465,7 +10465,7 @@
     "career_name": "Bioinformatics Specialist",
     "career_name_hindi": "जैव सूचना विज्ञान विशेषज्ञ",
     "riasec_code": "IRC",
-    "riasec_primary": "Investigative",
+    "riasec_primary": "I",
     "description": "Bioinformatics specialists use computational methods to analyze biological data — genomic sequences, protein structures, drug interactions, and evolutionary patterns. They bridge biology and computer science, working on drug discovery, precision medicine, agricultural genomics, and public health genomics. India's pharma and biotech industry increasingly depends on bioinformatics for drug development.",
     "stream_required": "Science (PCB/PCM)",
     "education_pathway": {
@@ -10536,7 +10536,7 @@
     "career_name": "Health Tech Product Manager",
     "career_name_hindi": "हेल्थ टेक प्रोडक्ट मैनेजर",
     "riasec_code": "EIS",
-    "riasec_primary": "Enterprising",
+    "riasec_primary": "E",
     "description": "Health Tech Product Managers lead the development of digital health products — telemedicine platforms, health apps, hospital management systems, wearable health devices, and AI diagnostic tools. They bridge clinical requirements with technology solutions. India's digital health market is booming with Ayushman Bharat Digital Mission (ABDM), Practo, PharmEasy, and 1mg driving transformation.",
     "stream_required": "Any Stream (Science/Engineering + Healthcare domain preferred)",
     "education_pathway": {
@@ -10608,7 +10608,7 @@
     "career_name": "ITI Electrician",
     "career_name_hindi": "आईटीआई इलेक्ट्रीशियन",
     "riasec_code": "RCI",
-    "riasec_primary": "Realistic",
+    "riasec_primary": "R",
     "description": "ITI Electricians install, maintain, and repair electrical wiring, equipment, and systems in residential, commercial, and industrial settings. This is a 2-year ITI course (after 10th) available at ~15,000 government and private ITIs across India. One of the most in-demand trades with guaranteed employment in construction, manufacturing, power distribution, and maintenance sectors.",
     "stream_required": "10th Pass (Any Stream)",
     "education_pathway": {
@@ -10671,7 +10671,7 @@
     "career_name": "ITI Fitter/Mechanic",
     "career_name_hindi": "आईटीआई फिटर/मैकेनिक",
     "riasec_code": "RCI",
-    "riasec_primary": "Realistic",
+    "riasec_primary": "R",
     "description": "ITI Fitter/Mechanics assemble, install, and maintain machinery and mechanical equipment in factories, workshops, and industrial plants. The Fitter trade is the most versatile ITI trade — graduates work in automobile, manufacturing, defence, railways, and oil & gas sectors. 2-year NCVT course after 10th. Fee at government ITIs is minimal (₹2,000-5,000/year).",
     "stream_required": "10th Pass (Any Stream)",
     "education_pathway": {
@@ -10735,7 +10735,7 @@
     "career_name": "Diploma Civil Engineer",
     "career_name_hindi": "डिप्लोमा सिविल इंजीनियर",
     "riasec_code": "RIC",
-    "riasec_primary": "Realistic",
+    "riasec_primary": "R",
     "description": "Diploma Civil Engineers supervise construction projects, manage building sites, prepare estimates, and ensure structural safety. A 3-year polytechnic diploma after 10th provides hands-on engineering skills for India's massive construction and infrastructure sector. Graduates work in roads, bridges, buildings, dams, and Smart City projects. Lower cost and faster entry than BTech, with good employment prospects.",
     "stream_required": "10th Pass (Science/Maths preferred)",
     "education_pathway": {
@@ -10804,7 +10804,7 @@
     "career_name": "Diploma Mechanical Engineer",
     "career_name_hindi": "डिप्लोमा मैकेनिकल इंजीनियर",
     "riasec_code": "RIC",
-    "riasec_primary": "Realistic",
+    "riasec_primary": "R",
     "description": "Diploma Mechanical Engineers work in manufacturing, automobile, power plant, and heavy engineering sectors handling production, maintenance, quality control, and design. A 3-year polytechnic diploma after 10th provides industry-ready skills at low cost. Excellent government job prospects through SSC JE, state PSC, and PSU recruitment. Make in India boosting manufacturing employment.",
     "stream_required": "10th Pass (Science/Maths preferred)",
     "education_pathway": {
@@ -10868,7 +10868,7 @@
     "career_name": "Professional Chef/Culinary Arts",
     "career_name_hindi": "प्रोफेशनल शेफ/पाककला",
     "riasec_code": "RAE",
-    "riasec_primary": "Realistic",
+    "riasec_primary": "R",
     "description": "Professional chefs create, plan, and execute menus in restaurants, hotels, cruise ships, catering companies, and food startups. India's hospitality and food service industry is booming with cloud kitchens, premium dining, and international hotel chains expanding. A 1-3 year diploma/degree in culinary arts or hotel management opens doors. Celebrity chef culture and food content creation adding new dimensions to this career.",
     "stream_required": "Any Stream (10th/12th pass)",
     "education_pathway": {
@@ -10940,7 +10940,7 @@
     "career_name": "Merchant Navy Officer",
     "career_name_hindi": "मर्चेंट नेवी अधिकारी",
     "riasec_code": "REC",
-    "riasec_primary": "Realistic",
+    "riasec_primary": "R",
     "description": "Merchant Navy officers operate commercial ships carrying cargo and passengers across global trade routes. They work in navigation (deck officers) or engineering (marine engineers). Entry after 12th (PCM) through DG Shipping-approved courses. High salary (tax-free if at sea 182+ days) with global travel. India is the world's 3rd largest supplier of merchant navy officers.",
     "stream_required": "Science (PCM mandatory)",
     "education_pathway": {
@@ -11011,7 +11011,7 @@
     "career_name": "Fashion Designer (Diploma)",
     "career_name_hindi": "फैशन डिज़ाइनर (डिप्लोमा)",
     "riasec_code": "AER",
-    "riasec_primary": "Artistic",
+    "riasec_primary": "A",
     "description": "Fashion designers create clothing, accessories, and textile designs for the Indian and global fashion industry. A 1-3 year diploma after 10th/12th provides practical skills in design, pattern making, draping, and garment construction. India's fashion industry is worth $100B+ with ready-to-wear, bridal, export garments, and sustainable fashion creating diverse opportunities.",
     "stream_required": "Any Stream (10th/12th pass)",
     "education_pathway": {
@@ -11084,7 +11084,7 @@
     "career_name": "Fitness Trainer/Sports Coach",
     "career_name_hindi": "फिटनेस ट्रेनर/खेल कोच",
     "riasec_code": "SRE",
-    "riasec_primary": "Social",
+    "riasec_primary": "S",
     "description": "Fitness trainers and sports coaches design exercise programs, train athletes, and promote physical wellness. India's fitness industry is booming at $32B+ with gyms, yoga studios, CrossFit boxes, and personal training expanding rapidly. Certification-based entry makes this accessible without a full degree. Sports coaching for cricket, football, badminton academies also growing.",
     "stream_required": "Any Stream (Physical Education/Sports Science preferred)",
     "education_pathway": {
@@ -11155,7 +11155,7 @@
     "career_name": "Social Media Manager",
     "career_name_hindi": "सोशल मीडिया मैनेजर",
     "riasec_code": "EAS",
-    "riasec_primary": "Enterprising",
+    "riasec_primary": "E",
     "description": "Social media managers create content strategies, manage brand presence, engage audiences, and grow followings across Instagram, YouTube, LinkedIn, Twitter/X, and emerging platforms. India has 500M+ social media users — brands, politicians, and celebrities all need social media management. Entry barrier is low — skills and creativity matter more than degrees.",
     "stream_required": "Any Stream",
     "education_pathway": {
@@ -11227,7 +11227,7 @@
     "career_name": "Professional Photographer",
     "career_name_hindi": "प्रोफेशनल फोटोग्राफर",
     "riasec_code": "ARI",
-    "riasec_primary": "Artistic",
+    "riasec_primary": "A",
     "description": "Professional photographers capture images for weddings, commercial brands, journalism, fashion, wildlife, and digital content. India's wedding photography market alone is worth ₹40,000 crore+. Specializations include wedding, portrait, product, food, wildlife, real estate, and drone photography. No mandatory degree — skill, portfolio, and equipment investment drive success.",
     "stream_required": "Any Stream",
     "education_pathway": {
@@ -11299,7 +11299,7 @@
     "career_name": "Event Manager",
     "career_name_hindi": "इवेंट मैनेजर",
     "riasec_code": "ESA",
-    "riasec_primary": "Enterprising",
+    "riasec_primary": "E",
     "description": "Event managers plan, organize, and execute events including weddings, corporate conferences, product launches, music festivals, exhibitions, and government programs. India's event management industry is worth ₹10,000 crore+ and growing rapidly. Requires strong organizational skills, creativity, and the ability to handle logistics under pressure. Entrepreneurship opportunities are excellent.",
     "stream_required": "Any Stream",
     "education_pathway": {
@@ -11370,7 +11370,7 @@
     "career_name": "Real Estate Agent",
     "career_name_hindi": "रियल एस्टेट एजेंट",
     "riasec_code": "ESC",
-    "riasec_primary": "Enterprising",
+    "riasec_primary": "E",
     "description": "Real estate agents facilitate buying, selling, and renting of residential and commercial properties. Under RERA (Real Estate Regulation and Development Act 2016), agents must be registered with the state RERA authority. India's real estate market is worth $265B and growing. Commission-based earning model (1-2% of property value) offers unlimited income potential. RERA registration requires only 10th pass in many states.",
     "stream_required": "Any Stream (10th/12th pass minimum)",
     "education_pathway": {
@@ -11441,7 +11441,7 @@
     "career_name": "Interior Designer (Diploma)",
     "career_name_hindi": "इंटीरियर डिज़ाइनर (डिप्लोमा)",
     "riasec_code": "ARI",
-    "riasec_primary": "Artistic",
+    "riasec_primary": "A",
     "description": "Interior designers plan and create functional, aesthetically pleasing indoor spaces for homes, offices, hotels, and retail stores. A 1-3 year diploma after 10th/12th provides practical skills in space planning, materials, 3D visualization, and AutoCAD. India's interior design market is worth ₹20,000 crore+ with the housing boom, co-working spaces, and commercial fitouts driving demand.",
     "stream_required": "Any Stream (Arts/Science preferred)",
     "education_pathway": {
