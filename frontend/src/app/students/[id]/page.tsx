@@ -334,16 +334,18 @@ export default function StudentDetailPage() {
             Action Plan
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {Object.entries(report.action_plan).map(([period, items]: [string, any], idx: number) => {
+            {Object.entries(report.action_plan)
+              .filter(([, v]) => Array.isArray(v) && v.length > 0 && typeof v[0] === "string")
+              .map(([period, items]: [string, any], idx: number) => {
               const colors = ["border-blue-200 bg-blue-50/50", "border-amber-200 bg-amber-50/50", "border-green-200 bg-green-50/50"];
               const headerColors = ["text-blue-700", "text-amber-700", "text-green-700"];
               return (
-                <div key={period} className={`rounded-xl border ${colors[idx] || colors[0]} p-5`}>
-                  <h3 className={`font-semibold text-sm uppercase tracking-wide mb-3 ${headerColors[idx] || headerColors[0]}`}>
+                <div key={period} className={`rounded-xl border ${colors[idx % 3] || colors[0]} p-5`}>
+                  <h3 className={`font-semibold text-sm uppercase tracking-wide mb-3 ${headerColors[idx % 3] || headerColors[0]}`}>
                     {period.replace(/_/g, " ")}
                   </h3>
                   <ul className="space-y-2">
-                    {(Array.isArray(items) ? items : []).map((item: string, i: number) => (
+                    {items.map((item: string, i: number) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
                         <svg className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4" />
