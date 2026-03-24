@@ -13,6 +13,7 @@ from config import (
     ANTHROPIC_API_KEY,
     OPENAI_API_KEY,
     GOOGLE_API_KEY,
+    GROQ_API_KEY,
     LLM_MODELS,
     CLASS_INSTRUCTIONS,
     RIASEC_TYPE_NAMES,
@@ -73,6 +74,14 @@ def build_user_prompt(student: Student, matched_career_details: list) -> str:
         if parts:
             stream_pref_section = "\n\nSTREAM PREFERENCE DATA (from student's own assessment):\n" + "\n".join(parts)
 
+    # Academic marks section (optional)
+    academic_section = ""
+    marks = student.academic_marks if hasattr(student, 'academic_marks') else None
+    if marks:
+        marks_parts = [f"- {k.replace('_', ' ').title()}: {v}%" for k, v in marks.items()]
+        academic_section = "\n\nACADEMIC PERFORMANCE (self-reported marks):\n" + "\n".join(marks_parts)
+        academic_section += "\nIMPORTANT: If any subject mark is below 50% but the career recommendation requires strong performance in that subject, flag this honestly. Recommend additional preparation or alternative pathways. Include a 'Realistic Pathway' alongside the 'Ideal Pathway'."
+
     # Build career details section
     career_json = json.dumps(matched_career_details[:5], indent=2, ensure_ascii=False)
 
@@ -83,7 +92,7 @@ def build_user_prompt(student: Student, matched_career_details: list) -> str:
 - City: (assessment session city)
 - RIASEC Scores: R={scores.get('R', 0)}%, I={scores.get('I', 0)}%, A={scores.get('A', 0)}%, S={scores.get('S', 0)}%, E={scores.get('E', 0)}%, C={scores.get('C', 0)}%
 - Holland Code: {student.holland_code}
-- Top Work Values: {top_values_str}{stream_pref_section}
+- Top Work Values: {top_values_str}{stream_pref_section}{academic_section}
 
 MATCHED CAREERS FROM DATABASE (use ONLY these facts for career details):
 {career_json}
@@ -104,7 +113,10 @@ Generate a complete career assessment report as JSON with this EXACT structure:
     "confidence": "High / Medium / Low",
     "reasoning": "Why this stream fits their profile",
     "subject_combination": "Specific subjects to choose",
-    "alternative_stream": "Backup stream option with reasoning"
+    "alternative_stream": "Backup stream option with reasoning",
+    "why_this_stream": ["Reason 1 tied to RIASEC scores", "Reason 2", "Reason 3"],
+    "subjects_in_stream": [{{"name": "Physics", "brief": "Understanding mechanics, electricity, optics..."}}],
+    "what_if_change_mind": "Reassuring paragraph about stream flexibility..."
   }},
   "career_matches": [
     {{
@@ -123,7 +135,11 @@ Generate a complete career assessment report as JSON with this EXACT structure:
   "action_plan": {{
     "next_3_months": ["Action item 1", "Action item 2", "Action item 3"],
     "next_1_year": ["Action item 1", "Action item 2", "Action item 3"],
-    "next_2_3_years": ["Action item 1", "Action item 2", "Action item 3"]
+    "next_2_3_years": ["Action item 1", "Action item 2", "Action item 3"],
+    "recommended_books": ["Book Title 1 by Author — why it helps", "Book 2", "Book 3"],
+    "recommended_youtube": ["Channel Name — what they'll learn", "Channel 2", "Channel 3"],
+    "recommended_websites": ["Website — what it offers", "Website 2", "Website 3"],
+    "skills_to_develop": [{{"skill": "Skill name", "activity": "Specific activity to practice this"}}]
   }},
   "parent_section": {{
     "title": "अभिभावकों के लिए / For Parents",
@@ -131,11 +147,21 @@ Generate a complete career assessment report as JSON with this EXACT structure:
     "recommendation_summary_hindi": "माता-पिता के लिए सरल भाषा में सारांश",
     "what_to_do_now": ["Specific action 1", "Specific action 2", "Specific action 3"],
     "common_concerns_addressed": "Address job security, salary, social status concerns",
-    "how_to_support": "How parents can support their child's career exploration"
-  }}
+    "how_to_support": "How parents can support their child's career exploration",
+    "faqs": [
+      {{"question_en": "What if my child changes their mind?", "question_hi": "अगर मेरा बच्चा अपना मन बदल ले तो?", "answer_en": "...", "answer_hi": "..."}},
+      {{"question_en": "Is this recommendation final?", "question_hi": "क्या यह सिफारिश अंतिम है?", "answer_en": "...", "answer_hi": "..."}},
+      {{"question_en": "How can I support without pressuring?", "question_hi": "बिना दबाव डाले मैं कैसे सहयोग करूं?", "answer_en": "...", "answer_hi": "..."}},
+      {{"question_en": "What about financial constraints?", "question_hi": "आर्थिक सीमाओं के बारे में क्या?", "answer_en": "...", "answer_hi": "..."}}
+    ],
+    "conversation_starters": ["Question for parent to ask child 1", "Question 2", "Question 3"]
+  }},
+  "personal_note": "Dear {{{{name}}}}, ... (2-3 warm paragraphs addressing the student directly in second person. Reference their specific RIASEC strengths. Be encouraging and specific to their profile.)"
 }}
 
-Include exactly 5 careers in career_matches. Make all content specific, actionable, and India-focused."""
+Include exactly 5 careers in career_matches. Make all content specific, actionable, and India-focused.
+
+Make recommended_books, recommended_youtube, and recommended_websites REAL — use actual Indian book titles, actual YouTube channel names (like Physics Wallah, Unacademy, Khan Academy Hindi), and actual websites (SWAYAM, NPTEL, Coursera). Do NOT invent fictional resources."""
 
 
 class LLMClient:
@@ -155,6 +181,8 @@ class LLMClient:
                     return self._call_openai(system_prompt, user_prompt)
                 elif self.provider == "google":
                     return self._call_google(system_prompt, user_prompt)
+                elif self.provider == "groq":
+                    return self._call_groq(system_prompt, user_prompt)
                 else:
                     raise ValueError(f"Unknown provider: {self.provider}")
             except Exception as e:
@@ -170,7 +198,7 @@ class LLMClient:
         client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
         response = client.messages.create(
             model=LLM_MODELS["anthropic"],
-            max_tokens=4096,
+            max_tokens=8192,
             system=system_prompt,
             messages=[{"role": "user", "content": user_prompt}],
         )
@@ -196,7 +224,7 @@ class LLMClient:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            max_tokens=4096,
+            max_tokens=8192,
             response_format={"type": "json_object"},
         )
         text = response.choices[0].message.content
@@ -219,11 +247,32 @@ class LLMClient:
             user_prompt,
             generation_config=genai.types.GenerationConfig(
                 response_mime_type="application/json",
-                max_output_tokens=4096,
+                max_output_tokens=8192,
             ),
         )
         parsed = json.loads(response.text)
         # Gemini Flash is free tier / very cheap
+        cost = 0.0
+        return parsed, cost
+
+    def _call_groq(self, system_prompt: str, user_prompt: str) -> tuple[dict, float]:
+        import openai
+        client = openai.OpenAI(
+            api_key=GROQ_API_KEY,
+            base_url="https://api.groq.com/openai/v1",
+        )
+        response = client.chat.completions.create(
+            model=LLM_MODELS["groq"],
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            max_tokens=8192,
+            response_format={"type": "json_object"},
+        )
+        text = response.choices[0].message.content
+        parsed = json.loads(text)
+        # Groq free tier: $0 cost
         cost = 0.0
         return parsed, cost
 

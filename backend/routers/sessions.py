@@ -17,6 +17,19 @@ from routers.auth import get_current_user
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
 
+def _parse_academic_marks(row: dict):
+    """Parse optional academic marks columns from a CSV row."""
+    marks = {}
+    for key in ("maths_marks", "science_marks", "english_marks", "overall_percentage"):
+        val = row.get(key, "").strip()
+        if val:
+            try:
+                marks[key.replace("_marks", "").replace("_percentage", "_pct")] = float(val)
+            except ValueError:
+                pass
+    return marks if marks else None
+
+
 class SessionCreate(BaseModel):
     school_id: int
     session_date: date
@@ -142,6 +155,8 @@ async def upload_csvs(
             "stream_pref_parent": row.get("stream_pref_parent", "").strip(),
             "stream_pref_student": row.get("stream_pref_student", "").strip(),
             "career_concern": row.get("career_concern", "").strip(),
+            # Academic marks (optional)
+            "academic_marks": _parse_academic_marks(row),
         }
 
     # Parse ZipGrade CSV
@@ -186,6 +201,7 @@ async def upload_csvs(
             stream_pref_parent=info.get("stream_pref_parent", ""),
             stream_pref_student=info.get("stream_pref_student", ""),
             career_concern=info.get("career_concern", ""),
+            academic_marks=info.get("academic_marks"),
             report_status="pending",
         )
         db.add(student)
@@ -231,7 +247,15 @@ def generate_reports(
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
+    # Idempotency: prevent duplicate generation
+    if session.status == "generating" and session.generation_started_at:
+        elapsed = (datetime.now() - session.generation_started_at).total_seconds()
+        if elapsed < 1800:  # 30 minutes
+            raise HTTPException(status_code=409, detail="Report generation already in progress")
+        # If > 30 min, assume crashed — allow retry
+
     session.status = "generating"
+    session.generation_started_at = datetime.now()
     db.commit()
 
     from tasks.batch_processor import run_report_generation

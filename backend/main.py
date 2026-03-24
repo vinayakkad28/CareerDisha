@@ -11,7 +11,7 @@ from slowapi.errors import RateLimitExceeded
 
 from config import CORS_ORIGINS, OUTPUT_DIR, SENTRY_DSN
 from database import init_db, SessionLocal
-from routers import auth, schools, sessions, students, reports, dashboard, consent
+from routers import auth, schools, sessions, students, reports, dashboard, consent, whatsapp, cards
 
 # Configure logging
 logging.basicConfig(
@@ -68,6 +68,8 @@ app.include_router(students.router, prefix="/api/students", tags=["Students"])
 app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(consent.router, prefix="/api/consent", tags=["Consent"])
+app.include_router(whatsapp.router, prefix="/api/whatsapp", tags=["WhatsApp"])
+app.include_router(cards.router, prefix="/api/students", tags=["Cards"])
 
 # Serve generated PDFs
 app.mount("/output", StaticFiles(directory=str(OUTPUT_DIR)), name="output")

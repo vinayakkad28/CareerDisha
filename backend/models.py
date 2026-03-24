@@ -77,6 +77,9 @@ class Student(Base):
     work_values = Column(JSON, default=dict)
     matched_careers = Column(JSON, default=list)
 
+    # Academic performance (optional — from student info CSV)
+    academic_marks = Column(JSON, nullable=True)  # {"maths": 85, "science": 72, "english": 90, "overall_pct": 82}
+
     # Section D: Class 10 stream preference (from OMR form)
     stream_pref_parent = Column(String(50), default="")
     stream_pref_student = Column(String(50), default="")
