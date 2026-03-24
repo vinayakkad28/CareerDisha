@@ -134,7 +134,24 @@ def validate_report(student: Student) -> list[str]:
     elif len(riasec_profile.get("summary", "")) < 100:
         flags.append("RIASEC profile summary too short (< 100 chars)")
 
-    # 8. College whitelist check (if whitelist exists)
+    # 8. New enriched fields (warnings only — older reports may lack these)
+    personal_note = report.get("personal_note", "")
+    if not personal_note or len(personal_note) < 200:
+        flags.append("[WARNING] personal_note missing or too short (< 200 chars)")
+
+    recommended_books = report.get("action_plan", {}).get("recommended_books", [])
+    if not recommended_books or len(recommended_books) < 3:
+        flags.append("[WARNING] action_plan.recommended_books missing or has < 3 items")
+
+    parent_faqs = report.get("parent_section", {}).get("faqs", [])
+    if not parent_faqs or len(parent_faqs) < 3:
+        flags.append("[WARNING] parent_section.faqs missing or has < 3 items")
+
+    conversation_starters = report.get("parent_section", {}).get("conversation_starters", [])
+    if not conversation_starters or len(conversation_starters) < 3:
+        flags.append("[WARNING] parent_section.conversation_starters missing or has < 3 items")
+
+    # 9. College whitelist check (if whitelist exists)
     whitelist = load_colleges_whitelist()
     if whitelist:
         for career in careers:

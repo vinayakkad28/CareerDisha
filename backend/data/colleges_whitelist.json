@@ -1,129 +1,4406 @@
 [
-  {"name": "IIT Bombay", "aliases": ["IITB", "Indian Institute of Technology Bombay"], "type": "Engineering", "location": "Mumbai"},
-  {"name": "IIT Delhi", "aliases": ["IITD", "Indian Institute of Technology Delhi"], "type": "Engineering", "location": "New Delhi"},
-  {"name": "IIT Madras", "aliases": ["IITM", "Indian Institute of Technology Madras"], "type": "Engineering", "location": "Chennai"},
-  {"name": "IIT Kanpur", "aliases": ["IITK", "Indian Institute of Technology Kanpur"], "type": "Engineering", "location": "Kanpur"},
-  {"name": "IIT Kharagpur", "aliases": ["IIT KGP", "Indian Institute of Technology Kharagpur"], "type": "Engineering", "location": "Kharagpur"},
-  {"name": "IIT Roorkee", "aliases": ["IITR", "Indian Institute of Technology Roorkee"], "type": "Engineering", "location": "Roorkee"},
-  {"name": "IIT Guwahati", "aliases": ["IITG", "Indian Institute of Technology Guwahati"], "type": "Engineering", "location": "Guwahati"},
-  {"name": "IIT Hyderabad", "aliases": ["IITH", "Indian Institute of Technology Hyderabad"], "type": "Engineering", "location": "Hyderabad"},
-  {"name": "IIT BHU", "aliases": ["IIT Varanasi", "Indian Institute of Technology BHU"], "type": "Engineering", "location": "Varanasi"},
-  {"name": "IIT Indore", "aliases": ["Indian Institute of Technology Indore"], "type": "Engineering", "location": "Indore"},
-  {"name": "IIT Dhanbad", "aliases": ["IIT ISM", "Indian Institute of Technology Dhanbad", "ISM Dhanbad"], "type": "Engineering", "location": "Dhanbad"},
-  {"name": "IIT Patna", "aliases": ["Indian Institute of Technology Patna"], "type": "Engineering", "location": "Patna"},
-  {"name": "IIT Gandhinagar", "aliases": ["IITGN", "Indian Institute of Technology Gandhinagar"], "type": "Engineering", "location": "Gandhinagar"},
-  {"name": "IIT Jodhpur", "aliases": ["Indian Institute of Technology Jodhpur"], "type": "Engineering", "location": "Jodhpur"},
-  {"name": "IIT Mandi", "aliases": ["Indian Institute of Technology Mandi"], "type": "Engineering", "location": "Mandi"},
-  {"name": "IIT Ropar", "aliases": ["Indian Institute of Technology Ropar"], "type": "Engineering", "location": "Ropar"},
-  {"name": "IIT Bhubaneswar", "aliases": ["Indian Institute of Technology Bhubaneswar"], "type": "Engineering", "location": "Bhubaneswar"},
-  {"name": "IIT Tirupati", "aliases": ["Indian Institute of Technology Tirupati"], "type": "Engineering", "location": "Tirupati"},
-  {"name": "IIT Palakkad", "aliases": ["Indian Institute of Technology Palakkad"], "type": "Engineering", "location": "Palakkad"},
-  {"name": "IIT Dharwad", "aliases": ["Indian Institute of Technology Dharwad"], "type": "Engineering", "location": "Dharwad"},
-  {"name": "IIT Jammu", "aliases": ["Indian Institute of Technology Jammu"], "type": "Engineering", "location": "Jammu"},
-  {"name": "IIT Goa", "aliases": ["Indian Institute of Technology Goa"], "type": "Engineering", "location": "Goa"},
-  {"name": "IIT Bhilai", "aliases": ["Indian Institute of Technology Bhilai"], "type": "Engineering", "location": "Bhilai"},
-  {"name": "NIT Trichy", "aliases": ["NIT Tiruchirappalli", "National Institute of Technology Tiruchirappalli"], "type": "Engineering", "location": "Tiruchirappalli"},
-  {"name": "NIT Surathkal", "aliases": ["NIT Karnataka", "NITK Surathkal"], "type": "Engineering", "location": "Surathkal"},
-  {"name": "NIT Warangal", "aliases": ["National Institute of Technology Warangal"], "type": "Engineering", "location": "Warangal"},
-  {"name": "NIT Calicut", "aliases": ["NIT Kozhikode", "National Institute of Technology Calicut"], "type": "Engineering", "location": "Calicut"},
-  {"name": "NIT Rourkela", "aliases": ["National Institute of Technology Rourkela"], "type": "Engineering", "location": "Rourkela"},
-  {"name": "NIT Allahabad", "aliases": ["MNNIT Allahabad", "Motilal Nehru NIT"], "type": "Engineering", "location": "Prayagraj"},
-  {"name": "NIT Jaipur", "aliases": ["MNIT Jaipur", "Malaviya NIT"], "type": "Engineering", "location": "Jaipur"},
-  {"name": "NIT Kurukshetra", "aliases": ["National Institute of Technology Kurukshetra"], "type": "Engineering", "location": "Kurukshetra"},
-  {"name": "BITS Pilani", "aliases": ["Birla Institute of Technology and Science Pilani"], "type": "Engineering", "location": "Pilani"},
-  {"name": "BITS Goa", "aliases": ["BITS Pilani Goa Campus"], "type": "Engineering", "location": "Goa"},
-  {"name": "BITS Hyderabad", "aliases": ["BITS Pilani Hyderabad Campus"], "type": "Engineering", "location": "Hyderabad"},
-  {"name": "IIIT Hyderabad", "aliases": ["International Institute of Information Technology Hyderabad"], "type": "Engineering", "location": "Hyderabad"},
-  {"name": "IIIT Delhi", "aliases": ["Indraprastha Institute of Information Technology Delhi"], "type": "Engineering", "location": "New Delhi"},
-  {"name": "IIIT Bangalore", "aliases": ["International Institute of Information Technology Bangalore"], "type": "Engineering", "location": "Bangalore"},
-  {"name": "IIIT Allahabad", "aliases": ["Indian Institute of Information Technology Allahabad"], "type": "Engineering", "location": "Prayagraj"},
-  {"name": "VIT Vellore", "aliases": ["Vellore Institute of Technology"], "type": "Engineering", "location": "Vellore"},
-  {"name": "SRM University", "aliases": ["SRM Institute of Science and Technology"], "type": "Engineering", "location": "Chennai"},
-  {"name": "Manipal Institute of Technology", "aliases": ["MIT Manipal", "Manipal University"], "type": "Engineering", "location": "Manipal"},
-  {"name": "DTU Delhi", "aliases": ["Delhi Technological University", "DCE"], "type": "Engineering", "location": "New Delhi"},
-  {"name": "NSUT Delhi", "aliases": ["Netaji Subhas University of Technology", "NSIT"], "type": "Engineering", "location": "New Delhi"},
-  {"name": "Jadavpur University", "aliases": ["JU Kolkata"], "type": "Engineering", "location": "Kolkata"},
-  {"name": "Anna University", "aliases": ["Anna University Chennai"], "type": "Engineering", "location": "Chennai"},
-  {"name": "COEP Pune", "aliases": ["College of Engineering Pune", "COEP Technological University"], "type": "Engineering", "location": "Pune"},
-  {"name": "AIIMS Delhi", "aliases": ["All India Institute of Medical Sciences Delhi"], "type": "Medical", "location": "New Delhi"},
-  {"name": "AIIMS Jodhpur", "aliases": ["All India Institute of Medical Sciences Jodhpur"], "type": "Medical", "location": "Jodhpur"},
-  {"name": "AIIMS Bhopal", "aliases": ["All India Institute of Medical Sciences Bhopal"], "type": "Medical", "location": "Bhopal"},
-  {"name": "AIIMS Rishikesh", "aliases": ["All India Institute of Medical Sciences Rishikesh"], "type": "Medical", "location": "Rishikesh"},
-  {"name": "PGIMER Chandigarh", "aliases": ["Post Graduate Institute of Medical Education and Research"], "type": "Medical", "location": "Chandigarh"},
-  {"name": "CMC Vellore", "aliases": ["Christian Medical College Vellore"], "type": "Medical", "location": "Vellore"},
-  {"name": "JIPMER Puducherry", "aliases": ["Jawaharlal Institute of Postgraduate Medical Education and Research"], "type": "Medical", "location": "Puducherry"},
-  {"name": "Maulana Azad Medical College", "aliases": ["MAMC Delhi"], "type": "Medical", "location": "New Delhi"},
-  {"name": "Lady Hardinge Medical College", "aliases": ["LHMC Delhi"], "type": "Medical", "location": "New Delhi"},
-  {"name": "Grant Medical College Mumbai", "aliases": ["Grant Medical College"], "type": "Medical", "location": "Mumbai"},
-  {"name": "KEM Hospital Mumbai", "aliases": ["Seth GS Medical College and KEM Hospital"], "type": "Medical", "location": "Mumbai"},
-  {"name": "BHU Medical", "aliases": ["Institute of Medical Sciences BHU"], "type": "Medical", "location": "Varanasi"},
-  {"name": "KGMU Lucknow", "aliases": ["King George's Medical University"], "type": "Medical", "location": "Lucknow"},
-  {"name": "Armed Forces Medical College", "aliases": ["AFMC Pune"], "type": "Medical", "location": "Pune"},
-  {"name": "Kasturba Medical College Manipal", "aliases": ["KMC Manipal"], "type": "Medical", "location": "Manipal"},
-  {"name": "SRCC Mumbai", "aliases": ["Shri Ram College of Commerce"], "type": "Commerce", "location": "New Delhi"},
-  {"name": "SRCC Delhi", "aliases": ["Shri Ram College of Commerce Delhi"], "type": "Commerce", "location": "New Delhi"},
-  {"name": "Hindu College Delhi", "aliases": ["Hindu College University of Delhi"], "type": "Arts/Commerce", "location": "New Delhi"},
-  {"name": "St. Stephen's College", "aliases": ["St. Stephens Delhi"], "type": "Arts/Commerce", "location": "New Delhi"},
-  {"name": "Lady Shri Ram College", "aliases": ["LSR Delhi"], "type": "Arts/Commerce", "location": "New Delhi"},
-  {"name": "Loyola College Chennai", "aliases": ["Loyola College"], "type": "Arts/Commerce", "location": "Chennai"},
-  {"name": "Christ University Bangalore", "aliases": ["Christ University"], "type": "Arts/Commerce", "location": "Bangalore"},
-  {"name": "St. Xavier's College Mumbai", "aliases": ["St. Xavier's Mumbai"], "type": "Arts/Commerce", "location": "Mumbai"},
-  {"name": "Presidency College Kolkata", "aliases": ["Presidency University"], "type": "Arts", "location": "Kolkata"},
-  {"name": "Hansraj College", "aliases": ["Hansraj College Delhi"], "type": "Commerce", "location": "New Delhi"},
-  {"name": "IIM Ahmedabad", "aliases": ["IIMA", "Indian Institute of Management Ahmedabad"], "type": "Management", "location": "Ahmedabad"},
-  {"name": "IIM Bangalore", "aliases": ["IIMB", "Indian Institute of Management Bangalore"], "type": "Management", "location": "Bangalore"},
-  {"name": "IIM Calcutta", "aliases": ["IIMC", "Indian Institute of Management Calcutta"], "type": "Management", "location": "Kolkata"},
-  {"name": "IIM Lucknow", "aliases": ["IIML", "Indian Institute of Management Lucknow"], "type": "Management", "location": "Lucknow"},
-  {"name": "IIM Kozhikode", "aliases": ["IIMK", "Indian Institute of Management Kozhikode"], "type": "Management", "location": "Kozhikode"},
-  {"name": "IIM Indore", "aliases": ["Indian Institute of Management Indore"], "type": "Management", "location": "Indore"},
-  {"name": "XLRI Jamshedpur", "aliases": ["Xavier Labour Relations Institute"], "type": "Management", "location": "Jamshedpur"},
-  {"name": "FMS Delhi", "aliases": ["Faculty of Management Studies Delhi University"], "type": "Management", "location": "New Delhi"},
-  {"name": "MDI Gurgaon", "aliases": ["Management Development Institute"], "type": "Management", "location": "Gurgaon"},
-  {"name": "ISB Hyderabad", "aliases": ["Indian School of Business"], "type": "Management", "location": "Hyderabad"},
-  {"name": "SP Jain Mumbai", "aliases": ["SP Jain Institute of Management and Research"], "type": "Management", "location": "Mumbai"},
-  {"name": "NLSIU Bangalore", "aliases": ["National Law School of India University"], "type": "Law", "location": "Bangalore"},
-  {"name": "NALSAR Hyderabad", "aliases": ["NALSAR University of Law"], "type": "Law", "location": "Hyderabad"},
-  {"name": "NLU Delhi", "aliases": ["National Law University Delhi"], "type": "Law", "location": "New Delhi"},
-  {"name": "NUJS Kolkata", "aliases": ["National University of Juridical Sciences", "WBNUJS"], "type": "Law", "location": "Kolkata"},
-  {"name": "NLU Jodhpur", "aliases": ["National Law University Jodhpur"], "type": "Law", "location": "Jodhpur"},
-  {"name": "GNLU Gandhinagar", "aliases": ["Gujarat National Law University"], "type": "Law", "location": "Gandhinagar"},
-  {"name": "NLU Lucknow", "aliases": ["Ram Manohar Lohia National Law University"], "type": "Law", "location": "Lucknow"},
-  {"name": "ICAI", "aliases": ["Institute of Chartered Accountants of India"], "type": "Commerce", "location": "National"},
-  {"name": "ICSI", "aliases": ["Institute of Company Secretaries of India"], "type": "Commerce", "location": "National"},
-  {"name": "ICMAI", "aliases": ["Institute of Cost Accountants of India", "ICWAI"], "type": "Commerce", "location": "National"},
-  {"name": "IISc Bangalore", "aliases": ["Indian Institute of Science"], "type": "Science", "location": "Bangalore"},
-  {"name": "ISI Kolkata", "aliases": ["Indian Statistical Institute"], "type": "Science", "location": "Kolkata"},
-  {"name": "CMI Chennai", "aliases": ["Chennai Mathematical Institute"], "type": "Science", "location": "Chennai"},
-  {"name": "NIFT Delhi", "aliases": ["National Institute of Fashion Technology Delhi"], "type": "Design", "location": "New Delhi"},
-  {"name": "NID Ahmedabad", "aliases": ["National Institute of Design"], "type": "Design", "location": "Ahmedabad"},
-  {"name": "SPA Delhi", "aliases": ["School of Planning and Architecture Delhi"], "type": "Architecture", "location": "New Delhi"},
-  {"name": "CEPT University", "aliases": ["CEPT Ahmedabad"], "type": "Architecture", "location": "Ahmedabad"},
-  {"name": "Sir JJ College of Architecture", "aliases": ["JJ School of Art Mumbai"], "type": "Architecture", "location": "Mumbai"},
-  {"name": "IHM Pusa", "aliases": ["Institute of Hotel Management Pusa Delhi"], "type": "Hotel Management", "location": "New Delhi"},
-  {"name": "IHM Mumbai", "aliases": ["Institute of Hotel Management Mumbai"], "type": "Hotel Management", "location": "Mumbai"},
-  {"name": "FTII Pune", "aliases": ["Film and Television Institute of India"], "type": "Media", "location": "Pune"},
-  {"name": "IIMC New Delhi", "aliases": ["Indian Institute of Mass Communication"], "type": "Media", "location": "New Delhi"},
-  {"name": "Xavier Institute of Communication", "aliases": ["XIC Mumbai"], "type": "Media", "location": "Mumbai"},
-  {"name": "Asian College of Journalism", "aliases": ["ACJ Chennai"], "type": "Media", "location": "Chennai"},
-  {"name": "Symbiosis Institute of Media and Communication", "aliases": ["SIMC Pune"], "type": "Media", "location": "Pune"},
-  {"name": "TISS Mumbai", "aliases": ["Tata Institute of Social Sciences"], "type": "Social Work", "location": "Mumbai"},
-  {"name": "Delhi School of Economics", "aliases": ["DSE Delhi"], "type": "Economics", "location": "New Delhi"},
-  {"name": "JNU New Delhi", "aliases": ["Jawaharlal Nehru University"], "type": "Arts/Social Sciences", "location": "New Delhi"},
-  {"name": "Ashoka University", "aliases": ["Ashoka Sonipat"], "type": "Liberal Arts", "location": "Sonipat"},
-  {"name": "FLAME University", "aliases": ["FLAME Pune"], "type": "Liberal Arts", "location": "Pune"},
-  {"name": "National Defence Academy", "aliases": ["NDA Khadakwasla", "NDA Pune"], "type": "Defence", "location": "Pune"},
-  {"name": "Indian Military Academy", "aliases": ["IMA Dehradun"], "type": "Defence", "location": "Dehradun"},
-  {"name": "ISRO", "aliases": ["Indian Space Research Organisation"], "type": "Space/Research", "location": "Bangalore"},
-  {"name": "DRDO", "aliases": ["Defence Research and Development Organisation"], "type": "Research", "location": "National"},
-  {"name": "BARC", "aliases": ["Bhabha Atomic Research Centre"], "type": "Research", "location": "Mumbai"},
-  {"name": "IARI New Delhi", "aliases": ["Indian Agricultural Research Institute", "Pusa Institute"], "type": "Agriculture", "location": "New Delhi"},
-  {"name": "NDRI Karnal", "aliases": ["National Dairy Research Institute"], "type": "Agriculture", "location": "Karnal"},
-  {"name": "PAU Ludhiana", "aliases": ["Punjab Agricultural University"], "type": "Agriculture", "location": "Ludhiana"},
-  {"name": "Indraprastha University", "aliases": ["GGSIPU", "IP University Delhi"], "type": "Multi", "location": "New Delhi"},
-  {"name": "Amity University", "aliases": ["Amity Noida"], "type": "Multi", "location": "Noida"},
-  {"name": "Lovely Professional University", "aliases": ["LPU"], "type": "Multi", "location": "Phagwara"},
-  {"name": "Chandigarh University", "aliases": ["CU Mohali"], "type": "Multi", "location": "Mohali"},
-  {"name": "Symbiosis International University", "aliases": ["Symbiosis Pune"], "type": "Multi", "location": "Pune"},
-  {"name": "National Forensic Sciences University", "aliases": ["NFSU Gandhinagar"], "type": "Forensic Science", "location": "Gandhinagar"},
-  {"name": "Lok Nayak Jayaprakash Narayan National Institute of Criminology", "aliases": ["LNJN NICFS Delhi"], "type": "Forensic Science", "location": "New Delhi"}
+  {
+    "name": "IIT Bombay",
+    "aliases": [
+      "IITB",
+      "Indian Institute of Technology Bombay"
+    ],
+    "type": "Engineering",
+    "location": "Mumbai"
+  },
+  {
+    "name": "IIT Delhi",
+    "aliases": [
+      "IITD",
+      "Indian Institute of Technology Delhi"
+    ],
+    "type": "Engineering",
+    "location": "New Delhi"
+  },
+  {
+    "name": "IIT Madras",
+    "aliases": [
+      "IITM",
+      "Indian Institute of Technology Madras"
+    ],
+    "type": "Engineering",
+    "location": "Chennai"
+  },
+  {
+    "name": "IIT Kanpur",
+    "aliases": [
+      "IITK",
+      "Indian Institute of Technology Kanpur"
+    ],
+    "type": "Engineering",
+    "location": "Kanpur"
+  },
+  {
+    "name": "IIT Kharagpur",
+    "aliases": [
+      "IIT KGP",
+      "Indian Institute of Technology Kharagpur"
+    ],
+    "type": "Engineering",
+    "location": "Kharagpur"
+  },
+  {
+    "name": "IIT Roorkee",
+    "aliases": [
+      "IITR",
+      "Indian Institute of Technology Roorkee"
+    ],
+    "type": "Engineering",
+    "location": "Roorkee"
+  },
+  {
+    "name": "IIT Guwahati",
+    "aliases": [
+      "IITG",
+      "Indian Institute of Technology Guwahati"
+    ],
+    "type": "Engineering",
+    "location": "Guwahati"
+  },
+  {
+    "name": "IIT Hyderabad",
+    "aliases": [
+      "IITH",
+      "Indian Institute of Technology Hyderabad"
+    ],
+    "type": "Engineering",
+    "location": "Hyderabad"
+  },
+  {
+    "name": "IIT BHU",
+    "aliases": [
+      "IIT Varanasi",
+      "Indian Institute of Technology BHU"
+    ],
+    "type": "Engineering",
+    "location": "Varanasi"
+  },
+  {
+    "name": "IIT Indore",
+    "aliases": [
+      "Indian Institute of Technology Indore"
+    ],
+    "type": "Engineering",
+    "location": "Indore"
+  },
+  {
+    "name": "IIT Dhanbad",
+    "aliases": [
+      "IIT ISM",
+      "Indian Institute of Technology Dhanbad",
+      "ISM Dhanbad"
+    ],
+    "type": "Engineering",
+    "location": "Dhanbad"
+  },
+  {
+    "name": "IIT Patna",
+    "aliases": [
+      "Indian Institute of Technology Patna"
+    ],
+    "type": "Engineering",
+    "location": "Patna"
+  },
+  {
+    "name": "IIT Gandhinagar",
+    "aliases": [
+      "IITGN",
+      "Indian Institute of Technology Gandhinagar"
+    ],
+    "type": "Engineering",
+    "location": "Gandhinagar"
+  },
+  {
+    "name": "IIT Jodhpur",
+    "aliases": [
+      "Indian Institute of Technology Jodhpur"
+    ],
+    "type": "Engineering",
+    "location": "Jodhpur"
+  },
+  {
+    "name": "IIT Mandi",
+    "aliases": [
+      "Indian Institute of Technology Mandi"
+    ],
+    "type": "Engineering",
+    "location": "Mandi"
+  },
+  {
+    "name": "IIT Ropar",
+    "aliases": [
+      "Indian Institute of Technology Ropar"
+    ],
+    "type": "Engineering",
+    "location": "Ropar"
+  },
+  {
+    "name": "IIT Bhubaneswar",
+    "aliases": [
+      "Indian Institute of Technology Bhubaneswar"
+    ],
+    "type": "Engineering",
+    "location": "Bhubaneswar"
+  },
+  {
+    "name": "IIT Tirupati",
+    "aliases": [
+      "Indian Institute of Technology Tirupati"
+    ],
+    "type": "Engineering",
+    "location": "Tirupati"
+  },
+  {
+    "name": "IIT Palakkad",
+    "aliases": [
+      "Indian Institute of Technology Palakkad"
+    ],
+    "type": "Engineering",
+    "location": "Palakkad"
+  },
+  {
+    "name": "IIT Dharwad",
+    "aliases": [
+      "Indian Institute of Technology Dharwad"
+    ],
+    "type": "Engineering",
+    "location": "Dharwad"
+  },
+  {
+    "name": "IIT Jammu",
+    "aliases": [
+      "Indian Institute of Technology Jammu"
+    ],
+    "type": "Engineering",
+    "location": "Jammu"
+  },
+  {
+    "name": "IIT Goa",
+    "aliases": [
+      "Indian Institute of Technology Goa"
+    ],
+    "type": "Engineering",
+    "location": "Goa"
+  },
+  {
+    "name": "IIT Bhilai",
+    "aliases": [
+      "Indian Institute of Technology Bhilai"
+    ],
+    "type": "Engineering",
+    "location": "Bhilai"
+  },
+  {
+    "name": "NIT Trichy",
+    "aliases": [
+      "NIT Tiruchirappalli",
+      "National Institute of Technology Tiruchirappalli"
+    ],
+    "type": "Engineering",
+    "location": "Tiruchirappalli"
+  },
+  {
+    "name": "NIT Surathkal",
+    "aliases": [
+      "NIT Karnataka",
+      "NITK Surathkal"
+    ],
+    "type": "Engineering",
+    "location": "Surathkal"
+  },
+  {
+    "name": "NIT Warangal",
+    "aliases": [
+      "National Institute of Technology Warangal"
+    ],
+    "type": "Engineering",
+    "location": "Warangal"
+  },
+  {
+    "name": "NIT Calicut",
+    "aliases": [
+      "NIT Kozhikode",
+      "National Institute of Technology Calicut"
+    ],
+    "type": "Engineering",
+    "location": "Calicut"
+  },
+  {
+    "name": "NIT Rourkela",
+    "aliases": [
+      "National Institute of Technology Rourkela"
+    ],
+    "type": "Engineering",
+    "location": "Rourkela"
+  },
+  {
+    "name": "NIT Allahabad",
+    "aliases": [
+      "MNNIT Allahabad",
+      "Motilal Nehru NIT"
+    ],
+    "type": "Engineering",
+    "location": "Prayagraj"
+  },
+  {
+    "name": "NIT Jaipur",
+    "aliases": [
+      "MNIT Jaipur",
+      "Malaviya NIT"
+    ],
+    "type": "Engineering",
+    "location": "Jaipur"
+  },
+  {
+    "name": "NIT Kurukshetra",
+    "aliases": [
+      "National Institute of Technology Kurukshetra"
+    ],
+    "type": "Engineering",
+    "location": "Kurukshetra"
+  },
+  {
+    "name": "NIT Bhopal",
+    "aliases": [
+      "MANIT Bhopal",
+      "Maulana Azad National Institute of Technology"
+    ],
+    "type": "Engineering",
+    "location": "Bhopal"
+  },
+  {
+    "name": "NIT Nagpur",
+    "aliases": [
+      "VNIT Nagpur",
+      "Visvesvaraya National Institute of Technology"
+    ],
+    "type": "Engineering",
+    "location": "Nagpur"
+  },
+  {
+    "name": "NIT Durgapur",
+    "aliases": [
+      "National Institute of Technology Durgapur"
+    ],
+    "type": "Engineering",
+    "location": "Durgapur"
+  },
+  {
+    "name": "NIT Silchar",
+    "aliases": [
+      "National Institute of Technology Silchar"
+    ],
+    "type": "Engineering",
+    "location": "Silchar"
+  },
+  {
+    "name": "NIT Hamirpur",
+    "aliases": [
+      "National Institute of Technology Hamirpur"
+    ],
+    "type": "Engineering",
+    "location": "Hamirpur"
+  },
+  {
+    "name": "NIT Srinagar",
+    "aliases": [
+      "National Institute of Technology Srinagar"
+    ],
+    "type": "Engineering",
+    "location": "Srinagar"
+  },
+  {
+    "name": "NIT Jalandhar",
+    "aliases": [
+      "Dr BR Ambedkar NIT Jalandhar"
+    ],
+    "type": "Engineering",
+    "location": "Jalandhar"
+  },
+  {
+    "name": "NIT Jamshedpur",
+    "aliases": [
+      "National Institute of Technology Jamshedpur"
+    ],
+    "type": "Engineering",
+    "location": "Jamshedpur"
+  },
+  {
+    "name": "NIT Patna",
+    "aliases": [
+      "National Institute of Technology Patna"
+    ],
+    "type": "Engineering",
+    "location": "Patna"
+  },
+  {
+    "name": "NIT Agartala",
+    "aliases": [
+      "National Institute of Technology Agartala"
+    ],
+    "type": "Engineering",
+    "location": "Agartala"
+  },
+  {
+    "name": "NIT Goa",
+    "aliases": [
+      "National Institute of Technology Goa"
+    ],
+    "type": "Engineering",
+    "location": "Goa"
+  },
+  {
+    "name": "NIT Mizoram",
+    "aliases": [
+      "National Institute of Technology Mizoram"
+    ],
+    "type": "Engineering",
+    "location": "Aizawl"
+  },
+  {
+    "name": "NIT Meghalaya",
+    "aliases": [
+      "National Institute of Technology Meghalaya"
+    ],
+    "type": "Engineering",
+    "location": "Shillong"
+  },
+  {
+    "name": "NIT Manipur",
+    "aliases": [
+      "National Institute of Technology Manipur"
+    ],
+    "type": "Engineering",
+    "location": "Imphal"
+  },
+  {
+    "name": "NIT Nagaland",
+    "aliases": [
+      "National Institute of Technology Nagaland"
+    ],
+    "type": "Engineering",
+    "location": "Dimapur"
+  },
+  {
+    "name": "NIT Arunachal Pradesh",
+    "aliases": [
+      "National Institute of Technology Arunachal Pradesh"
+    ],
+    "type": "Engineering",
+    "location": "Yupia"
+  },
+  {
+    "name": "NIT Sikkim",
+    "aliases": [
+      "National Institute of Technology Sikkim"
+    ],
+    "type": "Engineering",
+    "location": "Ravangla"
+  },
+  {
+    "name": "NIT Uttarakhand",
+    "aliases": [
+      "National Institute of Technology Uttarakhand"
+    ],
+    "type": "Engineering",
+    "location": "Srinagar Garhwal"
+  },
+  {
+    "name": "NIT Delhi",
+    "aliases": [
+      "National Institute of Technology Delhi"
+    ],
+    "type": "Engineering",
+    "location": "New Delhi"
+  },
+  {
+    "name": "NIT Andhra Pradesh",
+    "aliases": [
+      "National Institute of Technology Andhra Pradesh"
+    ],
+    "type": "Engineering",
+    "location": "Tadepalligudem"
+  },
+  {
+    "name": "NIT Puducherry",
+    "aliases": [
+      "National Institute of Technology Puducherry"
+    ],
+    "type": "Engineering",
+    "location": "Karaikal"
+  },
+  {
+    "name": "NIT Raipur",
+    "aliases": [
+      "National Institute of Technology Raipur"
+    ],
+    "type": "Engineering",
+    "location": "Raipur"
+  },
+  {
+    "name": "NIT Surat",
+    "aliases": [
+      "SVNIT Surat",
+      "Sardar Vallabhbhai National Institute of Technology"
+    ],
+    "type": "Engineering",
+    "location": "Surat"
+  },
+  {
+    "name": "BITS Pilani",
+    "aliases": [
+      "Birla Institute of Technology and Science Pilani"
+    ],
+    "type": "Engineering",
+    "location": "Pilani"
+  },
+  {
+    "name": "BITS Goa",
+    "aliases": [
+      "BITS Pilani Goa Campus"
+    ],
+    "type": "Engineering",
+    "location": "Goa"
+  },
+  {
+    "name": "BITS Hyderabad",
+    "aliases": [
+      "BITS Pilani Hyderabad Campus"
+    ],
+    "type": "Engineering",
+    "location": "Hyderabad"
+  },
+  {
+    "name": "IIIT Hyderabad",
+    "aliases": [
+      "International Institute of Information Technology Hyderabad"
+    ],
+    "type": "Engineering",
+    "location": "Hyderabad"
+  },
+  {
+    "name": "IIIT Delhi",
+    "aliases": [
+      "Indraprastha Institute of Information Technology Delhi"
+    ],
+    "type": "Engineering",
+    "location": "New Delhi"
+  },
+  {
+    "name": "IIIT Bangalore",
+    "aliases": [
+      "International Institute of Information Technology Bangalore"
+    ],
+    "type": "Engineering",
+    "location": "Bangalore"
+  },
+  {
+    "name": "IIIT Allahabad",
+    "aliases": [
+      "Indian Institute of Information Technology Allahabad"
+    ],
+    "type": "Engineering",
+    "location": "Prayagraj"
+  },
+  {
+    "name": "IIIT Lucknow",
+    "aliases": [
+      "Indian Institute of Information Technology Lucknow"
+    ],
+    "type": "Engineering",
+    "location": "Lucknow"
+  },
+  {
+    "name": "IIIT Gwalior",
+    "aliases": [
+      "ABV-IIITM Gwalior",
+      "Indian Institute of Information Technology and Management Gwalior"
+    ],
+    "type": "Engineering",
+    "location": "Gwalior"
+  },
+  {
+    "name": "IIIT Jabalpur",
+    "aliases": [
+      "IIITDM Jabalpur",
+      "Indian Institute of Information Technology Design and Manufacturing Jabalpur"
+    ],
+    "type": "Engineering",
+    "location": "Jabalpur"
+  },
+  {
+    "name": "IIIT Kota",
+    "aliases": [
+      "Indian Institute of Information Technology Kota"
+    ],
+    "type": "Engineering",
+    "location": "Kota"
+  },
+  {
+    "name": "IIIT Sonepat",
+    "aliases": [
+      "Indian Institute of Information Technology Sonepat"
+    ],
+    "type": "Engineering",
+    "location": "Sonepat"
+  },
+  {
+    "name": "IIIT Nagpur",
+    "aliases": [
+      "Indian Institute of Information Technology Nagpur"
+    ],
+    "type": "Engineering",
+    "location": "Nagpur"
+  },
+  {
+    "name": "IIIT Pune",
+    "aliases": [
+      "Indian Institute of Information Technology Pune"
+    ],
+    "type": "Engineering",
+    "location": "Pune"
+  },
+  {
+    "name": "IIIT Sri City",
+    "aliases": [
+      "Indian Institute of Information Technology Sri City"
+    ],
+    "type": "Engineering",
+    "location": "Sri City"
+  },
+  {
+    "name": "IIIT Vadodara",
+    "aliases": [
+      "Indian Institute of Information Technology Vadodara"
+    ],
+    "type": "Engineering",
+    "location": "Vadodara"
+  },
+  {
+    "name": "IIIT Kanchipuram",
+    "aliases": [
+      "IIITDM Kanchipuram",
+      "Indian Institute of Information Technology Design and Manufacturing Kanchipuram"
+    ],
+    "type": "Engineering",
+    "location": "Kanchipuram"
+  },
+  {
+    "name": "IIIT Tiruchirappalli",
+    "aliases": [
+      "Indian Institute of Information Technology Tiruchirappalli"
+    ],
+    "type": "Engineering",
+    "location": "Tiruchirappalli"
+  },
+  {
+    "name": "IIIT Una",
+    "aliases": [
+      "Indian Institute of Information Technology Una"
+    ],
+    "type": "Engineering",
+    "location": "Una"
+  },
+  {
+    "name": "IIIT Bhopal",
+    "aliases": [
+      "Indian Institute of Information Technology Bhopal"
+    ],
+    "type": "Engineering",
+    "location": "Bhopal"
+  },
+  {
+    "name": "IIIT Surat",
+    "aliases": [
+      "Indian Institute of Information Technology Surat"
+    ],
+    "type": "Engineering",
+    "location": "Surat"
+  },
+  {
+    "name": "IIIT Ranchi",
+    "aliases": [
+      "Indian Institute of Information Technology Ranchi"
+    ],
+    "type": "Engineering",
+    "location": "Ranchi"
+  },
+  {
+    "name": "IIIT Kalyani",
+    "aliases": [
+      "Indian Institute of Information Technology Kalyani"
+    ],
+    "type": "Engineering",
+    "location": "Kalyani"
+  },
+  {
+    "name": "IIIT Dharwad",
+    "aliases": [
+      "Indian Institute of Information Technology Dharwad"
+    ],
+    "type": "Engineering",
+    "location": "Dharwad"
+  },
+  {
+    "name": "IIIT Kurnool",
+    "aliases": [
+      "Indian Institute of Information Technology Kurnool"
+    ],
+    "type": "Engineering",
+    "location": "Kurnool"
+  },
+  {
+    "name": "IIIT Bhagalpur",
+    "aliases": [
+      "Indian Institute of Information Technology Bhagalpur"
+    ],
+    "type": "Engineering",
+    "location": "Bhagalpur"
+  },
+  {
+    "name": "IIIT Agartala",
+    "aliases": [
+      "Indian Institute of Information Technology Agartala"
+    ],
+    "type": "Engineering",
+    "location": "Agartala"
+  },
+  {
+    "name": "IIIT Raichur",
+    "aliases": [
+      "Indian Institute of Information Technology Raichur"
+    ],
+    "type": "Engineering",
+    "location": "Raichur"
+  },
+  {
+    "name": "IIIT Manipur",
+    "aliases": [
+      "Indian Institute of Information Technology Manipur"
+    ],
+    "type": "Engineering",
+    "location": "Imphal"
+  },
+  {
+    "name": "VIT Vellore",
+    "aliases": [
+      "Vellore Institute of Technology"
+    ],
+    "type": "Engineering",
+    "location": "Vellore"
+  },
+  {
+    "name": "SRM University",
+    "aliases": [
+      "SRM Institute of Science and Technology"
+    ],
+    "type": "Engineering",
+    "location": "Chennai"
+  },
+  {
+    "name": "Manipal Institute of Technology",
+    "aliases": [
+      "MIT Manipal",
+      "Manipal University"
+    ],
+    "type": "Engineering",
+    "location": "Manipal"
+  },
+  {
+    "name": "DTU Delhi",
+    "aliases": [
+      "Delhi Technological University",
+      "DCE"
+    ],
+    "type": "Engineering",
+    "location": "New Delhi"
+  },
+  {
+    "name": "NSUT Delhi",
+    "aliases": [
+      "Netaji Subhas University of Technology",
+      "NSIT"
+    ],
+    "type": "Engineering",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Jadavpur University",
+    "aliases": [
+      "JU Kolkata"
+    ],
+    "type": "Engineering",
+    "location": "Kolkata"
+  },
+  {
+    "name": "Anna University",
+    "aliases": [
+      "Anna University Chennai"
+    ],
+    "type": "Engineering",
+    "location": "Chennai"
+  },
+  {
+    "name": "COEP Pune",
+    "aliases": [
+      "College of Engineering Pune",
+      "COEP Technological University"
+    ],
+    "type": "Engineering",
+    "location": "Pune"
+  },
+  {
+    "name": "Thapar University",
+    "aliases": [
+      "Thapar Institute of Engineering and Technology",
+      "TIET Patiala"
+    ],
+    "type": "Engineering",
+    "location": "Patiala"
+  },
+  {
+    "name": "LNMIIT Jaipur",
+    "aliases": [
+      "LNM Institute of Information Technology"
+    ],
+    "type": "Engineering",
+    "location": "Jaipur"
+  },
+  {
+    "name": "PEC Chandigarh",
+    "aliases": [
+      "Punjab Engineering College",
+      "PEC University of Technology"
+    ],
+    "type": "Engineering",
+    "location": "Chandigarh"
+  },
+  {
+    "name": "IIEST Shibpur",
+    "aliases": [
+      "Indian Institute of Engineering Science and Technology Shibpur",
+      "BE College Shibpur"
+    ],
+    "type": "Engineering",
+    "location": "Howrah"
+  },
+  {
+    "name": "BIT Mesra",
+    "aliases": [
+      "Birla Institute of Technology Mesra"
+    ],
+    "type": "Engineering",
+    "location": "Ranchi"
+  },
+  {
+    "name": "PSG College of Technology",
+    "aliases": [
+      "PSG Tech Coimbatore"
+    ],
+    "type": "Engineering",
+    "location": "Coimbatore"
+  },
+  {
+    "name": "College of Engineering Guindy",
+    "aliases": [
+      "CEG Anna University",
+      "CEG Chennai"
+    ],
+    "type": "Engineering",
+    "location": "Chennai"
+  },
+  {
+    "name": "RVCE Bangalore",
+    "aliases": [
+      "RV College of Engineering"
+    ],
+    "type": "Engineering",
+    "location": "Bangalore"
+  },
+  {
+    "name": "BMS College of Engineering",
+    "aliases": [
+      "BMSCE Bangalore"
+    ],
+    "type": "Engineering",
+    "location": "Bangalore"
+  },
+  {
+    "name": "MS Ramaiah Institute of Technology",
+    "aliases": [
+      "MSRIT Bangalore"
+    ],
+    "type": "Engineering",
+    "location": "Bangalore"
+  },
+  {
+    "name": "PES University",
+    "aliases": [
+      "PES Bangalore",
+      "PESIT"
+    ],
+    "type": "Engineering",
+    "location": "Bangalore"
+  },
+  {
+    "name": "Dayananda Sagar College of Engineering",
+    "aliases": [
+      "DSCE Bangalore"
+    ],
+    "type": "Engineering",
+    "location": "Bangalore"
+  },
+  {
+    "name": "New Horizon College of Engineering",
+    "aliases": [
+      "NHCE Bangalore"
+    ],
+    "type": "Engineering",
+    "location": "Bangalore"
+  },
+  {
+    "name": "SASTRA University",
+    "aliases": [
+      "SASTRA Deemed University Thanjavur"
+    ],
+    "type": "Engineering",
+    "location": "Thanjavur"
+  },
+  {
+    "name": "Amrita Vishwa Vidyapeetham",
+    "aliases": [
+      "Amrita University"
+    ],
+    "type": "Engineering",
+    "location": "Coimbatore"
+  },
+  {
+    "name": "KLE Technological University",
+    "aliases": [
+      "KLE Tech Hubballi",
+      "BVB College of Engineering"
+    ],
+    "type": "Engineering",
+    "location": "Hubballi"
+  },
+  {
+    "name": "Shiv Nadar University",
+    "aliases": [
+      "SNU Greater Noida"
+    ],
+    "type": "Engineering",
+    "location": "Greater Noida"
+  },
+  {
+    "name": "KIIT Bhubaneswar",
+    "aliases": [
+      "Kalinga Institute of Industrial Technology"
+    ],
+    "type": "Engineering",
+    "location": "Bhubaneswar"
+  },
+  {
+    "name": "MIT World Peace University",
+    "aliases": [
+      "MIT WPU Pune"
+    ],
+    "type": "Engineering",
+    "location": "Pune"
+  },
+  {
+    "name": "MAHE Manipal",
+    "aliases": [
+      "Manipal Academy of Higher Education"
+    ],
+    "type": "Engineering",
+    "location": "Manipal"
+  },
+  {
+    "name": "Birla Institute of Technology Ranchi",
+    "aliases": [
+      "BIT Ranchi"
+    ],
+    "type": "Engineering",
+    "location": "Ranchi"
+  },
+  {
+    "name": "DAIICT Gandhinagar",
+    "aliases": [
+      "Dhirubhai Ambani Institute of Information and Communication Technology"
+    ],
+    "type": "Engineering",
+    "location": "Gandhinagar"
+  },
+  {
+    "name": "IIITDM Kancheepuram",
+    "aliases": [
+      "Indian Institute of Information Technology Design and Manufacturing Kancheepuram"
+    ],
+    "type": "Engineering",
+    "location": "Kancheepuram"
+  },
+  {
+    "name": "Indian Maritime University",
+    "aliases": [
+      "IMU Chennai"
+    ],
+    "type": "Engineering",
+    "location": "Chennai"
+  },
+  {
+    "name": "UPES Dehradun",
+    "aliases": [
+      "University of Petroleum and Energy Studies"
+    ],
+    "type": "Engineering",
+    "location": "Dehradun"
+  },
+  {
+    "name": "Chitkara University",
+    "aliases": [
+      "Chitkara Rajpura"
+    ],
+    "type": "Engineering",
+    "location": "Rajpura"
+  },
+  {
+    "name": "AIIMS Delhi",
+    "aliases": [
+      "All India Institute of Medical Sciences Delhi"
+    ],
+    "type": "Medical",
+    "location": "New Delhi"
+  },
+  {
+    "name": "AIIMS Jodhpur",
+    "aliases": [
+      "All India Institute of Medical Sciences Jodhpur"
+    ],
+    "type": "Medical",
+    "location": "Jodhpur"
+  },
+  {
+    "name": "AIIMS Bhopal",
+    "aliases": [
+      "All India Institute of Medical Sciences Bhopal"
+    ],
+    "type": "Medical",
+    "location": "Bhopal"
+  },
+  {
+    "name": "AIIMS Rishikesh",
+    "aliases": [
+      "All India Institute of Medical Sciences Rishikesh"
+    ],
+    "type": "Medical",
+    "location": "Rishikesh"
+  },
+  {
+    "name": "AIIMS Patna",
+    "aliases": [
+      "All India Institute of Medical Sciences Patna"
+    ],
+    "type": "Medical",
+    "location": "Patna"
+  },
+  {
+    "name": "AIIMS Raipur",
+    "aliases": [
+      "All India Institute of Medical Sciences Raipur"
+    ],
+    "type": "Medical",
+    "location": "Raipur"
+  },
+  {
+    "name": "AIIMS Nagpur",
+    "aliases": [
+      "All India Institute of Medical Sciences Nagpur"
+    ],
+    "type": "Medical",
+    "location": "Nagpur"
+  },
+  {
+    "name": "AIIMS Mangalagiri",
+    "aliases": [
+      "All India Institute of Medical Sciences Mangalagiri"
+    ],
+    "type": "Medical",
+    "location": "Mangalagiri"
+  },
+  {
+    "name": "AIIMS Gorakhpur",
+    "aliases": [
+      "All India Institute of Medical Sciences Gorakhpur"
+    ],
+    "type": "Medical",
+    "location": "Gorakhpur"
+  },
+  {
+    "name": "AIIMS Bathinda",
+    "aliases": [
+      "All India Institute of Medical Sciences Bathinda"
+    ],
+    "type": "Medical",
+    "location": "Bathinda"
+  },
+  {
+    "name": "AIIMS Kalyani",
+    "aliases": [
+      "All India Institute of Medical Sciences Kalyani"
+    ],
+    "type": "Medical",
+    "location": "Kalyani"
+  },
+  {
+    "name": "AIIMS Deoghar",
+    "aliases": [
+      "All India Institute of Medical Sciences Deoghar"
+    ],
+    "type": "Medical",
+    "location": "Deoghar"
+  },
+  {
+    "name": "AIIMS Bilaspur",
+    "aliases": [
+      "All India Institute of Medical Sciences Bilaspur"
+    ],
+    "type": "Medical",
+    "location": "Bilaspur"
+  },
+  {
+    "name": "AIIMS Rajkot",
+    "aliases": [
+      "All India Institute of Medical Sciences Rajkot"
+    ],
+    "type": "Medical",
+    "location": "Rajkot"
+  },
+  {
+    "name": "AIIMS Madurai",
+    "aliases": [
+      "All India Institute of Medical Sciences Madurai"
+    ],
+    "type": "Medical",
+    "location": "Madurai"
+  },
+  {
+    "name": "AIIMS Bibinagar",
+    "aliases": [
+      "All India Institute of Medical Sciences Bibinagar"
+    ],
+    "type": "Medical",
+    "location": "Bibinagar"
+  },
+  {
+    "name": "AIIMS Guwahati",
+    "aliases": [
+      "All India Institute of Medical Sciences Guwahati"
+    ],
+    "type": "Medical",
+    "location": "Guwahati"
+  },
+  {
+    "name": "AIIMS Vijaypur",
+    "aliases": [
+      "All India Institute of Medical Sciences Vijaypur"
+    ],
+    "type": "Medical",
+    "location": "Vijaypur"
+  },
+  {
+    "name": "AIIMS Darbhanga",
+    "aliases": [
+      "All India Institute of Medical Sciences Darbhanga"
+    ],
+    "type": "Medical",
+    "location": "Darbhanga"
+  },
+  {
+    "name": "AIIMS Raebareli",
+    "aliases": [
+      "All India Institute of Medical Sciences Raebareli"
+    ],
+    "type": "Medical",
+    "location": "Raebareli"
+  },
+  {
+    "name": "AIIMS Jammu",
+    "aliases": [
+      "All India Institute of Medical Sciences Jammu"
+    ],
+    "type": "Medical",
+    "location": "Jammu"
+  },
+  {
+    "name": "PGIMER Chandigarh",
+    "aliases": [
+      "Post Graduate Institute of Medical Education and Research"
+    ],
+    "type": "Medical",
+    "location": "Chandigarh"
+  },
+  {
+    "name": "CMC Vellore",
+    "aliases": [
+      "Christian Medical College Vellore"
+    ],
+    "type": "Medical",
+    "location": "Vellore"
+  },
+  {
+    "name": "JIPMER Puducherry",
+    "aliases": [
+      "Jawaharlal Institute of Postgraduate Medical Education and Research"
+    ],
+    "type": "Medical",
+    "location": "Puducherry"
+  },
+  {
+    "name": "Maulana Azad Medical College",
+    "aliases": [
+      "MAMC Delhi"
+    ],
+    "type": "Medical",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Lady Hardinge Medical College",
+    "aliases": [
+      "LHMC Delhi"
+    ],
+    "type": "Medical",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Grant Medical College Mumbai",
+    "aliases": [
+      "Grant Medical College"
+    ],
+    "type": "Medical",
+    "location": "Mumbai"
+  },
+  {
+    "name": "KEM Hospital Mumbai",
+    "aliases": [
+      "Seth GS Medical College and KEM Hospital"
+    ],
+    "type": "Medical",
+    "location": "Mumbai"
+  },
+  {
+    "name": "BHU Medical",
+    "aliases": [
+      "Institute of Medical Sciences BHU"
+    ],
+    "type": "Medical",
+    "location": "Varanasi"
+  },
+  {
+    "name": "KGMU Lucknow",
+    "aliases": [
+      "King George's Medical University"
+    ],
+    "type": "Medical",
+    "location": "Lucknow"
+  },
+  {
+    "name": "Armed Forces Medical College",
+    "aliases": [
+      "AFMC Pune"
+    ],
+    "type": "Medical",
+    "location": "Pune"
+  },
+  {
+    "name": "Kasturba Medical College Manipal",
+    "aliases": [
+      "KMC Manipal"
+    ],
+    "type": "Medical",
+    "location": "Manipal"
+  },
+  {
+    "name": "KGMC Lucknow",
+    "aliases": [
+      "King George's Medical College Lucknow"
+    ],
+    "type": "Medical",
+    "location": "Lucknow"
+  },
+  {
+    "name": "GSVM Kanpur",
+    "aliases": [
+      "Ganesh Shankar Vidyarthi Memorial Medical College"
+    ],
+    "type": "Medical",
+    "location": "Kanpur"
+  },
+  {
+    "name": "BRD Medical College Gorakhpur",
+    "aliases": [
+      "Baba Raghav Das Medical College"
+    ],
+    "type": "Medical",
+    "location": "Gorakhpur"
+  },
+  {
+    "name": "MLN Medical College Prayagraj",
+    "aliases": [
+      "Motilal Nehru Medical College"
+    ],
+    "type": "Medical",
+    "location": "Prayagraj"
+  },
+  {
+    "name": "Madras Medical College",
+    "aliases": [
+      "MMC Chennai"
+    ],
+    "type": "Medical",
+    "location": "Chennai"
+  },
+  {
+    "name": "Bangalore Medical College",
+    "aliases": [
+      "BMCRI Bangalore",
+      "Bangalore Medical College and Research Institute"
+    ],
+    "type": "Medical",
+    "location": "Bangalore"
+  },
+  {
+    "name": "Government Medical College Chandigarh",
+    "aliases": [
+      "GMCH Chandigarh",
+      "Government Medical College and Hospital Chandigarh"
+    ],
+    "type": "Medical",
+    "location": "Chandigarh"
+  },
+  {
+    "name": "GMCH Nagpur",
+    "aliases": [
+      "Government Medical College and Hospital Nagpur"
+    ],
+    "type": "Medical",
+    "location": "Nagpur"
+  },
+  {
+    "name": "BJ Medical College Ahmedabad",
+    "aliases": [
+      "B.J. Medical College Ahmedabad"
+    ],
+    "type": "Medical",
+    "location": "Ahmedabad"
+  },
+  {
+    "name": "Medical College Kolkata",
+    "aliases": [
+      "Calcutta Medical College"
+    ],
+    "type": "Medical",
+    "location": "Kolkata"
+  },
+  {
+    "name": "RG Kar Medical College Kolkata",
+    "aliases": [
+      "RG Kar Medical College and Hospital"
+    ],
+    "type": "Medical",
+    "location": "Kolkata"
+  },
+  {
+    "name": "SMS Medical College Jaipur",
+    "aliases": [
+      "Sawai Man Singh Medical College"
+    ],
+    "type": "Medical",
+    "location": "Jaipur"
+  },
+  {
+    "name": "GMC Thiruvananthapuram",
+    "aliases": [
+      "Government Medical College Thiruvananthapuram"
+    ],
+    "type": "Medical",
+    "location": "Thiruvananthapuram"
+  },
+  {
+    "name": "Government Medical College Kozhikode",
+    "aliases": [
+      "GMC Kozhikode",
+      "Calicut Medical College"
+    ],
+    "type": "Medical",
+    "location": "Kozhikode"
+  },
+  {
+    "name": "Stanley Medical College Chennai",
+    "aliases": [
+      "Stanley Medical College"
+    ],
+    "type": "Medical",
+    "location": "Chennai"
+  },
+  {
+    "name": "Topiwala National Medical College Mumbai",
+    "aliases": [
+      "TNMC Mumbai",
+      "Topiwala Nair Medical College"
+    ],
+    "type": "Medical",
+    "location": "Mumbai"
+  },
+  {
+    "name": "Government Medical College Amritsar",
+    "aliases": [
+      "GMC Amritsar"
+    ],
+    "type": "Medical",
+    "location": "Amritsar"
+  },
+  {
+    "name": "Government Medical College Patiala",
+    "aliases": [
+      "GMC Patiala",
+      "Rajindra Hospital Patiala"
+    ],
+    "type": "Medical",
+    "location": "Patiala"
+  },
+  {
+    "name": "Osmania Medical College Hyderabad",
+    "aliases": [
+      "OMC Hyderabad"
+    ],
+    "type": "Medical",
+    "location": "Hyderabad"
+  },
+  {
+    "name": "Gandhi Medical College Hyderabad",
+    "aliases": [
+      "GMC Hyderabad"
+    ],
+    "type": "Medical",
+    "location": "Hyderabad"
+  },
+  {
+    "name": "Government Medical College Srinagar",
+    "aliases": [
+      "GMC Srinagar"
+    ],
+    "type": "Medical",
+    "location": "Srinagar"
+  },
+  {
+    "name": "Government Medical College Thrissur",
+    "aliases": [
+      "GMC Thrissur"
+    ],
+    "type": "Medical",
+    "location": "Thrissur"
+  },
+  {
+    "name": "Government Medical College Kottayam",
+    "aliases": [
+      "GMC Kottayam"
+    ],
+    "type": "Medical",
+    "location": "Kottayam"
+  },
+  {
+    "name": "Medical College Trivandrum",
+    "aliases": [
+      "Government Medical College Trivandrum"
+    ],
+    "type": "Medical",
+    "location": "Thiruvananthapuram"
+  },
+  {
+    "name": "Institute of Medical Sciences BHU",
+    "aliases": [
+      "IMS BHU Varanasi"
+    ],
+    "type": "Medical",
+    "location": "Varanasi"
+  },
+  {
+    "name": "LLRM Medical College Meerut",
+    "aliases": [
+      "Lala Lajpat Rai Memorial Medical College"
+    ],
+    "type": "Medical",
+    "location": "Meerut"
+  },
+  {
+    "name": "Government Medical College Bhopal",
+    "aliases": [
+      "GMC Bhopal",
+      "Gandhi Medical College Bhopal"
+    ],
+    "type": "Medical",
+    "location": "Bhopal"
+  },
+  {
+    "name": "Government Medical College Indore",
+    "aliases": [
+      "GMC Indore"
+    ],
+    "type": "Medical",
+    "location": "Indore"
+  },
+  {
+    "name": "RIMS Ranchi",
+    "aliases": [
+      "Rajendra Institute of Medical Sciences"
+    ],
+    "type": "Medical",
+    "location": "Ranchi"
+  },
+  {
+    "name": "Patna Medical College",
+    "aliases": [
+      "PMCH Patna",
+      "Patna Medical College and Hospital"
+    ],
+    "type": "Medical",
+    "location": "Patna"
+  },
+  {
+    "name": "Darbhanga Medical College",
+    "aliases": [
+      "DMCH Darbhanga"
+    ],
+    "type": "Medical",
+    "location": "Darbhanga"
+  },
+  {
+    "name": "MGM Medical College Indore",
+    "aliases": [
+      "Mahatma Gandhi Memorial Medical College"
+    ],
+    "type": "Medical",
+    "location": "Indore"
+  },
+  {
+    "name": "Government Medical College Aurangabad",
+    "aliases": [
+      "GMC Aurangabad"
+    ],
+    "type": "Medical",
+    "location": "Aurangabad"
+  },
+  {
+    "name": "Government Medical College Miraj",
+    "aliases": [
+      "GMC Miraj"
+    ],
+    "type": "Medical",
+    "location": "Miraj"
+  },
+  {
+    "name": "Maulana Azad Institute of Dental Sciences",
+    "aliases": [
+      "MAIDS Delhi"
+    ],
+    "type": "Dental",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Government Dental College Mumbai",
+    "aliases": [
+      "GDC Mumbai"
+    ],
+    "type": "Dental",
+    "location": "Mumbai"
+  },
+  {
+    "name": "Government Dental College Chennai",
+    "aliases": [
+      "GDC Chennai"
+    ],
+    "type": "Dental",
+    "location": "Chennai"
+  },
+  {
+    "name": "Manipal College of Dental Sciences",
+    "aliases": [
+      "MCODS Manipal"
+    ],
+    "type": "Dental",
+    "location": "Manipal"
+  },
+  {
+    "name": "SRM Dental College",
+    "aliases": [
+      "SRM Dental College Chennai"
+    ],
+    "type": "Dental",
+    "location": "Chennai"
+  },
+  {
+    "name": "AIIMS Dental",
+    "aliases": [
+      "Centre for Dental Education and Research AIIMS"
+    ],
+    "type": "Dental",
+    "location": "New Delhi"
+  },
+  {
+    "name": "SDM College of Dental Sciences",
+    "aliases": [
+      "SDM Dental Dharwad"
+    ],
+    "type": "Dental",
+    "location": "Dharwad"
+  },
+  {
+    "name": "AB Shetty Memorial Institute of Dental Sciences",
+    "aliases": [
+      "AB Shetty Dental Mangalore"
+    ],
+    "type": "Dental",
+    "location": "Mangalore"
+  },
+  {
+    "name": "Saveetha Dental College",
+    "aliases": [
+      "Saveetha Dental College Chennai"
+    ],
+    "type": "Dental",
+    "location": "Chennai"
+  },
+  {
+    "name": "Meenakshi Ammal Dental College",
+    "aliases": [
+      "MADC Chennai"
+    ],
+    "type": "Dental",
+    "location": "Chennai"
+  },
+  {
+    "name": "NIPER Mohali",
+    "aliases": [
+      "National Institute of Pharmaceutical Education and Research Mohali"
+    ],
+    "type": "Pharmacy",
+    "location": "Mohali"
+  },
+  {
+    "name": "NIPER Hyderabad",
+    "aliases": [
+      "National Institute of Pharmaceutical Education and Research Hyderabad"
+    ],
+    "type": "Pharmacy",
+    "location": "Hyderabad"
+  },
+  {
+    "name": "ICT Mumbai",
+    "aliases": [
+      "Institute of Chemical Technology Mumbai",
+      "UDCT Mumbai"
+    ],
+    "type": "Pharmacy",
+    "location": "Mumbai"
+  },
+  {
+    "name": "Jamia Hamdard",
+    "aliases": [
+      "Jamia Hamdard University Delhi"
+    ],
+    "type": "Pharmacy",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Manipal College of Pharmaceutical Sciences",
+    "aliases": [
+      "MCOPS Manipal"
+    ],
+    "type": "Pharmacy",
+    "location": "Manipal"
+  },
+  {
+    "name": "JSS College of Pharmacy",
+    "aliases": [
+      "JSS Pharmacy Mysuru"
+    ],
+    "type": "Pharmacy",
+    "location": "Mysuru"
+  },
+  {
+    "name": "BITS Pilani Pharmacy",
+    "aliases": [
+      "BITS Pharmacy Pilani"
+    ],
+    "type": "Pharmacy",
+    "location": "Pilani"
+  },
+  {
+    "name": "Bombay College of Pharmacy",
+    "aliases": [
+      "BCP Mumbai"
+    ],
+    "type": "Pharmacy",
+    "location": "Mumbai"
+  },
+  {
+    "name": "LM College of Pharmacy Ahmedabad",
+    "aliases": [
+      "LM Pharmacy Ahmedabad"
+    ],
+    "type": "Pharmacy",
+    "location": "Ahmedabad"
+  },
+  {
+    "name": "NIPER Kolkata",
+    "aliases": [
+      "National Institute of Pharmaceutical Education and Research Kolkata"
+    ],
+    "type": "Pharmacy",
+    "location": "Kolkata"
+  },
+  {
+    "name": "NIMHANS Bangalore",
+    "aliases": [
+      "National Institute of Mental Health and Neurosciences"
+    ],
+    "type": "Medical",
+    "location": "Bangalore"
+  },
+  {
+    "name": "SRCC Delhi",
+    "aliases": [
+      "Shri Ram College of Commerce",
+      "SRCC"
+    ],
+    "type": "Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Hindu College Delhi",
+    "aliases": [
+      "Hindu College University of Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "St. Stephen's College",
+    "aliases": [
+      "St. Stephens Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Lady Shri Ram College",
+    "aliases": [
+      "LSR Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Loyola College Chennai",
+    "aliases": [
+      "Loyola College"
+    ],
+    "type": "Arts/Commerce",
+    "location": "Chennai"
+  },
+  {
+    "name": "Christ University Bangalore",
+    "aliases": [
+      "Christ University"
+    ],
+    "type": "Arts/Commerce",
+    "location": "Bangalore"
+  },
+  {
+    "name": "St. Xavier's College Mumbai",
+    "aliases": [
+      "St. Xavier's Mumbai"
+    ],
+    "type": "Arts/Commerce",
+    "location": "Mumbai"
+  },
+  {
+    "name": "Presidency College Kolkata",
+    "aliases": [
+      "Presidency University"
+    ],
+    "type": "Arts",
+    "location": "Kolkata"
+  },
+  {
+    "name": "Hansraj College",
+    "aliases": [
+      "Hansraj College Delhi"
+    ],
+    "type": "Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Kirori Mal College",
+    "aliases": [
+      "KMC Delhi",
+      "Kirori Mal College Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Miranda House",
+    "aliases": [
+      "Miranda House Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Ramjas College",
+    "aliases": [
+      "Ramjas College Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Gargi College",
+    "aliases": [
+      "Gargi College Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Jesus and Mary College",
+    "aliases": [
+      "JMC Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Daulat Ram College",
+    "aliases": [
+      "Daulat Ram College Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Venkateshwara College",
+    "aliases": [
+      "Venky Delhi",
+      "Sri Venkateswara College Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "PGDAV College",
+    "aliases": [
+      "PGDAV College Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Deshbandhu College",
+    "aliases": [
+      "Deshbandhu College Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Zakir Husain College",
+    "aliases": [
+      "Zakir Husain Delhi College"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Atma Ram Sanatan Dharma College",
+    "aliases": [
+      "ARSD College Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Dyal Singh College",
+    "aliases": [
+      "Dyal Singh College Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Bharati College",
+    "aliases": [
+      "Bharati College Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Maitreyi College",
+    "aliases": [
+      "Maitreyi College Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Shivaji College",
+    "aliases": [
+      "Shivaji College Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Rajdhani College",
+    "aliases": [
+      "Rajdhani College Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Maharaja Agrasen College",
+    "aliases": [
+      "MAC Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Shaheed Bhagat Singh College",
+    "aliases": [
+      "SBS College Delhi",
+      "SBSC Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Ram Lal Anand College",
+    "aliases": [
+      "RLA College Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Motilal Nehru College",
+    "aliases": [
+      "Motilal Nehru College Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Satyawati College",
+    "aliases": [
+      "Satyawati College Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Janki Devi Memorial College",
+    "aliases": [
+      "JDMC Delhi"
+    ],
+    "type": "Arts/Commerce",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Indira Gandhi Delhi Technical University for Women",
+    "aliases": [
+      "IGDTUW Delhi"
+    ],
+    "type": "Engineering",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Ambedkar University Delhi",
+    "aliases": [
+      "AUD Delhi"
+    ],
+    "type": "Arts/Social Sciences",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Jamia Millia Islamia",
+    "aliases": [
+      "JMI Delhi",
+      "Jamia Delhi"
+    ],
+    "type": "Multi",
+    "location": "New Delhi"
+  },
+  {
+    "name": "IIM Ahmedabad",
+    "aliases": [
+      "IIMA",
+      "Indian Institute of Management Ahmedabad"
+    ],
+    "type": "Management",
+    "location": "Ahmedabad"
+  },
+  {
+    "name": "IIM Bangalore",
+    "aliases": [
+      "IIMB",
+      "Indian Institute of Management Bangalore"
+    ],
+    "type": "Management",
+    "location": "Bangalore"
+  },
+  {
+    "name": "IIM Calcutta",
+    "aliases": [
+      "IIMC",
+      "Indian Institute of Management Calcutta"
+    ],
+    "type": "Management",
+    "location": "Kolkata"
+  },
+  {
+    "name": "IIM Lucknow",
+    "aliases": [
+      "IIML",
+      "Indian Institute of Management Lucknow"
+    ],
+    "type": "Management",
+    "location": "Lucknow"
+  },
+  {
+    "name": "IIM Kozhikode",
+    "aliases": [
+      "IIMK",
+      "Indian Institute of Management Kozhikode"
+    ],
+    "type": "Management",
+    "location": "Kozhikode"
+  },
+  {
+    "name": "IIM Indore",
+    "aliases": [
+      "Indian Institute of Management Indore"
+    ],
+    "type": "Management",
+    "location": "Indore"
+  },
+  {
+    "name": "IIM Amritsar",
+    "aliases": [
+      "Indian Institute of Management Amritsar"
+    ],
+    "type": "Management",
+    "location": "Amritsar"
+  },
+  {
+    "name": "IIM Bodh Gaya",
+    "aliases": [
+      "Indian Institute of Management Bodh Gaya"
+    ],
+    "type": "Management",
+    "location": "Bodh Gaya"
+  },
+  {
+    "name": "IIM Jammu",
+    "aliases": [
+      "Indian Institute of Management Jammu"
+    ],
+    "type": "Management",
+    "location": "Jammu"
+  },
+  {
+    "name": "IIM Kashipur",
+    "aliases": [
+      "Indian Institute of Management Kashipur"
+    ],
+    "type": "Management",
+    "location": "Kashipur"
+  },
+  {
+    "name": "IIM Nagpur",
+    "aliases": [
+      "Indian Institute of Management Nagpur"
+    ],
+    "type": "Management",
+    "location": "Nagpur"
+  },
+  {
+    "name": "IIM Raipur",
+    "aliases": [
+      "Indian Institute of Management Raipur"
+    ],
+    "type": "Management",
+    "location": "Raipur"
+  },
+  {
+    "name": "IIM Ranchi",
+    "aliases": [
+      "Indian Institute of Management Ranchi"
+    ],
+    "type": "Management",
+    "location": "Ranchi"
+  },
+  {
+    "name": "IIM Rohtak",
+    "aliases": [
+      "Indian Institute of Management Rohtak"
+    ],
+    "type": "Management",
+    "location": "Rohtak"
+  },
+  {
+    "name": "IIM Sambalpur",
+    "aliases": [
+      "Indian Institute of Management Sambalpur"
+    ],
+    "type": "Management",
+    "location": "Sambalpur"
+  },
+  {
+    "name": "IIM Sirmaur",
+    "aliases": [
+      "Indian Institute of Management Sirmaur"
+    ],
+    "type": "Management",
+    "location": "Sirmaur"
+  },
+  {
+    "name": "IIM Trichy",
+    "aliases": [
+      "Indian Institute of Management Tiruchirappalli"
+    ],
+    "type": "Management",
+    "location": "Tiruchirappalli"
+  },
+  {
+    "name": "IIM Udaipur",
+    "aliases": [
+      "Indian Institute of Management Udaipur"
+    ],
+    "type": "Management",
+    "location": "Udaipur"
+  },
+  {
+    "name": "IIM Visakhapatnam",
+    "aliases": [
+      "Indian Institute of Management Visakhapatnam"
+    ],
+    "type": "Management",
+    "location": "Visakhapatnam"
+  },
+  {
+    "name": "IIM Shillong",
+    "aliases": [
+      "Indian Institute of Management Shillong"
+    ],
+    "type": "Management",
+    "location": "Shillong"
+  },
+  {
+    "name": "IIM Mumbai",
+    "aliases": [
+      "Indian Institute of Management Mumbai"
+    ],
+    "type": "Management",
+    "location": "Mumbai"
+  },
+  {
+    "name": "XLRI Jamshedpur",
+    "aliases": [
+      "Xavier Labour Relations Institute"
+    ],
+    "type": "Management",
+    "location": "Jamshedpur"
+  },
+  {
+    "name": "FMS Delhi",
+    "aliases": [
+      "Faculty of Management Studies Delhi University"
+    ],
+    "type": "Management",
+    "location": "New Delhi"
+  },
+  {
+    "name": "MDI Gurgaon",
+    "aliases": [
+      "Management Development Institute"
+    ],
+    "type": "Management",
+    "location": "Gurgaon"
+  },
+  {
+    "name": "ISB Hyderabad",
+    "aliases": [
+      "Indian School of Business"
+    ],
+    "type": "Management",
+    "location": "Hyderabad"
+  },
+  {
+    "name": "SP Jain Mumbai",
+    "aliases": [
+      "SP Jain Institute of Management and Research"
+    ],
+    "type": "Management",
+    "location": "Mumbai"
+  },
+  {
+    "name": "JBIMS Mumbai",
+    "aliases": [
+      "Jamnalal Bajaj Institute of Management Studies"
+    ],
+    "type": "Management",
+    "location": "Mumbai"
+  },
+  {
+    "name": "IIFT Delhi",
+    "aliases": [
+      "Indian Institute of Foreign Trade"
+    ],
+    "type": "Management",
+    "location": "New Delhi"
+  },
+  {
+    "name": "NMIMS Mumbai",
+    "aliases": [
+      "Narsee Monjee Institute of Management Studies"
+    ],
+    "type": "Management",
+    "location": "Mumbai"
+  },
+  {
+    "name": "SIBM Pune",
+    "aliases": [
+      "Symbiosis Institute of Business Management Pune"
+    ],
+    "type": "Management",
+    "location": "Pune"
+  },
+  {
+    "name": "IMT Ghaziabad",
+    "aliases": [
+      "Institute of Management Technology Ghaziabad"
+    ],
+    "type": "Management",
+    "location": "Ghaziabad"
+  },
+  {
+    "name": "GIM Goa",
+    "aliases": [
+      "Goa Institute of Management"
+    ],
+    "type": "Management",
+    "location": "Goa"
+  },
+  {
+    "name": "TAPMI Manipal",
+    "aliases": [
+      "T.A. Pai Management Institute"
+    ],
+    "type": "Management",
+    "location": "Manipal"
+  },
+  {
+    "name": "LBSIM Delhi",
+    "aliases": [
+      "Lal Bahadur Shastri Institute of Management"
+    ],
+    "type": "Management",
+    "location": "New Delhi"
+  },
+  {
+    "name": "IBS Hyderabad",
+    "aliases": [
+      "ICFAI Business School Hyderabad"
+    ],
+    "type": "Management",
+    "location": "Hyderabad"
+  },
+  {
+    "name": "Great Lakes Chennai",
+    "aliases": [
+      "Great Lakes Institute of Management"
+    ],
+    "type": "Management",
+    "location": "Chennai"
+  },
+  {
+    "name": "SCMHRD Pune",
+    "aliases": [
+      "Symbiosis Centre for Management and Human Resource Development"
+    ],
+    "type": "Management",
+    "location": "Pune"
+  },
+  {
+    "name": "KJ Somaiya Mumbai",
+    "aliases": [
+      "KJ Somaiya Institute of Management"
+    ],
+    "type": "Management",
+    "location": "Mumbai"
+  },
+  {
+    "name": "Welingkar Mumbai",
+    "aliases": [
+      "Prin. LN Welingkar Institute of Management"
+    ],
+    "type": "Management",
+    "location": "Mumbai"
+  },
+  {
+    "name": "NITIE Mumbai",
+    "aliases": [
+      "National Institute of Industrial Engineering Mumbai"
+    ],
+    "type": "Management",
+    "location": "Mumbai"
+  },
+  {
+    "name": "FORE School Delhi",
+    "aliases": [
+      "FORE School of Management"
+    ],
+    "type": "Management",
+    "location": "New Delhi"
+  },
+  {
+    "name": "NLSIU Bangalore",
+    "aliases": [
+      "National Law School of India University"
+    ],
+    "type": "Law",
+    "location": "Bangalore"
+  },
+  {
+    "name": "NALSAR Hyderabad",
+    "aliases": [
+      "NALSAR University of Law"
+    ],
+    "type": "Law",
+    "location": "Hyderabad"
+  },
+  {
+    "name": "NLU Delhi",
+    "aliases": [
+      "National Law University Delhi"
+    ],
+    "type": "Law",
+    "location": "New Delhi"
+  },
+  {
+    "name": "NUJS Kolkata",
+    "aliases": [
+      "National University of Juridical Sciences",
+      "WBNUJS"
+    ],
+    "type": "Law",
+    "location": "Kolkata"
+  },
+  {
+    "name": "NLU Jodhpur",
+    "aliases": [
+      "National Law University Jodhpur"
+    ],
+    "type": "Law",
+    "location": "Jodhpur"
+  },
+  {
+    "name": "GNLU Gandhinagar",
+    "aliases": [
+      "Gujarat National Law University"
+    ],
+    "type": "Law",
+    "location": "Gandhinagar"
+  },
+  {
+    "name": "NLU Lucknow",
+    "aliases": [
+      "Ram Manohar Lohia National Law University"
+    ],
+    "type": "Law",
+    "location": "Lucknow"
+  },
+  {
+    "name": "NLIU Bhopal",
+    "aliases": [
+      "National Law Institute University Bhopal"
+    ],
+    "type": "Law",
+    "location": "Bhopal"
+  },
+  {
+    "name": "NLU Nagpur",
+    "aliases": [
+      "Maharashtra National Law University Nagpur",
+      "MNLU Nagpur"
+    ],
+    "type": "Law",
+    "location": "Nagpur"
+  },
+  {
+    "name": "CNLU Patna",
+    "aliases": [
+      "Chanakya National Law University Patna"
+    ],
+    "type": "Law",
+    "location": "Patna"
+  },
+  {
+    "name": "HNLU Raipur",
+    "aliases": [
+      "Hidayatullah National Law University Raipur"
+    ],
+    "type": "Law",
+    "location": "Raipur"
+  },
+  {
+    "name": "NLU Odisha",
+    "aliases": [
+      "National Law University Odisha Cuttack"
+    ],
+    "type": "Law",
+    "location": "Cuttack"
+  },
+  {
+    "name": "NLU Assam",
+    "aliases": [
+      "National Law University and Judicial Academy Assam"
+    ],
+    "type": "Law",
+    "location": "Guwahati"
+  },
+  {
+    "name": "DSNLU Visakhapatnam",
+    "aliases": [
+      "Damodaram Sanjivayya National Law University"
+    ],
+    "type": "Law",
+    "location": "Visakhapatnam"
+  },
+  {
+    "name": "TNNLS Tiruchirappalli",
+    "aliases": [
+      "Tamil Nadu National Law School"
+    ],
+    "type": "Law",
+    "location": "Tiruchirappalli"
+  },
+  {
+    "name": "NUSRL Ranchi",
+    "aliases": [
+      "National University of Study and Research in Law Ranchi"
+    ],
+    "type": "Law",
+    "location": "Ranchi"
+  },
+  {
+    "name": "RMLNLU Lucknow",
+    "aliases": [
+      "Dr Ram Manohar Lohia National Law University Lucknow"
+    ],
+    "type": "Law",
+    "location": "Lucknow"
+  },
+  {
+    "name": "MNLU Mumbai",
+    "aliases": [
+      "Maharashtra National Law University Mumbai"
+    ],
+    "type": "Law",
+    "location": "Mumbai"
+  },
+  {
+    "name": "MNLU Aurangabad",
+    "aliases": [
+      "Maharashtra National Law University Aurangabad"
+    ],
+    "type": "Law",
+    "location": "Aurangabad"
+  },
+  {
+    "name": "NUALS Kochi",
+    "aliases": [
+      "National University of Advanced Legal Studies Kochi"
+    ],
+    "type": "Law",
+    "location": "Kochi"
+  },
+  {
+    "name": "ICAI",
+    "aliases": [
+      "Institute of Chartered Accountants of India"
+    ],
+    "type": "Commerce",
+    "location": "National"
+  },
+  {
+    "name": "ICSI",
+    "aliases": [
+      "Institute of Company Secretaries of India"
+    ],
+    "type": "Commerce",
+    "location": "National"
+  },
+  {
+    "name": "ICMAI",
+    "aliases": [
+      "Institute of Cost Accountants of India",
+      "ICWAI"
+    ],
+    "type": "Commerce",
+    "location": "National"
+  },
+  {
+    "name": "IISc Bangalore",
+    "aliases": [
+      "Indian Institute of Science"
+    ],
+    "type": "Science",
+    "location": "Bangalore"
+  },
+  {
+    "name": "ISI Kolkata",
+    "aliases": [
+      "Indian Statistical Institute"
+    ],
+    "type": "Science",
+    "location": "Kolkata"
+  },
+  {
+    "name": "CMI Chennai",
+    "aliases": [
+      "Chennai Mathematical Institute"
+    ],
+    "type": "Science",
+    "location": "Chennai"
+  },
+  {
+    "name": "IISER Pune",
+    "aliases": [
+      "Indian Institute of Science Education and Research Pune"
+    ],
+    "type": "Science",
+    "location": "Pune"
+  },
+  {
+    "name": "IISER Kolkata",
+    "aliases": [
+      "Indian Institute of Science Education and Research Kolkata"
+    ],
+    "type": "Science",
+    "location": "Kolkata"
+  },
+  {
+    "name": "IISER Mohali",
+    "aliases": [
+      "Indian Institute of Science Education and Research Mohali"
+    ],
+    "type": "Science",
+    "location": "Mohali"
+  },
+  {
+    "name": "IISER Bhopal",
+    "aliases": [
+      "Indian Institute of Science Education and Research Bhopal"
+    ],
+    "type": "Science",
+    "location": "Bhopal"
+  },
+  {
+    "name": "IISER Thiruvananthapuram",
+    "aliases": [
+      "Indian Institute of Science Education and Research Thiruvananthapuram"
+    ],
+    "type": "Science",
+    "location": "Thiruvananthapuram"
+  },
+  {
+    "name": "IISER Tirupati",
+    "aliases": [
+      "Indian Institute of Science Education and Research Tirupati"
+    ],
+    "type": "Science",
+    "location": "Tirupati"
+  },
+  {
+    "name": "IISER Berhampur",
+    "aliases": [
+      "Indian Institute of Science Education and Research Berhampur"
+    ],
+    "type": "Science",
+    "location": "Berhampur"
+  },
+  {
+    "name": "NISER Bhubaneswar",
+    "aliases": [
+      "National Institute of Science Education and Research"
+    ],
+    "type": "Science",
+    "location": "Bhubaneswar"
+  },
+  {
+    "name": "HRI Prayagraj",
+    "aliases": [
+      "Harish-Chandra Research Institute"
+    ],
+    "type": "Science",
+    "location": "Prayagraj"
+  },
+  {
+    "name": "ICTS Bangalore",
+    "aliases": [
+      "International Centre for Theoretical Sciences"
+    ],
+    "type": "Science",
+    "location": "Bangalore"
+  },
+  {
+    "name": "NIFT Delhi",
+    "aliases": [
+      "National Institute of Fashion Technology Delhi"
+    ],
+    "type": "Design",
+    "location": "New Delhi"
+  },
+  {
+    "name": "NIFT Mumbai",
+    "aliases": [
+      "National Institute of Fashion Technology Mumbai"
+    ],
+    "type": "Design",
+    "location": "Mumbai"
+  },
+  {
+    "name": "NIFT Bangalore",
+    "aliases": [
+      "National Institute of Fashion Technology Bangalore"
+    ],
+    "type": "Design",
+    "location": "Bangalore"
+  },
+  {
+    "name": "NIFT Chennai",
+    "aliases": [
+      "National Institute of Fashion Technology Chennai"
+    ],
+    "type": "Design",
+    "location": "Chennai"
+  },
+  {
+    "name": "NIFT Kolkata",
+    "aliases": [
+      "National Institute of Fashion Technology Kolkata"
+    ],
+    "type": "Design",
+    "location": "Kolkata"
+  },
+  {
+    "name": "NIFT Hyderabad",
+    "aliases": [
+      "National Institute of Fashion Technology Hyderabad"
+    ],
+    "type": "Design",
+    "location": "Hyderabad"
+  },
+  {
+    "name": "NID Ahmedabad",
+    "aliases": [
+      "National Institute of Design Ahmedabad"
+    ],
+    "type": "Design",
+    "location": "Ahmedabad"
+  },
+  {
+    "name": "NID Gandhinagar",
+    "aliases": [
+      "National Institute of Design Gandhinagar"
+    ],
+    "type": "Design",
+    "location": "Gandhinagar"
+  },
+  {
+    "name": "NID Haryana",
+    "aliases": [
+      "National Institute of Design Kurukshetra"
+    ],
+    "type": "Design",
+    "location": "Kurukshetra"
+  },
+  {
+    "name": "NID Madhya Pradesh",
+    "aliases": [
+      "National Institute of Design Bhopal"
+    ],
+    "type": "Design",
+    "location": "Bhopal"
+  },
+  {
+    "name": "Srishti Manipal Institute",
+    "aliases": [
+      "Srishti Institute of Art Design and Technology"
+    ],
+    "type": "Design",
+    "location": "Bangalore"
+  },
+  {
+    "name": "Pearl Academy Delhi",
+    "aliases": [
+      "Pearl Academy"
+    ],
+    "type": "Design",
+    "location": "New Delhi"
+  },
+  {
+    "name": "SPA Delhi",
+    "aliases": [
+      "School of Planning and Architecture Delhi"
+    ],
+    "type": "Architecture",
+    "location": "New Delhi"
+  },
+  {
+    "name": "CEPT University",
+    "aliases": [
+      "CEPT Ahmedabad"
+    ],
+    "type": "Architecture",
+    "location": "Ahmedabad"
+  },
+  {
+    "name": "Sir JJ College of Architecture",
+    "aliases": [
+      "JJ School of Art Mumbai"
+    ],
+    "type": "Architecture",
+    "location": "Mumbai"
+  },
+  {
+    "name": "IHM Pusa",
+    "aliases": [
+      "Institute of Hotel Management Pusa Delhi"
+    ],
+    "type": "Hotel Management",
+    "location": "New Delhi"
+  },
+  {
+    "name": "IHM Mumbai",
+    "aliases": [
+      "Institute of Hotel Management Mumbai"
+    ],
+    "type": "Hotel Management",
+    "location": "Mumbai"
+  },
+  {
+    "name": "IHM Bangalore",
+    "aliases": [
+      "Institute of Hotel Management Bangalore"
+    ],
+    "type": "Hotel Management",
+    "location": "Bangalore"
+  },
+  {
+    "name": "IHM Hyderabad",
+    "aliases": [
+      "Institute of Hotel Management Hyderabad"
+    ],
+    "type": "Hotel Management",
+    "location": "Hyderabad"
+  },
+  {
+    "name": "IHM Goa",
+    "aliases": [
+      "Institute of Hotel Management Goa"
+    ],
+    "type": "Hotel Management",
+    "location": "Goa"
+  },
+  {
+    "name": "IHM Chennai",
+    "aliases": [
+      "Institute of Hotel Management Chennai"
+    ],
+    "type": "Hotel Management",
+    "location": "Chennai"
+  },
+  {
+    "name": "IHM Kolkata",
+    "aliases": [
+      "Institute of Hotel Management Kolkata"
+    ],
+    "type": "Hotel Management",
+    "location": "Kolkata"
+  },
+  {
+    "name": "IHM Jaipur",
+    "aliases": [
+      "Institute of Hotel Management Jaipur"
+    ],
+    "type": "Hotel Management",
+    "location": "Jaipur"
+  },
+  {
+    "name": "IHM Lucknow",
+    "aliases": [
+      "Institute of Hotel Management Lucknow"
+    ],
+    "type": "Hotel Management",
+    "location": "Lucknow"
+  },
+  {
+    "name": "IHM Ahmedabad",
+    "aliases": [
+      "Institute of Hotel Management Ahmedabad"
+    ],
+    "type": "Hotel Management",
+    "location": "Ahmedabad"
+  },
+  {
+    "name": "FTII Pune",
+    "aliases": [
+      "Film and Television Institute of India"
+    ],
+    "type": "Media",
+    "location": "Pune"
+  },
+  {
+    "name": "IIMC New Delhi",
+    "aliases": [
+      "Indian Institute of Mass Communication"
+    ],
+    "type": "Media",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Xavier Institute of Communication",
+    "aliases": [
+      "XIC Mumbai"
+    ],
+    "type": "Media",
+    "location": "Mumbai"
+  },
+  {
+    "name": "Asian College of Journalism",
+    "aliases": [
+      "ACJ Chennai"
+    ],
+    "type": "Media",
+    "location": "Chennai"
+  },
+  {
+    "name": "Symbiosis Institute of Media and Communication",
+    "aliases": [
+      "SIMC Pune"
+    ],
+    "type": "Media",
+    "location": "Pune"
+  },
+  {
+    "name": "Jamia Millia Islamia Mass Communication",
+    "aliases": [
+      "AJK MCRC Jamia",
+      "AJK Mass Communication Research Centre"
+    ],
+    "type": "Media",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Delhi University Mass Communication",
+    "aliases": [
+      "DU Mass Communication Department"
+    ],
+    "type": "Media",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Manipal School of Communication",
+    "aliases": [
+      "MAHE SOC Manipal"
+    ],
+    "type": "Media",
+    "location": "Manipal"
+  },
+  {
+    "name": "MICA Ahmedabad",
+    "aliases": [
+      "Mudra Institute of Communications Ahmedabad"
+    ],
+    "type": "Media",
+    "location": "Ahmedabad"
+  },
+  {
+    "name": "Pearl Academy",
+    "aliases": [
+      "Pearl Academy Media Delhi"
+    ],
+    "type": "Media",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Indian Institute of Journalism and New Media Bangalore",
+    "aliases": [
+      "IIJNM Bangalore"
+    ],
+    "type": "Media",
+    "location": "Bangalore"
+  },
+  {
+    "name": "Whistling Woods International Mumbai",
+    "aliases": [
+      "Whistling Woods Mumbai"
+    ],
+    "type": "Media",
+    "location": "Mumbai"
+  },
+  {
+    "name": "TISS Mumbai",
+    "aliases": [
+      "Tata Institute of Social Sciences"
+    ],
+    "type": "Social Work",
+    "location": "Mumbai"
+  },
+  {
+    "name": "Delhi School of Economics",
+    "aliases": [
+      "DSE Delhi"
+    ],
+    "type": "Economics",
+    "location": "New Delhi"
+  },
+  {
+    "name": "JNU New Delhi",
+    "aliases": [
+      "Jawaharlal Nehru University"
+    ],
+    "type": "Arts/Social Sciences",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Ashoka University",
+    "aliases": [
+      "Ashoka Sonipat"
+    ],
+    "type": "Liberal Arts",
+    "location": "Sonipat"
+  },
+  {
+    "name": "FLAME University",
+    "aliases": [
+      "FLAME Pune"
+    ],
+    "type": "Liberal Arts",
+    "location": "Pune"
+  },
+  {
+    "name": "BHU Varanasi",
+    "aliases": [
+      "Banaras Hindu University"
+    ],
+    "type": "Multi",
+    "location": "Varanasi"
+  },
+  {
+    "name": "University of Hyderabad",
+    "aliases": [
+      "UoH Hyderabad",
+      "Hyderabad Central University"
+    ],
+    "type": "Arts/Science",
+    "location": "Hyderabad"
+  },
+  {
+    "name": "Pondicherry University",
+    "aliases": [
+      "Pondicherry Central University"
+    ],
+    "type": "Arts/Science",
+    "location": "Puducherry"
+  },
+  {
+    "name": "Central University of Rajasthan",
+    "aliases": [
+      "CURAJ Ajmer"
+    ],
+    "type": "Arts/Science",
+    "location": "Ajmer"
+  },
+  {
+    "name": "Central University of Kerala",
+    "aliases": [
+      "CU Kerala Kasaragod"
+    ],
+    "type": "Arts/Science",
+    "location": "Kasaragod"
+  },
+  {
+    "name": "Central University of Haryana",
+    "aliases": [
+      "CU Haryana Mahendergarh"
+    ],
+    "type": "Arts/Science",
+    "location": "Mahendergarh"
+  },
+  {
+    "name": "Central University of Punjab",
+    "aliases": [
+      "CU Punjab Bathinda"
+    ],
+    "type": "Arts/Science",
+    "location": "Bathinda"
+  },
+  {
+    "name": "Central University of Jharkhand",
+    "aliases": [
+      "CU Jharkhand Ranchi"
+    ],
+    "type": "Arts/Science",
+    "location": "Ranchi"
+  },
+  {
+    "name": "Central University of Jammu",
+    "aliases": [
+      "CU Jammu"
+    ],
+    "type": "Arts/Science",
+    "location": "Jammu"
+  },
+  {
+    "name": "IGNOU",
+    "aliases": [
+      "Indira Gandhi National Open University"
+    ],
+    "type": "Multi",
+    "location": "New Delhi"
+  },
+  {
+    "name": "University of Madras",
+    "aliases": [
+      "Madras University"
+    ],
+    "type": "Arts/Science",
+    "location": "Chennai"
+  },
+  {
+    "name": "University of Calcutta",
+    "aliases": [
+      "Calcutta University"
+    ],
+    "type": "Arts/Science",
+    "location": "Kolkata"
+  },
+  {
+    "name": "University of Mumbai",
+    "aliases": [
+      "Mumbai University"
+    ],
+    "type": "Arts/Science",
+    "location": "Mumbai"
+  },
+  {
+    "name": "Savitribai Phule Pune University",
+    "aliases": [
+      "SPPU Pune",
+      "Pune University"
+    ],
+    "type": "Arts/Science",
+    "location": "Pune"
+  },
+  {
+    "name": "Aligarh Muslim University",
+    "aliases": [
+      "AMU Aligarh"
+    ],
+    "type": "Multi",
+    "location": "Aligarh"
+  },
+  {
+    "name": "National Defence Academy",
+    "aliases": [
+      "NDA Khadakwasla",
+      "NDA Pune"
+    ],
+    "type": "Defence",
+    "location": "Pune"
+  },
+  {
+    "name": "Indian Military Academy",
+    "aliases": [
+      "IMA Dehradun"
+    ],
+    "type": "Defence",
+    "location": "Dehradun"
+  },
+  {
+    "name": "Officers Training Academy Chennai",
+    "aliases": [
+      "OTA Chennai"
+    ],
+    "type": "Defence",
+    "location": "Chennai"
+  },
+  {
+    "name": "Air Force Academy Dundigal",
+    "aliases": [
+      "AFA Dundigal",
+      "Air Force Academy Hyderabad"
+    ],
+    "type": "Defence",
+    "location": "Hyderabad"
+  },
+  {
+    "name": "Indian Naval Academy Ezhimala",
+    "aliases": [
+      "INA Ezhimala"
+    ],
+    "type": "Defence",
+    "location": "Ezhimala"
+  },
+  {
+    "name": "Rashtriya Indian Military College Dehradun",
+    "aliases": [
+      "RIMC Dehradun"
+    ],
+    "type": "Defence",
+    "location": "Dehradun"
+  },
+  {
+    "name": "Sainik Schools",
+    "aliases": [
+      "Sainik School"
+    ],
+    "type": "Defence",
+    "location": "National"
+  },
+  {
+    "name": "ISRO",
+    "aliases": [
+      "Indian Space Research Organisation"
+    ],
+    "type": "Space/Research",
+    "location": "Bangalore"
+  },
+  {
+    "name": "DRDO",
+    "aliases": [
+      "Defence Research and Development Organisation"
+    ],
+    "type": "Research",
+    "location": "National"
+  },
+  {
+    "name": "BARC",
+    "aliases": [
+      "Bhabha Atomic Research Centre"
+    ],
+    "type": "Research",
+    "location": "Mumbai"
+  },
+  {
+    "name": "IARI New Delhi",
+    "aliases": [
+      "Indian Agricultural Research Institute",
+      "Pusa Institute"
+    ],
+    "type": "Agriculture",
+    "location": "New Delhi"
+  },
+  {
+    "name": "NDRI Karnal",
+    "aliases": [
+      "National Dairy Research Institute"
+    ],
+    "type": "Agriculture",
+    "location": "Karnal"
+  },
+  {
+    "name": "PAU Ludhiana",
+    "aliases": [
+      "Punjab Agricultural University"
+    ],
+    "type": "Agriculture",
+    "location": "Ludhiana"
+  },
+  {
+    "name": "TNAU Coimbatore",
+    "aliases": [
+      "Tamil Nadu Agricultural University"
+    ],
+    "type": "Agriculture",
+    "location": "Coimbatore"
+  },
+  {
+    "name": "UAS Bangalore",
+    "aliases": [
+      "University of Agricultural Sciences Bangalore"
+    ],
+    "type": "Agriculture",
+    "location": "Bangalore"
+  },
+  {
+    "name": "UAS Dharwad",
+    "aliases": [
+      "University of Agricultural Sciences Dharwad"
+    ],
+    "type": "Agriculture",
+    "location": "Dharwad"
+  },
+  {
+    "name": "GBPUAT Pantnagar",
+    "aliases": [
+      "Govind Ballabh Pant University of Agriculture and Technology"
+    ],
+    "type": "Agriculture",
+    "location": "Pantnagar"
+  },
+  {
+    "name": "SKUAST Kashmir",
+    "aliases": [
+      "Sher-e-Kashmir University of Agricultural Sciences and Technology"
+    ],
+    "type": "Agriculture",
+    "location": "Srinagar"
+  },
+  {
+    "name": "CSK HP Agricultural University Palampur",
+    "aliases": [
+      "CSKHPKV Palampur",
+      "Himachal Pradesh Agricultural University"
+    ],
+    "type": "Agriculture",
+    "location": "Palampur"
+  },
+  {
+    "name": "JNKVV Jabalpur",
+    "aliases": [
+      "Jawaharlal Nehru Krishi Vishwa Vidyalaya"
+    ],
+    "type": "Agriculture",
+    "location": "Jabalpur"
+  },
+  {
+    "name": "Rajendra Prasad Central Agricultural University Pusa",
+    "aliases": [
+      "RPCAU Pusa",
+      "RAU Pusa"
+    ],
+    "type": "Agriculture",
+    "location": "Samastipur"
+  },
+  {
+    "name": "Sam Higginbottom University Prayagraj",
+    "aliases": [
+      "SHUATS Prayagraj",
+      "Allahabad Agricultural Institute"
+    ],
+    "type": "Agriculture",
+    "location": "Prayagraj"
+  },
+  {
+    "name": "LNIPE Gwalior",
+    "aliases": [
+      "Lakshmibai National Institute of Physical Education"
+    ],
+    "type": "Sports/Physical Education",
+    "location": "Gwalior"
+  },
+  {
+    "name": "SAI",
+    "aliases": [
+      "Sports Authority of India"
+    ],
+    "type": "Sports/Physical Education",
+    "location": "National"
+  },
+  {
+    "name": "National Sports University Manipur",
+    "aliases": [
+      "NSU Manipur",
+      "National Sports University Imphal"
+    ],
+    "type": "Sports/Physical Education",
+    "location": "Imphal"
+  },
+  {
+    "name": "IISM Gwalior",
+    "aliases": [
+      "Indian Institute of Sports Medicine Gwalior"
+    ],
+    "type": "Sports/Physical Education",
+    "location": "Gwalior"
+  },
+  {
+    "name": "Indira Gandhi Institute of Physical Education Delhi",
+    "aliases": [
+      "IGIPESS Delhi"
+    ],
+    "type": "Sports/Physical Education",
+    "location": "New Delhi"
+  },
+  {
+    "name": "AIIMS Nursing",
+    "aliases": [
+      "College of Nursing AIIMS Delhi"
+    ],
+    "type": "Nursing",
+    "location": "New Delhi"
+  },
+  {
+    "name": "RAK College of Nursing Delhi",
+    "aliases": [
+      "Rajkumari Amrit Kaur College of Nursing"
+    ],
+    "type": "Nursing",
+    "location": "New Delhi"
+  },
+  {
+    "name": "College of Nursing CMC Vellore",
+    "aliases": [
+      "CMC Nursing Vellore"
+    ],
+    "type": "Nursing",
+    "location": "Vellore"
+  },
+  {
+    "name": "Manipal College of Nursing",
+    "aliases": [
+      "MCON Manipal"
+    ],
+    "type": "Nursing",
+    "location": "Manipal"
+  },
+  {
+    "name": "St John's College of Nursing Bangalore",
+    "aliases": [
+      "St John's Nursing Bangalore"
+    ],
+    "type": "Nursing",
+    "location": "Bangalore"
+  },
+  {
+    "name": "PGIMER Nursing Chandigarh",
+    "aliases": [
+      "National Institute of Nursing Education PGIMER"
+    ],
+    "type": "Nursing",
+    "location": "Chandigarh"
+  },
+  {
+    "name": "Armed Forces Nursing Service",
+    "aliases": [
+      "AFNS",
+      "Military Nursing Service"
+    ],
+    "type": "Nursing",
+    "location": "National"
+  },
+  {
+    "name": "NIMHANS Nursing Bangalore",
+    "aliases": [
+      "NIMHANS College of Nursing"
+    ],
+    "type": "Nursing",
+    "location": "Bangalore"
+  },
+  {
+    "name": "Indraprastha University",
+    "aliases": [
+      "GGSIPU",
+      "IP University Delhi"
+    ],
+    "type": "Multi",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Amity University",
+    "aliases": [
+      "Amity Noida"
+    ],
+    "type": "Multi",
+    "location": "Noida"
+  },
+  {
+    "name": "Lovely Professional University",
+    "aliases": [
+      "LPU"
+    ],
+    "type": "Multi",
+    "location": "Phagwara"
+  },
+  {
+    "name": "Chandigarh University",
+    "aliases": [
+      "CU Mohali"
+    ],
+    "type": "Multi",
+    "location": "Mohali"
+  },
+  {
+    "name": "Symbiosis International University",
+    "aliases": [
+      "Symbiosis Pune"
+    ],
+    "type": "Multi",
+    "location": "Pune"
+  },
+  {
+    "name": "National Forensic Sciences University",
+    "aliases": [
+      "NFSU Gandhinagar"
+    ],
+    "type": "Forensic Science",
+    "location": "Gandhinagar"
+  },
+  {
+    "name": "Lok Nayak Jayaprakash Narayan National Institute of Criminology",
+    "aliases": [
+      "LNJN NICFS Delhi"
+    ],
+    "type": "Forensic Science",
+    "location": "New Delhi"
+  },
+  {
+    "name": "VIT Chennai",
+    "aliases": [
+      "Vellore Institute of Technology Chennai Campus"
+    ],
+    "type": "Engineering",
+    "location": "Chennai"
+  },
+  {
+    "name": "VIT Bhopal",
+    "aliases": [
+      "Vellore Institute of Technology Bhopal Campus"
+    ],
+    "type": "Engineering",
+    "location": "Bhopal"
+  },
+  {
+    "name": "VIT AP",
+    "aliases": [
+      "Vellore Institute of Technology Amaravati"
+    ],
+    "type": "Engineering",
+    "location": "Amaravati"
+  },
+  {
+    "name": "SRM AP",
+    "aliases": [
+      "SRM University Andhra Pradesh"
+    ],
+    "type": "Engineering",
+    "location": "Amaravati"
+  },
+  {
+    "name": "IIIT Kottayam",
+    "aliases": [
+      "Indian Institute of Information Technology Kottayam"
+    ],
+    "type": "Engineering",
+    "location": "Kottayam"
+  },
+  {
+    "name": "Cochin University of Science and Technology",
+    "aliases": [
+      "CUSAT Kochi"
+    ],
+    "type": "Engineering",
+    "location": "Kochi"
+  },
+  {
+    "name": "NIT Puducherry",
+    "aliases": [
+      "National Institute of Technology Puducherry Karaikal"
+    ],
+    "type": "Engineering",
+    "location": "Karaikal"
+  },
+  {
+    "name": "Visvesvaraya Technological University",
+    "aliases": [
+      "VTU Belagavi"
+    ],
+    "type": "Engineering",
+    "location": "Belagavi"
+  },
+  {
+    "name": "JNTU Hyderabad",
+    "aliases": [
+      "Jawaharlal Nehru Technological University Hyderabad"
+    ],
+    "type": "Engineering",
+    "location": "Hyderabad"
+  },
+  {
+    "name": "JNTU Kakinada",
+    "aliases": [
+      "Jawaharlal Nehru Technological University Kakinada"
+    ],
+    "type": "Engineering",
+    "location": "Kakinada"
+  },
+  {
+    "name": "Osmania University",
+    "aliases": [
+      "OU Hyderabad"
+    ],
+    "type": "Multi",
+    "location": "Hyderabad"
+  },
+  {
+    "name": "Andhra University",
+    "aliases": [
+      "AU Visakhapatnam"
+    ],
+    "type": "Multi",
+    "location": "Visakhapatnam"
+  },
+  {
+    "name": "NIT Puducherry",
+    "aliases": [
+      "NIT Karaikal"
+    ],
+    "type": "Engineering",
+    "location": "Karaikal"
+  },
+  {
+    "name": "Maulana Abul Kalam Azad University of Technology",
+    "aliases": [
+      "MAKAUT Kolkata",
+      "WBUT"
+    ],
+    "type": "Engineering",
+    "location": "Kolkata"
+  },
+  {
+    "name": "University of Petroleum and Energy Studies",
+    "aliases": [
+      "UPES Dehradun"
+    ],
+    "type": "Engineering",
+    "location": "Dehradun"
+  },
+  {
+    "name": "ICFAI University Hyderabad",
+    "aliases": [
+      "ICFAI Hyderabad"
+    ],
+    "type": "Multi",
+    "location": "Hyderabad"
+  },
+  {
+    "name": "Woxsen University",
+    "aliases": [
+      "Woxsen Hyderabad"
+    ],
+    "type": "Management",
+    "location": "Hyderabad"
+  },
+  {
+    "name": "OP Jindal Global University",
+    "aliases": [
+      "JGU Sonipat"
+    ],
+    "type": "Multi",
+    "location": "Sonipat"
+  },
+  {
+    "name": "Azim Premji University",
+    "aliases": [
+      "APU Bangalore"
+    ],
+    "type": "Liberal Arts",
+    "location": "Bangalore"
+  },
+  {
+    "name": "Krea University",
+    "aliases": [
+      "Krea Sri City"
+    ],
+    "type": "Liberal Arts",
+    "location": "Sri City"
+  },
+  {
+    "name": "Plaksha University",
+    "aliases": [
+      "Plaksha Mohali"
+    ],
+    "type": "Engineering",
+    "location": "Mohali"
+  },
+  {
+    "name": "IIIT Naya Raipur",
+    "aliases": [
+      "Indian Institute of Information Technology Naya Raipur"
+    ],
+    "type": "Engineering",
+    "location": "Naya Raipur"
+  },
+  {
+    "name": "Government College of Engineering Pune",
+    "aliases": [
+      "GCOE Pune"
+    ],
+    "type": "Engineering",
+    "location": "Pune"
+  },
+  {
+    "name": "Walchand College of Engineering Sangli",
+    "aliases": [
+      "WCE Sangli"
+    ],
+    "type": "Engineering",
+    "location": "Sangli"
+  },
+  {
+    "name": "VJTI Mumbai",
+    "aliases": [
+      "Veermata Jijabai Technological Institute"
+    ],
+    "type": "Engineering",
+    "location": "Mumbai"
+  },
+  {
+    "name": "ICT Mumbai",
+    "aliases": [
+      "Institute of Chemical Technology",
+      "UDCT"
+    ],
+    "type": "Engineering",
+    "location": "Mumbai"
+  },
+  {
+    "name": "SPCE Mumbai",
+    "aliases": [
+      "Sardar Patel College of Engineering Mumbai"
+    ],
+    "type": "Engineering",
+    "location": "Mumbai"
+  },
+  {
+    "name": "DJ Sanghvi College of Engineering",
+    "aliases": [
+      "DJSCE Mumbai"
+    ],
+    "type": "Engineering",
+    "location": "Mumbai"
+  },
+  {
+    "name": "Thadomal Shahani Engineering College",
+    "aliases": [
+      "TSEC Mumbai"
+    ],
+    "type": "Engineering",
+    "location": "Mumbai"
+  },
+  {
+    "name": "KJ Somaiya College of Engineering",
+    "aliases": [
+      "Somaiya Engineering Mumbai"
+    ],
+    "type": "Engineering",
+    "location": "Mumbai"
+  },
+  {
+    "name": "Fr. Conceicao Rodrigues College of Engineering",
+    "aliases": [
+      "CRCE Mumbai"
+    ],
+    "type": "Engineering",
+    "location": "Mumbai"
+  },
+  {
+    "name": "Dwarkadas J Sanghvi College of Engineering",
+    "aliases": [
+      "DJSCE Mumbai"
+    ],
+    "type": "Engineering",
+    "location": "Mumbai"
+  },
+  {
+    "name": "SSN College of Engineering Chennai",
+    "aliases": [
+      "SSN Chennai"
+    ],
+    "type": "Engineering",
+    "location": "Chennai"
+  },
+  {
+    "name": "Thiagarajar College of Engineering",
+    "aliases": [
+      "TCE Madurai"
+    ],
+    "type": "Engineering",
+    "location": "Madurai"
+  },
+  {
+    "name": "Coimbatore Institute of Technology",
+    "aliases": [
+      "CIT Coimbatore"
+    ],
+    "type": "Engineering",
+    "location": "Coimbatore"
+  },
+  {
+    "name": "Kongu Engineering College",
+    "aliases": [
+      "KEC Erode"
+    ],
+    "type": "Engineering",
+    "location": "Erode"
+  },
+  {
+    "name": "Sri Sivasubramaniya Nadar College of Engineering",
+    "aliases": [
+      "SSN College Chennai"
+    ],
+    "type": "Engineering",
+    "location": "Chennai"
+  },
+  {
+    "name": "Government College of Technology Coimbatore",
+    "aliases": [
+      "GCT Coimbatore"
+    ],
+    "type": "Engineering",
+    "location": "Coimbatore"
+  },
+  {
+    "name": "Mepco Schlenk Engineering College",
+    "aliases": [
+      "Mepco Sivakasi"
+    ],
+    "type": "Engineering",
+    "location": "Sivakasi"
+  },
+  {
+    "name": "Kumaraguru College of Technology",
+    "aliases": [
+      "KCT Coimbatore"
+    ],
+    "type": "Engineering",
+    "location": "Coimbatore"
+  },
+  {
+    "name": "Maharaja Sayajirao University Baroda",
+    "aliases": [
+      "MSU Baroda",
+      "MS University Vadodara"
+    ],
+    "type": "Multi",
+    "location": "Vadodara"
+  },
+  {
+    "name": "Gujarat University",
+    "aliases": [
+      "GU Ahmedabad"
+    ],
+    "type": "Multi",
+    "location": "Ahmedabad"
+  },
+  {
+    "name": "LDCE Ahmedabad",
+    "aliases": [
+      "LD College of Engineering Ahmedabad"
+    ],
+    "type": "Engineering",
+    "location": "Ahmedabad"
+  },
+  {
+    "name": "Nirma University",
+    "aliases": [
+      "Nirma Ahmedabad"
+    ],
+    "type": "Engineering",
+    "location": "Ahmedabad"
+  },
+  {
+    "name": "Dhirubhai Ambani Institute",
+    "aliases": [
+      "DA-IICT Gandhinagar"
+    ],
+    "type": "Engineering",
+    "location": "Gandhinagar"
+  },
+  {
+    "name": "PDPU Gandhinagar",
+    "aliases": [
+      "Pandit Deendayal Petroleum University",
+      "PDEU"
+    ],
+    "type": "Engineering",
+    "location": "Gandhinagar"
+  },
+  {
+    "name": "Sardar Vallabhbhai Patel International School of Textiles and Management",
+    "aliases": [
+      "SVPISTM Coimbatore"
+    ],
+    "type": "Management",
+    "location": "Coimbatore"
+  },
+  {
+    "name": "Harcourt Butler Technical University",
+    "aliases": [
+      "HBTU Kanpur"
+    ],
+    "type": "Engineering",
+    "location": "Kanpur"
+  },
+  {
+    "name": "MMMUT Gorakhpur",
+    "aliases": [
+      "Madan Mohan Malaviya University of Technology"
+    ],
+    "type": "Engineering",
+    "location": "Gorakhpur"
+  },
+  {
+    "name": "KNIT Sultanpur",
+    "aliases": [
+      "Kamla Nehru Institute of Technology"
+    ],
+    "type": "Engineering",
+    "location": "Sultanpur"
+  },
+  {
+    "name": "IIIT Lucknow",
+    "aliases": [
+      "Indian Institute of Information Technology Lucknow"
+    ],
+    "type": "Engineering",
+    "location": "Lucknow"
+  },
+  {
+    "name": "BIET Jhansi",
+    "aliases": [
+      "Bundelkhand Institute of Engineering and Technology"
+    ],
+    "type": "Engineering",
+    "location": "Jhansi"
+  },
+  {
+    "name": "IET Lucknow",
+    "aliases": [
+      "Institute of Engineering and Technology Lucknow"
+    ],
+    "type": "Engineering",
+    "location": "Lucknow"
+  },
+  {
+    "name": "University of Rajasthan",
+    "aliases": [
+      "Rajasthan University Jaipur"
+    ],
+    "type": "Multi",
+    "location": "Jaipur"
+  },
+  {
+    "name": "MBM University Jodhpur",
+    "aliases": [
+      "MBM Engineering College",
+      "Marwar Business and Management University"
+    ],
+    "type": "Engineering",
+    "location": "Jodhpur"
+  },
+  {
+    "name": "JECRC Jaipur",
+    "aliases": [
+      "JECRC University"
+    ],
+    "type": "Engineering",
+    "location": "Jaipur"
+  },
+  {
+    "name": "Poornima University Jaipur",
+    "aliases": [
+      "Poornima Jaipur"
+    ],
+    "type": "Engineering",
+    "location": "Jaipur"
+  },
+  {
+    "name": "Rajasthan Technical University",
+    "aliases": [
+      "RTU Kota"
+    ],
+    "type": "Engineering",
+    "location": "Kota"
+  },
+  {
+    "name": "Banasthali Vidyapith",
+    "aliases": [
+      "Banasthali University"
+    ],
+    "type": "Multi",
+    "location": "Tonk"
+  },
+  {
+    "name": "Central University of South Bihar",
+    "aliases": [
+      "CUSB Gaya"
+    ],
+    "type": "Arts/Science",
+    "location": "Gaya"
+  },
+  {
+    "name": "Central University of Tamil Nadu",
+    "aliases": [
+      "CUTN Thiruvarur"
+    ],
+    "type": "Arts/Science",
+    "location": "Thiruvarur"
+  },
+  {
+    "name": "Central University of Karnataka",
+    "aliases": [
+      "CUK Kalaburagi"
+    ],
+    "type": "Arts/Science",
+    "location": "Kalaburagi"
+  },
+  {
+    "name": "Central University of Odisha",
+    "aliases": [
+      "CUO Koraput"
+    ],
+    "type": "Arts/Science",
+    "location": "Koraput"
+  },
+  {
+    "name": "Central University of Andhra Pradesh",
+    "aliases": [
+      "CUAP Anantapur"
+    ],
+    "type": "Arts/Science",
+    "location": "Anantapur"
+  },
+  {
+    "name": "Central University of Gujarat",
+    "aliases": [
+      "CUG Gandhinagar"
+    ],
+    "type": "Arts/Science",
+    "location": "Gandhinagar"
+  },
+  {
+    "name": "Mizoram University",
+    "aliases": [
+      "MZU Aizawl"
+    ],
+    "type": "Multi",
+    "location": "Aizawl"
+  },
+  {
+    "name": "Nagaland University",
+    "aliases": [
+      "NU Lumami"
+    ],
+    "type": "Multi",
+    "location": "Lumami"
+  },
+  {
+    "name": "Manipur University",
+    "aliases": [
+      "MU Imphal"
+    ],
+    "type": "Multi",
+    "location": "Imphal"
+  },
+  {
+    "name": "Tripura University",
+    "aliases": [
+      "TU Agartala"
+    ],
+    "type": "Multi",
+    "location": "Agartala"
+  },
+  {
+    "name": "Sikkim University",
+    "aliases": [
+      "SU Gangtok"
+    ],
+    "type": "Multi",
+    "location": "Gangtok"
+  },
+  {
+    "name": "Tezpur University",
+    "aliases": [
+      "TU Tezpur"
+    ],
+    "type": "Multi",
+    "location": "Tezpur"
+  },
+  {
+    "name": "Assam University",
+    "aliases": [
+      "AU Silchar"
+    ],
+    "type": "Multi",
+    "location": "Silchar"
+  },
+  {
+    "name": "North Eastern Hill University",
+    "aliases": [
+      "NEHU Shillong"
+    ],
+    "type": "Multi",
+    "location": "Shillong"
+  },
+  {
+    "name": "Rajiv Gandhi University",
+    "aliases": [
+      "RGU Itanagar"
+    ],
+    "type": "Multi",
+    "location": "Itanagar"
+  },
+  {
+    "name": "Hemvati Nandan Bahuguna Garhwal University",
+    "aliases": [
+      "HNBGU Srinagar Garhwal"
+    ],
+    "type": "Multi",
+    "location": "Srinagar Garhwal"
+  },
+  {
+    "name": "Kumaun University",
+    "aliases": [
+      "KU Nainital"
+    ],
+    "type": "Multi",
+    "location": "Nainital"
+  },
+  {
+    "name": "Guru Nanak Dev University",
+    "aliases": [
+      "GNDU Amritsar"
+    ],
+    "type": "Multi",
+    "location": "Amritsar"
+  },
+  {
+    "name": "Panjab University Chandigarh",
+    "aliases": [
+      "PU Chandigarh"
+    ],
+    "type": "Multi",
+    "location": "Chandigarh"
+  },
+  {
+    "name": "Kurukshetra University",
+    "aliases": [
+      "KU Kurukshetra",
+      "KUK"
+    ],
+    "type": "Multi",
+    "location": "Kurukshetra"
+  },
+  {
+    "name": "Maharshi Dayanand University",
+    "aliases": [
+      "MDU Rohtak"
+    ],
+    "type": "Multi",
+    "location": "Rohtak"
+  },
+  {
+    "name": "Chaudhary Charan Singh University",
+    "aliases": [
+      "CCSU Meerut"
+    ],
+    "type": "Multi",
+    "location": "Meerut"
+  },
+  {
+    "name": "Lucknow University",
+    "aliases": [
+      "University of Lucknow"
+    ],
+    "type": "Multi",
+    "location": "Lucknow"
+  },
+  {
+    "name": "Allahabad University",
+    "aliases": [
+      "University of Allahabad"
+    ],
+    "type": "Multi",
+    "location": "Prayagraj"
+  },
+  {
+    "name": "Patna University",
+    "aliases": [
+      "PU Patna"
+    ],
+    "type": "Multi",
+    "location": "Patna"
+  },
+  {
+    "name": "Gauhati University",
+    "aliases": [
+      "GU Guwahati"
+    ],
+    "type": "Multi",
+    "location": "Guwahati"
+  },
+  {
+    "name": "Utkal University",
+    "aliases": [
+      "UU Bhubaneswar"
+    ],
+    "type": "Multi",
+    "location": "Bhubaneswar"
+  },
+  {
+    "name": "Ravenshaw University",
+    "aliases": [
+      "Ravenshaw Cuttack"
+    ],
+    "type": "Arts/Science",
+    "location": "Cuttack"
+  },
+  {
+    "name": "Berhampur University",
+    "aliases": [
+      "BU Berhampur"
+    ],
+    "type": "Multi",
+    "location": "Berhampur"
+  },
+  {
+    "name": "Mysore University",
+    "aliases": [
+      "University of Mysore"
+    ],
+    "type": "Multi",
+    "location": "Mysuru"
+  },
+  {
+    "name": "Bangalore University",
+    "aliases": [
+      "BU Bangalore"
+    ],
+    "type": "Multi",
+    "location": "Bangalore"
+  },
+  {
+    "name": "Mangalore University",
+    "aliases": [
+      "MU Mangalore"
+    ],
+    "type": "Multi",
+    "location": "Mangalore"
+  },
+  {
+    "name": "Kerala University",
+    "aliases": [
+      "University of Kerala"
+    ],
+    "type": "Multi",
+    "location": "Thiruvananthapuram"
+  },
+  {
+    "name": "Calicut University",
+    "aliases": [
+      "University of Calicut"
+    ],
+    "type": "Multi",
+    "location": "Kozhikode"
+  },
+  {
+    "name": "Mahatma Gandhi University Kottayam",
+    "aliases": [
+      "MGU Kottayam"
+    ],
+    "type": "Multi",
+    "location": "Kottayam"
+  },
+  {
+    "name": "Bharathiar University",
+    "aliases": [
+      "BU Coimbatore"
+    ],
+    "type": "Multi",
+    "location": "Coimbatore"
+  },
+  {
+    "name": "Bharathidasan University",
+    "aliases": [
+      "BDU Tiruchirappalli"
+    ],
+    "type": "Multi",
+    "location": "Tiruchirappalli"
+  },
+  {
+    "name": "Madurai Kamaraj University",
+    "aliases": [
+      "MKU Madurai"
+    ],
+    "type": "Multi",
+    "location": "Madurai"
+  },
+  {
+    "name": "Alagappa University",
+    "aliases": [
+      "AU Karaikudi"
+    ],
+    "type": "Multi",
+    "location": "Karaikudi"
+  },
+  {
+    "name": "Sri Venkateswara University",
+    "aliases": [
+      "SVU Tirupati"
+    ],
+    "type": "Multi",
+    "location": "Tirupati"
+  },
+  {
+    "name": "Kakatiya University",
+    "aliases": [
+      "KU Warangal"
+    ],
+    "type": "Multi",
+    "location": "Warangal"
+  },
+  {
+    "name": "Nagarjuna University",
+    "aliases": [
+      "ANU Guntur",
+      "Acharya Nagarjuna University"
+    ],
+    "type": "Multi",
+    "location": "Guntur"
+  },
+  {
+    "name": "SV University Tirupati",
+    "aliases": [
+      "Sri Venkateswara University Tirupati"
+    ],
+    "type": "Multi",
+    "location": "Tirupati"
+  },
+  {
+    "name": "BITS Pilani Dubai",
+    "aliases": [
+      "BITS Dubai Campus"
+    ],
+    "type": "Engineering",
+    "location": "Dubai"
+  },
+  {
+    "name": "Sharda University",
+    "aliases": [
+      "Sharda Greater Noida"
+    ],
+    "type": "Multi",
+    "location": "Greater Noida"
+  },
+  {
+    "name": "Bennett University",
+    "aliases": [
+      "Bennett Greater Noida",
+      "Times of India University"
+    ],
+    "type": "Multi",
+    "location": "Greater Noida"
+  },
+  {
+    "name": "SRM IST Ramapuram",
+    "aliases": [
+      "SRM Ramapuram Campus"
+    ],
+    "type": "Engineering",
+    "location": "Chennai"
+  },
+  {
+    "name": "Sathyabama Institute of Science and Technology",
+    "aliases": [
+      "Sathyabama University Chennai"
+    ],
+    "type": "Engineering",
+    "location": "Chennai"
+  },
+  {
+    "name": "SPA Bhopal",
+    "aliases": [
+      "School of Planning and Architecture Bhopal"
+    ],
+    "type": "Architecture",
+    "location": "Bhopal"
+  },
+  {
+    "name": "SPA Vijayawada",
+    "aliases": [
+      "School of Planning and Architecture Vijayawada"
+    ],
+    "type": "Architecture",
+    "location": "Vijayawada"
+  },
+  {
+    "name": "MITS Gwalior",
+    "aliases": [
+      "Madhav Institute of Technology and Science"
+    ],
+    "type": "Engineering",
+    "location": "Gwalior"
+  },
+  {
+    "name": "HBTU Kanpur",
+    "aliases": [
+      "Harcourt Butler Technical University"
+    ],
+    "type": "Engineering",
+    "location": "Kanpur"
+  },
+  {
+    "name": "IIITDM Jabalpur",
+    "aliases": [
+      "Indian Institute of Information Technology Design and Manufacturing Jabalpur"
+    ],
+    "type": "Engineering",
+    "location": "Jabalpur"
+  },
+  {
+    "name": "ABV-IIITM Gwalior",
+    "aliases": [
+      "Atal Bihari Vajpayee Indian Institute of Information Technology and Management"
+    ],
+    "type": "Engineering",
+    "location": "Gwalior"
+  },
+  {
+    "name": "RV College of Engineering",
+    "aliases": [
+      "RVCE Bangalore"
+    ],
+    "type": "Engineering",
+    "location": "Bangalore"
+  },
+  {
+    "name": "Banaras Hindu University",
+    "aliases": [
+      "BHU Varanasi"
+    ],
+    "type": "Multi",
+    "location": "Varanasi"
+  },
+  {
+    "name": "University of Delhi",
+    "aliases": [
+      "Delhi University",
+      "DU"
+    ],
+    "type": "Multi",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Central University of Kashmir",
+    "aliases": [
+      "CUK Ganderbal"
+    ],
+    "type": "Arts/Science",
+    "location": "Ganderbal"
+  },
+  {
+    "name": "University of Lucknow",
+    "aliases": [
+      "Lucknow University"
+    ],
+    "type": "Multi",
+    "location": "Lucknow"
+  },
+  {
+    "name": "Panjab University",
+    "aliases": [
+      "PU Chandigarh"
+    ],
+    "type": "Multi",
+    "location": "Chandigarh"
+  },
+  {
+    "name": "University of Mysore",
+    "aliases": [
+      "Mysore University"
+    ],
+    "type": "Multi",
+    "location": "Mysore"
+  },
+  {
+    "name": "University of Kerala",
+    "aliases": [
+      "Kerala University Thiruvananthapuram"
+    ],
+    "type": "Multi",
+    "location": "Thiruvananthapuram"
+  },
+  {
+    "name": "Visva Bharati University",
+    "aliases": [
+      "Visva Bharati Santiniketan"
+    ],
+    "type": "Multi",
+    "location": "Santiniketan"
+  },
+  {
+    "name": "Indira Gandhi DTU for Women",
+    "aliases": [
+      "IGDTUW Delhi"
+    ],
+    "type": "Engineering",
+    "location": "New Delhi"
+  },
+  {
+    "name": "Indian Maritime University Chennai",
+    "aliases": [
+      "IMU Kolkata Campus"
+    ],
+    "type": "Maritime",
+    "location": "Kolkata"
+  },
+  {
+    "name": "TS Chanakya Mumbai",
+    "aliases": [
+      "Training Ship Chanakya"
+    ],
+    "type": "Maritime",
+    "location": "Mumbai"
+  },
+  {
+    "name": "IGRUA Fursatganj",
+    "aliases": [
+      "Indira Gandhi Rashtriya Uran Akademi",
+      "IGRUA"
+    ],
+    "type": "Aviation",
+    "location": "Amethi"
+  },
+  {
+    "name": "Rajiv Gandhi Aviation Academy",
+    "aliases": [
+      "RGAA Hyderabad"
+    ],
+    "type": "Aviation",
+    "location": "Hyderabad"
+  }
 ]

@@ -222,6 +222,18 @@
     {% endif %}
 </div>
 
+<!-- PERSONAL NOTE -->
+<div class="page-break">
+    {% if report.personal_note %}
+    <div style="padding: 2cm 1cm; text-align: center;">
+        <h1 style="border-bottom: none; text-align: center; color: {{ brand.primary }}; font-size: 16pt;">A Note Just For You</h1>
+        <div style="max-width: 85%; margin: 1.5cm auto; font-size: 11pt; line-height: 1.8; text-align: left; color: #333;">
+            {{ report.personal_note }}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
 <!-- PAGE 6: STREAM RECOMMENDATION / ROADMAP -->
 <div class="page-break">
     {% if student.class_level == 10 %}
@@ -255,6 +267,39 @@
         <p class="career-detail"><strong>Alternative:</strong> {{ report.stream_recommendation.alternative_stream }}</p>
         {% endif %}
     </div>
+
+        {% if report.stream_recommendation.why_this_stream %}
+        <h2>Why This Stream Fits You</h2>
+        <ul style="padding-left: 16px; font-size: 9.5pt;">
+            {% for reason in report.stream_recommendation.why_this_stream %}
+            <li style="margin-bottom: 4px;">{{ reason }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if report.stream_recommendation.subjects_in_stream %}
+        <h2>Subjects You'll Study</h2>
+        <table style="width: 100%; border-collapse: collapse; font-size: 9pt; margin-top: 6px;">
+            <tr style="background: {{ brand.primary }}; color: white;">
+                <th style="padding: 5px 8px; text-align: left; width: 30%;">Subject</th>
+                <th style="padding: 5px 8px; text-align: left;">What You'll Learn</th>
+            </tr>
+            {% for subj in report.stream_recommendation.subjects_in_stream %}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 4px 8px; font-weight: 600;">{{ subj.name }}</td>
+                <td style="padding: 4px 8px;">{{ subj.brief }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+
+        {% if report.stream_recommendation.what_if_change_mind %}
+        <div class="info-box" style="margin-top: 12px;">
+            <h3>What If You Change Your Mind?</h3>
+            <p>{{ report.stream_recommendation.what_if_change_mind }}</p>
+        </div>
+        {% endif %}
+
     {% endif %}
 </div>
 
@@ -297,6 +342,59 @@
         </div>
         {% endif %}
     </div>
+
+    {% if report.action_plan.recommended_books or report.action_plan.recommended_youtube or report.action_plan.recommended_websites %}
+    <h2 style="margin-top: 16px;">Recommended Resources</h2>
+    <div style="display: flex; gap: 8px; font-size: 9pt;">
+        {% if report.action_plan.recommended_books %}
+        <div style="flex: 1; background: #f8f9fa; padding: 8px; border-radius: 6px;">
+            <h3 style="font-size: 9pt; color: {{ brand.primary }}; margin-bottom: 4px;">Books</h3>
+            <ul style="padding-left: 14px; margin: 0;">
+                {% for book in report.action_plan.recommended_books %}
+                <li style="margin-bottom: 2px;">{{ book }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% if report.action_plan.recommended_youtube %}
+        <div style="flex: 1; background: #f8f9fa; padding: 8px; border-radius: 6px;">
+            <h3 style="font-size: 9pt; color: {{ brand.primary }}; margin-bottom: 4px;">YouTube Channels</h3>
+            <ul style="padding-left: 14px; margin: 0;">
+                {% for yt in report.action_plan.recommended_youtube %}
+                <li style="margin-bottom: 2px;">{{ yt }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% if report.action_plan.recommended_websites %}
+        <div style="flex: 1; background: #f8f9fa; padding: 8px; border-radius: 6px;">
+            <h3 style="font-size: 9pt; color: {{ brand.primary }}; margin-bottom: 4px;">Websites</h3>
+            <ul style="padding-left: 14px; margin: 0;">
+                {% for site in report.action_plan.recommended_websites %}
+                <li style="margin-bottom: 2px;">{{ site }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if report.action_plan.skills_to_develop %}
+    <h2 style="margin-top: 12px;">Skills to Develop</h2>
+    <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
+        <tr style="background: {{ brand.primary }}; color: white;">
+            <th style="padding: 4px 8px; text-align: left; width: 30%;">Skill</th>
+            <th style="padding: 4px 8px; text-align: left;">How to Practice</th>
+        </tr>
+        {% for skill in report.action_plan.skills_to_develop %}
+        <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 3px 8px; font-weight: 600;">{{ skill.skill }}</td>
+            <td style="padding: 3px 8px;">{{ skill.activity }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
     {% endif %}
 </div>
 
@@ -332,6 +430,30 @@
         {% if report.parent_section.how_to_support %}
         <h2>How to Support Your Child</h2>
         <p>{{ report.parent_section.how_to_support }}</p>
+        {% endif %}
+
+        {% if report.parent_section.faqs %}
+        <h2>Frequently Asked Questions / अक्सर पूछे जाने वाले प्रश्न</h2>
+        {% for faq in report.parent_section.faqs %}
+        <div style="margin-bottom: 8px; padding: 6px; background: #fff8e1; border-radius: 4px;">
+            <p style="font-weight: 600; font-size: 9.5pt; margin-bottom: 2px;">{{ faq.question_en }}</p>
+            <p class="hindi" style="font-size: 8.5pt; color: #666; margin-bottom: 4px;">{{ faq.question_hi }}</p>
+            <p style="font-size: 9pt;">{{ faq.answer_en }}</p>
+            {% if faq.answer_hi %}
+            <p class="hindi" style="font-size: 8.5pt; color: #555;">{{ faq.answer_hi }}</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if report.parent_section.conversation_starters %}
+        <h2>Conversation Starters / बातचीत शुरू करें</h2>
+        <p style="font-size: 9pt; color: #555; margin-bottom: 4px;">Use these questions to discuss the report with your child:</p>
+        <ul style="padding-left: 16px; font-size: 9.5pt;">
+            {% for q in report.parent_section.conversation_starters %}
+            <li style="margin-bottom: 3px;">{{ q }}</li>
+            {% endfor %}
+        </ul>
         {% endif %}
     </div>
     {% endif %}
