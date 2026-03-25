@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+    @page { size: A4; margin: 2cm 1.5cm; }
+    body { font-family: 'Noto Sans', 'Noto Sans Devanagari', Arial, sans-serif; color: #2c3e50; font-size: 11pt; line-height: 1.6; }
+    .header { text-align: center; margin-bottom: 20px; }
+    .header .logo { font-size: 20pt; font-weight: 800; }
+    .header .logo-blue { color: #1a5276; }
+    .header .logo-gold { color: #d4ac0d; }
+    .school-name { font-size: 14pt; font-weight: 700; color: #1a5276; text-align: center; margin-top: 10px; }
+    .divider { width: 100%; height: 2px; background: #d4ac0d; margin: 15px 0; }
+    .title { font-size: 13pt; font-weight: 700; color: #1a5276; text-align: center; margin: 15px 0 5px; }
+    .hindi-title { font-size: 12pt; color: #1a5276; text-align: center; margin-bottom: 15px; font-family: 'Noto Sans Devanagari', sans-serif; }
+    .section { margin: 12px 0; }
+    .section-head { font-size: 11pt; font-weight: 700; color: #1a5276; margin-bottom: 4px; }
+    .hindi { font-family: 'Noto Sans Devanagari', sans-serif; }
+    .highlight-box { background: #eef5fa; border-left: 3px solid #1a5276; padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 10px 0; }
+    .fee-box { background: #fef9e7; border: 1px solid #d4ac0d; border-radius: 6px; padding: 12px; text-align: center; margin: 12px 0; }
+    .fee-amount { font-size: 18pt; font-weight: 800; color: #1a5276; }
+    table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 10pt; }
+    th { background: #1a5276; color: white; padding: 6px 8px; text-align: left; }
+    td { padding: 5px 8px; border-bottom: 1px solid #eee; }
+    .footer { margin-top: 20px; font-size: 8pt; color: #888; text-align: center; border-top: 1px solid #ddd; padding-top: 8px; }
+    .consent-line { margin-top: 25px; padding-top: 8px; border-top: 1px dashed #ccc; }
+    .signature-area { display: flex; justify-content: space-between; margin-top: 30px; }
+    .sig-box { width: 45%; text-align: center; }
+    .sig-line { border-top: 1px solid #333; margin-top: 40px; padding-top: 3px; font-size: 9pt; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo"><span class="logo-blue">Career</span><span class="logo-gold">Disha</span></div>
+    <div style="font-size: 9pt; color: #666;">AI-Powered Career Assessment | एआई-संचालित करियर मूल्यांकन</div>
+</div>
+
+<div class="school-name">{{ school_name }}</div>
+<div style="text-align: center; font-size: 9pt; color: #666;">{{ school_city }} | {{ school_board }}</div>
+
+<div class="divider"></div>
+
+<div class="title">Career Counselling Program — Parent Information Circular</div>
+<div class="hindi-title">करियर काउंसलिंग कार्यक्रम — अभिभावक सूचना पत्र</div>
+
+<div class="section">
+    <p>Dear Parents / प्रिय अभिभावक,</p>
+    <p>We are pleased to announce that <strong>{{ school_name }}</strong> is conducting a comprehensive <strong>AI-Powered Career Assessment Program</strong> for students of <strong>Classes {{ classes }}</strong> in partnership with <strong>CareerDisha</strong>.</p>
+    <p class="hindi">हमें यह बताते हुए खुशी हो रही है कि <strong>{{ school_name }}</strong> में <strong>CareerDisha</strong> के सहयोग से <strong>कक्षा {{ classes }}</strong> के छात्रों के लिए एक व्यापक <strong>एआई-संचालित करियर मूल्यांकन कार्यक्रम</strong> आयोजित किया जा रहा है।</p>
+</div>
+
+<div class="highlight-box">
+    <div class="section-head">What Your Child Will Receive / आपके बच्चे को क्या मिलेगा</div>
+    <table>
+        <tr><td style="width:30px;">✓</td><td><strong>80-minute Career Awareness Session</strong> — Interactive group session on career exploration<br><span class="hindi">80 मिनट का करियर जागरूकता सत्र — करियर अन्वेषण पर इंटरैक्टिव समूह सत्र</span></td></tr>
+        <tr><td>✓</td><td><strong>Scientific RIASEC Assessment</strong> — 74-question career interest inventory (OMR-based)<br><span class="hindi">वैज्ञानिक RIASEC मूल्यांकन — 74 प्रश्नों की करियर रुचि परीक्षा</span></td></tr>
+        <tr><td>✓</td><td><strong>Personalized AI Career Report (8-12 pages)</strong> — Individual PDF report with:<br>
+            <span class="hindi">व्यक्तिगत AI करियर रिपोर्ट (8-12 पृष्ठ):</span>
+            <ul style="margin: 4px 0; padding-left: 20px; font-size: 10pt;">
+                <li>RIASEC interest profile with radar chart / रडार चार्ट के साथ RIASEC रुचि प्रोफ़ाइल</li>
+                <li>Top 5 career recommendations with colleges, exams, salaries / शीर्ष 5 करियर सिफारिशें</li>
+                <li>Stream recommendation (for Class 10) / स्ट्रीम सिफारिश (कक्षा 10 के लिए)</li>
+                <li>Action plan with timeline / समय सारिणी के साथ कार्य योजना</li>
+                <li>Parent section in Hindi & English / हिंदी और अंग्रेजी में अभिभावक अनुभाग</li>
+            </ul>
+        </td></tr>
+        <tr><td>✓</td><td><strong>Report delivered via WhatsApp</strong> within 48 hours<br><span class="hindi">48 घंटों के भीतर WhatsApp पर रिपोर्ट वितरित</span></td></tr>
+    </table>
+</div>
+
+<div class="section">
+    <div class="section-head">About the Assessment / मूल्यांकन के बारे में</div>
+    <p>The RIASEC Career Interest Inventory is a <strong>scientifically validated</strong> assessment used worldwide. There are <strong>no right or wrong answers</strong> — it measures your child's natural interests to suggest career paths where they are most likely to thrive.</p>
+    <p class="hindi">RIASEC करियर रुचि परीक्षा एक <strong>वैज्ञानिक रूप से मान्य</strong> मूल्यांकन है। इसमें <strong>कोई सही या गलत उत्तर नहीं</strong> है — यह आपके बच्चे की प्राकृतिक रुचियों को मापता है।</p>
+</div>
+
+<div class="fee-box">
+    <div style="font-size: 10pt; color: #666;">Program Fee / कार्यक्रम शुल्क</div>
+    <div class="fee-amount">₹{{ fee_amount }}</div>
+    <div style="font-size: 9pt; color: #555;">per student / प्रति छात्र</div>
+    <div style="font-size: 8pt; color: #888; margin-top: 4px;">(Includes assessment + AI report + WhatsApp delivery)</div>
+</div>
+
+<div class="section">
+    <div class="section-head">Session Date / सत्र की तिथि: {{ session_date }}</div>
+    <p>Counsellor: <strong>{{ counsellor_name }}</strong> {% if counsellor_certification %}({{ counsellor_certification }}){% endif %}</p>
+</div>
+
+<div class="section">
+    <div class="section-head">Important Notes / महत्वपूर्ण सूचना</div>
+    <ul style="font-size: 10pt; padding-left: 20px;">
+        <li>This is an interest-based assessment, not an aptitude test / यह रुचि-आधारित मूल्यांकन है, योग्यता परीक्षा नहीं</li>
+        <li>Student data is protected under DPDPA 2023 / छात्र डेटा DPDPA 2023 के तहत सुरक्षित है</li>
+        <li>Reports are confidential and shared only with parents / रिपोर्ट गोपनीय हैं और केवल अभिभावकों के साथ साझा की जाती हैं</li>
+        <li>This program supports CBSE career counselling guidelines / यह कार्यक्रम CBSE करियर काउंसलिंग दिशानिर्देशों का समर्थन करता है</li>
+    </ul>
+</div>
+
+<div class="consent-line">
+    <div class="section-head">Parental Consent / अभिभावक सहमति</div>
+    <p style="font-size: 10pt;">I, _____________________________ (parent/guardian of _____________________________), hereby give consent for my child to participate in the CareerDisha Career Assessment Program. I understand that the assessment data will be processed to generate a personalized career report.</p>
+    <p class="hindi" style="font-size: 9pt;">मैं, _____________________________ (_____________________________ के अभिभावक), अपने बच्चे को CareerDisha करियर मूल्यांकन कार्यक्रम में भाग लेने की सहमति देता/देती हूँ।</p>
+
+    <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+        <div style="width: 45%;">
+            <div style="border-top: 1px solid #333; margin-top: 30px; padding-top: 3px; font-size: 9pt; text-align: center;">Parent Signature / अभिभावक हस्ताक्षर</div>
+        </div>
+        <div style="width: 30%; text-align: center;">
+            <div style="font-size: 9pt; color: #666;">Date / दिनांक: ____ / ____ / ________</div>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    CareerDisha — AI-Powered Career Counselling | IIT Madras Pravartak Certified | www.careerdisha.com<br>
+    This circular is part of the school's career counselling program in compliance with CBSE Affiliation Bye-Laws Clause 2.4.12
+</div>
+
+</body>
+</html>

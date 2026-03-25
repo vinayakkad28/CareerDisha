@@ -517,3 +517,42 @@ def compliance_certificate_pdf(session_id: int, db: DBSession = Depends(get_db))
         media_type="application/pdf",
         filename=f"CBSE_Compliance_Certificate_{school.code if school else ''}_{session_date_short}.pdf",
     )
+
+
+@router.get("/{session_id}/parent-circular/pdf")
+def parent_circular_pdf(session_id: int, fee: int = 500, db: DBSession = Depends(get_db)):
+    """Generate parent circular PDF for a session."""
+    from jinja2 import Environment, FileSystemLoader
+    from weasyprint import HTML
+    from config import TEMPLATES_DIR, OUTPUT_DIR
+
+    session = db.query(Session).filter(Session.id == session_id).first()
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    school = db.query(School).filter(School.id == session.school_id).first()
+    session_date_str = session.session_date.strftime("%d %B %Y") if session.session_date else ""
+
+    env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)))
+    template = env.get_template("parent_circular.html")
+    html = template.render(
+        school_name=school.name if school else "",
+        school_city=school.city if school else "",
+        school_board=school.board if school else "CBSE",
+        classes=", ".join(str(c) for c in (session.classes_assessed or [])),
+        session_date=session_date_str,
+        counsellor_name=session.counsellor_name or "CareerDisha Counsellor",
+        counsellor_certification=session.counsellor_certification or "",
+        fee_amount=fee,
+    )
+
+    output_dir = OUTPUT_DIR / f"session_{session_id}"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    pdf_path = output_dir / f"parent_circular_{school.code if school else 'session'}.pdf"
+    HTML(string=html, base_url=str(TEMPLATES_DIR)).write_pdf(str(pdf_path))
+
+    return FileResponse(
+        str(pdf_path),
+        media_type="application/pdf",
+        filename=f"Parent_Circular_{school.name if school else 'School'}.pdf",
+    )
