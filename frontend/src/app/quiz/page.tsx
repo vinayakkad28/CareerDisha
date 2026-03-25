@@ -127,6 +127,19 @@ export default function QuizPage() {
     );
   }
 
+  // Guard: questions not loaded yet
+  if (!questions || questions.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-brand-gradient">
+        <div className="text-center">
+          <div className="w-10 h-10 border-3 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-white/70 text-sm">Loading questions...</p>
+          {error && <p className="text-red-300 text-sm mt-2">{error}</p>}
+        </div>
+      </div>
+    );
+  }
+
   // Results page
   if (result) {
     const maxScore = Math.max(...Object.values(result.riasec_scores), 1);
@@ -393,7 +406,7 @@ export default function QuizPage() {
         </div>
 
         {/* Questions */}
-        {questions.map((q, idx) => {
+        {(questions || []).map((q, idx) => {
           const selected = answers[String(q.id)];
           return (
             <div
