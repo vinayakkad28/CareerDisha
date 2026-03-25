@@ -1,8 +1,13 @@
 """Free stream predictor quiz — public, no auth required."""
 
+import logging
 from fastapi import APIRouter
 from pydantic import BaseModel
 
+from database import SessionLocal
+from models import Lead
+
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # 15 mini-RIASEC questions (2-3 per type, simplified for quick quiz)
@@ -40,6 +45,10 @@ class QuizSubmission(BaseModel):
     student_name: str = ""
     parent_phone: str = ""
     class_level: int = 10
+    email: str = ""
+    utm_source: str = ""
+    utm_medium: str = ""
+    utm_campaign: str = ""
 
 
 @router.get("/questions")
@@ -85,12 +94,38 @@ def submit_quiz(submission: QuizSubmission):
     gap = top_score - second_score
     confidence = "High" if gap > 15 else "Medium" if gap > 5 else "Low — interests are broad"
 
+    # Save Lead record
+    lead_id = None
+    try:
+        db = SessionLocal()
+        lead = Lead(
+            name=submission.student_name,
+            phone=submission.parent_phone,
+            email=submission.email,
+            class_level=submission.class_level,
+            holland_code=holland_code,
+            recommended_stream=stream,
+            riasec_scores=riasec_pct,
+            source="free_quiz",
+            utm_source=submission.utm_source,
+            utm_medium=submission.utm_medium,
+            utm_campaign=submission.utm_campaign,
+        )
+        db.add(lead)
+        db.commit()
+        db.refresh(lead)
+        lead_id = lead.id
+        db.close()
+    except Exception as e:
+        logger.warning(f"Failed to save quiz lead: {e}")
+
     return {
         "holland_code": holland_code,
         "riasec_scores": riasec_pct,
         "recommended_stream": stream,
         "confidence": confidence,
         "primary_type": primary,
+        "lead_id": lead_id,
         "message": f"Based on your interests, {stream} appears to be a strong fit. For a detailed analysis with career recommendations, college suggestions, and a personalized action plan, take the full CareerDisha assessment at your school.",
         "cta": "Get Your Full Career Report — ₹500 only",
         "cta_url": "https://www.careerdisha.com",

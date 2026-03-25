@@ -114,6 +114,58 @@ class Student(Base):
     # Cost tracking
     llm_cost = Column(Float, default=0.0)
 
+    d2c_assessment_id = Column(Integer, ForeignKey("d2c_assessments.id"), nullable=True)
+
     created_at = Column(DateTime, default=datetime.utcnow)
 
     session = relationship("Session", back_populates="students")
+
+
+class Lead(Base):
+    __tablename__ = "leads"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), default="")
+    phone = Column(String(15), default="")
+    email = Column(String(255), default="")
+    class_level = Column(Integer, nullable=True)
+    holland_code = Column(String(6), default="")
+    recommended_stream = Column(String(100), default="")
+    riasec_scores = Column(JSON, default=dict)
+    source = Column(String(50), default="free_quiz")
+    utm_source = Column(String(100), default="")
+    utm_medium = Column(String(100), default="")
+    utm_campaign = Column(String(100), default="")
+    converted = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class D2CAssessment(Base):
+    __tablename__ = "d2c_assessments"
+    id = Column(Integer, primary_key=True, index=True)
+    token = Column(String(64), unique=True, nullable=False, index=True)
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=True)
+    lead_id = Column(Integer, ForeignKey("leads.id"), nullable=True)
+    student_name = Column(String(255), default="")
+    student_email = Column(String(255), default="")
+    parent_phone = Column(String(15), default="")
+    class_level = Column(Integer, default=10)
+    tier = Column(String(20), default="basic")
+    amount_inr = Column(Integer, default=499)
+    razorpay_order_id = Column(String(100), default="")
+    razorpay_payment_id = Column(String(100), default="")
+    payment_status = Column(String(20), default="pending")
+    paid_at = Column(DateTime, nullable=True)
+    status = Column(String(30), default="created")
+    raw_responses = Column(JSON, default=dict)
+    self_efficacy = Column(JSON, nullable=True)
+    gender = Column(String(10), default="")
+    family_income = Column(String(20), default="")
+    location_type = Column(String(20), default="")
+    parental_education = Column(String(20), default="")
+    first_gen_learner = Column(Boolean, nullable=True)
+    academic_marks = Column(JSON, nullable=True)
+    report_email_sent = Column(Boolean, default=False)
+    report_whatsapp_sent = Column(Boolean, default=False)
+    pdf_url = Column(String(500), default="")
+    created_at = Column(DateTime, default=datetime.utcnow)
+    completed_at = Column(DateTime, nullable=True)

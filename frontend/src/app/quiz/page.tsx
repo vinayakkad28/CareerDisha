@@ -46,6 +46,7 @@ interface QuizResult {
   message: string;
   cta: string;
   cta_url: string;
+  lead_id?: string;
 }
 
 export default function QuizPage() {
@@ -56,6 +57,7 @@ export default function QuizPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [studentName, setStudentName] = useState("");
+  const [email, setEmail] = useState("");
   const [parentPhone, setParentPhone] = useState("");
   const [showPhoneCapture, setShowPhoneCapture] = useState(false);
   const [phoneSaved, setPhoneSaved] = useState(false);
@@ -266,9 +268,7 @@ export default function QuizPage() {
               college suggestions, and a personalized action plan.
             </p>
             <a
-              href={result.cta_url}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={result.lead_id ? `/assessment?lead=${result.lead_id}` : "/assessment"}
               className="inline-block px-6 py-3 rounded-xl font-semibold text-sm transition-all
                 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
               style={{
@@ -277,7 +277,7 @@ export default function QuizPage() {
                 color: "#1a5276",
               }}
             >
-              {result.cta}
+              Get Your Full 74-Question Career Report — ₹499
             </a>
 
             {/* Phone capture toggle */}
@@ -291,7 +291,16 @@ export default function QuizPage() {
             )}
 
             {showPhoneCapture && !phoneSaved && (
-              <div className="mt-4 flex flex-col sm:flex-row gap-2 max-w-sm mx-auto">
+              <div className="mt-4 flex flex-col gap-2 max-w-sm mx-auto">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email address"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-gray-800 outline-none
+                    focus:ring-2 focus:ring-[#d4ac0d]/50 placeholder:text-gray-400"
+                />
+                <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="tel"
                   value={parentPhone}
@@ -316,6 +325,7 @@ export default function QuizPage() {
                 >
                   Send Details
                 </button>
+                </div>
               </div>
             )}
 

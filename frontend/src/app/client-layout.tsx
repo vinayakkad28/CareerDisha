@@ -17,8 +17,8 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Public pages (login, quiz) don't need sidebar or auth
-  if (pathname === "/login" || pathname === "/quiz" || pathname?.startsWith("/quiz/")) {
+  // Public pages (login, quiz, assessment) don't need sidebar or auth
+  if (pathname === "/login" || pathname === "/quiz" || pathname?.startsWith("/quiz/") || pathname === "/assessment" || pathname?.startsWith("/assessment/")) {
     return <>{children}</>;
   }
 
