@@ -74,7 +74,7 @@ export default function QuizPage() {
   }, []);
 
   const answeredCount = Object.keys(answers).length;
-  const totalQuestions = questions.length;
+  const totalQuestions = questions?.length || 0;
   const allAnswered = answeredCount === totalQuestions && totalQuestions > 0;
 
   const handleAnswer = (questionId: number, score: number) => {
