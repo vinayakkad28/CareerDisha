@@ -68,6 +68,11 @@ def build_user_prompt(student: Student, matched_career_details: list) -> str:
     work_values = student.work_values or {}
     class_level = student.class_level or 10
 
+    # Detect D2C vs school context
+    is_d2c = hasattr(student, 'd2c_assessment_id') and student.d2c_assessment_id is not None
+    school_line = "CareerDisha Online Assessment" if is_d2c else "(school session)"
+    city_line = student.location_type.title() if (hasattr(student, 'location_type') and student.location_type) else "(assessment session city)"
+
     # Get top 3 work values
     top_values = sorted(work_values.items(), key=lambda x: -x[1])[:3]
     top_values_str = ", ".join(f"{k} ({v}/5)" for k, v in top_values)
@@ -137,8 +142,8 @@ def build_user_prompt(student: Student, matched_career_details: list) -> str:
     return f"""STUDENT PROFILE:
 - Name: {student.name}
 - Class: {class_level}
-- School: (school session)
-- City: (assessment session city)
+- School: {school_line}
+- City: {city_line}
 - RIASEC Scores: R={scores.get('R', 0)}%, I={scores.get('I', 0)}%, A={scores.get('A', 0)}%, S={scores.get('S', 0)}%, E={scores.get('E', 0)}%, C={scores.get('C', 0)}%
 - Holland Code: {student.holland_code}
 - Top Work Values: {top_values_str}{stream_pref_section}{academic_section}{context_section}{se_section}

@@ -415,7 +415,40 @@ def _generate_d2c_report(assessment_id: int):
             assessment.status = "report_generating"  # Allow retry
             db.commit()
 
-        # TODO: Send email and WhatsApp delivery
+        # Send email delivery
+        if assessment.student_email:
+            try:
+                from services.email_service import send_report_email
+                stream_rec = (student.report_content or {}).get("stream_recommendation", {}).get("recommended_stream", "")
+                sent = send_report_email(
+                    to_email=assessment.student_email,
+                    student_name=student.name,
+                    pdf_path=str(pdf_path),
+                    holland_code=student.holland_code or "",
+                    stream=stream_rec,
+                )
+                if sent:
+                    assessment.report_email_sent = True
+                    db.commit()
+            except Exception as e:
+                logger.warning(f"D2C email delivery failed: {e}")
+
+        # Send WhatsApp delivery
+        if assessment.parent_phone:
+            try:
+                from services.whatsapp import WhatsAppService
+                wa = WhatsAppService()
+                result = wa.send_pdf(
+                    phone=assessment.parent_phone,
+                    pdf_path=str(pdf_path),
+                    student_name=student.name,
+                    school_name="CareerDisha",
+                )
+                if result.get("success"):
+                    assessment.report_whatsapp_sent = True
+                    db.commit()
+            except Exception as e:
+                logger.warning(f"D2C WhatsApp delivery failed: {e}")
 
     except Exception as e:
         logger.error(f"D2C report pipeline failed for assessment {assessment_id}: {e}", exc_info=True)
