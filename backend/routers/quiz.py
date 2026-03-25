@@ -1,0 +1,97 @@
+"""Free stream predictor quiz — public, no auth required."""
+
+from fastapi import APIRouter
+from pydantic import BaseModel
+
+router = APIRouter()
+
+# 15 mini-RIASEC questions (2-3 per type, simplified for quick quiz)
+QUIZ_QUESTIONS = [
+    {"id": 1, "text": "I enjoy solving maths and science problems", "text_hi": "मुझे गणित और विज्ञान की समस्याएँ हल करना पसंद है", "type": "I"},
+    {"id": 2, "text": "I like working with my hands — building, fixing, or creating things", "text_hi": "मुझे अपने हाथों से काम करना पसंद है", "type": "R"},
+    {"id": 3, "text": "I enjoy drawing, writing, music, or other creative activities", "text_hi": "मुझे चित्रकला, लेखन, संगीत पसंद है", "type": "A"},
+    {"id": 4, "text": "I like helping people and working in teams", "text_hi": "मुझे लोगों की मदद करना और टीम में काम करना पसंद है", "type": "S"},
+    {"id": 5, "text": "I enjoy leading groups and convincing others", "text_hi": "मुझे समूह का नेतृत्व करना और लोगों को समझाना पसंद है", "type": "E"},
+    {"id": 6, "text": "I like organizing data, keeping records, and following rules", "text_hi": "मुझे डेटा व्यवस्थित करना और नियम पालन करना पसंद है", "type": "C"},
+    {"id": 7, "text": "I enjoy learning about technology and new discoveries", "text_hi": "मुझे तकनीक और नई खोजों के बारे में सीखना पसंद है", "type": "I"},
+    {"id": 8, "text": "I like outdoor activities and physical work", "text_hi": "मुझे बाहरी गतिविधियाँ और शारीरिक काम पसंद है", "type": "R"},
+    {"id": 9, "text": "I enjoy expressing ideas creatively — through design, videos, or content", "text_hi": "मुझे विचारों को रचनात्मक तरीके से व्यक्त करना पसंद है", "type": "A"},
+    {"id": 10, "text": "I like talking to many people and understanding their views", "text_hi": "मुझे कई लोगों से बात करना और उनके विचार समझना पसंद है", "type": "S"},
+    {"id": 11, "text": "I enjoy managing money, planning budgets, or selling things", "text_hi": "मुझे पैसे का प्रबंधन करना पसंद है", "type": "E"},
+    {"id": 12, "text": "I like working with numbers, spreadsheets, and detailed tasks", "text_hi": "मुझे संख्याओं और विस्तृत कार्यों पर काम करना पसंद है", "type": "C"},
+    {"id": 13, "text": "I enjoy experiments and understanding how things work", "text_hi": "मुझे प्रयोग करना और चीज़ों को समझना पसंद है", "type": "I"},
+    {"id": 14, "text": "I like starting new projects and taking risks", "text_hi": "मुझे नई परियोजनाएँ शुरू करना और जोखिम लेना पसंद है", "type": "E"},
+    {"id": 15, "text": "I enjoy caring for others and making them feel comfortable", "text_hi": "मुझे दूसरों की देखभाल करना पसंद है", "type": "S"},
+]
+
+# Stream mapping based on dominant RIASEC types
+STREAM_MAP = {
+    "R": "Science (PCM)",
+    "I": "Science (PCM)",
+    "A": "Arts / Humanities",
+    "S": "Science (PCB) or Arts",
+    "E": "Commerce",
+    "C": "Commerce",
+}
+
+
+class QuizSubmission(BaseModel):
+    answers: dict[str, int]  # {"1": 4, "2": 2, ...} question_id: score (1-5)
+    student_name: str = ""
+    parent_phone: str = ""
+    class_level: int = 10
+
+
+@router.get("/questions")
+def get_quiz_questions():
+    """Return the 15 quiz questions (public, no auth)."""
+    return {"questions": QUIZ_QUESTIONS, "total": len(QUIZ_QUESTIONS)}
+
+
+@router.post("/submit")
+def submit_quiz(submission: QuizSubmission):
+    """Process quiz answers and return stream recommendation (public, no auth)."""
+    # Calculate RIASEC scores from 15 questions
+    type_scores = {"R": 0, "I": 0, "A": 0, "S": 0, "E": 0, "C": 0}
+    type_counts = {"R": 0, "I": 0, "A": 0, "S": 0, "E": 0, "C": 0}
+
+    for q in QUIZ_QUESTIONS:
+        qid = str(q["id"])
+        if qid in submission.answers:
+            score = max(1, min(5, submission.answers[qid]))
+            type_scores[q["type"]] += score
+            type_counts[q["type"]] += 1
+
+    # Normalize to percentages
+    riasec_pct = {}
+    for t in "RIASEC":
+        count = type_counts[t]
+        if count > 0:
+            riasec_pct[t] = round((type_scores[t] / (count * 5)) * 100, 1)
+        else:
+            riasec_pct[t] = 0
+
+    # Determine top 3 types (Holland code)
+    sorted_types = sorted(riasec_pct.items(), key=lambda x: -x[1])
+    holland_code = "".join(t for t, _ in sorted_types[:3])
+    primary = sorted_types[0][0]
+
+    # Stream recommendation
+    stream = STREAM_MAP.get(primary, "Explore all options")
+
+    # Confidence
+    top_score = sorted_types[0][1]
+    second_score = sorted_types[1][1] if len(sorted_types) > 1 else 0
+    gap = top_score - second_score
+    confidence = "High" if gap > 15 else "Medium" if gap > 5 else "Low — interests are broad"
+
+    return {
+        "holland_code": holland_code,
+        "riasec_scores": riasec_pct,
+        "recommended_stream": stream,
+        "confidence": confidence,
+        "primary_type": primary,
+        "message": f"Based on your interests, {stream} appears to be a strong fit. For a detailed analysis with career recommendations, college suggestions, and a personalized action plan, take the full CareerDisha assessment at your school.",
+        "cta": "Get Your Full Career Report — ₹500 only",
+        "cta_url": "https://www.careerdisha.com",
+    }
