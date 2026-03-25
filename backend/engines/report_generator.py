@@ -178,7 +178,10 @@ Generate a complete career assessment report as JSON with this EXACT structure:
       "entrance_exams": ["Exam1", "Exam2"],
       "top_colleges": ["College1 (NIRF #X)", "College2 (NIRF #Y)", "College3 (NIRF #Z)"],
       "salary_range": "Entry: X-Y LPA, Mid: A-B LPA, Senior: C-D LPA",
-      "growth_outlook": "Industry growth outlook"
+      "growth_outlook": "Industry growth outlook",
+      "education_cost": "Govt college: X Lakh, Private: Y Lakh total",
+      "scholarship_options": "Relevant scholarships (e.g., National Scholarship Portal, INSPIRE, state schemes)",
+      "coaching_needed": "Yes/No/Optional — with honest assessment and cost comparison"
     }}
   ],
   "action_plan": {{

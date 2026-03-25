@@ -217,6 +217,18 @@
         {% if career.growth_outlook %}
         <p class="career-detail"><strong>Growth:</strong> {{ career.growth_outlook }}</p>
         {% endif %}
+
+        {% if career.education_cost %}
+        <p class="career-detail"><strong>Education Cost:</strong> {{ career.education_cost }}</p>
+        {% endif %}
+
+        {% if career.scholarship_options %}
+        <p class="career-detail" style="color: #27ae60;"><strong>Scholarships:</strong> {{ career.scholarship_options }}</p>
+        {% endif %}
+
+        {% if career.coaching_needed %}
+        <p class="career-detail"><strong>Coaching:</strong> {{ career.coaching_needed }}</p>
+        {% endif %}
     </div>
     {% endfor %}
     {% endif %}
