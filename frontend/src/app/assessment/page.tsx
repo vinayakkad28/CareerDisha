@@ -1153,7 +1153,7 @@ export default function AssessmentPage() {
                           {i + 1}
                         </span>
                         <span className="text-sm font-medium text-gray-700">
-                          {career}
+                          {typeof career === "string" ? career : (career as {name: string}).name}
                         </span>
                       </div>
                     ))}
