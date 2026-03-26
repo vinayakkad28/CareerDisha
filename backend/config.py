@@ -114,6 +114,15 @@ SUPPORTED_CLASSES = [9, 10, 11, 12]
 
 # Class-specific prompt instructions
 CLASS_INSTRUCTIONS = {
+    8: """This student is in Class 8 (age 13-14). Career decision is 2+ years away.
+FOCUS: Career EXPLORATION — broad curiosity, self-discovery, and interest mapping.
+DO: Help the student explore diverse career fields without narrowing prematurely.
+DO: Show how their RIASEC profile maps to general career clusters.
+DO: Suggest extracurriculars, books, and activities that build self-awareness.
+DO NOT: Recommend specific entrance exams or coaching institutes yet.
+DO NOT: Pressure stream selection — it is still far away.
+PARENT SECTION: "Your child is at an ideal stage for exploration. Here's how to nurture their interests." """,
+
     9: """This student is in Class 9 (age 14-15). Stream selection is 1 year away.
 FOCUS: Career EXPLORATION with stream awareness. Connect interests to broad career fields.
 DO: Explain what each stream (Science PCM, Science PCB, Commerce, Arts) opens up.

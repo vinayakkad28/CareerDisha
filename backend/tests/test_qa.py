@@ -47,6 +47,7 @@ def _make_valid_report():
             "next_3_months": ["Action 1"],
             "next_1_year": ["Action 2"],
             "next_2_3_years": ["Action 3"],
+            "recommended_books": ["Book 1", "Book 2", "Book 3"],
         },
         "parent_section": {
             "title": "अभिभावकों के लिए / For Parents",
@@ -55,7 +56,14 @@ def _make_valid_report():
             "what_to_do_now": ["Encourage STEM"],
             "common_concerns_addressed": "Good salary and job security.",
             "how_to_support": "Provide resources.",
+            "faqs": [
+                {"question_en": "Q1", "question_hi": "प्र1", "answer_en": "A1", "answer_hi": "उ1"},
+                {"question_en": "Q2", "question_hi": "प्र2", "answer_en": "A2", "answer_hi": "उ2"},
+                {"question_en": "Q3", "question_hi": "प्र3", "answer_en": "A3", "answer_hi": "उ3"},
+            ],
+            "conversation_starters": ["Starter 1", "Starter 2", "Starter 3"],
         },
+        "personal_note": "A" * 210,
     }
 
 
