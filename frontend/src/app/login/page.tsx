@@ -16,6 +16,10 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    if (!password) {
+      setError("Password is required.");
+      return;
+    }
     setLoading(true);
     try {
       await login(password, email || undefined);
@@ -59,7 +63,7 @@ export default function LoginPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">
                 Email{" "}
-                <span className="text-gray-400 font-normal">(optional)</span>
+                <span className="text-gray-400 font-normal">(for counsellor accounts)</span>
               </label>
               <input
                 type="email"
@@ -114,7 +118,7 @@ export default function LoginPage() {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={loading || !password}
+              disabled={loading}
               className="w-full py-3 text-white rounded-xl font-semibold text-sm
                 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed
                 hover:shadow-lg hover:shadow-[#1a5276]/25 active:scale-[0.98]"

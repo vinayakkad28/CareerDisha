@@ -44,6 +44,10 @@ async function request<T>(
   });
 
   if (!res.ok) {
+    if ((res.status === 401 || res.status === 403) && typeof window !== "undefined") {
+      localStorage.removeItem("cd_token");
+      window.location.href = "/login";
+    }
     const error = await res.json().catch(() => ({ detail: res.statusText }));
     throw new Error(error.detail || `API error: ${res.status}`);
   }

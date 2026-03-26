@@ -5,11 +5,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { schools as schoolsApi, sessions as sessionsApi } from "@/lib/api";
 import { useToast } from "@/components/Toast";
+import { useAuth } from "@/lib/auth";
 
 export default function NewSessionPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [schoolList, setSchoolList] = useState<any[]>([]);
   const [step, setStep] = useState<"create" | "upload">("create");
   const [sessionId, setSessionId] = useState<number | null>(null);
@@ -157,19 +159,21 @@ export default function NewSessionPage() {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">LLM Provider</label>
-            <select
-              value={form.llm_provider}
-              onChange={(e) => setForm({ ...form, llm_provider: e.target.value })}
-              className="w-full px-3 py-2 border rounded-lg"
-            >
-              <option value="groq">Groq Llama 3.3 70B (Free)</option>
-              <option value="anthropic">Claude Haiku</option>
-              <option value="openai">GPT-4o Mini</option>
-              <option value="google">Gemini Flash</option>
-            </select>
-          </div>
+          {user?.role === "admin" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">LLM Provider</label>
+              <select
+                value={form.llm_provider}
+                onChange={(e) => setForm({ ...form, llm_provider: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+              >
+                <option value="groq">Groq Llama 3.3 70B (Free)</option>
+                <option value="anthropic">Claude Haiku</option>
+                <option value="openai">GPT-4o Mini</option>
+                <option value="google">Gemini Flash</option>
+              </select>
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
