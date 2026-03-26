@@ -2,8 +2,9 @@ import logging
 import os
 import time
 import uuid
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from config import OUTPUT_DIR
+from config import OUTPUT_DIR, MAX_CONCURRENT_REQUESTS
 from database import SessionLocal
 from models import Session, Student
 
@@ -25,13 +26,38 @@ def _retry(fn, *args, max_retries: int = 3, base_delay: float = 2.0, **kwargs):
     raise last_exc
 
 
+def _generate_one(student_id: int, kb: dict, provider: str) -> tuple[float, str | None]:
+    """Worker: generate a single student report in its own DB session.
+
+    Returns (cost, error_message). Each worker owns its own session so that
+    concurrent threads don't share SQLAlchemy state.
+    """
+    from engines.report_generator import generate_single_report
+
+    db = SessionLocal()
+    try:
+        student = db.query(Student).filter(Student.id == student_id).first()
+        if not student:
+            return 0.0, f"Student {student_id} not found"
+        if not student.consent_obtained:
+            return 0.0, "no_consent"
+        cost = _retry(generate_single_report, student, kb, provider, db)
+        student.report_status = "report_generated"
+        db.commit()
+        return cost, None
+    except Exception as e:
+        return 0.0, str(e)
+    finally:
+        db.close()
+
+
 def run_report_generation(session_id: int, provider: str = "anthropic"):
     """Background task: generate LLM reports for all scored students in a session.
 
+    Processes up to MAX_CONCURRENT_REQUESTS students in parallel using a thread pool.
     Checkpoint: students already in report_generated/qa_passed/qa_flagged status are
     skipped automatically, so restarting the task is safe and idempotent.
     """
-    from engines.report_generator import generate_single_report
     from engines.scoring_engine import load_knowledge_base
 
     db = SessionLocal()
@@ -47,29 +73,36 @@ def run_report_generation(session_id: int, provider: str = "anthropic"):
             Student.session_id == session_id,
             Student.report_status == "scored",
         ).all()
+        student_ids = [s.id for s in students]
 
-        logger.info(f"Session {session_id}: generating reports for {len(students)} students with provider={provider}")
+        logger.info(
+            f"Session {session_id}: generating reports for {len(student_ids)} students "
+            f"with provider={provider}, concurrency={MAX_CONCURRENT_REQUESTS}"
+        )
+
         total_cost = 0.0
         completed = 0
         failed = 0
         skipped_no_consent = 0
-        for i, student in enumerate(students, 1):
-            # DPDPA consent gate — never generate a report without recorded consent
-            if not student.consent_obtained:
-                skipped_no_consent += 1
-                logger.warning(f"  [{i}/{len(students)}] Skipping {student.name} (ID {student.id}) — no consent recorded")
-                continue
-            try:
-                cost = _retry(generate_single_report, student, kb, provider, db)
-                total_cost += cost
-                student.report_status = "report_generated"
-                db.commit()
-                completed += 1
-                logger.info(f"  [{i}/{len(students)}] Report generated for {student.name} (cost: ${cost:.4f})")
-            except Exception as e:
-                failed += 1
-                logger.error(f"  [{i}/{len(students)}] All retries exhausted for {student.name} (ID {student.id}): {e}", exc_info=True)
-                continue
+
+        with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_REQUESTS) as pool:
+            futures = {
+                pool.submit(_generate_one, sid, kb, provider): sid
+                for sid in student_ids
+            }
+            for future in as_completed(futures):
+                sid = futures[future]
+                cost, err = future.result()
+                if err == "no_consent":
+                    skipped_no_consent += 1
+                    logger.warning(f"  Skipping student ID {sid} — no consent recorded")
+                elif err:
+                    failed += 1
+                    logger.error(f"  All retries exhausted for student ID {sid}: {err}")
+                else:
+                    total_cost += cost
+                    completed += 1
+                    logger.info(f"  Report generated for student ID {sid} (cost: ${cost:.4f})")
 
         session.total_cost = total_cost
         session.status = "generated"
