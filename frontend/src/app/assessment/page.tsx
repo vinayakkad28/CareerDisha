@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
+import { useToast } from "@/components/Toast";
 
 const API_BASE = (
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"
@@ -190,9 +191,11 @@ export default function AssessmentPage() {
   const leadId = searchParams.get("lead");
 
   /* state */
+  const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [token, setToken] = useState("");
   const [error, setError] = useState("");
+  const [nameError, setNameError] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Step 1
@@ -258,9 +261,10 @@ export default function AssessmentPage() {
   // Step 1 → start assessment
   const handleStart = async () => {
     if (!studentName.trim()) {
-      setError("Please enter your name.");
+      setNameError("Student name is required.");
       return;
     }
+    setNameError("");
     setLoading(true);
     setError("");
     try {
@@ -299,7 +303,7 @@ export default function AssessmentPage() {
         english_marks: englishMarks ? Number(englishMarks) : undefined,
       });
     } catch {
-      // Context is optional — proceed even if save fails
+      toast("Preferences couldn't be saved, but your assessment will continue.", "warning");
     }
     setStep(3);
     setLoading(false);
@@ -320,16 +324,24 @@ export default function AssessmentPage() {
         scores: selfEfficacy,
       });
     } catch {
-      // Non-critical
+      toast("Confidence ratings couldn't be saved, but your assessment will continue.", "warning");
     }
 
-    // Load RIASEC questions
+    // Load RIASEC questions with 20s timeout
     setQuestionsLoading(true);
     try {
-      const data = await apiGet("/api/d2c/questions");
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 20000);
+      const res = await fetch(`${API_BASE}/api/d2c/questions`, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (!res.ok) throw new Error(`${res.status}`);
+      const data = await res.json();
       setQuestions(data.riasec_questions || data.questions || []);
-    } catch {
-      setError("Failed to load assessment questions. Please try again.");
+    } catch (e: any) {
+      const msg = e?.name === "AbortError"
+        ? "Loading questions timed out. Please check your connection and try again."
+        : "Failed to load assessment questions. Please try again.";
+      setError(msg);
       setLoading(false);
       setQuestionsLoading(false);
       return;
@@ -536,12 +548,15 @@ export default function AssessmentPage() {
                 <input
                   type="text"
                   value={studentName}
-                  onChange={(e) => setStudentName(e.target.value)}
+                  onChange={(e) => { setStudentName(e.target.value); if (e.target.value.trim()) setNameError(""); }}
                   placeholder="Enter your full name"
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm
-                    focus:ring-2 focus:ring-[#1a5276]/20 focus:border-[#1a5276] outline-none
-                    transition-all bg-gray-50 focus:bg-white placeholder:text-gray-400"
+                  className={`w-full px-4 py-2.5 border rounded-xl text-sm
+                    focus:ring-2 focus:ring-[#1a5276]/20 outline-none
+                    transition-all bg-gray-50 focus:bg-white placeholder:text-gray-400 ${
+                    nameError ? "border-red-400 focus:border-red-400" : "border-gray-200 focus:border-[#1a5276]"
+                  }`}
                 />
+                {nameError && <p className="text-red-500 text-xs mt-1">{nameError}</p>}
               </div>
 
               <div>

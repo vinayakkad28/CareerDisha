@@ -63,16 +63,25 @@ export default function QuizPage() {
   const [phoneSaved, setPhoneSaved] = useState(false);
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/quiz/questions`)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 20000);
+    fetch(`${API_BASE}/api/quiz/questions`, { signal: controller.signal })
       .then((res) => res.json())
       .then((data) => {
+        clearTimeout(timeoutId);
         setQuestions(data.questions);
         setLoading(false);
       })
-      .catch(() => {
-        setError("Failed to load quiz questions. Please refresh the page.");
+      .catch((e) => {
+        clearTimeout(timeoutId);
+        setError(
+          e?.name === "AbortError"
+            ? "Loading timed out. Please check your connection and refresh."
+            : "Failed to load quiz questions. Please refresh the page."
+        );
         setLoading(false);
       });
+    return () => { clearTimeout(timeoutId); controller.abort(); };
   }, []);
 
   const answeredCount = Object.keys(answers).length;
