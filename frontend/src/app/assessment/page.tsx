@@ -4,9 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/components/Toast";
 
-const API_BASE = (
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"
-).replace(/\/api$/, "");
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api").replace(/\/api\/?$/, "");
 
 /* ── brand tokens ─────────────────────────────────────────── */
 const NAVY = "#1a5276";

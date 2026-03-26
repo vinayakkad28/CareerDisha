@@ -1,4 +1,5 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+// Normalize: strip trailing /api then re-add, so env var works with or without it
+const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api").replace(/\/api\/?$/, "") + "/api";
 
 /** Download a file with auth token, triggering a browser save dialog. */
 export async function downloadFile(url: string, filename: string) {
