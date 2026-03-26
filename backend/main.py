@@ -11,7 +11,7 @@ from slowapi.errors import RateLimitExceeded
 from config import CORS_ORIGINS, OUTPUT_DIR, SENTRY_DSN
 from database import init_db, SessionLocal
 from rate_limit import limiter
-from routers import auth, schools, sessions, students, reports, dashboard, consent, whatsapp, cards, quiz, nps, d2c, coaching, school_portal, audit, feedback, counsellors
+from routers import auth, schools, sessions, students, reports, dashboard, consent, whatsapp, cards, quiz, nps, d2c, coaching, school_portal, audit, feedback, counsellors, outcomes
 
 # Configure logging
 logging.basicConfig(
@@ -75,6 +75,7 @@ app.include_router(school_portal.router, prefix="/api/school-portal", tags=["Sch
 app.include_router(audit.router, prefix="/api/audit", tags=["Audit"])
 app.include_router(feedback.router, prefix="/api/feedback", tags=["Feedback"])
 app.include_router(counsellors.router, prefix="/api/counsellors", tags=["Counsellors"])
+app.include_router(outcomes.router, prefix="/api/outcomes", tags=["Outcomes"])
 
 # Serve generated PDFs
 app.mount("/output", StaticFiles(directory=str(OUTPUT_DIR)), name="output")

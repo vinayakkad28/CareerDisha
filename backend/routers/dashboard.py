@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from database import get_db
-from models import School, Session as SessionModel, Student
+from models import School, Session as SessionModel, Student, StudentOutcome, Feedback
 from routers.auth import get_current_user
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
@@ -60,6 +60,72 @@ def get_recent_sessions(limit: int = 10, db: Session = Depends(get_db)):
             "created_at": s.created_at.isoformat() if s.created_at else "",
         })
     return result
+
+
+@router.get("/aggregate")
+def get_aggregate(db: Session = Depends(get_db)):
+    """Aggregate stats for the founder's sales pitch deck.
+
+    Returns live numbers: total students, recommendation accuracy, avg NPS,
+    top 5 careers by city — all derived from real production data.
+    """
+    total_students = db.query(Student).count()
+    total_schools = db.query(School).filter(School.code != "D2C-ONLINE").count()
+    total_sessions = db.query(SessionModel).count()
+    delivered = db.query(Student).filter(
+        Student.delivery_status.in_(["sent", "delivered"])
+    ).count()
+
+    # Recommendation accuracy from StudentOutcome records
+    outcomes = db.query(StudentOutcome).all()
+    outcome_total = len(outcomes)
+    matched = sum(1 for o in outcomes if o.recommendation_matched is True)
+    accuracy_pct = round(matched / outcome_total * 100, 1) if outcome_total else None
+
+    # NPS from Feedback (would_recommend True/False)
+    feedbacks = db.query(Feedback).all()
+    nps_total = len([f for f in feedbacks if f.would_recommend is not None])
+    promoters = sum(1 for f in feedbacks if f.would_recommend is True)
+    detractors = sum(1 for f in feedbacks if f.would_recommend is False)
+    nps = round(((promoters - detractors) / nps_total) * 100) if nps_total else None
+
+    ratings = [f.rating for f in feedbacks if f.rating is not None]
+    avg_rating = round(sum(ratings) / len(ratings), 1) if ratings else None
+
+    # Top 5 careers by city (all schools, real data)
+    city_career: dict[str, dict[str, int]] = {}
+    students_with_careers = db.query(Student).filter(Student.matched_careers != None).all()  # noqa: E711
+    for student in students_with_careers:
+        session = db.query(SessionModel).filter(SessionModel.id == student.session_id).first()
+        school = db.query(School).filter(School.id == session.school_id).first() if session else None
+        city = school.city if school else "Unknown"
+        for mc in (student.matched_careers or [])[:2]:
+            name = mc.get("career_name", "")
+            if name:
+                city_career.setdefault(city, {})
+                city_career[city][name] = city_career[city].get(name, 0) + 1
+
+    top_careers_by_city = {
+        city: sorted(careers.items(), key=lambda x: -x[1])[:5]
+        for city, careers in city_career.items()
+    }
+
+    return {
+        "total_students_assessed": total_students,
+        "total_schools": total_schools,
+        "total_sessions": total_sessions,
+        "reports_delivered": delivered,
+        "delivery_rate_pct": round(delivered / total_students * 100, 1) if total_students else 0,
+        "recommendation_accuracy_pct": accuracy_pct,
+        "outcomes_recorded": outcome_total,
+        "nps": nps,
+        "avg_rating": avg_rating,
+        "feedback_responses": nps_total,
+        "top_careers_by_city": {
+            city: [{"career": c, "count": n} for c, n in careers]
+            for city, careers in top_careers_by_city.items()
+        },
+    }
 
 
 @router.get("/cost-summary")

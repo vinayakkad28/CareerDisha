@@ -200,6 +200,21 @@ class D2CAssessment(Base):
     completed_at = Column(DateTime, nullable=True)
 
 
+class StudentOutcome(Base):
+    """6-month follow-up: what stream/career did the student actually choose?"""
+    __tablename__ = "student_outcomes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=False, unique=True)
+    actual_stream_chosen = Column(String(100), default="")    # e.g. "Science (PCM)"
+    actual_career_interest = Column(String(255), default="")  # free text
+    recommendation_matched = Column(Boolean, nullable=True)   # did prediction match?
+    notes = Column(Text, default="")
+    collected_via = Column(String(20), default="whatsapp")    # "whatsapp", "manual", "form"
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
 class SchoolAssignment(Base):
     """Counsellor ↔ School many-to-many with commission rate."""
     __tablename__ = "school_assignments"
