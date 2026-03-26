@@ -1,5 +1,7 @@
 import logging
+import os
 import time
+import uuid
 
 from config import OUTPUT_DIR
 from database import SessionLocal
@@ -113,12 +115,22 @@ def run_pdf_generation(session_id: int):
 
         counsellor_name = session.counsellor_name or ""
 
+        base_url = os.getenv("APP_BASE_URL", "https://careerdisha.in")
         logger.info(f"Session {session_id}: generating PDFs for {len(students)} students in {output_dir}")
         completed = 0
         failed = 0
         for student in students:
             try:
-                pdf_path = generate_student_pdf(student, output_dir, counsellor_name=counsellor_name)
+                # Assign a stable report token if not already set
+                if not student.report_token:
+                    student.report_token = uuid.uuid4().hex
+                    db.commit()
+                web_report_url = f"{base_url}/reports/{student.report_token}"
+                pdf_path = generate_student_pdf(
+                    student, output_dir,
+                    counsellor_name=counsellor_name,
+                    web_report_url=web_report_url,
+                )
                 student.pdf_path = str(pdf_path)
                 student.report_status = "pdf_ready"
                 db.commit()

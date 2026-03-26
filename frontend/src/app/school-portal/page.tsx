@@ -128,6 +128,26 @@ export default function SchoolPortalPage() {
         )}
       </div>
 
+      {hasAnalytics && analytics.feedback_responses > 0 && (
+        <div className="grid grid-cols-3 gap-4">
+          <StatCard
+            label="NPS Score"
+            value={analytics.nps !== null ? analytics.nps : "—"}
+            sub="Would recommend CareerDisha"
+          />
+          <StatCard
+            label="Avg Rating"
+            value={analytics.avg_rating !== null ? `${analytics.avg_rating} / 5` : "—"}
+            sub="Parent satisfaction"
+          />
+          <StatCard
+            label="Feedback Responses"
+            value={analytics.feedback_responses}
+            sub="Surveys completed"
+          />
+        </div>
+      )}
+
       {hasAnalytics && (
         <>
           {/* RIASEC Average + Stream Breakdown */}

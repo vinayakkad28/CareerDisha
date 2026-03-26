@@ -125,7 +125,7 @@ export default function ReportPage() {
 
   useEffect(() => {
     if (!token) return;
-    fetch(`${API_BASE}/d2c/report/${token}`)
+    fetch(`${API_BASE}/reports/${token}`)
       .then(async (r) => {
         if (!r.ok) {
           const body = await r.json().catch(() => ({}));

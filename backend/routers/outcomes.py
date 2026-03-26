@@ -17,6 +17,46 @@ from services.whatsapp import send_text_message
 logger = logging.getLogger(__name__)
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
+# Separate public router — no auth (parents submit from WhatsApp link)
+public_router = APIRouter()
+
+
+class PublicOutcomeRecord(BaseModel):
+    student_id: int
+    actual_stream_chosen: str = ""
+    actual_career_interest: str = ""
+    notes: str = ""
+
+
+@public_router.post("/public", status_code=201)
+def public_record_outcome(req: PublicOutcomeRecord, db: Session = Depends(get_db)):
+    """Accept a 6-month follow-up response from a parent (no auth required)."""
+    student = db.query(Student).filter(Student.id == req.student_id).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    existing = db.query(StudentOutcome).filter(StudentOutcome.student_id == req.student_id).first()
+    if existing:
+        existing.actual_stream_chosen = req.actual_stream_chosen
+        existing.actual_career_interest = req.actual_career_interest
+        existing.notes = req.notes
+        existing.collected_via = "whatsapp"
+        existing.updated_at = datetime.now(timezone.utc)
+        db.commit()
+    else:
+        o = StudentOutcome(
+            student_id=req.student_id,
+            actual_stream_chosen=req.actual_stream_chosen,
+            actual_career_interest=req.actual_career_interest,
+            notes=req.notes,
+            collected_via="whatsapp",
+        )
+        db.add(o)
+        db.commit()
+
+    logger.info(f"Public outcome recorded for student {req.student_id}: stream={req.actual_stream_chosen}")
+    return {"message": "Thank you! Your response has been recorded."}
+
 
 # ── Schemas ───────────────────────────────────────────────────────────────────
 

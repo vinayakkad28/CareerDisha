@@ -3,7 +3,7 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
-from models import School, Session as SessionModel, Student
+from models import School, Session as SessionModel, Student, Feedback
 from routers.auth import get_current_user
 from permissions import require_role
 
@@ -100,6 +100,16 @@ def get_school_analytics(db: Session = Depends(get_db), user: dict = Depends(req
     riasec_avg = {t: round(riasec_totals[t] / riasec_count, 1) if riasec_count else 0 for t in "RIASEC"}
     top_careers = sorted(career_freq.items(), key=lambda x: -x[1])[:15]
 
+    # NPS + satisfaction from Feedback table
+    student_ids = [s.id for s in students]
+    feedbacks = db.query(Feedback).filter(Feedback.student_id.in_(student_ids)).all() if student_ids else []
+    ratings = [f.rating for f in feedbacks if f.rating is not None]
+    avg_rating = round(sum(ratings) / len(ratings), 1) if ratings else None
+    nps_responses = [f for f in feedbacks if f.would_recommend is not None]
+    promoters = sum(1 for f in nps_responses if f.would_recommend is True)
+    detractors = sum(1 for f in nps_responses if f.would_recommend is False)
+    nps = round(((promoters - detractors) / len(nps_responses)) * 100) if nps_responses else None
+
     return {
         "total_students": len(students),
         "total_sessions": len(sessions),
@@ -109,4 +119,7 @@ def get_school_analytics(db: Session = Depends(get_db), user: dict = Depends(req
         "class_distribution": class_dist,
         "consent_rate": round(sum(1 for s in students if s.consent_obtained) / len(students) * 100, 1) if students else 0,
         "report_completion_rate": round(sum(1 for s in students if s.report_status in ("pdf_ready", "delivered")) / len(students) * 100, 1) if students else 0,
+        "nps": nps,
+        "avg_rating": avg_rating,
+        "feedback_responses": len(feedbacks),
     }

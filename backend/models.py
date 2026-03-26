@@ -100,6 +100,7 @@ class Student(Base):
     report_status = Column(String(20), default="pending")
     qa_flags = Column(JSON, default=list)
     pdf_path = Column(String(500), default="")
+    report_token = Column(String(64), unique=True, nullable=True, index=True)  # UUID for web report link
 
     # Delivery
     delivery_status = Column(String(20), default="pending")
