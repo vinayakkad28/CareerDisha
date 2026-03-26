@@ -81,6 +81,109 @@ function cls(...classes: (string | false | undefined | null)[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+/* ── module-level components (stable identity — never defined inside render) ── */
+function Logo() {
+  return (
+    <h1 className="text-2xl font-bold tracking-tight">
+      <span className="text-white">Career</span>
+      <span style={{ color: GOLD }}>Disha</span>
+    </h1>
+  );
+}
+
+function Card({ children, className: extra }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={cls("bg-white rounded-2xl shadow-sm border border-gray-100 p-6", extra)}>
+      {children}
+    </div>
+  );
+}
+
+function OptionButtons({ options, value, onChange }: { options: string[]; value: string; onChange: (v: string) => void }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {options.map((opt) => (
+        <button
+          key={opt}
+          onClick={() => onChange(opt)}
+          className={cls(
+            "px-4 py-2 rounded-xl text-sm font-medium transition-all border",
+            value === opt ? "text-white border-transparent shadow-sm" : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
+          )}
+          style={value === opt ? { background: `linear-gradient(135deg, ${NAVY} 0%, ${NAVY_DARK} 100%)` } : undefined}
+        >
+          {opt}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function Header({ step, progressPct, subtitle }: { step: number; progressPct: number; subtitle?: string }) {
+  return (
+    <header className="bg-brand-gradient text-white py-5 shadow-lg">
+      <div className="max-w-lg mx-auto px-4 text-center">
+        <Logo />
+        {subtitle && <p className="text-white/60 text-sm mt-1">{subtitle}</p>}
+        {step >= 1 && step <= 7 && (
+          <>
+            <div className="mt-3 bg-white/10 rounded-full h-2 overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{ width: `${progressPct}%`, background: `linear-gradient(90deg, ${GOLD}, #2ecc71)` }}
+              />
+            </div>
+            <p className="text-white/40 text-xs mt-1">Step {step} of 8</p>
+          </>
+        )}
+      </div>
+    </header>
+  );
+}
+
+function ErrorBanner({ error }: { error: string }) {
+  if (!error) return null;
+  return (
+    <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-600 text-sm text-center">
+      {error}
+    </div>
+  );
+}
+
+function PrimaryBtn({
+  children, onClick, disabled, loading, className: extra,
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  disabled?: boolean;
+  loading?: boolean;
+  className?: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled || loading}
+      className={cls(
+        "w-full py-3.5 rounded-xl font-semibold text-sm transition-all duration-200",
+        "disabled:opacity-40 disabled:cursor-not-allowed",
+        "hover:shadow-lg active:scale-[0.98]",
+        extra
+      )}
+      style={{ background: `linear-gradient(135deg, ${GOLD} 0%, #b8960b 100%)`, color: NAVY }}
+    >
+      {loading ? (
+        <span className="inline-flex items-center gap-2">
+          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+          Please wait...
+        </span>
+      ) : children}
+    </button>
+  );
+}
+
 /* ── component ────────────────────────────────────────────── */
 export default function AssessmentPage() {
   const searchParams = useSearchParams();
@@ -397,146 +500,6 @@ export default function AssessmentPage() {
   const answeredCount = Object.keys(answers).length;
   const allAnswered = answeredCount === totalQ && totalQ > 0;
 
-  /* ── shared UI pieces ───────────────────────────────────── */
-  const Logo = () => (
-    <h1 className="text-2xl font-bold tracking-tight">
-      <span className="text-white">Career</span>
-      <span style={{ color: GOLD }}>Disha</span>
-    </h1>
-  );
-
-  const Header = ({ subtitle }: { subtitle?: string }) => (
-    <header className="bg-brand-gradient text-white py-5 shadow-lg">
-      <div className="max-w-lg mx-auto px-4 text-center">
-        <Logo />
-        {subtitle && (
-          <p className="text-white/60 text-sm mt-1">{subtitle}</p>
-        )}
-        {step >= 1 && step <= 7 && (
-          <>
-            <div className="mt-3 bg-white/10 rounded-full h-2 overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{
-                  width: `${progressPct}%`,
-                  background: `linear-gradient(90deg, ${GOLD}, #2ecc71)`,
-                }}
-              />
-            </div>
-            <p className="text-white/40 text-xs mt-1">
-              Step {step} of 8
-            </p>
-          </>
-        )}
-      </div>
-    </header>
-  );
-
-  const ErrorBanner = () =>
-    error ? (
-      <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-600 text-sm text-center">
-        {error}
-      </div>
-    ) : null;
-
-  const PrimaryBtn = ({
-    children,
-    onClick,
-    disabled,
-    className: extra,
-  }: {
-    children: React.ReactNode;
-    onClick?: () => void;
-    disabled?: boolean;
-    className?: string;
-  }) => (
-    <button
-      onClick={onClick}
-      disabled={disabled || loading}
-      className={cls(
-        "w-full py-3.5 rounded-xl font-semibold text-sm transition-all duration-200",
-        "disabled:opacity-40 disabled:cursor-not-allowed",
-        "hover:shadow-lg active:scale-[0.98]",
-        extra
-      )}
-      style={{
-        background: `linear-gradient(135deg, ${GOLD} 0%, #b8960b 100%)`,
-        color: NAVY,
-      }}
-    >
-      {loading ? (
-        <span className="inline-flex items-center gap-2">
-          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-            />
-          </svg>
-          Please wait...
-        </span>
-      ) : (
-        children
-      )}
-    </button>
-  );
-
-  const Card = ({
-    children,
-    className: extra,
-  }: {
-    children: React.ReactNode;
-    className?: string;
-  }) => (
-    <div
-      className={cls(
-        "bg-white rounded-2xl shadow-sm border border-gray-100 p-6",
-        extra
-      )}
-    >
-      {children}
-    </div>
-  );
-
-  const OptionButtons = ({
-    options,
-    value,
-    onChange,
-  }: {
-    options: string[];
-    value: string;
-    onChange: (v: string) => void;
-  }) => (
-    <div className="flex flex-wrap gap-2">
-      {options.map((opt) => (
-        <button
-          key={opt}
-          onClick={() => onChange(opt)}
-          className={cls(
-            "px-4 py-2 rounded-xl text-sm font-medium transition-all border",
-            value === opt
-              ? "text-white border-transparent shadow-sm"
-              : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
-          )}
-          style={
-            value === opt
-              ? { background: `linear-gradient(135deg, ${NAVY} 0%, ${NAVY_DARK} 100%)` }
-              : undefined
-          }
-        >
-          {opt}
-        </button>
-      ))}
-    </div>
-  );
 
   /* ═══════════════════════════════════════════════════════════
      STEP 1 — Landing / Info
@@ -544,7 +507,7 @@ export default function AssessmentPage() {
   if (step === 1) {
     return (
       <div className="min-h-screen bg-[#f8f9fa]">
-        <Header />
+        <Header step={step} progressPct={progressPct} />
         <div className="max-w-lg mx-auto px-4 py-8 space-y-5">
           <Card>
             <div className="text-center mb-6">
@@ -622,8 +585,8 @@ export default function AssessmentPage() {
             </div>
           </Card>
 
-          <ErrorBanner />
-          <PrimaryBtn onClick={handleStart} disabled={!studentName.trim()}>
+          <ErrorBanner error={error} />
+          <PrimaryBtn loading={loading} onClick={handleStart} disabled={!studentName.trim()}>
             Start Assessment
           </PrimaryBtn>
 
@@ -642,7 +605,7 @@ export default function AssessmentPage() {
   if (step === 2) {
     return (
       <div className="min-h-screen bg-[#f8f9fa]">
-        <Header subtitle="Help us personalize your report" />
+        <Header step={step} progressPct={progressPct} subtitle="Help us personalize your report" />
         <div className="max-w-lg mx-auto px-4 py-8 space-y-5">
           <Card>
             <h3 className="text-lg font-bold mb-1" style={{ color: NAVY }}>
@@ -777,8 +740,8 @@ export default function AssessmentPage() {
             </div>
           </Card>
 
-          <ErrorBanner />
-          <PrimaryBtn onClick={handleContextContinue}>Continue</PrimaryBtn>
+          <ErrorBanner error={error} />
+          <PrimaryBtn loading={loading} onClick={handleContextContinue}>Continue</PrimaryBtn>
           <div className="text-center">
             <button
               onClick={handleContextSkip}
@@ -801,7 +764,7 @@ export default function AssessmentPage() {
 
     return (
       <div className="min-h-screen bg-[#f8f9fa]">
-        <Header subtitle="How confident are you in these areas?" />
+        <Header step={step} progressPct={progressPct} subtitle="How confident are you in these areas?" />
         <div className="max-w-lg mx-auto px-4 py-8 space-y-5">
           <Card>
             <h3 className="text-lg font-bold mb-1" style={{ color: NAVY }}>
@@ -850,7 +813,7 @@ export default function AssessmentPage() {
             </div>
           </Card>
 
-          <ErrorBanner />
+          <ErrorBanner error={error} />
           <PrimaryBtn
             onClick={handleSelfEfficacyContinue}
             disabled={!allSEAnswered}
@@ -869,7 +832,7 @@ export default function AssessmentPage() {
     if (!questions || questions.length === 0) {
       return (
         <div className="min-h-screen bg-[#f8f9fa]">
-          <Header subtitle="Loading assessment..." />
+          <Header step={step} progressPct={progressPct} subtitle="Loading assessment..." />
           <div className="max-w-lg mx-auto px-4 py-16 text-center">
             <div className="w-10 h-10 border-3 border-gray-300 border-t-gray-600 rounded-full animate-spin mx-auto mb-4" />
             <p className="text-gray-500 text-sm">Loading questions...</p>
@@ -994,7 +957,7 @@ export default function AssessmentPage() {
             )}
           </div>
 
-          <ErrorBanner />
+          <ErrorBanner error={error} />
         </div>
       </div>
     );
@@ -1052,7 +1015,7 @@ export default function AssessmentPage() {
 
     return (
       <div className="min-h-screen bg-[#f8f9fa]">
-        <Header subtitle="Your Preview Results" />
+        <Header step={step} progressPct={progressPct} subtitle="Your Preview Results" />
         <div className="max-w-lg mx-auto px-4 py-8 space-y-6">
           {/* Holland Code */}
           {pd && (
@@ -1292,7 +1255,7 @@ export default function AssessmentPage() {
             ))}
           </div>
 
-          <ErrorBanner />
+          <ErrorBanner error={error} />
         </div>
       </div>
     );
@@ -1306,7 +1269,7 @@ export default function AssessmentPage() {
 
     return (
       <div className="min-h-screen bg-[#f8f9fa]">
-        <Header subtitle="Complete Payment" />
+        <Header step={step} progressPct={progressPct} subtitle="Complete Payment" />
         <div className="max-w-lg mx-auto px-4 py-8 space-y-5">
           <Card className="text-center">
             <h3 className="text-lg font-bold mb-2" style={{ color: NAVY }}>
@@ -1324,17 +1287,17 @@ export default function AssessmentPage() {
                   Development Mode — Razorpay is not configured. Click below to
                   simulate a successful payment.
                 </div>
-                <PrimaryBtn onClick={handleMockPayment}>
+                <PrimaryBtn loading={loading} onClick={handleMockPayment}>
                   Simulate Payment (Dev Mode)
                 </PrimaryBtn>
               </div>
             ) : (
-              <PrimaryBtn onClick={handlePayment}>
+              <PrimaryBtn loading={loading} onClick={handlePayment}>
                 Pay with Razorpay
               </PrimaryBtn>
             )}
           </Card>
-          <ErrorBanner />
+          <ErrorBanner error={error} />
         </div>
       </div>
     );
@@ -1419,7 +1382,7 @@ export default function AssessmentPage() {
 
     return (
       <div className="min-h-screen bg-[#f8f9fa]">
-        <Header subtitle="Report Ready" />
+        <Header step={step} progressPct={progressPct} subtitle="Report Ready" />
         <div className="max-w-lg mx-auto px-4 py-8 space-y-6">
           {/* Celebration */}
           <Card className="text-center">
