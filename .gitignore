@@ -39,3 +39,4 @@ Thumbs.db
 keys/
 CLAUDE_CODE_BUILD_PROMPT.md
 *.docx
+.vercel
