@@ -50,7 +50,13 @@ def run_report_generation(session_id: int, provider: str = "anthropic"):
         total_cost = 0.0
         completed = 0
         failed = 0
+        skipped_no_consent = 0
         for i, student in enumerate(students, 1):
+            # DPDPA consent gate — never generate a report without recorded consent
+            if not student.consent_obtained:
+                skipped_no_consent += 1
+                logger.warning(f"  [{i}/{len(students)}] Skipping {student.name} (ID {student.id}) — no consent recorded")
+                continue
             try:
                 cost = _retry(generate_single_report, student, kb, provider, db)
                 total_cost += cost
@@ -66,7 +72,11 @@ def run_report_generation(session_id: int, provider: str = "anthropic"):
         session.total_cost = total_cost
         session.status = "generated"
         db.commit()
-        logger.info(f"Session {session_id}: report generation complete. {completed} succeeded, {failed} failed. Total cost: ${total_cost:.4f}")
+        logger.info(
+            f"Session {session_id}: report generation complete. "
+            f"{completed} succeeded, {failed} failed, {skipped_no_consent} skipped (no consent). "
+            f"Total cost: ${total_cost:.4f}"
+        )
     except Exception as e:
         logger.error(f"Session {session_id}: report generation batch failed: {e}", exc_info=True)
         try:

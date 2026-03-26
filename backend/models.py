@@ -1,4 +1,4 @@
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 from sqlalchemy import (
     Boolean, Column, Integer, String, Text, Float, Date, DateTime,
     ForeignKey, JSON, Enum as SAEnum,
@@ -137,6 +137,20 @@ class Lead(Base):
     utm_campaign = Column(String(100), default="")
     converted = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class AuditLog(Base):
+    """Immutable audit trail for DPDPA compliance (who did what, when)."""
+    __tablename__ = "audit_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, nullable=True)          # None = system/automated action
+    action = Column(String(100), nullable=False)       # e.g. "report_generated", "pii_deleted"
+    entity_type = Column(String(50), default="")       # "student", "session", "user"
+    entity_id = Column(Integer, nullable=True)
+    detail = Column(Text, default="")                  # free-form context
+    ip_address = Column(String(45), default="")
+    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)
 
 
 class D2CAssessment(Base):
