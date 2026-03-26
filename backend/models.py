@@ -104,6 +104,7 @@ class Student(Base):
     # Delivery
     delivery_status = Column(String(20), default="pending")
     delivery_timestamp = Column(DateTime, nullable=True)
+    helpline_booked_at = Column(DateTime, nullable=True)   # Calendly booking confirmed
 
     # DPDPA consent tracking
     consent_obtained = Column(Boolean, default=False)
@@ -197,3 +198,32 @@ class D2CAssessment(Base):
     pdf_url = Column(String(500), default="")
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     completed_at = Column(DateTime, nullable=True)
+
+
+class SchoolAssignment(Base):
+    """Counsellor ↔ School many-to-many with commission rate."""
+    __tablename__ = "school_assignments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    counsellor_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    school_id = Column(Integer, ForeignKey("schools.id"), nullable=False)
+    commission_rate = Column(Float, default=0.40)   # fraction — 0.40 = 40%
+    is_active = Column(Boolean, default=True)
+    notes = Column(Text, default="")
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+class CounsellorCommission(Base):
+    """Per-session commission record for each counsellor."""
+    __tablename__ = "counsellor_commissions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    counsellor_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    session_id = Column(Integer, ForeignKey("sessions.id"), nullable=False)
+    students_count = Column(Integer, default=0)       # number of students in session
+    rate_per_student = Column(Integer, default=200)   # INR — 40% of ₹500
+    amount_inr = Column(Integer, default=0)           # students_count × rate_per_student
+    status = Column(String(20), default="pending")    # pending, paid
+    paid_at = Column(DateTime, nullable=True)
+    notes = Column(Text, default="")
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))

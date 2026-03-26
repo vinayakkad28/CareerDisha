@@ -172,6 +172,44 @@ async def send_survey_message(phone: str, student_name: str, feedback_url: str) 
     return {"success": False, "error": f"Provider {WHATSAPP_PROVIDER} not supported for text messages"}
 
 
+async def send_helpline_message(phone: str, student_name: str, calendly_url: str) -> dict:
+    """Send a helpline booking invite via WhatsApp after report delivery."""
+    if not is_whatsapp_configured():
+        return {"success": False, "error": "WhatsApp not configured"}
+
+    text = (
+        f"Namaste! 🙏\n\n"
+        f"We hope {student_name}'s CareerDisha career report has been helpful.\n\n"
+        f"Do you have questions about the recommendations or next steps?\n"
+        f"Book a *free 15-minute call* with a CareerDisha counsellor:\n"
+        f"👉 {calendly_url}\n\n"
+        f"We're here to help you support {student_name}'s career journey. 🌟\n"
+        f"— CareerDisha Team"
+    )
+
+    if WHATSAPP_PROVIDER == "meta" and META_WHATSAPP_TOKEN and META_PHONE_NUMBER_ID:
+        normalized = normalize_phone(phone)
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                f"https://graph.facebook.com/v18.0/{META_PHONE_NUMBER_ID}/messages",
+                headers={
+                    "Authorization": f"Bearer {META_WHATSAPP_TOKEN}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "messaging_product": "whatsapp",
+                    "to": normalized,
+                    "type": "text",
+                    "text": {"body": text},
+                },
+            )
+        if resp.status_code in (200, 201):
+            return {"success": True}
+        return {"success": False, "error": resp.text}
+
+    return {"success": False, "error": f"Provider {WHATSAPP_PROVIDER} not supported for text messages"}
+
+
 async def send_bulk(students_data: list, school_name: str) -> dict:
     """Send PDFs to multiple students with rate limiting (1/sec for WhatsApp)."""
     sent = 0
