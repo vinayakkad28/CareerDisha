@@ -75,7 +75,7 @@ function OutcomeForm() {
           <h2 className="text-xl font-bold mb-2" style={{ color: NAVY }}>Thank You!</h2>
           <p className="text-gray-500 text-sm leading-relaxed">
             Your response has been recorded. This helps us measure how accurately
-            CareerDisha's recommendations match real-world choices — improving guidance
+            CareerDisha&apos;s recommendations match real-world choices — improving guidance
             for future students.
           </p>
           <p className="text-xs text-gray-300 mt-6">— CareerDisha Team</p>
@@ -169,7 +169,7 @@ function OutcomeForm() {
         </button>
 
         <p className="text-center text-xs text-gray-400 pb-4">
-          Your response is used only for improving CareerDisha's recommendations.
+          Your response is used only for improving CareerDisha&apos;s recommendations.
         </p>
       </div>
     </div>
