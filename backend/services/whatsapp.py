@@ -101,21 +101,38 @@ async def send_pdf_twilio(phone: str, pdf_path: str, student_name: str, school_n
     }
 
 
-async def send_pdf(phone: str, pdf_path: str, student_name: str, school_name: str) -> dict:
-    """Send PDF report via configured WhatsApp provider."""
+async def send_pdf(phone: str, pdf_path: str, student_name: str, school_name: str,
+                   max_retries: int = 3, retry_delay: float = 5.0) -> dict:
+    """Send PDF report via configured WhatsApp provider with retry on failure."""
     if not is_whatsapp_configured():
         return {"success": False, "error": "WhatsApp not configured. Set WHATSAPP_PROVIDER in .env"}
 
-    try:
-        if WHATSAPP_PROVIDER == "meta":
-            return await send_pdf_meta(phone, pdf_path, student_name, school_name)
-        elif WHATSAPP_PROVIDER == "twilio":
-            return await send_pdf_twilio(phone, pdf_path, student_name, school_name)
-        else:
-            return {"success": False, "error": f"Unknown provider: {WHATSAPP_PROVIDER}"}
-    except Exception as e:
-        logger.error(f"WhatsApp send failed for {phone}: {e}")
-        return {"success": False, "error": str(e)}
+    last_result = {"success": False, "error": "Unknown error"}
+    for attempt in range(1, max_retries + 1):
+        try:
+            if WHATSAPP_PROVIDER == "meta":
+                result = await send_pdf_meta(phone, pdf_path, student_name, school_name)
+            elif WHATSAPP_PROVIDER == "twilio":
+                result = await send_pdf_twilio(phone, pdf_path, student_name, school_name)
+            else:
+                return {"success": False, "error": f"Unknown provider: {WHATSAPP_PROVIDER}"}
+
+            if result["success"]:
+                return result
+
+            last_result = result
+            if attempt < max_retries:
+                logger.warning(f"WhatsApp send attempt {attempt}/{max_retries} failed for {phone}: {result.get('error')}. Retrying in {retry_delay}s...")
+                time.sleep(retry_delay)
+        except Exception as e:
+            last_result = {"success": False, "error": str(e)}
+            if attempt < max_retries:
+                logger.warning(f"WhatsApp send attempt {attempt}/{max_retries} exception for {phone}: {e}. Retrying in {retry_delay}s...")
+                time.sleep(retry_delay)
+            else:
+                logger.error(f"WhatsApp send all retries exhausted for {phone}: {e}")
+
+    return last_result
 
 
 async def send_bulk(students_data: list, school_name: str) -> dict:

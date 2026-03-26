@@ -1,4 +1,5 @@
 import logging
+import time
 
 from config import OUTPUT_DIR
 from database import SessionLocal
@@ -7,8 +8,27 @@ from models import Session, Student
 logger = logging.getLogger(__name__)
 
 
+def _retry(fn, *args, max_retries: int = 3, base_delay: float = 2.0, **kwargs):
+    """Call fn(*args, **kwargs) up to max_retries times with exponential backoff."""
+    last_exc = None
+    for attempt in range(1, max_retries + 1):
+        try:
+            return fn(*args, **kwargs)
+        except Exception as e:
+            last_exc = e
+            if attempt < max_retries:
+                delay = base_delay * (2 ** (attempt - 1))
+                logger.warning(f"Attempt {attempt}/{max_retries} failed ({e}). Retrying in {delay:.0f}s...")
+                time.sleep(delay)
+    raise last_exc
+
+
 def run_report_generation(session_id: int, provider: str = "anthropic"):
-    """Background task: generate LLM reports for all scored students in a session."""
+    """Background task: generate LLM reports for all scored students in a session.
+
+    Checkpoint: students already in report_generated/qa_passed/qa_flagged status are
+    skipped automatically, so restarting the task is safe and idempotent.
+    """
     from engines.report_generator import generate_single_report
     from engines.scoring_engine import load_knowledge_base
 
@@ -20,6 +40,7 @@ def run_report_generation(session_id: int, provider: str = "anthropic"):
             return
 
         kb = load_knowledge_base()
+        # Checkpoint: only process students not yet generated (safe to restart)
         students = db.query(Student).filter(
             Student.session_id == session_id,
             Student.report_status == "scored",
@@ -29,17 +50,17 @@ def run_report_generation(session_id: int, provider: str = "anthropic"):
         total_cost = 0.0
         completed = 0
         failed = 0
-        for student in students:
+        for i, student in enumerate(students, 1):
             try:
-                cost = generate_single_report(student, kb, provider, db)
+                cost = _retry(generate_single_report, student, kb, provider, db)
                 total_cost += cost
                 student.report_status = "report_generated"
                 db.commit()
                 completed += 1
-                logger.info(f"  [{completed}/{len(students)}] Report generated for {student.name} (cost: ${cost:.4f})")
+                logger.info(f"  [{i}/{len(students)}] Report generated for {student.name} (cost: ${cost:.4f})")
             except Exception as e:
                 failed += 1
-                logger.error(f"  Error generating report for {student.name} (ID {student.id}): {e}", exc_info=True)
+                logger.error(f"  [{i}/{len(students)}] All retries exhausted for {student.name} (ID {student.id}): {e}", exc_info=True)
                 continue
 
         session.total_cost = total_cost

@@ -162,6 +162,27 @@ def register(req: RegisterRequest, user: dict = Depends(get_current_user)):
         db.close()
 
 
+@router.get("/users")
+def list_users(user: dict = Depends(get_current_user)):
+    """List all users (admin-only)."""
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+
+    from models import User
+    from database import SessionLocal
+
+    db = SessionLocal()
+    try:
+        users = db.query(User).order_by(User.id).all()
+        return [
+            {"id": u.id, "email": u.email, "name": u.name, "role": u.role,
+             "school_id": u.school_id, "is_active": u.is_active}
+            for u in users
+        ]
+    finally:
+        db.close()
+
+
 @router.get("/me")
 def me(user: dict = Depends(get_current_user)):
     return {
