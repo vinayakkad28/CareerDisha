@@ -1,7 +1,7 @@
 from datetime import datetime, date, timezone
 from sqlalchemy import (
     Boolean, Column, Integer, String, Text, Float, Date, DateTime,
-    ForeignKey, JSON, Enum as SAEnum,
+    ForeignKey, JSON,
 )
 from sqlalchemy.orm import relationship
 from database import Base
@@ -17,7 +17,7 @@ class User(Base):
     role = Column(String(20), nullable=False, default="counsellor")  # admin, counsellor, school_admin
     school_id = Column(Integer, ForeignKey("schools.id"), nullable=True)
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 class School(Base):
@@ -30,7 +30,7 @@ class School(Base):
     board = Column(String(20), default="CBSE")  # CBSE / ICSE / State
     contact_person = Column(String(255), default="")
     contact_phone = Column(String(15), default="")
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     sessions = relationship("Session", back_populates="school", cascade="all, delete-orphan")
 
@@ -52,7 +52,7 @@ class Session(Base):
     generation_started_at = Column(DateTime, nullable=True)
     created_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     notes = Column(Text, default="")
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     school = relationship("School", back_populates="sessions")
     students = relationship("Student", back_populates="session", cascade="all, delete-orphan")
@@ -116,7 +116,7 @@ class Student(Base):
 
     d2c_assessment_id = Column(Integer, ForeignKey("d2c_assessments.id"), nullable=True)
 
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     session = relationship("Session", back_populates="students")
 
@@ -136,7 +136,21 @@ class Lead(Base):
     utm_medium = Column(String(100), default="")
     utm_campaign = Column(String(100), default="")
     converted = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+class Feedback(Base):
+    """Post-delivery parent satisfaction survey responses."""
+    __tablename__ = "feedback"
+
+    id = Column(Integer, primary_key=True, index=True)
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=False)
+    rating = Column(Integer, nullable=True)                     # 1-5 stars
+    recommendation_match = Column(Boolean, nullable=True)       # Did recommendation match parent's thinking?
+    most_useful = Column(Text, default="")                       # Free text
+    missing = Column(Text, default="")                          # Free text
+    would_recommend = Column(Boolean, nullable=True)            # NPS proxy
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 class AuditLog(Base):
@@ -181,5 +195,5 @@ class D2CAssessment(Base):
     report_email_sent = Column(Boolean, default=False)
     report_whatsapp_sent = Column(Boolean, default=False)
     pdf_url = Column(String(500), default="")
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     completed_at = Column(DateTime, nullable=True)

@@ -17,7 +17,7 @@ from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 from weasyprint.text.fonts import FontConfiguration
 
-from config import BRAND_COLORS, RIASEC_TYPE_NAMES, TEMPLATES_DIR, FONTS_DIR, OUTPUT_DIR
+from config import BRAND_COLORS, RIASEC_TYPE_NAMES, RIASEC_ARCHETYPES, RIASEC_COLORS, TEMPLATES_DIR, FONTS_DIR, OUTPUT_DIR
 from models import Student
 
 
@@ -54,15 +54,27 @@ def generate_radar_chart(riasec_scores: dict) -> str:
     return base64.b64encode(buf.read()).decode()
 
 
+def generate_qr_code(url: str) -> str:
+    """Generate QR code as base64 PNG."""
+    try:
+        import qrcode
+        qr = qrcode.QRCode(box_size=4, border=2)
+        qr.add_data(url)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color="#1a5276", back_color="white")
+        buf = io.BytesIO()
+        img.save(buf, format="PNG")
+        buf.seek(0)
+        return base64.b64encode(buf.read()).decode()
+    except Exception:
+        return ""
+
+
 def generate_bar_chart(riasec_scores: dict) -> str:
-    """Generate RIASEC bar chart as base64 PNG."""
+    """Generate RIASEC bar chart as base64 PNG, colour-coded per type."""
     categories = ["R", "I", "A", "S", "E", "C"]
     values = [riasec_scores.get(t, 0) for t in categories]
-    colors = [BRAND_COLORS["primary"]] * 6
-
-    # Highlight top score
-    max_idx = values.index(max(values))
-    colors[max_idx] = BRAND_COLORS["secondary"]
+    colors = [RIASEC_COLORS[t] for t in categories]
 
     fig, ax = plt.subplots(figsize=(6, 2.5))
     bars = ax.barh(
@@ -101,6 +113,8 @@ def render_report_html(
     student: Student,
     counsellor_name: str = "",
     counsellor_certification: str = "",
+    counsellor_phone: str = "",
+    web_report_url: str = "",
 ) -> str:
     """Render the full HTML report from student data."""
     env = Environment(loader=FileSystemLoader(str(TEMPLATES_DIR)))
@@ -108,33 +122,48 @@ def render_report_html(
 
     scores = student.riasec_scores or {}
     report = student.report_content or {}
+    holland_code = student.holland_code or ""
 
     # Generate charts
     radar_chart_b64 = generate_radar_chart(scores)
     bar_chart_b64 = generate_bar_chart(scores)
 
+    # QR code linking to web report (if URL provided)
+    qr_code_b64 = generate_qr_code(web_report_url) if web_report_url else ""
+
     # Font path for CSS
     font_path = FONTS_DIR / "NotoSansDevanagari-Regular.ttf"
     font_url = font_path.as_uri() if font_path.exists() else ""
+
+    # Primary type archetype for personalised display
+    primary_type = holland_code[0] if holland_code else ""
 
     context = {
         "student": {
             "name": student.name,
             "class_level": student.class_level,
             "section": student.section,
-            "holland_code": student.holland_code,
+            "holland_code": holland_code,
             "parent_name": student.parent_name,
         },
         "scores": scores,
         "report": report,
         "radar_chart": radar_chart_b64,
         "bar_chart": bar_chart_b64,
+        "qr_code": qr_code_b64,
         "brand": BRAND_COLORS,
         "riasec_names": RIASEC_TYPE_NAMES,
+        "riasec_archetypes": RIASEC_ARCHETYPES,
+        "riasec_colors": RIASEC_COLORS,
+        "primary_type": primary_type,
+        "primary_archetype": RIASEC_ARCHETYPES.get(primary_type, ""),
+        "primary_color": RIASEC_COLORS.get(primary_type, BRAND_COLORS["primary"]),
         "today": date.today().strftime("%d %B %Y"),
         "font_url": font_url,
         "counsellor_name": counsellor_name,
         "counsellor_certification": counsellor_certification,
+        "counsellor_phone": counsellor_phone,
+        "web_report_url": web_report_url,
     }
 
     return template.render(**context)
@@ -145,6 +174,8 @@ def generate_student_pdf(
     output_dir: Path = None,
     counsellor_name: str = "",
     counsellor_certification: str = "",
+    counsellor_phone: str = "",
+    web_report_url: str = "",
 ) -> Path:
     """Generate PDF for a single student. Returns the output file path."""
     if output_dir is None:
@@ -152,7 +183,10 @@ def generate_student_pdf(
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    html_content = render_report_html(student, counsellor_name, counsellor_certification)
+    html_content = render_report_html(
+        student, counsellor_name, counsellor_certification,
+        counsellor_phone=counsellor_phone, web_report_url=web_report_url,
+    )
 
     # Build filename
     safe_name = student.name.replace(" ", "_").replace("/", "_")

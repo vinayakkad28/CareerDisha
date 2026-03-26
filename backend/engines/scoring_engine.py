@@ -151,6 +151,59 @@ def match_careers(holland_code: str, knowledge_base: list, top_n: int = 10) -> l
     return scored_careers[:top_n]
 
 
+# Attention-check items embedded in future OMR forms (Q75-Q77).
+# Each maps to the expected correct answer (the question text instructs the student to pick it).
+ATTENTION_CHECK_ITEMS = {
+    "Q75": "C",  # "For this question, please select option C"
+    "Q76": "A",  # "For this question, please select option A"
+    "Q77": "D",  # "For this question, please select option D"
+}
+ATTENTION_CHECK_FAIL_THRESHOLD = 2  # flag if 2+ checks failed
+
+
+def detect_attention_issues(raw_responses: dict) -> list[str]:
+    """Detect signs of random or careless responding.
+
+    Returns a list of warning strings (empty = no issues detected).
+    """
+    warnings = []
+    valid_responses = [v for v in raw_responses.values() if isinstance(v, str) and v.upper() in "ABCDE"]
+    if not valid_responses:
+        return warnings
+
+    # 1. Explicit attention-check failures (Q75-Q77 if present on the form)
+    ac_failures = 0
+    for q_key, expected in ATTENTION_CHECK_ITEMS.items():
+        if q_key in raw_responses:
+            actual = str(raw_responses[q_key]).upper()
+            if actual != expected:
+                ac_failures += 1
+    if ac_failures >= ATTENTION_CHECK_FAIL_THRESHOLD:
+        warnings.append(f"[ATTENTION] Failed {ac_failures}/{len(ATTENTION_CHECK_ITEMS)} attention-check items — responses may be unreliable")
+
+    # 2. Near-identical responses: > 80% of answers are the same letter
+    if len(valid_responses) >= 20:
+        from collections import Counter
+        most_common_letter, most_common_count = Counter(valid_responses).most_common(1)[0]
+        pct = most_common_count / len(valid_responses)
+        if pct >= 0.80:
+            warnings.append(f"[ATTENTION] {pct:.0%} of responses are '{most_common_letter}' — possible random/careless responding")
+
+    # 3. Long consecutive run of same letter (≥ 15 in a row)
+    max_run = 1
+    current_run = 1
+    for i in range(1, len(valid_responses)):
+        if valid_responses[i] == valid_responses[i - 1]:
+            current_run += 1
+            max_run = max(max_run, current_run)
+        else:
+            current_run = 1
+    if max_run >= 15:
+        warnings.append(f"[ATTENTION] Run of {max_run} identical consecutive responses detected — possible patterned responding")
+
+    return warnings
+
+
 def score_all_students(session_id: int):
     """Score all students in a session: calculate RIASEC, determine Holland Code, match careers."""
     db = SessionLocal()
@@ -176,6 +229,12 @@ def score_all_students(session_id: int):
 
             # Match careers
             matched = match_careers(holland_code, kb)
+
+            # Attention-check detection — append warnings to qa_flags
+            attention_warnings = detect_attention_issues(raw)
+            if attention_warnings:
+                existing_flags = student.qa_flags or []
+                student.qa_flags = existing_flags + attention_warnings
 
             # Update student record
             student.riasec_scores = riasec_scores

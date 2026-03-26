@@ -94,6 +94,26 @@ RIASEC_TYPE_NAMES = {
     "E": "Enterprising",
     "C": "Conventional",
 }
+
+# Relatable archetype labels — used in report to make RIASEC feel personal
+RIASEC_ARCHETYPES = {
+    "R": "The Builder",
+    "I": "The Thinker",
+    "A": "The Creator",
+    "S": "The Helper",
+    "E": "The Leader",
+    "C": "The Organiser",
+}
+
+# Per-type colours — used for consistent colour-coding across report
+RIASEC_COLORS = {
+    "R": "#27ae60",  # Green
+    "I": "#2980b9",  # Blue
+    "A": "#8e44ad",  # Purple
+    "S": "#e67e22",  # Orange
+    "E": "#c0392b",  # Red
+    "C": "#16a085",  # Teal
+}
 ITEMS_PER_DIMENSION = 11
 WORK_VALUES_ITEMS = 8
 

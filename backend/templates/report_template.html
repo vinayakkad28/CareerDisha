@@ -151,7 +151,27 @@
 <div class="page-break">
     <h1>Your Interest Profile</h1>
 
-    <div class="holland-code">{{ student.holland_code }}</div>
+    {% if primary_archetype %}
+    <div style="text-align:center; margin-bottom: 10px;">
+        <span style="display:inline-block; background:{{ primary_color }}; color:white; border-radius:20px; padding:4px 18px; font-size:13pt; font-weight:700; letter-spacing:1px;">
+            {{ primary_archetype }}
+        </span>
+    </div>
+    {% endif %}
+
+    <div class="holland-code" style="color: {{ primary_color }}; background: {{ primary_color }}18;">
+        {% for letter in student.holland_code %}
+        <span style="color: {{ riasec_colors.get(letter, brand.primary) }};">{{ letter }}</span>
+        {% endfor %}
+    </div>
+
+    <div style="display:flex; justify-content:center; gap:8px; margin:6px 0 12px; flex-wrap:wrap;">
+        {% for letter in student.holland_code %}
+        <span style="background:{{ riasec_colors.get(letter, brand.primary) }}22; color:{{ riasec_colors.get(letter, brand.primary) }}; border:1px solid {{ riasec_colors.get(letter, brand.primary) }}55; border-radius:12px; padding:2px 12px; font-size:9pt; font-weight:600;">
+            {{ letter }} — {{ riasec_names.get(letter, '') }} ({{ riasec_archetypes.get(letter, '') }})
+        </span>
+        {% endfor %}
+    </div>
 
     <div class="chart-container">
         <img src="data:image/png;base64,{{ radar_chart }}" alt="RIASEC Radar Chart" style="max-height: 280px;">
@@ -166,7 +186,7 @@
     <p style="font-size: 9.5pt;">{{ report.riasec_profile.summary }}</p>
 
     {% if report.riasec_profile.primary_type_description %}
-    <h3>Your Strongest Interest: {{ riasec_names.get(student.holland_code[0:1], '') }}</h3>
+    <h3 style="color: {{ primary_color }};">Your Strongest Interest: {{ riasec_names.get(student.holland_code[0:1], '') }} — {{ riasec_archetypes.get(student.holland_code[0:1], '') }}</h3>
     <p class="text-sm">{{ report.riasec_profile.primary_type_description }}</p>
     {% endif %}
     {% endif %}
@@ -476,16 +496,31 @@
     <div class="logo" style="font-size: 22pt; font-weight: 800; color: {{ brand.primary }};">Career<span style="color: {{ brand.secondary }};">Disha</span></div>
     <p style="color: #666; margin-top: 8px;">AI-Powered Career Counselling for Indian Schools</p>
 
-    {% if counsellor_name %}
-    <div style="margin-top: 2cm; padding: 16px; border: 1px solid #ddd; border-radius: 8px; display: inline-block; text-align: left;">
-        <p style="font-size: 9pt; color: #888; margin-bottom: 4px;">Reviewed & Approved by</p>
-        <p style="font-size: 12pt; font-weight: 600; color: {{ brand.primary }};">{{ counsellor_name }}</p>
-        {% if counsellor_certification %}
-        <p style="font-size: 9pt; color: #555;">{{ counsellor_certification }}</p>
+    <div style="margin-top: 1.5cm; display: flex; justify-content: center; gap: 2cm; align-items: flex-start; flex-wrap: wrap;">
+        {% if counsellor_name %}
+        <div style="padding: 16px; border: 1px solid #ddd; border-radius: 8px; text-align: left; min-width: 180px;">
+            <p style="font-size: 8pt; color: #888; margin-bottom: 4px;">Reviewed &amp; Approved by</p>
+            <p style="font-size: 12pt; font-weight: 600; color: {{ brand.primary }};">{{ counsellor_name }}</p>
+            {% if counsellor_certification %}
+            <p style="font-size: 9pt; color: #555;">{{ counsellor_certification }}</p>
+            {% endif %}
+            {% if counsellor_phone %}
+            <p style="font-size: 9pt; color: #555; margin-top: 4px;">
+                📱 <a href="https://wa.me/{{ counsellor_phone }}" style="color: {{ brand.primary }}; text-decoration: none;">{{ counsellor_phone }}</a>
+                <span style="font-size: 8pt; color: #888;"> (Free follow-up query)</span>
+            </p>
+            {% endif %}
+            <p style="font-size: 8pt; color: #888; margin-top: 4px;">Career Counsellor, CareerDisha</p>
+        </div>
         {% endif %}
-        <p style="font-size: 9pt; color: #888; margin-top: 4px;">Career Counsellor, CareerDisha</p>
+
+        {% if qr_code %}
+        <div style="text-align: center;">
+            <img src="data:image/png;base64,{{ qr_code }}" alt="View Report Online" style="width: 80px; height: 80px;">
+            <p style="font-size: 7.5pt; color: #888; margin-top: 4px;">Scan to view<br>report online</p>
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
 
     <p style="color: #999; margin-top: 1.5cm; font-size: 8.5pt; max-width: 80%; margin-left: auto; margin-right: auto;">
         This report was generated using AI-assisted analysis of your RIASEC career interest assessment.

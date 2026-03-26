@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from database import get_db
 from models import Student, Session as SessionModel, School
 from routers.auth import get_current_user
-from services.whatsapp import send_pdf, send_bulk, is_whatsapp_configured
+from services.whatsapp import send_pdf, send_bulk, send_survey_message, is_whatsapp_configured
 
 logger = logging.getLogger(__name__)
 router = APIRouter(dependencies=[Depends(get_current_user)])
@@ -87,3 +87,35 @@ async def send_bulk_session(session_id: int, db: Session = Depends(get_db)):
     db.commit()
 
     return result
+
+
+@router.post("/survey/{session_id}")
+async def send_survey(session_id: int, db: Session = Depends(get_db)):
+    """Send post-delivery satisfaction survey to parents delivered 48+ hours ago."""
+    from datetime import timedelta
+    import os
+
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=48)
+    students = db.query(Student).filter(
+        Student.session_id == session_id,
+        Student.delivery_status == "sent",
+        Student.delivery_timestamp <= cutoff,
+        Student.parent_phone != "",
+    ).all()
+
+    if not students:
+        return {"message": "No eligible students (none delivered 48+ hours ago)", "sent": 0}
+
+    base_url = os.getenv("APP_BASE_URL", "https://careerdisha.in")
+    sent = 0
+    failed = 0
+    for student in students:
+        feedback_url = f"{base_url}/feedback?sid={student.id}"
+        result = await send_survey_message(student.parent_phone, student.name, feedback_url)
+        if result["success"]:
+            sent += 1
+        else:
+            failed += 1
+            logger.warning(f"Survey send failed for {student.name}: {result.get('error')}")
+
+    return {"sent": sent, "failed": failed, "total": len(students)}
