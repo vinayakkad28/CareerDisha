@@ -52,12 +52,29 @@ def get_or_create_d2c_session(db):
 
 class StartRequest(BaseModel):
     lead_id: Optional[int] = None
-
-class SubmitRequest(BaseModel):
-    student_name: str
+    student_name: str = ""
     student_email: str = ""
     parent_phone: str = ""
-    class_level: int
+    class_level: int = 10
+
+class ContextRequest(BaseModel):
+    gender: str = ""
+    income_bracket: str = ""
+    location: str = ""
+    parental_education: str = ""
+    first_gen_learner: bool = False
+    math_marks: Optional[int] = None
+    science_marks: Optional[int] = None
+    english_marks: Optional[int] = None
+
+class SelfEfficacyRequest(BaseModel):
+    scores: dict = {}
+
+class SubmitRequest(BaseModel):
+    student_name: str = ""   # falls back to value stored at /start
+    student_email: str = ""
+    parent_phone: str = ""
+    class_level: int = 0     # 0 = falls back to value stored at /start
     answers: dict  # {"Q1": "D", "Q2": "A", ...} or {"Q1": 4, "Q2": 1, ...}
     gender: str = ""
     family_income: str = ""
@@ -78,7 +95,14 @@ def start_assessment(request: Request, body: StartRequest = StartRequest()):
     token = uuid.uuid4().hex
     db = SessionLocal()
     try:
-        assessment = D2CAssessment(token=token, lead_id=body.lead_id)
+        assessment = D2CAssessment(
+            token=token,
+            lead_id=body.lead_id,
+            student_name=body.student_name,
+            student_email=body.student_email,
+            parent_phone=body.parent_phone,
+            class_level=body.class_level,
+        )
         db.add(assessment)
         db.commit()
         db.refresh(assessment)
@@ -127,6 +151,48 @@ def get_questions():
     return {"riasec_questions": questions, "self_efficacy_items": self_efficacy_items, "total_riasec": len(questions)}
 
 
+@router.post("/context/{token}")
+def save_context(token: str, body: ContextRequest):
+    """Save demographic context from Step 2. Non-critical — won't block flow if it fails."""
+    db = SessionLocal()
+    try:
+        assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
+        if not assessment:
+            raise HTTPException(status_code=404, detail="Assessment not found")
+        assessment.gender = body.gender
+        assessment.family_income = body.income_bracket
+        assessment.location_type = body.location
+        assessment.parental_education = body.parental_education
+        assessment.first_gen_learner = body.first_gen_learner
+        if body.math_marks is not None or body.science_marks is not None or body.english_marks is not None:
+            assessment.academic_marks = {
+                "math": body.math_marks,
+                "science": body.science_marks,
+                "english": body.english_marks,
+            }
+        if assessment.status == "created":
+            assessment.status = "info_collected"
+        db.commit()
+        return {"status": "saved"}
+    finally:
+        db.close()
+
+
+@router.post("/self-efficacy/{token}")
+def save_self_efficacy(token: str, body: SelfEfficacyRequest):
+    """Save self-efficacy scores from Step 3. Non-critical — won't block flow if it fails."""
+    db = SessionLocal()
+    try:
+        assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
+        if not assessment:
+            raise HTTPException(status_code=404, detail="Assessment not found")
+        assessment.self_efficacy = body.scores
+        db.commit()
+        return {"status": "saved"}
+    finally:
+        db.close()
+
+
 @router.post("/submit/{token}")
 @limiter.limit("10/minute")
 def submit_assessment(request: Request, token: str, body: SubmitRequest):
@@ -141,6 +207,29 @@ def submit_assessment(request: Request, token: str, body: SubmitRequest):
 
         if body.class_level not in (9, 10, 11, 12):
             raise HTTPException(status_code=400, detail="Class must be 9, 10, 11, or 12")
+
+        # Fall back to values stored at /start if not provided in submit body
+        if not body.student_name:
+            body.student_name = assessment.student_name or "Student"
+        if not body.class_level:
+            body.class_level = assessment.class_level or 10
+        if not body.student_email:
+            body.student_email = assessment.student_email or ""
+        if not body.parent_phone:
+            body.parent_phone = assessment.parent_phone or ""
+        # Fall back to context saved at /context step
+        if not body.gender and assessment.gender:
+            body.gender = assessment.gender
+        if not body.family_income and assessment.family_income:
+            body.family_income = assessment.family_income
+        if not body.location_type and assessment.location_type:
+            body.location_type = assessment.location_type
+        if not body.parental_education and assessment.parental_education:
+            body.parental_education = assessment.parental_education
+        if body.self_efficacy is None and assessment.self_efficacy:
+            body.self_efficacy = assessment.self_efficacy
+        if body.academic_marks is None and assessment.academic_marks:
+            body.academic_marks = assessment.academic_marks
 
         # Normalize answers to Q1-Q74 format with A-E values
         normalized = {}
@@ -218,8 +307,23 @@ def submit_assessment(request: Request, token: str, body: SubmitRequest):
 
         db.commit()
 
+        # Stream recommendation from primary Holland type
+        primary = holland_code[0] if holland_code else ""
+        stream_map = {"R": "Science (PCM)", "I": "Science (PCM)", "A": "Arts/Humanities",
+                      "S": "Science (PCB)", "E": "Commerce", "C": "Commerce"}
+        recommended_stream = stream_map.get(primary, "Explore all options")
+        career_teasers = [{"name": m.get("career_name", ""), "match_type": m.get("match_type", "")} for m in matched[:3]]
+
         logger.info(f"D2C assessment {token}: scored for {body.student_name} (Class {body.class_level}, Holland: {holland_code})")
-        return {"token": token, "status": "assessment_complete", "holland_code": holland_code}
+        return {
+            "token": token,
+            "status": "assessment_complete",
+            "holland_code": holland_code,
+            "riasec_scores": riasec_scores,
+            "recommended_stream": recommended_stream,
+            "confidence": "high",
+            "career_teasers": career_teasers,
+        }
     finally:
         db.close()
 

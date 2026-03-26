@@ -327,7 +327,7 @@ export default function AssessmentPage() {
     setQuestionsLoading(true);
     try {
       const data = await apiGet("/api/d2c/questions");
-      setQuestions(data.questions || []);
+      setQuestions(data.riasec_questions || data.questions || []);
     } catch {
       setError("Failed to load assessment questions. Please try again.");
       setLoading(false);
@@ -346,18 +346,22 @@ export default function AssessmentPage() {
     setError("");
     try {
       const data = await apiPost(`/api/d2c/submit/${token}`, {
+        student_name: studentName,
+        student_email: email || "",
+        parent_phone: parentPhone || "",
+        class_level: parseInt(classLevel) || 10,
         answers,
+        gender: gender || "",
+        family_income: income || "",
+        location_type: location || "",
+        parental_education: parentEdu || "",
+        first_gen_learner: firstGen,
         self_efficacy: selfEfficacy,
-        context: {
-          gender,
-          income_bracket: income,
-          location,
-          parental_education: parentEdu,
-          first_gen_learner: firstGen,
-          math_marks: mathMarks ? Number(mathMarks) : undefined,
-          science_marks: scienceMarks ? Number(scienceMarks) : undefined,
-          english_marks: englishMarks ? Number(englishMarks) : undefined,
-        },
+        academic_marks: (mathMarks || scienceMarks || englishMarks) ? {
+          math: mathMarks ? Number(mathMarks) : undefined,
+          science: scienceMarks ? Number(scienceMarks) : undefined,
+          english: englishMarks ? Number(englishMarks) : undefined,
+        } : undefined,
       });
       setPreviewData(data);
       setStep(5);
@@ -814,7 +818,13 @@ export default function AssessmentPage() {
           </Card>
 
           <ErrorBanner error={error} />
+          {!allSEAnswered && (
+            <p className="text-center text-xs text-amber-600">
+              {6 - Object.keys(selfEfficacy).length} subject{6 - Object.keys(selfEfficacy).length !== 1 ? "s" : ""} still unrated — scroll up to complete
+            </p>
+          )}
           <PrimaryBtn
+            loading={loading}
             onClick={handleSelfEfficacyContinue}
             disabled={!allSEAnswered}
           >
