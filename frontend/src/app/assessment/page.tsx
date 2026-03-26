@@ -282,6 +282,17 @@ export default function AssessmentPage() {
     }
   };
 
+  // Load Razorpay.js when we reach the payment step
+  useEffect(() => {
+    if (!paymentData) return;
+    if (typeof window === "undefined") return;
+    if ((window as unknown as Record<string, unknown>).Razorpay) return;
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.head.appendChild(script);
+  }, [paymentData]);
+
   // Step 6 → payment
   const handlePayment = useCallback(async () => {
     if (!paymentData) return;
@@ -1398,10 +1409,11 @@ export default function AssessmentPage() {
      ═══════════════════════════════════════════════════════════ */
   if (step === 8) {
     const pdfUrl = `${API_BASE}/api/d2c/pdf/${token}`;
+    const webReportUrl = `${window.location.origin}/reports/${token}`;
     const shareText = encodeURIComponent(
       `I just completed my AI Career Assessment on CareerDisha! My Holland Code is ${
         previewData?.holland_code || "..."
-      }. Find your ideal career path too: https://careerdisha.in/assessment`
+      }. View my report: ${webReportUrl}`
     );
     const whatsappUrl = `https://wa.me/?text=${shareText}`;
 
@@ -1458,6 +1470,18 @@ export default function AssessmentPage() {
             }}
           >
             Download Full Report (PDF)
+          </a>
+
+          {/* View online */}
+          <a
+            href={webReportUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full py-3.5 rounded-xl font-semibold text-sm text-center
+              transition-all hover:shadow-lg active:scale-[0.98] border-2"
+            style={{ borderColor: NAVY, color: NAVY }}
+          >
+            View Report Online
           </a>
 
           {/* Share on WhatsApp */}

@@ -182,6 +182,12 @@ export const whatsapp = {
     request<any>(`/whatsapp/send-bulk/${sessionId}`, { method: "POST" }),
 };
 
+// School Portal
+export const schoolPortal = {
+  mySchool: () => request<any>("/school-portal/my-school"),
+  analytics: () => request<any>("/school-portal/analytics"),
+};
+
 // Dashboard
 export const dashboard = {
   stats: () => request<any>("/dashboard/stats"),
