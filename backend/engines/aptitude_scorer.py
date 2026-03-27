@@ -7,9 +7,8 @@ and converts to per-stream fitness scores.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+from config import DATA_DIR
 
 # Per-stream aptitude weights
 STREAM_APTITUDE_WEIGHTS = {
@@ -43,25 +42,6 @@ def get_questions_for_api() -> list[dict]:
     return questions
 
 
-def _build_answer_key() -> dict[str, str]:
-    """Build answer key from questions file: {question_id: correct_answer}."""
-    data = load_aptitude_questions()
-    key = {}
-    for items in data["categories"].values():
-        for q in items:
-            key[q["id"]] = q["correct"]
-    return key
-
-
-def _build_category_map() -> dict[str, str]:
-    """Build map: {question_id: category_name}."""
-    data = load_aptitude_questions()
-    cat_map = {}
-    for category, items in data["categories"].items():
-        for q in items:
-            cat_map[q["id"]] = category
-    return cat_map
-
 
 def score_aptitude(responses: dict | None) -> dict | None:
     """Score aptitude responses.
@@ -75,8 +55,14 @@ def score_aptitude(responses: dict | None) -> dict | None:
     if not responses:
         return None
 
-    answer_key = _build_answer_key()
-    category_map = _build_category_map()
+    # Single file read for both answer key and category map
+    data = load_aptitude_questions()
+    answer_key = {}
+    category_map = {}
+    for category, items in data["categories"].items():
+        for q in items:
+            answer_key[q["id"]] = q["correct"]
+            category_map[q["id"]] = category
 
     # Count correct per category
     category_correct = {"numerical": 0, "verbal": 0, "spatial": 0}

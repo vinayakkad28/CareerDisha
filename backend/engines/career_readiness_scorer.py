@@ -7,12 +7,8 @@ Score influences report framing and caps recommendation confidence.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-
-# Likert mapping
-_LIKERT = {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+from config import DATA_DIR, LIKERT_MAP
 
 # Readiness level thresholds
 READINESS_LEVELS = [
@@ -62,7 +58,7 @@ def score_career_readiness(responses: dict | None) -> tuple[int | None, str]:
         if raw is None:
             continue
         if isinstance(raw, str):
-            total += _LIKERT.get(raw.upper(), 3)
+            total += LIKERT_MAP.get(raw.upper(), 3)
         else:
             total += int(raw)
         count += 1

@@ -10,12 +10,8 @@ A(greeableness), N(euroticism).
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-
-# Likert mapping: letter → score (1-5)
-_LIKERT = {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
+from config import DATA_DIR, LIKERT_MAP
 
 # TIPI item metadata
 TIPI_ITEMS = [
@@ -89,7 +85,7 @@ def score_tipi(responses: dict | None) -> dict[str, float] | None:
 
         # Convert letter to number if needed
         if isinstance(raw, str):
-            score = _LIKERT.get(raw.upper(), 3)
+            score = LIKERT_MAP.get(raw.upper(), 3)
         else:
             score = int(raw)
 

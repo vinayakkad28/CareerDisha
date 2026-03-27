@@ -232,6 +232,7 @@ export default function AssessmentPage() {
   const [aptCurrentQ, setAptCurrentQ] = useState(0);
   const [aptTimeLeft, setAptTimeLeft] = useState(600);
   const aptTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const aptAnswersRef = useRef<Record<string, string>>({});
 
   // Step 8: RIASEC Questions
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -458,13 +459,19 @@ export default function AssessmentPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Aptitude timer
+  // Aptitude timer — uses ref for answers to avoid stale closure
   useEffect(() => {
     if (step !== 7 || aptQuestions.length === 0) return;
     aptTimerRef.current = setInterval(() => {
       setAptTimeLeft((t) => {
         if (t <= 1) {
-          handleAptitudeSubmit();
+          if (aptTimerRef.current) clearInterval(aptTimerRef.current);
+          // Use ref for latest answers to avoid stale closure
+          apiPost(`/api/d2c/aptitude/${token}`, {
+            responses: aptAnswersRef.current,
+            time_taken: 600,
+          }).catch(() => {});
+          setStep(8);
           return 0;
         }
         return t - 1;
@@ -1011,9 +1018,14 @@ export default function AssessmentPage() {
     const allTipiAnswered = tipiAnsweredCount === tipiTotal && tipiTotal > 0;
 
     if (!tipiItems.length) {
-      // TIPI didn't load — skip
-      handleTipiSubmit();
-      return null;
+      return (
+        <div className="min-h-screen bg-surface font-body flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <p className="text-on-surface-variant">Loading personality questions...</p>
+            <button onClick={handleTipiSubmit} className="btn-ghost text-sm">Skip to next section</button>
+          </div>
+        </div>
+      );
     }
 
     return (
@@ -1084,8 +1096,14 @@ export default function AssessmentPage() {
     const allCrAnswered = crAnsweredCount === crTotal && crTotal > 0;
 
     if (!crItems.length) {
-      handleCareerReadinessSubmit();
-      return null;
+      return (
+        <div className="min-h-screen bg-surface font-body flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <p className="text-on-surface-variant">Loading readiness questions...</p>
+            <button onClick={handleCareerReadinessSubmit} className="btn-ghost text-sm">Skip to next section</button>
+          </div>
+        </div>
+      );
     }
 
     return (
@@ -1204,7 +1222,11 @@ export default function AssessmentPage() {
                     <button
                       key={letter}
                       onClick={() => {
-                        setAptAnswers((prev) => ({ ...prev, [aptQ.id]: letter }));
+                        setAptAnswers((prev) => {
+                          const next = { ...prev, [aptQ.id]: letter };
+                          aptAnswersRef.current = next;
+                          return next;
+                        });
                         setTimeout(() => {
                           if (aptCurrentQ < aptTotal - 1) setAptCurrentQ((c) => c + 1);
                         }, 250);
@@ -1262,7 +1284,7 @@ export default function AssessmentPage() {
   }
 
   /* ═══════════════════════════════════════════════════════════
-     STEP 6 — RIASEC Assessment (74 questions, one at a time)
+     STEP 8 — RIASEC Assessment (74 questions, one at a time)
      ═══════════════════════════════════════════════════════════ */
   if (step === 8) {
     if (!questions || questions.length === 0) {
@@ -1423,7 +1445,7 @@ export default function AssessmentPage() {
   }
 
   /* ═══════════════════════════════════════════════════════════
-     STEP 5 — Preview Results
+     STEP 9 — Preview Results
      ═══════════════════════════════════════════════════════════ */
   if (step === 9) {
     const pd = previewData;
@@ -1659,7 +1681,7 @@ export default function AssessmentPage() {
   }
 
   /* ═══════════════════════════════════════════════════════════
-     STEP 6 — Payment
+     STEP 10 — Payment
      ═══════════════════════════════════════════════════════════ */
   if (step === 10) {
     const isMock = !paymentData?.razorpay_key;
@@ -1723,7 +1745,7 @@ export default function AssessmentPage() {
   }
 
   /* ═══════════════════════════════════════════════════════════
-     STEP 7 — Generating Report
+     STEP 11 — Generating Report
      ═══════════════════════════════════════════════════════════ */
   if (step === 11) {
     return (
@@ -1784,7 +1806,7 @@ export default function AssessmentPage() {
   }
 
   /* ═══════════════════════════════════════════════════════════
-     STEP 8 — Report Ready
+     STEP 12 — Report Ready
      ═══════════════════════════════════════════════════════════ */
   if (step === 12) {
     const pdfUrl = `${API_BASE}/api/d2c/pdf/${token}`;

@@ -73,9 +73,9 @@ def determine_stream(sorted_types: list[tuple[str, float]]) -> str | None:
     if top1 in ("E", "C") and top2 in ("E", "C"):
         return "Commerce"
     if top1 == "A":
-        return "Arts / Humanities"
+        return "Arts/Humanities"
     if top1 == "S" and top2 == "A":
-        return "Arts / Humanities"
+        return "Arts/Humanities"
     if top1 == "S" and top2 == "E":
         return "Commerce"
     if top1 == "E":
@@ -87,7 +87,7 @@ def determine_stream(sorted_types: list[tuple[str, float]]) -> str | None:
     if top1 == "C":
         return "Commerce"
     if top1 == "S":
-        return "Arts / Humanities"
+        return "Arts/Humanities"
     return None
 
 
