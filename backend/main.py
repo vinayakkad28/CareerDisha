@@ -35,12 +35,12 @@ if SENTRY_DSN:
 async def lifespan(app: FastAPI):
     init_db()
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    logger.info(f"CareerDisha API started. Output dir: {OUTPUT_DIR}")
+    logger.info(f"CareerNeeti API started. Output dir: {OUTPUT_DIR}")
     yield
 
 
 app = FastAPI(
-    title="CareerDisha API",
+    title="CareerNeeti API",
     description="AI Career Counselling Platform for Indian Schools",
     version="1.0.0",
     lifespan=lifespan,
@@ -96,7 +96,7 @@ def health_check():
         db_status = "error"
     return {
         "status": "ok",
-        "service": "CareerDisha API",
+        "service": "CareerNeeti API",
         "db": db_status,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }

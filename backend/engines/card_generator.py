@@ -65,7 +65,7 @@ def generate_share_card(student) -> bytes:
     # Header bar
     draw.rectangle([0, 0, CARD_W, 180], fill=_hex_to_rgb(PRIMARY))
     draw.text((60, 40), "Career", fill=_hex_to_rgb(WHITE), font=font_title)
-    draw.text((60 + draw.textlength("Career", font=font_title), 40), "Disha", fill=_hex_to_rgb(SECONDARY), font=font_title)
+    draw.text((60 + draw.textlength("Career", font=font_title), 40), "Neeti", fill=_hex_to_rgb(SECONDARY), font=font_title)
     draw.text((60, 100), "AI-Powered Career Assessment", fill=(*_hex_to_rgb(WHITE)[:3],), font=font_small)
 
     # Gold accent line
@@ -150,7 +150,7 @@ def generate_share_card(student) -> bytes:
     fw = draw.textlength(footer, font=font_tiny)
     draw.text(((CARD_W - fw) / 2, y), footer, fill=_hex_to_rgb(GRAY_TEXT), font=font_tiny)
     y += 35
-    url = "www.careerdisha.com"
+    url = "www.careerneeti.in"
     uw = draw.textlength(url, font=font_small)
     draw.text(((CARD_W - uw) / 2, y), url, fill=_hex_to_rgb(PRIMARY), font=font_small)
 

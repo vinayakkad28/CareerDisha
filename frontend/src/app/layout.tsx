@@ -16,7 +16,7 @@ const publicSans = Public_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "CareerDisha - AI Career Counselling",
+  title: "CareerNeeti - AI Career Counselling",
   description: "AI-powered career counselling platform for Indian schools",
 };
 

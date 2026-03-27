@@ -1,4 +1,4 @@
-"""Seed demo data for CareerDisha.
+"""Seed demo data for CareerNeeti.
 
 Run: python seed_demo.py
 Creates a demo school, session, and 5 sample students with pre-computed RIASEC scores and sample report content.

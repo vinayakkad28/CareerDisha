@@ -44,7 +44,7 @@ def generate_compliance_pdf(
         school_board=school_board,
         session_date=session_date_str,
         session_date_short=session_date_short,
-        counsellor_name=counsellor_name or "CareerDisha Counsellor",
+        counsellor_name=counsellor_name or "CareerNeeti Counsellor",
         counsellor_certification=counsellor_certification,
         classes_assessed=classes_assessed,
         total_students=total_students,

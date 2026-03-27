@@ -1,4 +1,4 @@
-"""Email delivery service for CareerDisha reports."""
+"""Email delivery service for CareerNeeti reports."""
 import logging
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -22,11 +22,11 @@ def send_report_email(to_email: str, student_name: str, pdf_path: str, holland_c
         msg = MIMEMultipart()
         msg["From"] = SMTP_FROM_EMAIL or SMTP_USER
         msg["To"] = to_email
-        msg["Subject"] = f"CareerDisha Career Report for {student_name}"
+        msg["Subject"] = f"CareerNeeti Career Report for {student_name}"
 
         body = f"""Namaste!
 
-Your child {student_name}'s personalized AI Career Assessment Report from CareerDisha is ready.
+Your child {student_name}'s personalized AI Career Assessment Report from CareerNeeti is ready.
 
 Key Highlights:
 - Holland Code: {holland_code}
@@ -36,12 +36,12 @@ Key Highlights:
 
 Please find the detailed report attached as a PDF.
 
-For questions or follow-up counselling, reply to this email or visit www.careerdisha.com
+For questions or follow-up counselling, reply to this email or visit www.careerneeti.in
 
 Best regards,
-CareerDisha Team
+CareerNeeti Team
 AI-Powered Career Counselling for Indian Schools
-www.careerdisha.com
+www.careerneeti.in
 """
         msg.attach(MIMEText(body, "plain"))
 
@@ -52,7 +52,7 @@ www.careerdisha.com
                 part = MIMEBase("application", "octet-stream")
                 part.set_payload(f.read())
             encoders.encode_base64(part)
-            part.add_header("Content-Disposition", f"attachment; filename=CareerDisha_Report_{student_name.replace(' ', '_')}.pdf")
+            part.add_header("Content-Disposition", f"attachment; filename=CareerNeeti_Report_{student_name.replace(' ', '_')}.pdf")
             msg.attach(part)
 
         with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:

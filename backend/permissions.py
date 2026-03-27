@@ -1,4 +1,4 @@
-"""Role-based access control for CareerDisha API."""
+"""Role-based access control for CareerNeeti API."""
 
 from fastapi import Depends, HTTPException
 from routers.auth import get_current_user

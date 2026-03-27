@@ -169,7 +169,7 @@ export default function QuizPage() {
       <div className="min-h-screen bg-surface font-body">
         {/* Header */}
         <header className="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-16 bg-brand-gradient">
-          <div className="text-2xl font-bold text-white tracking-tight font-heading">CareerDisha</div>
+          <div className="text-2xl font-bold text-white tracking-tight font-heading">CareerNeeti</div>
           <div className="hidden md:flex space-x-8 items-center">
             <a className="text-secondary border-b-2 border-secondary pb-1 font-semibold text-sm" href="#">Tests</a>
           </div>
@@ -380,7 +380,7 @@ export default function QuizPage() {
       <header className="sticky top-0 z-50 bg-brand-gradient shadow-sm">
         <div className="flex justify-between items-center px-6 py-4 max-w-public mx-auto w-full">
           <div className="flex flex-col">
-            <span className="text-xl font-bold text-white tracking-widest uppercase font-heading">CareerDisha</span>
+            <span className="text-xl font-bold text-white tracking-widest uppercase font-heading">CareerNeeti</span>
             <span className="font-heading font-semibold text-sm tracking-tight text-secondary">Free Stream Predictor Quiz</span>
           </div>
           <div className="hidden md:flex flex-col items-end gap-2 w-1/3">
@@ -578,13 +578,13 @@ export default function QuizPage() {
       {/* Footer */}
       <footer className="w-full py-8 border-t border-slate-200 bg-surface mb-32">
         <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-public mx-auto w-full gap-4">
-          <span className="text-lg font-bold text-primary font-heading">CareerDisha</span>
+          <span className="text-lg font-bold text-primary font-heading">CareerNeeti</span>
           <div className="flex gap-6">
             <a className="text-xs text-slate-500 hover:text-secondary transition-colors duration-200" href="#">Contact Us</a>
             <a className="text-xs text-slate-500 hover:text-secondary transition-colors duration-200" href="#">Privacy Policy</a>
             <a className="text-xs text-slate-500 hover:text-secondary transition-colors duration-200" href="#">Terms of Service</a>
           </div>
-          <p className="text-xs text-primary">&copy; {new Date().getFullYear()} CareerDisha. All rights reserved. DPDPA Compliant.</p>
+          <p className="text-xs text-primary">&copy; {new Date().getFullYear()} CareerNeeti. All rights reserved. DPDPA Compliant.</p>
         </div>
       </footer>
     </div>

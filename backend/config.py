@@ -13,7 +13,7 @@ OUTPUT_DIR = Path(os.getenv("OUTPUT_DIR", str(BASE_DIR / "output")))
 
 # Database
 # Railway provides DATABASE_URL as postgres:// but SQLAlchemy needs postgresql://
-_raw_db_url = os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR / 'careerdisha.db'}")
+_raw_db_url = os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR / 'careerneeti.db'}")
 DATABASE_URL = _raw_db_url.replace("postgres://", "postgresql://", 1) if _raw_db_url.startswith("postgres://") else _raw_db_url
 
 # CORS — allow local dev + Railway frontend if deployed separately
@@ -25,7 +25,7 @@ CORS_ORIGINS = [
 
 # Auth
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "changeme")
-JWT_SECRET = os.getenv("JWT_SECRET", "careerdisha-secret-change-in-production")
+JWT_SECRET = os.getenv("JWT_SECRET", "careerneeti-secret-change-in-production")
 JWT_EXPIRY_HOURS = 24
 
 # JWT RS256 keys (optional — fallback to HS256 with JWT_SECRET if not set)

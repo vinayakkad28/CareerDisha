@@ -26,7 +26,7 @@ def get_or_create_d2c_session(db):
     """Get or create the D2C virtual school and a monthly session."""
     school = db.query(School).filter(School.code == D2C_SCHOOL_CODE).first()
     if not school:
-        school = School(name="CareerDisha Online", code=D2C_SCHOOL_CODE, city="Online", board="All")
+        school = School(name="CareerNeeti Online", code=D2C_SCHOOL_CODE, city="Online", board="All")
         db.add(school)
         db.flush()
 
@@ -41,7 +41,7 @@ def get_or_create_d2c_session(db):
             school_id=school.id,
             session_date=first_of_month,
             classes_assessed=[9, 10, 11, 12],
-            counsellor_name="CareerDisha AI",
+            counsellor_name="CareerNeeti AI",
             status="scored",
             llm_provider="groq",
         )
@@ -506,7 +506,7 @@ def _generate_d2c_report(assessment_id: int):
         output_dir = OUTPUT_DIR / "d2c"
         output_dir.mkdir(parents=True, exist_ok=True)
         try:
-            pdf_path = generate_student_pdf(student, output_dir, counsellor_name="CareerDisha AI")
+            pdf_path = generate_student_pdf(student, output_dir, counsellor_name="CareerNeeti AI")
             student.pdf_path = str(pdf_path)
             student.report_status = "pdf_ready"
             assessment.pdf_url = str(pdf_path)
@@ -546,7 +546,7 @@ def _generate_d2c_report(assessment_id: int):
                     phone=assessment.parent_phone,
                     pdf_path=str(pdf_path),
                     student_name=student.name,
-                    school_name="CareerDisha",
+                    school_name="CareerNeeti",
                 )
                 if result.get("success"):
                     assessment.report_whatsapp_sent = True
@@ -628,7 +628,7 @@ def download_pdf(token: str):
         return FileResponse(
             assessment.pdf_url,
             media_type="application/pdf",
-            filename=f"CareerDisha_Report_{assessment.student_name.replace(' ', '_')}.pdf",
+            filename=f"CareerNeeti_Report_{assessment.student_name.replace(' ', '_')}.pdf",
         )
     finally:
         db.close()

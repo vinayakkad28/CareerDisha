@@ -9,7 +9,7 @@ export default function Home() {
       <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-3 rounded-full mt-6 mx-auto max-w-5xl bg-slate-900/80 backdrop-blur-xl border border-white/10 shadow-xl font-heading text-sm font-semibold tracking-tight">
         <Link href="/" className="flex items-center gap-2">
           <span className="text-2xl font-bold tracking-tighter text-white">
-            Career<span className="text-secondary">Disha</span>
+            Career<span className="text-secondary">Neeti</span>
           </span>
         </Link>
         <nav className="hidden md:flex items-center gap-8">
@@ -204,7 +204,7 @@ export default function Home() {
               },
               {
                 quote:
-                  "CareerDisha has streamlined our counseling department's workflow significantly. Professional and highly reliable.",
+                  "CareerNeeti has streamlined our counseling department's workflow significantly. Professional and highly reliable.",
                 school: "Bishop Cotton School",
                 location: "Shimla, Himachal Pradesh",
               },
@@ -303,10 +303,10 @@ export default function Home() {
         <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
           <div className="mb-8 md:mb-0">
             <span className="font-heading font-bold text-xl text-white">
-              Career<span className="text-secondary">Disha</span>
+              Career<span className="text-secondary">Neeti</span>
             </span>
             <p className="mt-4 font-body text-sm text-slate-400 max-w-xs leading-relaxed">
-              &copy; {new Date().getFullYear()} CareerDisha AI. Empowering India&apos;s Youth through Scientific Guidance.
+              &copy; {new Date().getFullYear()} CareerNeeti AI. Empowering India&apos;s Youth through Scientific Guidance.
             </p>
           </div>
           <div className="flex gap-8">

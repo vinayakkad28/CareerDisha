@@ -541,7 +541,7 @@ def parent_circular_pdf(session_id: int, fee: int = 500, db: DBSession = Depends
         school_board=school.board if school else "CBSE",
         classes=", ".join(str(c) for c in (session.classes_assessed or [])),
         session_date=session_date_str,
-        counsellor_name=session.counsellor_name or "CareerDisha Counsellor",
+        counsellor_name=session.counsellor_name or "CareerNeeti Counsellor",
         counsellor_certification=session.counsellor_certification or "",
         fee_amount=fee,
     )

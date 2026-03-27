@@ -83,7 +83,7 @@ function FeedbackForm() {
             Your feedback helps us improve career guidance for thousands of students across India.
             We truly appreciate you taking the time.
           </p>
-          <p className="text-xs text-outline mt-6 font-body">&mdash; CareerDisha Team</p>
+          <p className="text-xs text-outline mt-6 font-body">&mdash; CareerNeeti Team</p>
         </div>
       </div>
     );
@@ -94,7 +94,7 @@ function FeedbackForm() {
       {/* Top Navigation */}
       <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-lg">
         <div className="flex justify-between items-center w-full max-w-public mx-auto px-6 h-16">
-          <span className="text-2xl font-black text-primary font-heading">CareerDisha</span>
+          <span className="text-2xl font-black text-primary font-heading">CareerNeeti</span>
         </div>
       </header>
 
@@ -102,7 +102,7 @@ function FeedbackForm() {
         {/* Header Banner */}
         <div className="w-full bg-brand-gradient p-8 rounded-xl shadow-sm overflow-hidden relative">
           <div className="relative z-10">
-            <h1 className="font-heading font-bold text-white text-3xl tracking-tight">CareerDisha</h1>
+            <h1 className="font-heading font-bold text-white text-3xl tracking-tight">CareerNeeti</h1>
             <p className="font-heading text-white/90 text-lg font-medium mt-1">Parent Feedback Survey</p>
             <p className="text-white/70 text-sm mt-2 font-body italic">Building scientific career paths together</p>
           </div>
@@ -116,7 +116,7 @@ function FeedbackForm() {
         {/* Intro Card */}
         <section className="bg-white p-8 rounded-xl">
           <p className="text-on-surface-variant font-body text-lg leading-relaxed">
-            Thank you for using CareerDisha. Your 2-minute feedback helps us improve guidance for students like yours.
+            Thank you for using CareerNeeti. Your 2-minute feedback helps us improve guidance for students like yours.
           </p>
         </section>
 
@@ -210,7 +210,7 @@ function FeedbackForm() {
 
         {/* Would Recommend Card */}
         <section className="bg-white p-8 rounded-xl flex flex-col gap-6">
-          <h2 className="font-heading font-semibold text-primary text-xl">Would you recommend CareerDisha to other parents?</h2>
+          <h2 className="font-heading font-semibold text-primary text-xl">Would you recommend CareerNeeti to other parents?</h2>
           <div className="flex gap-4">
             <button
               onClick={() => setWouldRecommend(true)}
@@ -263,7 +263,7 @@ function FeedbackForm() {
 
       {/* Footer */}
       <footer className="bg-slate-50 w-full py-12 px-4 flex flex-col items-center gap-4 text-center mt-12">
-        <div className="font-heading font-bold text-primary text-xl">CareerDisha</div>
+        <div className="font-heading font-bold text-primary text-xl">CareerNeeti</div>
         <p className="font-body text-xs text-slate-500 max-w-md">Scientific Career Counselling for Indian Students.</p>
         <div className="flex gap-6 mt-2">
           <span className="font-body text-xs text-slate-500 opacity-80">Privacy Policy</span>

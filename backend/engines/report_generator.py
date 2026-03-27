@@ -80,7 +80,7 @@ def build_user_prompt(student: Student, matched_career_details: list) -> str:
 
     # Detect D2C vs school context
     is_d2c = hasattr(student, 'd2c_assessment_id') and student.d2c_assessment_id is not None
-    school_line = "CareerDisha Online Assessment" if is_d2c else "(school session)"
+    school_line = "CareerNeeti Online Assessment" if is_d2c else "(school session)"
     city_line = student.location_type.title() if (hasattr(student, 'location_type') and student.location_type) else "(assessment session city)"
 
     # Get top 3 work values

@@ -49,7 +49,7 @@ export default function SettingsPage() {
               <span className="text-white font-heading font-bold text-sm">CD</span>
             </div>
             <div>
-              <p className="font-heading font-semibold text-on-surface">CareerDisha</p>
+              <p className="font-heading font-semibold text-on-surface">CareerNeeti</p>
               <p className="text-on-surface-variant">AI Career Counselling Platform</p>
             </div>
           </div>

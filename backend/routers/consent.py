@@ -114,7 +114,7 @@ async def send_consent_otp(req: OTPRequest, db: Session = Depends(get_db)):
                             "type": "text",
                             "text": {
                                 "body": (
-                                    f"CareerDisha: Your OTP for consent to generate {student.name}'s "
+                                    f"CareerNeeti: Your OTP for consent to generate {student.name}'s "
                                     f"career report is *{otp}*. Valid for 10 minutes. "
                                     f"Do not share this with anyone."
                                 )

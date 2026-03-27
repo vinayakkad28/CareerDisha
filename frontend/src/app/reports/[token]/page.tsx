@@ -928,7 +928,7 @@ export default function ReportPage() {
             </code>
           </div>
           <p className="font-body text-[10px] text-slate-400">
-            CareerDisha. Institutional Grade Career Assessment.
+            CareerNeeti. Institutional Grade Career Assessment.
           </p>
         </footer>
       </div>

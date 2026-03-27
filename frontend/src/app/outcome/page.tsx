@@ -81,10 +81,10 @@ function OutcomeForm() {
           <h2 className="font-heading text-xl font-bold text-primary mb-2">Thank You!</h2>
           <p className="text-on-surface-variant text-sm leading-relaxed font-body">
             Your response has been recorded. This helps us measure how accurately
-            CareerDisha&apos;s recommendations match real-world choices &mdash; improving guidance
+            CareerNeeti&apos;s recommendations match real-world choices &mdash; improving guidance
             for future students.
           </p>
-          <p className="text-xs text-outline mt-6 font-body">&mdash; CareerDisha Team</p>
+          <p className="text-xs text-outline mt-6 font-body">&mdash; CareerNeeti Team</p>
         </div>
       </div>
     );
@@ -95,7 +95,7 @@ function OutcomeForm() {
       {/* TopNavBar */}
       <header className="bg-brand-gradient w-full sticky top-0 z-50">
         <div className="flex justify-between items-center px-6 py-4 w-full max-w-form-compact mx-auto">
-          <span className="text-xl font-bold text-white font-heading tracking-tight">CareerDisha</span>
+          <span className="text-xl font-bold text-white font-heading tracking-tight">CareerNeeti</span>
           <span className="text-blue-100/80 text-xs font-medium uppercase tracking-widest">6-Month Follow-Up</span>
         </div>
       </header>
@@ -111,7 +111,7 @@ function OutcomeForm() {
             </div>
             <h1 className="font-heading text-2xl font-bold text-primary leading-tight">Dear Parent,</h1>
             <p className="text-on-surface-variant leading-relaxed font-body">
-              It has been 6 months since your child received their CareerDisha career report. We would love to know &mdash; which stream did they choose?
+              It has been 6 months since your child received their CareerNeeti career report. We would love to know &mdash; which stream did they choose?
             </p>
           </div>
         </section>
@@ -205,7 +205,7 @@ function OutcomeForm() {
       <footer className="bg-slate-50 border-t border-surface-container-highest mt-12">
         <div className="flex flex-col items-center gap-6 w-full max-w-form-compact mx-auto text-center px-4 py-12">
           <p className="text-slate-500 text-xs tracking-wide max-w-[400px]">
-            Your response is used only for improving CareerDisha recommendations. Data handled per DPDPA guidelines.
+            Your response is used only for improving CareerNeeti recommendations. Data handled per DPDPA guidelines.
           </p>
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
             <span className="text-slate-500 text-xs">Privacy Policy</span>
@@ -213,7 +213,7 @@ function OutcomeForm() {
             <span className="text-slate-500 text-xs">Terms of Service</span>
           </div>
           <div className="mt-4 opacity-50">
-            <p className="text-[10px] text-slate-400 font-medium">CareerDisha. All rights reserved.</p>
+            <p className="text-[10px] text-slate-400 font-medium">CareerNeeti. All rights reserved.</p>
           </div>
         </div>
       </footer>

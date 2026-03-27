@@ -50,7 +50,7 @@ export default function LoginPage() {
         <div className="relative z-10">
           <div className="flex items-center gap-2">
             <Link href="/" className="text-4xl font-heading font-extrabold tracking-tighter text-white">
-              Career<span className="text-yellow-400">Disha</span>
+              Career<span className="text-yellow-400">Neeti</span>
             </Link>
           </div>
           <p className="mt-6 text-xl font-heading font-semibold text-white/90 max-w-md leading-relaxed">
@@ -114,7 +114,7 @@ export default function LoginPage() {
           <div className="lg:hidden text-center mb-10">
             <Link href="/" className="font-heading text-3xl font-extrabold tracking-tight inline-block">
               <span className="text-primary">Career</span>
-              <span className="text-secondary">Disha</span>
+              <span className="text-secondary">Neeti</span>
             </Link>
             <p className="font-body text-on-surface-variant text-sm mt-2">
               AI-Powered Career Counselling
@@ -277,7 +277,7 @@ export default function LoginPage() {
         {/* DPDPA Footer */}
         <footer className="mt-auto pt-12 flex flex-col items-center gap-2">
           <p className="text-xs font-medium text-outline flex items-center gap-1.5 uppercase tracking-widest">
-            Powered by CareerDisha AI <span className="text-secondary">&bull;</span> DPDPA Compliant
+            Powered by CareerNeeti AI <span className="text-secondary">&bull;</span> DPDPA Compliant
           </p>
         </footer>
       </section>

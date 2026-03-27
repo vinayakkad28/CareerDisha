@@ -71,7 +71,7 @@ async def send_pdf_meta(phone: str, pdf_path: str, student_name: str, school_nam
             "type": "document",
             "document": {
                 "id": media_id,
-                "caption": f"Namaste! {student_name}'s CareerDisha Career Assessment Report from {school_name} is ready. For questions, contact your school counsellor. — CareerDisha",
+                "caption": f"Namaste! {student_name}'s CareerNeeti Career Assessment Report from {school_name} is ready. For questions, contact your school counsellor. — CareerNeeti",
                 "filename": f"{student_name}_Career_Report.pdf",
             },
         }
@@ -139,11 +139,11 @@ async def send_survey_message(phone: str, student_name: str, feedback_url: str) 
     """Send a post-delivery satisfaction survey link via WhatsApp."""
     text = (
         f"Namaste! 🙏\n\n"
-        f"We hope {student_name}'s CareerDisha report has been helpful.\n\n"
+        f"We hope {student_name}'s CareerNeeti report has been helpful.\n\n"
         f"It would mean a lot if you could share your feedback (2 minutes):\n"
         f"👉 {feedback_url}\n\n"
         f"Your response helps us improve guidance for thousands of students. Thank you! 🌟\n"
-        f"— CareerDisha Team"
+        f"— CareerNeeti Team"
     )
     return await send_text_message(phone, text)
 
@@ -178,12 +178,12 @@ async def send_helpline_message(phone: str, student_name: str, calendly_url: str
     """Send a helpline booking invite via WhatsApp after report delivery."""
     text = (
         f"Namaste! 🙏\n\n"
-        f"We hope {student_name}'s CareerDisha career report has been helpful.\n\n"
+        f"We hope {student_name}'s CareerNeeti career report has been helpful.\n\n"
         f"Do you have questions about the recommendations or next steps?\n"
-        f"Book a *free 15-minute call* with a CareerDisha counsellor:\n"
+        f"Book a *free 15-minute call* with a CareerNeeti counsellor:\n"
         f"👉 {calendly_url}\n\n"
         f"We're here to help you support {student_name}'s career journey. 🌟\n"
-        f"— CareerDisha Team"
+        f"— CareerNeeti Team"
     )
     return await send_text_message(phone, text)
 

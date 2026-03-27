@@ -107,7 +107,7 @@ async def send_survey(session_id: int, db: Session = Depends(get_db)):
     if not students:
         return {"message": "No eligible students (none delivered 48+ hours ago)", "sent": 0}
 
-    base_url = os.getenv("APP_BASE_URL", "https://careerdisha.in")
+    base_url = os.getenv("APP_BASE_URL", "https://careerneeti.in")
     sent = 0
     failed = 0
     for student in students:
@@ -125,7 +125,7 @@ async def send_survey(session_id: int, db: Session = Depends(get_db)):
 @router.post("/helpline/{session_id}")
 async def send_helpline(session_id: int, db: Session = Depends(get_db)):
     """Send helpline booking WhatsApp to parents of delivered students (7+ days ago)."""
-    calendly_url = os.getenv("CALENDLY_URL", "https://calendly.com/careerdisha/15min")
+    calendly_url = os.getenv("CALENDLY_URL", "https://calendly.com/careerneeti/15min")
     cutoff = datetime.now(timezone.utc) - timedelta(days=7)
 
     students = db.query(Student).filter(

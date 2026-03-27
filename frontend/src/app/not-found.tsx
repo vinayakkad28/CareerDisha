@@ -7,7 +7,7 @@ export default function NotFound() {
       <nav className="fixed top-0 w-full z-50 bg-white/70 backdrop-blur-md border-b border-white/20 shadow-sm">
         <div className="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
           <Link href="/" className="text-2xl font-bold text-primary tracking-tight font-heading">
-            CareerDisha
+            CareerNeeti
           </Link>
           <div className="hidden md:flex items-center gap-8">
             <span className="text-slate-400 text-sm uppercase tracking-widest">Error 404</span>
@@ -17,7 +17,7 @@ export default function NotFound() {
 
       {/* Background Watermark */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03] select-none">
-        <h2 className="font-heading font-extrabold text-[20vw] leading-none">CareerDisha</h2>
+        <h2 className="font-heading font-extrabold text-[20vw] leading-none">CareerNeeti</h2>
       </div>
 
       {/* Main Content */}
@@ -71,7 +71,7 @@ export default function NotFound() {
       {/* Footer */}
       <footer className="fixed bottom-12 w-full text-center pointer-events-none">
         <p className="text-outline-variant text-xs tracking-widest uppercase">
-          CareerDisha Intellectual Property. Scholarly Architect Series.
+          CareerNeeti Intellectual Property. Scholarly Architect Series.
         </p>
       </footer>
     </div>

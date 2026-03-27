@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""CareerDisha CLI — Batch processing tool for career assessment reports.
+"""CareerNeeti CLI — Batch processing tool for career assessment reports.
 
 Usage:
-    python careerdisha.py score   --zipgrade-csv ... --student-info ... --output scored.json
-    python careerdisha.py generate --profiles scored.json --model gemini --output reports.json
-    python careerdisha.py pdf     --reports reports.json --output-dir ./output/
-    python careerdisha.py send    --reports-dir ./output/ --student-info students.csv
-    python careerdisha.py pipeline --zipgrade-csv ... --student-info ... --model gemini --output-dir ./output/
+    python careerneeti.py score   --zipgrade-csv ... --student-info ... --output scored.json
+    python careerneeti.py generate --profiles scored.json --model gemini --output reports.json
+    python careerneeti.py pdf     --reports reports.json --output-dir ./output/
+    python careerneeti.py send    --reports-dir ./output/ --student-info students.csv
+    python careerneeti.py pipeline --zipgrade-csv ... --student-info ... --model gemini --output-dir ./output/
 """
 
 import csv
@@ -169,9 +169,9 @@ def _match_careers(holland_code: str, knowledge_base: list, top_n: int = 10) -> 
 
 
 @click.group()
-@click.version_option(version="1.0.0", prog_name="CareerDisha")
+@click.version_option(version="1.0.0", prog_name="CareerNeeti")
 def cli():
-    """CareerDisha — AI Career Counselling Report Generator for Indian Schools."""
+    """CareerNeeti — AI Career Counselling Report Generator for Indian Schools."""
     pass
 
 
@@ -793,7 +793,7 @@ def send(reports_dir, student_info, method):
         click.echo("  1. Open WhatsApp Web or WhatsApp Business")
         click.echo("  2. For each student, search the phone number")
         click.echo("  3. Attach the corresponding PDF file")
-        click.echo("  4. Send with message: 'Dear Parent, please find your child's Career Assessment Report attached. - CareerDisha'")
+        click.echo("  4. Send with message: 'Dear Parent, please find your child's Career Assessment Report attached. - CareerNeeti'")
 
 
 # ---- PIPELINE --------------------------------------------------------------
@@ -818,7 +818,7 @@ def pipeline(zipgrade_csv, student_info, knowledge_base, model, output_dir, coun
     pdf_dir = out_path / "pdfs"
 
     click.echo(click.style("═" * 60, fg="blue"))
-    click.echo(click.style("  CareerDisha — Full Pipeline", fg="blue", bold=True))
+    click.echo(click.style("  CareerNeeti — Full Pipeline", fg="blue", bold=True))
     click.echo(click.style("═" * 60, fg="blue"))
 
     # Step 1: Score

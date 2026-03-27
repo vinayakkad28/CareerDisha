@@ -148,7 +148,7 @@ def run_pdf_generation(session_id: int):
 
         counsellor_name = session.counsellor_name or ""
 
-        base_url = os.getenv("APP_BASE_URL", "https://careerdisha.in")
+        base_url = os.getenv("APP_BASE_URL", "https://careerneeti.in")
         logger.info(f"Session {session_id}: generating PDFs for {len(students)} students in {output_dir}")
         completed = 0
         failed = 0

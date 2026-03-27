@@ -81,7 +81,7 @@ export default function Sidebar() {
       <div className="px-6 mb-10">
         <h1 className="text-2xl font-heading font-extrabold tracking-tight">
           <span className="text-white">Career</span>
-          <span className="text-secondary">Disha</span>
+          <span className="text-secondary">Neeti</span>
         </h1>
         <p className="text-xs font-medium text-primary-200 tracking-wider uppercase opacity-80 mt-1">
           {portalLabel}

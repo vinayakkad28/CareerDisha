@@ -126,7 +126,7 @@ def submit_quiz(submission: QuizSubmission):
         "confidence": confidence,
         "primary_type": primary,
         "lead_id": lead_id,
-        "message": f"Based on your interests, {stream} appears to be a strong fit. For a detailed analysis with career recommendations, college suggestions, and a personalized action plan, take the full CareerDisha assessment at your school.",
+        "message": f"Based on your interests, {stream} appears to be a strong fit. For a detailed analysis with career recommendations, college suggestions, and a personalized action plan, take the full CareerNeeti assessment at your school.",
         "cta": "Get Your Full Career Report — ₹500 only",
-        "cta_url": "https://www.careerdisha.com",
+        "cta_url": "https://www.careerneeti.in",
     }

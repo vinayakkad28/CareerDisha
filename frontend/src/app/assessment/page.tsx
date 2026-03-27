@@ -85,7 +85,7 @@ function Logo() {
   return (
     <h1 className="text-2xl font-heading font-bold tracking-tight">
       <span className="text-white">Career</span>
-      <span className="text-secondary">Disha</span>
+      <span className="text-secondary">Neeti</span>
     </h1>
   );
 }
@@ -417,7 +417,7 @@ export default function AssessmentPage() {
           amount: paymentData.amount,
           currency: paymentData.currency || "INR",
           order_id: paymentData.order_id,
-          name: "CareerDisha",
+          name: "CareerNeeti",
           description: "Career Assessment Report",
           handler: async (response: Record<string, string>) => {
             try {
@@ -1343,7 +1343,7 @@ export default function AssessmentPage() {
     const pdfUrl = `${API_BASE}/api/d2c/pdf/${token}`;
     const webReportUrl = `${window.location.origin}/reports/${token}`;
     const shareText = encodeURIComponent(
-      `I just completed my AI Career Assessment on CareerDisha! My Holland Code is ${
+      `I just completed my AI Career Assessment on CareerNeeti! My Holland Code is ${
         previewData?.holland_code || "..."
       }. View my report: ${webReportUrl}`
     );
@@ -1437,7 +1437,7 @@ export default function AssessmentPage() {
 
           {/* Footer */}
           <p className="text-center text-xs text-on-surface-variant pb-6">
-            &copy; {new Date().getFullYear()} CareerDisha. AI Career Assessment.
+            &copy; {new Date().getFullYear()} CareerNeeti. AI Career Assessment.
           </p>
         </div>
       </div>

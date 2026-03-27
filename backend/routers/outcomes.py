@@ -171,7 +171,7 @@ def session_outcomes(session_id: int, db: Session = Depends(get_db)):
 async def send_followup(session_id: int, db: Session = Depends(get_db), user: dict = Depends(require_role("admin", "counsellor"))):
     """Send 6-month WhatsApp follow-up asking which stream student chose."""
     cutoff = datetime.now(timezone.utc) - timedelta(days=180)
-    base_url = os.getenv("APP_BASE_URL", "https://careerdisha.in")
+    base_url = os.getenv("APP_BASE_URL", "https://careerneeti.in")
 
     students = db.query(Student).filter(
         Student.session_id == session_id,
@@ -196,12 +196,12 @@ async def send_followup(session_id: int, db: Session = Depends(get_db), user: di
         outcome_url = f"{base_url}/outcome?sid={student.id}"
         text = (
             f"Namaste! 🙏\n\n"
-            f"It's been 6 months since {student.name} received their CareerDisha report.\n\n"
+            f"It's been 6 months since {student.name} received their CareerNeeti report.\n\n"
             f"We'd love to know — which stream did {student.name} choose? "
             f"Your response helps us improve guidance for thousands of students:\n"
             f"👉 {outcome_url}\n\n"
             f"Takes less than 1 minute. Thank you! 🌟\n"
-            f"— CareerDisha Team"
+            f"— CareerNeeti Team"
         )
         result = await send_text_message(student.parent_phone, text)
         if result["success"]:

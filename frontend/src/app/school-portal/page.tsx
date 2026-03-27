@@ -126,7 +126,7 @@ export default function SchoolPortalPage() {
           <div className="sa-card">
             <p className="text-xs font-medium text-on-surface-variant/50 uppercase tracking-wide mb-1">NPS Score</p>
             <p className="text-3xl font-heading font-bold text-on-surface">{analytics.nps !== null ? analytics.nps : "\u2014"}</p>
-            <p className="text-xs text-on-surface-variant/50 mt-1">Would recommend CareerDisha</p>
+            <p className="text-xs text-on-surface-variant/50 mt-1">Would recommend CareerNeeti</p>
           </div>
           <div className="sa-card">
             <p className="text-xs font-medium text-on-surface-variant/50 uppercase tracking-wide mb-1">Avg Rating</p>
