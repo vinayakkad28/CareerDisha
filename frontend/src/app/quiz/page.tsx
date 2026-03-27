@@ -93,8 +93,19 @@ export default function QuizPage() {
     setAnswers((prev) => ({ ...prev, [String(questionId)]: score }));
   };
 
+  const scrollToFirstUnanswered = () => {
+    if (!questions) return;
+    for (const q of questions) {
+      if (answers[String(q.id)] === undefined) {
+        const el = document.getElementById(`quiz-q-${q.id}`);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+    }
+  };
+
   const handleSubmit = async () => {
-    if (!allAnswered) return;
+    if (!allAnswered) { scrollToFirstUnanswered(); return; }
     setSubmitting(true);
     setError("");
     try {
@@ -433,11 +444,12 @@ export default function QuizPage() {
             return (
               <article
                 key={q.id}
+                id={`quiz-q-${q.id}`}
                 className={`p-8 rounded-lg transition-all duration-300 ${
                   isAnswered
                     ? "bg-white"
                     : idx === answeredCount
-                    ? "bg-white"
+                    ? "bg-white ring-2 ring-primary/30"
                     : "bg-surface-container-high/50 opacity-90"
                 }`}
               >
@@ -526,12 +538,12 @@ export default function QuizPage() {
             </div>
           </div>
           <button
-            onClick={handleSubmit}
-            disabled={!allAnswered || submitting}
+            onClick={allAnswered ? handleSubmit : scrollToFirstUnanswered}
+            disabled={submitting}
             className={`w-full md:w-auto px-8 py-4 rounded-lg font-heading font-bold text-sm tracking-wide whitespace-nowrap shadow-lg flex items-center justify-center gap-3 transition-all duration-200 ${
               allAnswered
                 ? "bg-primary text-white hover:brightness-110 cursor-pointer"
-                : "bg-primary opacity-50 cursor-not-allowed text-white"
+                : "bg-primary opacity-50 cursor-pointer text-white"
             }`}
           >
             {submitting ? (

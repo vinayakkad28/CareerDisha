@@ -278,8 +278,12 @@ export default function AssessmentPage() {
     }
   };
 
-  // Step 2 → save context (optional)
+  // Step 2 → save context (mandatory)
   const handleContextContinue = async () => {
+    if (!gender || !income || !location || !parentEdu) {
+      setError("Please answer all questions before continuing.");
+      return;
+    }
     setLoading(true);
     setError("");
     try {
@@ -298,11 +302,6 @@ export default function AssessmentPage() {
     }
     setStep(3);
     setLoading(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const handleContextSkip = () => {
-    setStep(3);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -617,14 +616,14 @@ export default function AssessmentPage() {
               Help us personalize your report
             </h3>
             <p className="text-on-surface-variant text-sm mb-5">
-              This information is optional but helps us give more relevant
+              This information helps us give you more relevant and personalized
               recommendations.
             </p>
 
             <div className="space-y-5">
               <div>
                 <label className="block text-sm font-heading font-semibold text-on-surface mb-2">
-                  Gender
+                  Gender <span className="text-red-500">*</span>
                 </label>
                 <OptionButtons
                   options={GENDER_OPTIONS}
@@ -635,7 +634,7 @@ export default function AssessmentPage() {
 
               <div>
                 <label className="block text-sm font-heading font-semibold text-on-surface mb-2">
-                  Family Income Bracket
+                  Family Income Bracket <span className="text-red-500">*</span>
                 </label>
                 <OptionButtons
                   options={INCOME_OPTIONS}
@@ -646,7 +645,7 @@ export default function AssessmentPage() {
 
               <div>
                 <label className="block text-sm font-heading font-semibold text-on-surface mb-2">
-                  Location
+                  Location <span className="text-red-500">*</span>
                 </label>
                 <OptionButtons
                   options={LOCATION_OPTIONS}
@@ -657,7 +656,7 @@ export default function AssessmentPage() {
 
               <div>
                 <label className="block text-sm font-heading font-semibold text-on-surface mb-2">
-                  Parental Education
+                  Parental Education <span className="text-red-500">*</span>
                 </label>
                 <OptionButtons
                   options={PARENT_EDU_OPTIONS}
@@ -740,15 +739,7 @@ export default function AssessmentPage() {
           </div>
 
           <ErrorBanner error={error} />
-          <PrimaryBtn loading={loading} onClick={handleContextContinue}>Continue</PrimaryBtn>
-          <div className="text-center">
-            <button
-              onClick={handleContextSkip}
-              className="btn-ghost text-sm"
-            >
-              Skip this step
-            </button>
-          </div>
+          <PrimaryBtn loading={loading} onClick={handleContextContinue} disabled={!gender || !income || !location || !parentEdu}>Continue</PrimaryBtn>
         </div>
       </div>
     );
@@ -932,7 +923,8 @@ export default function AssessmentPage() {
             {currentQ < totalQ - 1 ? (
               <button
                 onClick={() => setCurrentQ((c) => c + 1)}
-                className="btn-ghost flex-1 py-3"
+                disabled={!q || !answers[String(q.id)]}
+                className="btn-ghost flex-1 py-3 disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 Next
               </button>
