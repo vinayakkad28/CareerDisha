@@ -29,17 +29,6 @@ QUIZ_QUESTIONS = [
     {"id": 15, "text": "I enjoy caring for others and making them feel comfortable", "text_hi": "मुझे दूसरों की देखभाल करना पसंद है", "type": "S"},
 ]
 
-# Stream mapping based on dominant RIASEC types
-STREAM_MAP = {
-    "R": "Science (PCM)",
-    "I": "Science (PCM)",
-    "A": "Arts / Humanities",
-    "S": "Science (PCB) or Arts",
-    "E": "Commerce",
-    "C": "Commerce",
-}
-
-
 class QuizSubmission(BaseModel):
     answers: dict[str, int]  # {"1": 4, "2": 2, ...} question_id: score (1-5)
     student_name: str = ""
@@ -50,6 +39,119 @@ class QuizSubmission(BaseModel):
     utm_medium: str = ""
     utm_campaign: str = ""
 
+
+# ── Scoring helpers (shared with d2c.py) ──────────────────────
+
+def detect_straight_lining(answers: dict[str, int]) -> bool:
+    """Returns True if 85%+ of answers are the same value."""
+    from collections import Counter
+    values = list(answers.values())
+    if not values:
+        return True
+    counts = Counter(values)
+    return counts.most_common(1)[0][1] / len(values) > 0.85
+
+
+def is_flat_profile(riasec_pct: dict, threshold: float = 10.0) -> bool:
+    """Returns True if max - min RIASEC score < threshold."""
+    values = list(riasec_pct.values())
+    if not values:
+        return True
+    return (max(values) - min(values)) < threshold
+
+
+def determine_stream(sorted_types: list[tuple[str, float]]) -> str | None:
+    """Map RIASEC profile to Indian education stream. Returns None if unclear."""
+    if len(sorted_types) < 2:
+        return None
+    top1, top2 = sorted_types[0][0], sorted_types[1][0]
+
+    if top1 in ("I", "R") and top2 in ("I", "R"):
+        return "Science (PCM)"
+    if (top1 == "I" and top2 == "S") or (top1 == "S" and top2 == "I"):
+        return "Science (PCB)"
+    if top1 in ("E", "C") and top2 in ("E", "C"):
+        return "Commerce"
+    if top1 == "A":
+        return "Arts / Humanities"
+    if top1 == "S" and top2 == "A":
+        return "Arts / Humanities"
+    if top1 == "S" and top2 == "E":
+        return "Commerce"
+    if top1 == "E":
+        return "Commerce"
+    if top1 == "I":
+        return "Science (PCM)"
+    if top1 == "R":
+        return "Science (PCM)"
+    if top1 == "C":
+        return "Commerce"
+    if top1 == "S":
+        return "Arts / Humanities"
+    return None
+
+
+def calculate_recommendation(riasec_pct: dict, answers: dict[str, int]) -> dict:
+    """Single source of truth for stream, confidence, and message text."""
+    sorted_types = sorted(riasec_pct.items(), key=lambda x: -x[1])
+    gap = sorted_types[0][1] - sorted_types[1][1] if len(sorted_types) > 1 else 0
+
+    straight_lined = detect_straight_lining(answers)
+    flat = is_flat_profile(riasec_pct)
+
+    # Flat or straight-lined → no recommendation
+    if flat or straight_lined:
+        return {
+            "stream": None,
+            "confidence": "Insufficient",
+            "message": (
+                "Your responses show similar interest levels across all areas. "
+                "This usually happens when questions are answered the same way throughout. "
+                "For an accurate career profile, please retake the assessment \u2014 "
+                "answer each question based on what YOU genuinely enjoy, not what you think is the 'right' answer."
+            ),
+            "message_hi": (
+                "\u0906\u092a\u0915\u0947 \u0909\u0924\u094d\u0924\u0930 \u0938\u092d\u0940 \u0915\u094d\u0937\u0947\u0924\u094d\u0930\u094b\u0902 \u092e\u0947\u0902 \u0938\u092e\u093e\u0928 \u0930\u0941\u091a\u093f \u0926\u093f\u0916\u093e\u0924\u0947 \u0939\u0948\u0902\u0964 "
+                "\u0938\u091f\u0940\u0915 \u092a\u0930\u093f\u0923\u093e\u092e \u0915\u0947 \u0932\u093f\u090f, \u0915\u0943\u092a\u092f\u093e \u092a\u094d\u0930\u0924\u094d\u092f\u0947\u0915 \u092a\u094d\u0930\u0936\u094d\u0928 \u0915\u093e \u0909\u0924\u094d\u0924\u0930 \u0905\u092a\u0928\u0940 \u0935\u093e\u0938\u094d\u0924\u0935\u093f\u0915 \u092a\u0938\u0902\u0926 \u0915\u0947 \u0905\u0928\u0941\u0938\u093e\u0930 \u0926\u0947\u0902\u0964"
+            ),
+            "is_flat": True,
+        }
+
+    stream = determine_stream(sorted_types)
+
+    if stream is None or gap < 5:
+        return {
+            "stream": None,
+            "confidence": "Insufficient",
+            "message": (
+                "Your interest profile doesn\u2019t clearly point to one stream over another. "
+                "This is common and means you have diverse interests. "
+                "A detailed assessment with a counsellor can help narrow this down."
+            ),
+            "message_hi": "",
+            "is_flat": False,
+        }
+
+    if gap >= 20:
+        confidence = "High"
+        message = f"Based on your interest profile, {stream} is a strong match. Your interests clearly align with this direction."
+    elif gap >= 10:
+        confidence = "Moderate"
+        message = f"Based on your interests, {stream} appears to be a good fit. Consider exploring this stream while keeping other options open."
+    else:
+        confidence = "Low"
+        message = f"Your interests suggest {stream} may be worth exploring, but your profile shows broad interests. We recommend discussing with a counsellor before deciding."
+
+    return {
+        "stream": stream,
+        "confidence": confidence,
+        "message": message,
+        "message_hi": "",
+        "is_flat": False,
+    }
+
+
+# ── Endpoints ──────────────────────────────────────────────────
 
 @router.get("/questions")
 def get_quiz_questions():
@@ -83,16 +185,9 @@ def submit_quiz(submission: QuizSubmission):
     # Determine top 3 types (Holland code)
     sorted_types = sorted(riasec_pct.items(), key=lambda x: -x[1])
     holland_code = "".join(t for t, _ in sorted_types[:3])
-    primary = sorted_types[0][0]
 
-    # Stream recommendation
-    stream = STREAM_MAP.get(primary, "Explore all options")
-
-    # Confidence
-    top_score = sorted_types[0][1]
-    second_score = sorted_types[1][1] if len(sorted_types) > 1 else 0
-    gap = top_score - second_score
-    confidence = "High" if gap > 15 else "Medium" if gap > 5 else "Low — interests are broad"
+    # Stream recommendation with flat/straight-line detection
+    rec = calculate_recommendation(riasec_pct, submission.answers)
 
     # Save Lead record
     lead_id = None
@@ -104,7 +199,7 @@ def submit_quiz(submission: QuizSubmission):
             email=submission.email,
             class_level=submission.class_level,
             holland_code=holland_code,
-            recommended_stream=stream,
+            recommended_stream=rec["stream"] or "Undetermined",
             riasec_scores=riasec_pct,
             source="free_quiz",
             utm_source=submission.utm_source,
@@ -122,11 +217,13 @@ def submit_quiz(submission: QuizSubmission):
     return {
         "holland_code": holland_code,
         "riasec_scores": riasec_pct,
-        "recommended_stream": stream,
-        "confidence": confidence,
-        "primary_type": primary,
+        "recommended_stream": rec["stream"],
+        "confidence": rec["confidence"],
+        "primary_type": sorted_types[0][0] if sorted_types else "",
         "lead_id": lead_id,
-        "message": f"Based on your interests, {stream} appears to be a strong fit. For a detailed analysis with career recommendations, college suggestions, and a personalized action plan, take the full CareerNeeti assessment at your school.",
-        "cta": "Get Your Full Career Report — ₹500 only",
+        "message": rec["message"],
+        "message_hi": rec.get("message_hi", ""),
+        "is_flat": rec["is_flat"],
+        "cta": "Get Your Full Career Report \u2014 \u20b9500 only",
         "cta_url": "https://www.careerneeti.in",
     }

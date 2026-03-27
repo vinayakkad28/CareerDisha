@@ -41,10 +41,12 @@ interface Question {
 interface QuizResult {
   holland_code: string;
   riasec_scores: Record<string, number>;
-  recommended_stream: string;
+  recommended_stream: string | null;
   confidence: string;
   primary_type: string;
   message: string;
+  message_hi?: string;
+  is_flat?: boolean;
   cta: string;
   cta_url: string;
   lead_id?: string;
@@ -196,7 +198,7 @@ export default function QuizPage() {
                 Primary Holland Code
               </h3>
               <div className="flex gap-4 mb-6">
-                {result.holland_code.split("").map((letter, i) => (
+                {result.holland_code.split("").map((letter: string, i: number) => (
                   <div
                     key={i}
                     className="w-20 h-20 flex items-center justify-center rounded-lg shadow-inner"
@@ -210,46 +212,78 @@ export default function QuizPage() {
                 <p className="text-xl font-bold text-primary font-heading">
                   {result.holland_code
                     .split("")
-                    .map((l) => RIASEC_LABELS[l] || l)
+                    .map((l: string) => RIASEC_LABELS[l] || l)
                     .join(" / ")}
-                </p>
-                <p className="text-sm text-on-surface-variant mt-2 font-medium">
-                  {result.message}
                 </p>
               </div>
             </div>
 
-            {/* Stream Recommendation Card */}
-            <div className="bg-white p-8 rounded shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-2 h-full bg-primary" />
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <h3 className="text-xs font-bold uppercase tracking-widest text-outline mb-1">
-                    Recommended Stream
-                  </h3>
-                  <h2 className="text-3xl font-extrabold text-primary font-heading">
-                    {result.recommended_stream}
-                  </h2>
+            {/* Stream Recommendation OR Flat Profile Warning */}
+            {result.recommended_stream ? (
+              <div className="bg-white p-8 rounded shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-2 h-full bg-primary" />
+                <div className="flex justify-between items-start mb-6">
+                  <div>
+                    <h3 className="text-xs font-bold uppercase tracking-widest text-outline mb-1">
+                      Recommended Stream
+                    </h3>
+                    <h2 className="text-3xl font-extrabold text-primary font-heading">
+                      {result.recommended_stream}
+                    </h2>
+                  </div>
+                  <span
+                    className={`text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 ${
+                      result.confidence === "High"
+                        ? "bg-accent-50 text-accent-600 border border-accent/20"
+                        : result.confidence === "Moderate"
+                        ? "bg-secondary-50 text-secondary-600 border border-secondary/20"
+                        : "bg-surface-container-high text-on-surface-variant border border-outline-variant"
+                    }`}
+                  >
+                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                    </svg>
+                    {result.confidence} Confidence
+                  </span>
                 </div>
-                <span
-                  className={`text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 ${
-                    result.confidence === "High"
-                      ? "bg-accent-50 text-accent-600 border border-accent/20"
-                      : result.confidence === "Medium"
-                      ? "bg-secondary-50 text-secondary-600 border border-secondary/20"
-                      : "bg-surface-container-high text-on-surface-variant border border-outline-variant"
-                  }`}
-                >
-                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
-                  </svg>
-                  {result.confidence} Confidence
-                </span>
+                <p className="text-on-surface-variant leading-relaxed mb-6">
+                  {result.message}
+                </p>
               </div>
-              <p className="text-on-surface-variant leading-relaxed mb-6">
-                {result.message}
-              </p>
-            </div>
+            ) : (
+              <div className="bg-amber-50 border-2 border-amber-300 p-8 rounded-xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-2 h-full bg-amber-400" />
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+                    <svg className="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-amber-900 font-heading mb-1">
+                      Unable to Determine Stream
+                    </h3>
+                    <span className="text-xs font-bold px-3 py-1 rounded-full bg-amber-200 text-amber-800">
+                      Insufficient Data
+                    </span>
+                  </div>
+                </div>
+                <p className="text-amber-900 leading-relaxed mb-4">
+                  {result.message}
+                </p>
+                {result.message_hi && (
+                  <p className="text-amber-800/70 text-sm leading-relaxed mb-6 italic">
+                    {result.message_hi}
+                  </p>
+                )}
+                <button
+                  onClick={handleRetake}
+                  className="w-full py-4 px-6 rounded-lg bg-primary text-white font-heading font-bold text-sm shadow-lg hover:brightness-110 transition-all"
+                >
+                  Retake Assessment
+                </button>
+              </div>
+            )}
 
             {/* RIASEC Bar Chart Card */}
             <div className="bg-white p-8 rounded shadow-sm">
@@ -260,7 +294,8 @@ export default function QuizPage() {
               <RiasecBarChart scores={result.riasec_scores} />
             </div>
 
-            {/* Upgrade CTA Card */}
+            {/* Upgrade CTA Card — only show for valid profiles */}
+            {result.recommended_stream && (
             <div className="bg-brand-gradient p-1 rounded-xl shadow-xl">
               <div className="bg-primary/40 p-8 rounded-lg border-2 border-secondary/30 backdrop-blur-sm">
                 <div className="flex flex-col md:flex-row gap-8 items-center">
@@ -305,6 +340,7 @@ export default function QuizPage() {
                 </div>
               </div>
             </div>
+            )}
 
             {/* Phone capture for results */}
             {!showPhoneCapture && !phoneSaved && (

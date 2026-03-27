@@ -8,6 +8,7 @@ from typing import Optional
 from database import get_db, SessionLocal
 from models import Lead, D2CAssessment, Student, School, Session
 from engines.scoring_engine import calculate_riasec_scores, determine_holland_code, match_careers, load_knowledge_base
+from routers.quiz import determine_stream, is_flat_profile, detect_straight_lining
 from rate_limit import limiter
 
 logger = logging.getLogger(__name__)
@@ -307,12 +308,21 @@ def submit_assessment(request: Request, token: str, body: SubmitRequest):
 
         db.commit()
 
-        # Stream recommendation from primary Holland type
-        primary = holland_code[0] if holland_code else ""
-        stream_map = {"R": "Science (PCM)", "I": "Science (PCM)", "A": "Arts/Humanities",
-                      "S": "Science (PCB)", "E": "Commerce", "C": "Commerce"}
-        recommended_stream = stream_map.get(primary, "Explore all options")
+        # Stream recommendation with flat profile detection
+        sorted_types = sorted(riasec_scores.items(), key=lambda x: -x[1])
+        flat = is_flat_profile(riasec_scores)
+        straight = detect_straight_lining(body.answers)
         career_teasers = [{"name": m.get("career_name", ""), "match_type": m.get("match_type", "")} for m in matched[:3]]
+
+        if flat or straight:
+            recommended_stream = None
+            confidence = "Insufficient"
+        else:
+            recommended_stream = determine_stream(sorted_types)
+            gap = sorted_types[0][1] - sorted_types[1][1] if len(sorted_types) > 1 else 0
+            confidence = "High" if gap >= 20 else "Moderate" if gap >= 10 else "Low" if gap >= 5 else "Insufficient"
+            if confidence == "Insufficient":
+                recommended_stream = None
 
         logger.info(f"D2C assessment {token}: scored for {body.student_name} (Class {body.class_level}, Holland: {holland_code})")
         return {
@@ -321,8 +331,9 @@ def submit_assessment(request: Request, token: str, body: SubmitRequest):
             "holland_code": holland_code,
             "riasec_scores": riasec_scores,
             "recommended_stream": recommended_stream,
-            "confidence": "high",
+            "confidence": confidence,
             "career_teasers": career_teasers,
+            "is_flat": flat or straight,
         }
     finally:
         db.close()
