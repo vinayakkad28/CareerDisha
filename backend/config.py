@@ -124,9 +124,18 @@ LIKERT_MAP = {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
 STREAMS = ["Science (PCM)", "Science (PCB)", "Commerce", "Arts/Humanities"]
 STREAM_DIMENSION_WEIGHTS = {
     "interest": 0.25,
-    "academic": 0.30,
-    "aptitude": 0.25,
-    "feasibility": 0.20,
+    "academic": 0.25,
+    "aptitude": 0.20,
+    "personality": 0.15,
+    "feasibility": 0.15,
+}
+
+# Career Readiness thresholds
+CAREER_READINESS_THRESHOLDS = {
+    "decision_ready": 75,
+    "exploring": 50,
+    "early_stage": 25,
+    "undecided": 0,
 }
 
 # Brand colors

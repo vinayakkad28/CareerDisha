@@ -170,6 +170,31 @@ def build_user_prompt(student: Student, matched_career_details: list) -> str:
         family_section = "\n\nFAMILY CONTEXT:\n" + "\n".join(family_parts)
         family_section += "\nADAPT recommendations considering family constraints. If coaching is not affordable, recommend free alternatives (YouTube channels, NPTEL, government coaching schemes). If mobility is limited, emphasize local opportunities and remote work careers."
 
+    # Big Five personality section
+    bf_section = ""
+    bf = student.big_five_scores if hasattr(student, 'big_five_scores') and student.big_five_scores else None
+    if bf:
+        trait_names = {"O": "Openness", "C": "Conscientiousness", "E": "Extraversion", "A": "Agreeableness", "N": "Neuroticism"}
+        bf_parts = [f"- {trait_names.get(k, k)}: {v}%" for k, v in bf.items()]
+        bf_section = "\n\nPERSONALITY PROFILE (TIPI — broad tendencies, not precise measurements):\n" + "\n".join(bf_parts)
+        if bf.get("N", 0) > 70:
+            bf_section += f"\nNOTE: Elevated anxiety tendency ({bf['N']}%). Common in board exam culture — not pathological. Recommend confidence-building and stress management support."
+        bf_section += "\nUse personality data to enrich the personality portrait. High O supports creative careers; high C supports structured careers; high E supports people-facing roles. Do NOT use personality as primary stream signal."
+
+    # Career readiness section
+    cr_section = ""
+    cr_score = student.career_readiness_score if hasattr(student, 'career_readiness_score') and student.career_readiness_score is not None else None
+    cr_level = student.career_readiness_level if hasattr(student, 'career_readiness_level') and student.career_readiness_level else ""
+    if cr_score is not None:
+        level_labels = {"decision_ready": "Decision Ready", "exploring": "Exploring", "early_stage": "Early Stage", "undecided": "Undecided"}
+        cr_section = f"\n\nCAREER READINESS: {cr_score}% ({level_labels.get(cr_level, cr_level)})"
+        if cr_level in ("early_stage", "undecided"):
+            cr_section += "\nStudent has not yet seriously explored career options. Use exploratory, encouraging framing regardless of class level. Emphasize that it is normal and okay to be unsure at this stage."
+        elif cr_level == "exploring":
+            cr_section += "\nStudent is actively thinking about careers but not yet decided. Use 'good fit worth exploring' framing rather than definitive 'choose this' language."
+        else:
+            cr_section += "\nStudent is ready to commit to a stream. Use confident, actionable recommendation framing."
+
     # Build career details section
     career_json = json.dumps(matched_career_details[:5], indent=2, ensure_ascii=False)
 
@@ -180,7 +205,7 @@ def build_user_prompt(student: Student, matched_career_details: list) -> str:
 - City: {city_line}
 - RIASEC Scores: R={scores.get('R', 0)}%, I={scores.get('I', 0)}%, A={scores.get('A', 0)}%, S={scores.get('S', 0)}%, E={scores.get('E', 0)}%, C={scores.get('C', 0)}%
 - Holland Code: {student.holland_code}
-- Top Work Values: {top_values_str}{stream_pref_section}{academic_section}{context_section}{se_section}{apt_section}{family_section}
+- Top Work Values: {top_values_str}{stream_pref_section}{academic_section}{context_section}{se_section}{apt_section}{family_section}{bf_section}{cr_section}
 
 MATCHED CAREERS FROM DATABASE (use ONLY these facts for career details):
 {career_json}

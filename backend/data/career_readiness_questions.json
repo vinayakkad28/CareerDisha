@@ -1,0 +1,13 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "total_questions": 5
+  },
+  "items": [
+    {"id": "CR1", "text": "I have thought seriously about what career I want after Class 12", "text_hi": "मैंने 12वीं के बाद अपने करियर के बारे में गंभीरता से सोचा है"},
+    {"id": "CR2", "text": "I know which subjects or stream I need for my career of interest", "text_hi": "मुझे पता है कि मेरे रुचि के करियर के लिए कौन-से विषय चाहिए"},
+    {"id": "CR3", "text": "I have spoken with a teacher, parent, or counsellor about my career options", "text_hi": "मैंने अपने करियर के विकल्पों के बारे में शिक्षक, माता-पिता या काउंसलर से बात की है"},
+    {"id": "CR4", "text": "I feel confident that I can choose the right stream for my future", "text_hi": "मुझे विश्वास है कि मैं अपने भविष्य के लिए सही स्ट्रीम चुन सकता/सकती हूँ"},
+    {"id": "CR5", "text": "I have researched career options on my own (internet, books, or videos)", "text_hi": "मैंने खुद करियर विकल्पों के बारे में जानकारी ली है (इंटरनेट, किताबें या वीडियो)"}
+  ]
+}

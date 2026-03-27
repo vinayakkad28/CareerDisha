@@ -243,6 +243,64 @@ def save_aptitude(token: str, body: AptitudeSubmitRequest):
         db.close()
 
 
+class TIPIRequest(BaseModel):
+    responses: dict = {}  # {"BF1": "D", "BF2": "B", ...}
+
+
+class CareerReadinessRequest(BaseModel):
+    responses: dict = {}  # {"CR1": "D", "CR2": "B", ...}
+
+
+@router.get("/tipi-questions")
+def get_tipi_questions():
+    """Return 10 TIPI items (without scoring metadata)."""
+    from engines.tipi_scorer import get_tipi_for_api
+    return get_tipi_for_api()
+
+
+@router.post("/tipi/{token}")
+def save_tipi(token: str, body: TIPIRequest):
+    """Score and save TIPI (Big Five personality) responses."""
+    from engines.tipi_scorer import score_tipi
+    db = SessionLocal()
+    try:
+        assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
+        if not assessment:
+            raise HTTPException(status_code=404, detail="Assessment not found")
+        assessment.tipi_raw_responses = body.responses
+        assessment.big_five_scores = score_tipi(body.responses)
+        db.commit()
+        return {"status": "saved", "scores": assessment.big_five_scores}
+    finally:
+        db.close()
+
+
+@router.get("/career-readiness-questions")
+def get_career_readiness_questions():
+    """Return 5 career readiness items."""
+    from engines.career_readiness_scorer import get_career_readiness_for_api
+    return get_career_readiness_for_api()
+
+
+@router.post("/career-readiness/{token}")
+def save_career_readiness(token: str, body: CareerReadinessRequest):
+    """Score and save career readiness responses."""
+    from engines.career_readiness_scorer import score_career_readiness
+    db = SessionLocal()
+    try:
+        assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
+        if not assessment:
+            raise HTTPException(status_code=404, detail="Assessment not found")
+        cr_score, cr_level = score_career_readiness(body.responses)
+        assessment.career_readiness_responses = body.responses
+        assessment.career_readiness_score = cr_score
+        assessment.career_readiness_level = cr_level
+        db.commit()
+        return {"status": "saved", "score": cr_score, "level": cr_level}
+    finally:
+        db.close()
+
+
 @router.post("/submit/{token}")
 @limiter.limit("10/minute")
 def submit_assessment(request: Request, token: str, body: SubmitRequest):
@@ -374,13 +432,24 @@ def submit_assessment(request: Request, token: str, body: SubmitRequest):
         }
         feasibility_fit = calculate_family_feasibility(family_context)
 
+        # Personality (TIPI Big Five)
+        from engines.tipi_scorer import calculate_tipi_stream_fit, get_neuroticism_warning
+        personality_fit = calculate_tipi_stream_fit(assessment.big_five_scores)
+
         rec = recommend_stream(
             riasec_scores=riasec_scores,
             academic_fit=academic_fit,
             aptitude_fit=aptitude_fit,
+            personality_fit=personality_fit,
             feasibility_fit=feasibility_fit,
             self_efficacy=body.self_efficacy,
+            career_readiness_score=assessment.career_readiness_score,
         )
+
+        # Add neuroticism warning if applicable
+        n_warning = get_neuroticism_warning(assessment.big_five_scores)
+        if n_warning:
+            rec["warnings"].append(n_warning)
 
         career_teasers = [{"name": m.get("career_name", ""), "match_type": m.get("match_type", "")} for m in matched[:3]]
 

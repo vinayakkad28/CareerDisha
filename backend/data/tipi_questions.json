@@ -1,0 +1,21 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "instrument": "Ten-Item Personality Inventory (TIPI)",
+    "note": "TIPI reliability is lower than full NEO PI — present scores as broad tendencies, not precise measurements."
+  },
+  "preamble": "I see myself as someone who is...",
+  "preamble_hi": "मैं अपने आप को ऐसा व्यक्ति मानता/मानती हूँ जो...",
+  "items": [
+    {"id": "BF1",  "text": "Extraverted, enthusiastic",          "text_hi": "बहिर्मुखी, उत्साही",           "trait": "E", "reverse": false},
+    {"id": "BF2",  "text": "Critical, quarrelsome",              "text_hi": "आलोचनात्मक, झगड़ालू",          "trait": "A", "reverse": true},
+    {"id": "BF3",  "text": "Dependable, self-disciplined",       "text_hi": "विश्वसनीय, अनुशासित",           "trait": "C", "reverse": false},
+    {"id": "BF4",  "text": "Anxious, easily upset",              "text_hi": "चिंतित, जल्दी परेशान हो जाने वाला", "trait": "N", "reverse": false},
+    {"id": "BF5",  "text": "Open to new experiences, creative",  "text_hi": "नए अनुभवों के लिए खुला, रचनात्मक", "trait": "O", "reverse": false},
+    {"id": "BF6",  "text": "Reserved, quiet",                    "text_hi": "शांत, अंतर्मुखी",              "trait": "E", "reverse": true},
+    {"id": "BF7",  "text": "Sympathetic, warm",                  "text_hi": "सहानुभूतिशील, स्नेही",          "trait": "A", "reverse": false},
+    {"id": "BF8",  "text": "Disorganized, careless",             "text_hi": "अव्यवस्थित, लापरवाह",           "trait": "C", "reverse": true},
+    {"id": "BF9",  "text": "Calm, emotionally stable",           "text_hi": "शांत, भावनात्मक रूप से स्थिर",    "trait": "N", "reverse": true},
+    {"id": "BF10", "text": "Conventional, uncreative",           "text_hi": "पारंपरिक, रचनात्मकता की कमी",    "trait": "O", "reverse": true}
+  ]
+}

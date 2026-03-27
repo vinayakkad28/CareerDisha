@@ -38,23 +38,28 @@ def recommend_stream(
     riasec_scores: dict,
     academic_fit: dict[str, float] | None = None,
     aptitude_fit: dict[str, float] | None = None,
+    personality_fit: dict[str, float] | None = None,
     feasibility_fit: dict[str, float] | None = None,
     self_efficacy: dict | None = None,
+    career_readiness_score: int | None = None,
 ) -> dict:
-    """Multi-dimensional stream recommendation.
+    """Multi-dimensional stream recommendation (up to 5 dimensions).
 
     Args:
         riasec_scores: dict with keys R,I,A,S,E,C (0-100 each)
         academic_fit: per-stream academic fitness from academic_scorer (optional)
         aptitude_fit: per-stream aptitude fitness from aptitude_scorer (optional)
+        personality_fit: per-stream personality fit from tipi_scorer (optional)
         feasibility_fit: per-stream feasibility from family_scorer (optional)
         self_efficacy: raw SE scores for mismatch detection (optional)
+        career_readiness_score: 0-100, caps confidence if low (optional)
 
     Returns dict with:
         recommended_stream: str | None
         confidence: "High" | "Moderate" | "Low" | "Insufficient"
+        career_readiness_level: str
         all_streams: list of per-stream breakdowns (sorted by total desc)
-        dimension_count: how many dimensions had data (1-4)
+        dimension_count: how many dimensions had data (1-5)
         dimension_agreement: how many dimensions agree on top stream
         explanation: human-readable message
         warnings: list of cross-dimensional mismatch warnings
@@ -76,6 +81,8 @@ def recommend_stream(
         dimensions["academic"] = academic_fit
     if aptitude_fit is not None:
         dimensions["aptitude"] = aptitude_fit
+    if personality_fit is not None:
+        dimensions["personality"] = personality_fit
     if feasibility_fit is not None:
         dimensions["feasibility"] = feasibility_fit
 
@@ -84,8 +91,21 @@ def recommend_stream(
         "interest": True,
         "academic": academic_fit is not None,
         "aptitude": aptitude_fit is not None,
+        "personality": personality_fit is not None,
         "feasibility": feasibility_fit is not None,
     }
+
+    # Career readiness level
+    cr_level = ""
+    if career_readiness_score is not None:
+        if career_readiness_score >= 75:
+            cr_level = "decision_ready"
+        elif career_readiness_score >= 50:
+            cr_level = "exploring"
+        elif career_readiness_score >= 25:
+            cr_level = "early_stage"
+        else:
+            cr_level = "undecided"
 
     # Redistribute weights proportionally among available dimensions
     available_weights = {k: STREAM_DIMENSION_WEIGHTS[k] for k in dimensions}
@@ -96,12 +116,10 @@ def recommend_stream(
     stream_scores = []
     for stream in streams:
         total = 0.0
-        breakdown = {}
         for dim_name, dim_scores in dimensions.items():
             score = dim_scores.get(stream, 50.0)
             weight = normalized_weights[dim_name]
             total += score * weight
-            breakdown[dim_name] = round(score, 1)
 
         stream_scores.append({
             "stream": stream,
@@ -109,6 +127,7 @@ def recommend_stream(
             "interest_score": round(interest_scores.get(stream, 0), 1),
             "academic_score": round(academic_fit[stream], 1) if academic_fit and stream in academic_fit else None,
             "aptitude_score": round(aptitude_fit[stream], 1) if aptitude_fit and stream in aptitude_fit else None,
+            "personality_score": round(personality_fit[stream], 1) if personality_fit and stream in personality_fit else None,
             "feasibility_score": round(feasibility_fit[stream], 1) if feasibility_fit and stream in feasibility_fit else None,
             "flags": [],
         })
@@ -146,6 +165,11 @@ def recommend_stream(
         else:
             confidence = "Insufficient"
 
+    # Career readiness caps confidence
+    if career_readiness_score is not None and career_readiness_score < 40:
+        if confidence == "High":
+            confidence = "Moderate"
+
     if confidence == "Insufficient":
         top_stream_result = None
     else:
@@ -166,6 +190,7 @@ def recommend_stream(
     return {
         "recommended_stream": top_stream_result,
         "confidence": confidence,
+        "career_readiness_level": cr_level,
         "all_streams": stream_scores,
         "dimension_count": dimension_count,
         "dimension_agreement": dimension_agreement,
@@ -182,10 +207,11 @@ def _flat_result(streams: list[str]) -> dict:
     return {
         "recommended_stream": None,
         "confidence": "Insufficient",
+        "career_readiness_level": "",
         "all_streams": [
             {"stream": s, "total_score": 50.0, "interest_score": 50.0,
              "academic_score": None, "aptitude_score": None,
-             "feasibility_score": None, "flags": []}
+             "personality_score": None, "feasibility_score": None, "flags": []}
             for s in streams
         ],
         "dimension_count": 0,
@@ -197,7 +223,7 @@ def _flat_result(streams: list[str]) -> dict:
             "answer each question based on what YOU genuinely enjoy."
         ),
         "warnings": [],
-        "data_completeness": {"interest": False, "academic": False, "aptitude": False, "feasibility": False},
+        "data_completeness": {"interest": False, "academic": False, "aptitude": False, "personality": False, "feasibility": False},
     }
 
 

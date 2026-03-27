@@ -101,6 +101,15 @@ class Student(Base):
     aptitude_scores = Column(JSON, nullable=True)          # {"numerical": 80, "verbal": 60, "spatial": 70, "total": 70}
     aptitude_time_taken = Column(Integer, nullable=True)   # seconds
 
+    # Big Five TIPI (Section E)
+    tipi_raw_responses = Column(JSON, nullable=True)   # {"BF1": "D", "BF2": "B", ...}
+    big_five_scores = Column(JSON, nullable=True)       # {"O": 72, "C": 85, "E": 60, "A": 55, "N": 30}
+
+    # Career Readiness (Section F)
+    career_readiness_responses = Column(JSON, nullable=True)  # {"CR1": "D", ...}
+    career_readiness_score = Column(Integer, nullable=True)    # 0-100
+    career_readiness_level = Column(String(20), default="")    # "decision_ready", "exploring", etc.
+
     # Section D: Class 10 stream preference (from OMR form)
     stream_pref_parent = Column(String(50), default="")
     stream_pref_student = Column(String(50), default="")
@@ -212,6 +221,11 @@ class D2CAssessment(Base):
     aptitude_raw_responses = Column(JSON, nullable=True)
     aptitude_scores = Column(JSON, nullable=True)
     aptitude_time_taken = Column(Integer, nullable=True)
+    tipi_raw_responses = Column(JSON, nullable=True)
+    big_five_scores = Column(JSON, nullable=True)
+    career_readiness_responses = Column(JSON, nullable=True)
+    career_readiness_score = Column(Integer, nullable=True)
+    career_readiness_level = Column(String(20), default="")
     report_email_sent = Column(Boolean, default=False)
     report_whatsapp_sent = Column(Boolean, default=False)
     pdf_url = Column(String(500), default="")

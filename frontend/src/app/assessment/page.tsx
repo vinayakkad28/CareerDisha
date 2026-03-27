@@ -216,26 +216,36 @@ export default function AssessmentPage() {
   // Step 4: Self-Efficacy
   const [selfEfficacy, setSelfEfficacy] = useState<Record<string, number>>({});
 
-  // Step 5: Aptitude
+  // Step 5: TIPI (Big Five)
+  const [tipiItems, setTipiItems] = useState<{id: string; text: string; text_hi?: string}[]>([]);
+  const [tipiAnswers, setTipiAnswers] = useState<Record<string, number>>({});
+  const [tipiCurrentQ, setTipiCurrentQ] = useState(0);
+
+  // Step 6: Career Readiness
+  const [crItems, setCrItems] = useState<{id: string; text: string; text_hi?: string}[]>([]);
+  const [crAnswers, setCrAnswers] = useState<Record<string, number>>({});
+  const [crCurrentQ, setCrCurrentQ] = useState(0);
+
+  // Step 7: Aptitude
   const [aptQuestions, setAptQuestions] = useState<{id: string; text: string; text_hi?: string; options: Record<string, string>; category: string}[]>([]);
   const [aptAnswers, setAptAnswers] = useState<Record<string, string>>({});
   const [aptCurrentQ, setAptCurrentQ] = useState(0);
   const [aptTimeLeft, setAptTimeLeft] = useState(600);
   const aptTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Step 6: RIASEC Questions
+  // Step 8: RIASEC Questions
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [currentQ, setCurrentQ] = useState(0);
   const [questionsLoading, setQuestionsLoading] = useState(false);
 
-  // Step 7: Preview
+  // Step 9: Preview
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
 
-  // Step 8: Payment
+  // Step 10: Payment
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
 
-  // Step 9: Generating
+  // Step 11: Generating
   const [reportStatus, setReportStatus] = useState("");
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -332,7 +342,7 @@ export default function AssessmentPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Step 4 → save self-efficacy + load aptitude
+  // Step 4 → save self-efficacy + load TIPI
   const handleSelfEfficacyContinue = async () => {
     setLoading(true);
     setError("");
@@ -344,6 +354,45 @@ export default function AssessmentPage() {
       toast("Confidence ratings couldn't be saved, but your assessment will continue.", "warning");
     }
 
+    // Load TIPI questions
+    try {
+      const res = await fetch(`${API_BASE}/api/d2c/tipi-questions`);
+      if (res.ok) {
+        const data = await res.json();
+        setTipiItems(data.items || []);
+      }
+    } catch { /* non-critical */ }
+
+    setStep(5);
+    setLoading(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Step 5 → submit TIPI + load career readiness
+  const handleTipiSubmit = async () => {
+    try {
+      await apiPost(`/api/d2c/tipi/${token}`, { responses: tipiAnswers });
+    } catch { /* non-critical */ }
+
+    // Load career readiness questions
+    try {
+      const res = await fetch(`${API_BASE}/api/d2c/career-readiness-questions`);
+      if (res.ok) {
+        const data = await res.json();
+        setCrItems(data.items || []);
+      }
+    } catch { /* non-critical */ }
+
+    setStep(6);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Step 6 → submit career readiness + load aptitude
+  const handleCareerReadinessSubmit = async () => {
+    try {
+      await apiPost(`/api/d2c/career-readiness/${token}`, { responses: crAnswers });
+    } catch { /* non-critical */ }
+
     // Load aptitude questions
     try {
       const res = await fetch(`${API_BASE}/api/d2c/aptitude-questions`);
@@ -353,12 +402,11 @@ export default function AssessmentPage() {
       }
     } catch { /* aptitude is optional */ }
 
-    setStep(5);
-    setLoading(false);
+    setStep(7);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Step 5 → submit aptitude + load RIASEC
+  // Step 7 → submit aptitude + load RIASEC
   const handleAptitudeSubmit = async () => {
     if (aptTimerRef.current) clearInterval(aptTimerRef.current);
     try {
@@ -388,7 +436,7 @@ export default function AssessmentPage() {
       return;
     }
     setQuestionsLoading(false);
-    setStep(6);
+    setStep(8);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -406,13 +454,13 @@ export default function AssessmentPage() {
       return;
     }
     setQuestionsLoading(false);
-    setStep(6);
+    setStep(8);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Aptitude timer
   useEffect(() => {
-    if (step !== 5 || aptQuestions.length === 0) return;
+    if (step !== 7 || aptQuestions.length === 0) return;
     aptTimerRef.current = setInterval(() => {
       setAptTimeLeft((t) => {
         if (t <= 1) {
@@ -451,7 +499,7 @@ export default function AssessmentPage() {
         } : undefined,
       });
       setPreviewData(data);
-      setStep(7);
+      setStep(9);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setError("Submission failed. Please try again.");
@@ -460,14 +508,14 @@ export default function AssessmentPage() {
     }
   };
 
-  // Step 7 → create order
+  // Step 9 → create order
   const handleUnlockReport = async (tier: string) => {
     setLoading(true);
     setError("");
     try {
       const data = await apiPost(`/api/d2c/create-order/${token}`, { tier });
       setPaymentData(data);
-      setStep(8);
+      setStep(10);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setError("Could not create order. Please try again.");
@@ -511,7 +559,7 @@ export default function AssessmentPage() {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_signature: response.razorpay_signature,
               });
-              setStep(9);
+              setStep(11);
               window.scrollTo({ top: 0, behavior: "smooth" });
             } catch {
               setError("Payment verification failed. Please contact support.");
@@ -537,7 +585,7 @@ export default function AssessmentPage() {
         razorpay_order_id: paymentData?.order_id || "mock_order",
         razorpay_signature: "mock_signature",
       });
-      setStep(9);
+      setStep(11);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setError("Payment simulation failed. Please try again.");
@@ -546,16 +594,16 @@ export default function AssessmentPage() {
     }
   };
 
-  // Step 9 → poll status
+  // Step 11 → poll status
   useEffect(() => {
-    if (step !== 9) return;
+    if (step !== 11) return;
     const poll = async () => {
       try {
         const data = await apiGet(`/api/d2c/status/${token}`);
         setReportStatus(data.status);
         if (data.status === "report_ready") {
           if (pollRef.current) clearInterval(pollRef.current);
-          setStep(10);
+          setStep(12);
           window.scrollTo({ top: 0, behavior: "smooth" });
         }
       } catch {
@@ -571,25 +619,18 @@ export default function AssessmentPage() {
 
   /* ── progress % ─────────────────────────────────────────── */
   const progressPct =
-    step === 1
-      ? 0
-      : step === 2
-      ? 8
-      : step === 3
-      ? 15
-      : step === 4
-      ? 22
-      : step === 5
-      ? 30
-      : step === 6
-      ? 30 + (Object.keys(answers).length / Math.max(questions.length, 1)) * 50
-      : step === 7
-      ? 85
-      : step === 8
-      ? 90
-      : step === 9
-      ? 95
-      : 100;
+    step === 1 ? 0
+    : step === 2 ? 8
+    : step === 3 ? 14
+    : step === 4 ? 20
+    : step === 5 ? 26
+    : step === 6 ? 32
+    : step === 7 ? 38
+    : step === 8 ? 38 + (Object.keys(answers).length / Math.max(questions.length, 1)) * 45
+    : step === 9 ? 85
+    : step === 10 ? 90
+    : step === 11 ? 95
+    : 100;
 
   const totalQ = questions.length || 74;
   const answeredCount = Object.keys(answers).length;
@@ -961,9 +1002,153 @@ export default function AssessmentPage() {
   }
 
   /* ═══════════════════════════════════════════════════════════
-     STEP 5 — Aptitude Check (15 questions, 10 min timer)
+     STEP 5 — TIPI Big Five Personality (10 items)
      ═══════════════════════════════════════════════════════════ */
   if (step === 5) {
+    const tipiQ = tipiItems[tipiCurrentQ];
+    const tipiTotal = tipiItems.length;
+    const tipiAnsweredCount = Object.keys(tipiAnswers).length;
+    const allTipiAnswered = tipiAnsweredCount === tipiTotal && tipiTotal > 0;
+
+    if (!tipiItems.length) {
+      // TIPI didn't load — skip
+      handleTipiSubmit();
+      return null;
+    }
+
+    return (
+      <div className="min-h-screen bg-surface font-body">
+        <Header step={step} progressPct={progressPct} subtitle={`About You — ${tipiCurrentQ + 1} of ${tipiTotal}`} />
+        <div className="max-w-form-narrow mx-auto px-4 py-8">
+          <div className="sa-card mb-6">
+            <p className="text-sm text-on-surface-variant italic mb-4">I see myself as someone who is...</p>
+            {tipiQ && (
+              <>
+                <div className="flex items-start gap-3 mb-4">
+                  <span className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-sm font-heading font-bold shrink-0">
+                    {tipiCurrentQ + 1}
+                  </span>
+                  <div>
+                    <p className="text-base font-heading font-medium text-on-surface leading-relaxed">{tipiQ.text}</p>
+                    {tipiQ.text_hi && <p className="text-sm text-on-surface-variant/60 mt-1">{tipiQ.text_hi}</p>}
+                  </div>
+                </div>
+                <div className="mt-6 space-y-2">
+                  {SCALE_LABELS.map((label, i) => {
+                    const score = i + 1;
+                    const isSelected = tipiAnswers[tipiQ.id] === score;
+                    return (
+                      <button
+                        key={score}
+                        onClick={() => {
+                          setTipiAnswers((prev) => ({ ...prev, [tipiQ.id]: score }));
+                          setTimeout(() => {
+                            if (tipiCurrentQ < tipiTotal - 1) setTipiCurrentQ((c) => c + 1);
+                          }, 250);
+                        }}
+                        className={cls(
+                          "w-full py-3 px-4 rounded text-left text-sm font-medium transition-all",
+                          isSelected
+                            ? "btn-primary !w-full !py-3 !px-4 !text-left !text-sm"
+                            : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
+                        )}
+                      >
+                        <span className="inline-block w-6 font-heading">{score}.</span> {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+          </div>
+          <div className="flex gap-3">
+            <button onClick={() => setTipiCurrentQ((c) => Math.max(0, c - 1))} disabled={tipiCurrentQ === 0} className="btn-ghost flex-1 py-3 disabled:opacity-30 disabled:cursor-not-allowed">Previous</button>
+            {tipiCurrentQ < tipiTotal - 1 ? (
+              <button onClick={() => setTipiCurrentQ((c) => c + 1)} disabled={!tipiQ || !tipiAnswers[tipiQ.id]} className="btn-ghost flex-1 py-3 disabled:opacity-30 disabled:cursor-not-allowed">Next</button>
+            ) : (
+              <button onClick={handleTipiSubmit} disabled={!allTipiAnswered} className={cls("flex-1 py-3 rounded font-heading font-bold text-sm transition-all", allTipiAnswered ? "btn-gold" : "bg-surface-container-highest text-on-surface-variant disabled:opacity-40")}>Continue</button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     STEP 6 — Career Readiness (5 items)
+     ═══════════════════════════════════════════════════════════ */
+  if (step === 6) {
+    const crQ = crItems[crCurrentQ];
+    const crTotal = crItems.length;
+    const crAnsweredCount = Object.keys(crAnswers).length;
+    const allCrAnswered = crAnsweredCount === crTotal && crTotal > 0;
+
+    if (!crItems.length) {
+      handleCareerReadinessSubmit();
+      return null;
+    }
+
+    return (
+      <div className="min-h-screen bg-surface font-body">
+        <Header step={step} progressPct={progressPct} subtitle={`Career Readiness — ${crCurrentQ + 1} of ${crTotal}`} />
+        <div className="max-w-form-narrow mx-auto px-4 py-8">
+          <div className="sa-card mb-6">
+            {crQ && (
+              <>
+                <div className="flex items-start gap-3 mb-4">
+                  <span className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-sm font-heading font-bold shrink-0">
+                    {crCurrentQ + 1}
+                  </span>
+                  <div>
+                    <p className="text-base font-heading font-medium text-on-surface leading-relaxed">{crQ.text}</p>
+                    {crQ.text_hi && <p className="text-sm text-on-surface-variant/60 mt-1">{crQ.text_hi}</p>}
+                  </div>
+                </div>
+                <div className="mt-6 space-y-2">
+                  {SCALE_LABELS.map((label, i) => {
+                    const score = i + 1;
+                    const isSelected = crAnswers[crQ.id] === score;
+                    return (
+                      <button
+                        key={score}
+                        onClick={() => {
+                          setCrAnswers((prev) => ({ ...prev, [crQ.id]: score }));
+                          setTimeout(() => {
+                            if (crCurrentQ < crTotal - 1) setCrCurrentQ((c) => c + 1);
+                          }, 250);
+                        }}
+                        className={cls(
+                          "w-full py-3 px-4 rounded text-left text-sm font-medium transition-all",
+                          isSelected
+                            ? "btn-primary !w-full !py-3 !px-4 !text-left !text-sm"
+                            : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
+                        )}
+                      >
+                        <span className="inline-block w-6 font-heading">{score}.</span> {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+          </div>
+          <div className="flex gap-3">
+            <button onClick={() => setCrCurrentQ((c) => Math.max(0, c - 1))} disabled={crCurrentQ === 0} className="btn-ghost flex-1 py-3 disabled:opacity-30 disabled:cursor-not-allowed">Previous</button>
+            {crCurrentQ < crTotal - 1 ? (
+              <button onClick={() => setCrCurrentQ((c) => c + 1)} disabled={!crQ || !crAnswers[crQ.id]} className="btn-ghost flex-1 py-3 disabled:opacity-30 disabled:cursor-not-allowed">Next</button>
+            ) : (
+              <button onClick={handleCareerReadinessSubmit} disabled={!allCrAnswered} className={cls("flex-1 py-3 rounded font-heading font-bold text-sm transition-all", allCrAnswered ? "btn-gold" : "bg-surface-container-highest text-on-surface-variant disabled:opacity-40")}>Continue</button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     STEP 7 — Aptitude Check (15 questions, 10 min timer)
+     ═══════════════════════════════════════════════════════════ */
+  if (step === 7) {
     const aptQ = aptQuestions[aptCurrentQ];
     const aptTotal = aptQuestions.length;
     const aptAnsweredCount = Object.keys(aptAnswers).length;
@@ -1079,7 +1264,7 @@ export default function AssessmentPage() {
   /* ═══════════════════════════════════════════════════════════
      STEP 6 — RIASEC Assessment (74 questions, one at a time)
      ═══════════════════════════════════════════════════════════ */
-  if (step === 6) {
+  if (step === 8) {
     if (!questions || questions.length === 0) {
       return (
         <div className="min-h-screen bg-surface font-body">
@@ -1240,7 +1425,7 @@ export default function AssessmentPage() {
   /* ═══════════════════════════════════════════════════════════
      STEP 5 — Preview Results
      ═══════════════════════════════════════════════════════════ */
-  if (step === 7) {
+  if (step === 9) {
     const pd = previewData;
 
     const PRICING = [
@@ -1476,7 +1661,7 @@ export default function AssessmentPage() {
   /* ═══════════════════════════════════════════════════════════
      STEP 6 — Payment
      ═══════════════════════════════════════════════════════════ */
-  if (step === 8) {
+  if (step === 10) {
     const isMock = !paymentData?.razorpay_key;
 
     return (
@@ -1540,7 +1725,7 @@ export default function AssessmentPage() {
   /* ═══════════════════════════════════════════════════════════
      STEP 7 — Generating Report
      ═══════════════════════════════════════════════════════════ */
-  if (step === 9) {
+  if (step === 11) {
     return (
       <div className="min-h-screen bg-brand-gradient flex items-center justify-center font-body">
         <div className="text-center px-6 max-w-sm">
@@ -1601,7 +1786,7 @@ export default function AssessmentPage() {
   /* ═══════════════════════════════════════════════════════════
      STEP 8 — Report Ready
      ═══════════════════════════════════════════════════════════ */
-  if (step === 10) {
+  if (step === 12) {
     const pdfUrl = `${API_BASE}/api/d2c/pdf/${token}`;
     const webReportUrl = `${window.location.origin}/reports/${token}`;
     const shareText = encodeURIComponent(
