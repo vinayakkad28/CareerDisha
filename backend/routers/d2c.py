@@ -8,7 +8,6 @@ from typing import Optional
 from database import get_db, SessionLocal
 from models import Lead, D2CAssessment, Student, School, Session
 from engines.scoring_engine import calculate_riasec_scores, determine_holland_code, match_careers, load_knowledge_base
-from routers.quiz import determine_stream, is_flat_profile, detect_straight_lining
 from rate_limit import limiter
 
 logger = logging.getLogger(__name__)
@@ -67,6 +66,12 @@ class ContextRequest(BaseModel):
     math_marks: Optional[int] = None
     science_marks: Optional[int] = None
     english_marks: Optional[int] = None
+    social_studies_marks: Optional[int] = None
+    strongest_subject: Optional[str] = None
+    coaching_affordability: str = ""
+    mobility_willingness: str = ""
+    parent_primary_concern: str = ""
+    family_career_role_model: str = ""
 
 class SelfEfficacyRequest(BaseModel):
     scores: dict = {}
@@ -166,11 +171,25 @@ def save_context(token: str, body: ContextRequest):
         assessment.parental_education = body.parental_education
         assessment.first_gen_learner = body.first_gen_learner
         if body.math_marks is not None or body.science_marks is not None or body.english_marks is not None:
-            assessment.academic_marks = {
+            marks = {
                 "math": body.math_marks,
                 "science": body.science_marks,
                 "english": body.english_marks,
             }
+            if body.social_studies_marks is not None:
+                marks["social_studies"] = body.social_studies_marks
+            if body.strongest_subject:
+                marks["strongest_subject"] = body.strongest_subject
+            assessment.academic_marks = marks
+        # Family context fields
+        if body.coaching_affordability:
+            assessment.coaching_affordability = body.coaching_affordability
+        if body.mobility_willingness:
+            assessment.mobility_willingness = body.mobility_willingness
+        if body.parent_primary_concern:
+            assessment.parent_primary_concern = body.parent_primary_concern
+        if body.family_career_role_model:
+            assessment.family_career_role_model = body.family_career_role_model
         if assessment.status == "created":
             assessment.status = "info_collected"
         db.commit()
@@ -190,6 +209,36 @@ def save_self_efficacy(token: str, body: SelfEfficacyRequest):
         assessment.self_efficacy = body.scores
         db.commit()
         return {"status": "saved"}
+    finally:
+        db.close()
+
+
+class AptitudeSubmitRequest(BaseModel):
+    responses: dict = {}   # {"APT_N1": "B", "APT_V2": "A", ...}
+    time_taken: int = 0    # seconds
+
+
+@router.get("/aptitude-questions")
+def get_aptitude_questions():
+    """Return 15 aptitude questions (without correct answers)."""
+    from engines.aptitude_scorer import get_questions_for_api
+    return {"questions": get_questions_for_api(), "time_limit_seconds": 600}
+
+
+@router.post("/aptitude/{token}")
+def save_aptitude(token: str, body: AptitudeSubmitRequest):
+    """Save and score aptitude test responses."""
+    from engines.aptitude_scorer import score_aptitude
+    db = SessionLocal()
+    try:
+        assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
+        if not assessment:
+            raise HTTPException(status_code=404, detail="Assessment not found")
+        assessment.aptitude_raw_responses = body.responses
+        assessment.aptitude_time_taken = body.time_taken
+        assessment.aptitude_scores = score_aptitude(body.responses)
+        db.commit()
+        return {"status": "saved", "scores": assessment.aptitude_scores}
     finally:
         db.close()
 
@@ -308,32 +357,49 @@ def submit_assessment(request: Request, token: str, body: SubmitRequest):
 
         db.commit()
 
-        # Stream recommendation with flat profile detection
-        sorted_types = sorted(riasec_scores.items(), key=lambda x: -x[1])
-        flat = is_flat_profile(riasec_scores)
-        straight = detect_straight_lining(body.answers)
+        # Multi-dimensional stream recommendation
+        from engines.stream_recommender import recommend_stream
+        from engines.academic_scorer import calculate_academic_fit
+        from engines.family_scorer import calculate_family_feasibility
+        from engines.aptitude_scorer import calculate_aptitude_stream_fit
+
+        academic_fit = calculate_academic_fit(assessment.academic_marks or body.academic_marks)
+        aptitude_fit = calculate_aptitude_stream_fit(assessment.aptitude_scores)
+        family_context = {
+            "coaching_affordability": assessment.coaching_affordability or "",
+            "mobility_willingness": assessment.mobility_willingness or "",
+            "family_income": assessment.family_income or body.family_income,
+            "parent_primary_concern": assessment.parent_primary_concern or "",
+            "location_type": assessment.location_type or body.location_type,
+        }
+        feasibility_fit = calculate_family_feasibility(family_context)
+
+        rec = recommend_stream(
+            riasec_scores=riasec_scores,
+            academic_fit=academic_fit,
+            aptitude_fit=aptitude_fit,
+            feasibility_fit=feasibility_fit,
+            self_efficacy=body.self_efficacy,
+        )
+
         career_teasers = [{"name": m.get("career_name", ""), "match_type": m.get("match_type", "")} for m in matched[:3]]
 
-        if flat or straight:
-            recommended_stream = None
-            confidence = "Insufficient"
-        else:
-            recommended_stream = determine_stream(sorted_types)
-            gap = sorted_types[0][1] - sorted_types[1][1] if len(sorted_types) > 1 else 0
-            confidence = "High" if gap >= 20 else "Moderate" if gap >= 10 else "Low" if gap >= 5 else "Insufficient"
-            if confidence == "Insufficient":
-                recommended_stream = None
-
-        logger.info(f"D2C assessment {token}: scored for {body.student_name} (Class {body.class_level}, Holland: {holland_code})")
+        logger.info(f"D2C assessment {token}: scored for {body.student_name} (Class {body.class_level}, Holland: {holland_code}, confidence: {rec['confidence']})")
         return {
             "token": token,
             "status": "assessment_complete",
             "holland_code": holland_code,
             "riasec_scores": riasec_scores,
-            "recommended_stream": recommended_stream,
-            "confidence": confidence,
+            "recommended_stream": rec["recommended_stream"],
+            "confidence": rec["confidence"],
             "career_teasers": career_teasers,
-            "is_flat": flat or straight,
+            "is_flat": rec["recommended_stream"] is None,
+            "all_streams": rec["all_streams"],
+            "dimension_count": rec["dimension_count"],
+            "dimension_agreement": rec["dimension_agreement"],
+            "explanation": rec["explanation"],
+            "warnings": rec["warnings"],
+            "data_completeness": rec["data_completeness"],
         }
     finally:
         db.close()

@@ -90,6 +90,17 @@ class Student(Base):
     # Academic performance (optional — from student info CSV)
     academic_marks = Column(JSON, nullable=True)  # {"maths": 85, "science": 72, "english": 90, "overall_pct": 82}
 
+    # Family context (Phase 2)
+    coaching_affordability = Column(String(20), default="")   # "yes_easily", "yes_difficult", "no"
+    mobility_willingness = Column(String(20), default="")     # "yes", "maybe", "no"
+    parent_primary_concern = Column(String(30), default="")   # "job_security", "high_salary", "passion", "social_status"
+    family_career_role_model = Column(String(100), default="")
+
+    # Aptitude test (Phase 3)
+    aptitude_raw_responses = Column(JSON, nullable=True)  # {"APT_N1": "B", "APT_V2": "A", ...}
+    aptitude_scores = Column(JSON, nullable=True)          # {"numerical": 80, "verbal": 60, "spatial": 70, "total": 70}
+    aptitude_time_taken = Column(Integer, nullable=True)   # seconds
+
     # Section D: Class 10 stream preference (from OMR form)
     stream_pref_parent = Column(String(50), default="")
     stream_pref_student = Column(String(50), default="")
@@ -194,6 +205,13 @@ class D2CAssessment(Base):
     parental_education = Column(String(20), default="")
     first_gen_learner = Column(Boolean, nullable=True)
     academic_marks = Column(JSON, nullable=True)
+    coaching_affordability = Column(String(20), default="")
+    mobility_willingness = Column(String(20), default="")
+    parent_primary_concern = Column(String(30), default="")
+    family_career_role_model = Column(String(100), default="")
+    aptitude_raw_responses = Column(JSON, nullable=True)
+    aptitude_scores = Column(JSON, nullable=True)
+    aptitude_time_taken = Column(Integer, nullable=True)
     report_email_sent = Column(Boolean, default=False)
     report_whatsapp_sent = Column(Boolean, default=False)
     pdf_url = Column(String(500), default="")

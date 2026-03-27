@@ -120,6 +120,15 @@ WORK_VALUES_ITEMS = 8
 # Likert scale mapping: OMR bubble → score
 LIKERT_MAP = {"A": 1, "B": 2, "C": 3, "D": 4, "E": 5}
 
+# Stream recommendation
+STREAMS = ["Science (PCM)", "Science (PCB)", "Commerce", "Arts/Humanities"]
+STREAM_DIMENSION_WEIGHTS = {
+    "interest": 0.25,
+    "academic": 0.30,
+    "aptitude": 0.25,
+    "feasibility": 0.20,
+}
+
 # Brand colors
 BRAND_COLORS = {
     "primary": "#1a5276",    # Dark blue

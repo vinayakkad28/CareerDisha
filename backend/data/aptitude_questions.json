@@ -1,0 +1,120 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "time_limit_seconds": 600,
+    "total_questions": 15
+  },
+  "categories": {
+    "numerical": [
+      {
+        "id": "APT_N1",
+        "text": "What comes next in the series: 2, 6, 12, 20, 30, ?",
+        "text_hi": "इस श्रृंखला में अगली संख्या क्या होगी: 2, 6, 12, 20, 30, ?",
+        "options": {"A": "40", "B": "42", "C": "38", "D": "36"},
+        "correct": "B"
+      },
+      {
+        "id": "APT_N2",
+        "text": "If 3 workers can build a wall in 12 days, how many days will 6 workers take to build the same wall?",
+        "text_hi": "अगर 3 मज़दूर एक दीवार 12 दिन में बनाते हैं, तो 6 मज़दूर उसी दीवार को कितने दिन में बनाएंगे?",
+        "options": {"A": "24", "B": "8", "C": "6", "D": "4"},
+        "correct": "C"
+      },
+      {
+        "id": "APT_N3",
+        "text": "A shopkeeper buys an item for ₹400 and sells it for ₹500. What is the profit percentage?",
+        "text_hi": "एक दुकानदार ₹400 में एक वस्तु खरीदता है और ₹500 में बेचता है। लाभ प्रतिशत क्या है?",
+        "options": {"A": "20%", "B": "25%", "C": "10%", "D": "15%"},
+        "correct": "B"
+      },
+      {
+        "id": "APT_N4",
+        "text": "What comes next: 1, 1, 2, 3, 5, 8, ?",
+        "text_hi": "अगली संख्या क्या होगी: 1, 1, 2, 3, 5, 8, ?",
+        "options": {"A": "11", "B": "12", "C": "13", "D": "10"},
+        "correct": "C"
+      },
+      {
+        "id": "APT_N5",
+        "text": "If the price of a book is increased by 20% and then decreased by 20%, what is the net change?",
+        "text_hi": "अगर किसी किताब की कीमत पहले 20% बढ़ाई जाए और फिर 20% घटाई जाए, तो शुद्ध परिवर्तन क्या होगा?",
+        "options": {"A": "No change", "B": "4% decrease", "C": "4% increase", "D": "2% decrease"},
+        "correct": "B"
+      }
+    ],
+    "verbal": [
+      {
+        "id": "APT_V1",
+        "text": "Book is to Reading as Fork is to ?",
+        "text_hi": "किताब का संबंध पढ़ने से है जैसे काँटा (Fork) का संबंध ___ से है?",
+        "options": {"A": "Kitchen", "B": "Eating", "C": "Metal", "D": "Cooking"},
+        "correct": "B"
+      },
+      {
+        "id": "APT_V2",
+        "text": "Which word does NOT belong in the group: Apple, Mango, Carrot, Banana?",
+        "text_hi": "इनमें से कौन सा शब्द समूह में नहीं आता: सेब, आम, गाजर, केला?",
+        "options": {"A": "Apple", "B": "Mango", "C": "Carrot", "D": "Banana"},
+        "correct": "C"
+      },
+      {
+        "id": "APT_V3",
+        "text": "Doctor is to Hospital as Teacher is to ?",
+        "text_hi": "डॉक्टर का संबंध अस्पताल से है जैसे शिक्षक का संबंध ___ से है?",
+        "options": {"A": "Books", "B": "Students", "C": "School", "D": "Chalk"},
+        "correct": "C"
+      },
+      {
+        "id": "APT_V4",
+        "text": "Choose the word that best completes: 'Despite the heavy rain, the match continued because the players were very ___.'",
+        "text_hi": "'भारी बारिश के बावजूद, मैच जारी रहा क्योंकि खिलाड़ी बहुत ___ थे।' सही शब्द चुनें।",
+        "options": {"A": "tired", "B": "determined", "C": "wet", "D": "angry"},
+        "correct": "B"
+      },
+      {
+        "id": "APT_V5",
+        "text": "Which pair has the same relationship as Pen : Write?",
+        "text_hi": "कौन सा जोड़ा 'कलम : लिखना' जैसा संबंध रखता है?",
+        "options": {"A": "Chair : Table", "B": "Knife : Cut", "C": "Book : Page", "D": "Door : House"},
+        "correct": "B"
+      }
+    ],
+    "spatial": [
+      {
+        "id": "APT_S1",
+        "text": "If you fold a square piece of paper in half and cut a small circle at the center of the folded edge, how many holes will you see when you unfold?",
+        "text_hi": "अगर आप एक वर्गाकार कागज़ को आधा मोड़कर मुड़े किनारे के बीच में एक छोटा गोल काटें, तो खोलने पर कितने छेद दिखेंगे?",
+        "options": {"A": "1", "B": "2", "C": "3", "D": "4"},
+        "correct": "A"
+      },
+      {
+        "id": "APT_S2",
+        "text": "A clock shows 3:00. What is the angle between the hour and minute hands?",
+        "text_hi": "एक घड़ी 3:00 बजा रही है। घंटे और मिनट की सुइयों के बीच का कोण क्या है?",
+        "options": {"A": "60°", "B": "90°", "C": "120°", "D": "180°"},
+        "correct": "B"
+      },
+      {
+        "id": "APT_S3",
+        "text": "If you look at the word 'MIRROR' in a mirror, which letter will look the same?",
+        "text_hi": "अगर आप 'MIRROR' शब्द को दर्पण में देखें, तो कौन सा अक्षर वैसा ही दिखेगा?",
+        "options": {"A": "M", "B": "I", "C": "R", "D": "O"},
+        "correct": "D"
+      },
+      {
+        "id": "APT_S4",
+        "text": "A cube has 6 faces. If you paint all faces red and then cut it into 27 equal small cubes, how many small cubes have exactly 2 red faces?",
+        "text_hi": "एक घन की 6 सतहों को लाल रंग से रंगा गया। फिर इसे 27 छोटे बराबर घनों में काटा गया। कितने छोटे घनों की ठीक 2 सतहें लाल होंगी?",
+        "options": {"A": "8", "B": "12", "C": "6", "D": "4"},
+        "correct": "B"
+      },
+      {
+        "id": "APT_S5",
+        "text": "If North-East becomes South, what does South-West become?",
+        "text_hi": "अगर उत्तर-पूर्व दक्षिण बन जाए, तो दक्षिण-पश्चिम क्या बनेगा?",
+        "options": {"A": "North", "B": "East", "C": "West", "D": "North-East"},
+        "correct": "A"
+      }
+    ]
+  }
+}

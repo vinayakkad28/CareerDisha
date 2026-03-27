@@ -92,9 +92,12 @@ def determine_stream(sorted_types: list[tuple[str, float]]) -> str | None:
 
 
 def calculate_recommendation(riasec_pct: dict, answers: dict[str, int]) -> dict:
-    """Single source of truth for stream, confidence, and message text."""
-    sorted_types = sorted(riasec_pct.items(), key=lambda x: -x[1])
-    gap = sorted_types[0][1] - sorted_types[1][1] if len(sorted_types) > 1 else 0
+    """Single source of truth for stream, confidence, and message text.
+
+    Uses the multi-dimensional recommend_stream() engine with RIASEC-only data
+    (the free quiz doesn't collect academic/aptitude/family data).
+    """
+    from engines.stream_recommender import recommend_stream
 
     straight_lined = detect_straight_lining(answers)
     flat = is_flat_profile(riasec_pct)
@@ -117,37 +120,21 @@ def calculate_recommendation(riasec_pct: dict, answers: dict[str, int]) -> dict:
             "is_flat": True,
         }
 
-    stream = determine_stream(sorted_types)
+    rec = recommend_stream(riasec_scores=riasec_pct)
 
-    if stream is None or gap < 5:
-        return {
-            "stream": None,
-            "confidence": "Insufficient",
-            "message": (
-                "Your interest profile doesn\u2019t clearly point to one stream over another. "
-                "This is common and means you have diverse interests. "
-                "A detailed assessment with a counsellor can help narrow this down."
-            ),
-            "message_hi": "",
-            "is_flat": False,
-        }
-
-    if gap >= 20:
-        confidence = "High"
-        message = f"Based on your interest profile, {stream} is a strong match. Your interests clearly align with this direction."
-    elif gap >= 10:
-        confidence = "Moderate"
-        message = f"Based on your interests, {stream} appears to be a good fit. Consider exploring this stream while keeping other options open."
-    else:
-        confidence = "Low"
-        message = f"Your interests suggest {stream} may be worth exploring, but your profile shows broad interests. We recommend discussing with a counsellor before deciding."
+    # Add interest-only note to explanation
+    message = rec["explanation"]
+    if rec["recommended_stream"]:
+        message += " Based on interests only \u2014 take the full assessment for a complete multi-dimensional analysis."
 
     return {
-        "stream": stream,
-        "confidence": confidence,
+        "stream": rec["recommended_stream"],
+        "confidence": rec["confidence"],
         "message": message,
         "message_hi": "",
         "is_flat": False,
+        "all_streams": rec["all_streams"],
+        "data_completeness": rec["data_completeness"],
     }
 
 

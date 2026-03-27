@@ -22,13 +22,16 @@ router = APIRouter(dependencies=[Depends(get_current_user)])
 def _parse_academic_marks(row: dict):
     """Parse optional academic marks columns from a CSV row."""
     marks = {}
-    for key in ("maths_marks", "science_marks", "english_marks", "overall_percentage"):
+    for key in ("maths_marks", "science_marks", "english_marks", "social_studies_marks", "overall_percentage"):
         val = row.get(key, "").strip()
         if val:
             try:
                 marks[key.replace("_marks", "").replace("_percentage", "_pct")] = float(val)
             except ValueError:
                 pass
+    strongest = row.get("strongest_subject", "").strip().lower()
+    if strongest:
+        marks["strongest_subject"] = strongest
     return marks if marks else None
 
 
@@ -182,6 +185,10 @@ async def upload_csvs(
             "first_gen_learner": row.get("first_gen_learner", "").strip().lower() in ("yes", "true", "1"),
             # Self-efficacy (Layer 2 supplement)
             "self_efficacy": _parse_self_efficacy(row),
+            # Family context (Phase 2)
+            "coaching_affordability": row.get("coaching_affordability", "").strip(),
+            "mobility_willingness": row.get("mobility_willingness", "").strip(),
+            "parent_primary_concern": row.get("parent_primary_concern", "").strip(),
         }
 
     # Parse ZipGrade CSV
@@ -233,6 +240,9 @@ async def upload_csvs(
             parental_education=info.get("parental_education", ""),
             first_gen_learner=info.get("first_gen_learner"),
             self_efficacy=info.get("self_efficacy"),
+            coaching_affordability=info.get("coaching_affordability", ""),
+            mobility_willingness=info.get("mobility_willingness", ""),
+            parent_primary_concern=info.get("parent_primary_concern", ""),
             report_status="pending",
         )
         db.add(student)

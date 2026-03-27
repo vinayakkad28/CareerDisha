@@ -146,6 +146,30 @@ def build_user_prompt(student: Student, matched_career_details: list) -> str:
                 if interest > 70 and confidence <= 2:
                     se_section += f"\nWARNING: High {rtype} interest ({interest}%) but LOW {domain} confidence ({confidence}/5). Address this mismatch — recommend confidence-building activities."
 
+    # Aptitude scores section
+    apt_section = ""
+    apt = student.aptitude_scores if hasattr(student, 'aptitude_scores') and student.aptitude_scores else None
+    if apt:
+        apt_parts = [f"- {k.title()}: {v}%" for k, v in apt.items()]
+        apt_section = "\n\nAPTITUDE TEST SCORES:\n" + "\n".join(apt_parts)
+        apt_section += "\nUse these aptitude scores alongside RIASEC interests when recommending careers. High numerical aptitude supports engineering/finance careers; high verbal supports law/journalism; high spatial supports architecture/design."
+
+    # Family context section
+    family_section = ""
+    family_parts = []
+    if hasattr(student, 'coaching_affordability') and student.coaching_affordability:
+        labels = {"yes_easily": "Yes, easily affordable", "yes_difficult": "Yes, but with difficulty", "no": "No, not affordable"}
+        family_parts.append(f"- Coaching Affordability: {labels.get(student.coaching_affordability, student.coaching_affordability)}")
+    if hasattr(student, 'mobility_willingness') and student.mobility_willingness:
+        family_parts.append(f"- Willing to Relocate for College: {student.mobility_willingness.title()}")
+    if hasattr(student, 'parent_primary_concern') and student.parent_primary_concern:
+        family_parts.append(f"- Parent's Primary Concern: {student.parent_primary_concern.replace('_', ' ').title()}")
+    if hasattr(student, 'family_career_role_model') and student.family_career_role_model:
+        family_parts.append(f"- Family Career Role Model: {student.family_career_role_model}")
+    if family_parts:
+        family_section = "\n\nFAMILY CONTEXT:\n" + "\n".join(family_parts)
+        family_section += "\nADAPT recommendations considering family constraints. If coaching is not affordable, recommend free alternatives (YouTube channels, NPTEL, government coaching schemes). If mobility is limited, emphasize local opportunities and remote work careers."
+
     # Build career details section
     career_json = json.dumps(matched_career_details[:5], indent=2, ensure_ascii=False)
 
@@ -156,7 +180,7 @@ def build_user_prompt(student: Student, matched_career_details: list) -> str:
 - City: {city_line}
 - RIASEC Scores: R={scores.get('R', 0)}%, I={scores.get('I', 0)}%, A={scores.get('A', 0)}%, S={scores.get('S', 0)}%, E={scores.get('E', 0)}%, C={scores.get('C', 0)}%
 - Holland Code: {student.holland_code}
-- Top Work Values: {top_values_str}{stream_pref_section}{academic_section}{context_section}{se_section}
+- Top Work Values: {top_values_str}{stream_pref_section}{academic_section}{context_section}{se_section}{apt_section}{family_section}
 
 MATCHED CAREERS FROM DATABASE (use ONLY these facts for career details):
 {career_json}
