@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
 import { schools as schoolsApi, sessions as sessionsApi } from "@/lib/api";
 import { useToast } from "@/components/Toast";
 import { useAuth } from "@/lib/auth";
+import PageHeader from "@/components/PageHeader";
 
 export default function NewSessionPage() {
   const router = useRouter();
@@ -90,23 +90,42 @@ export default function NewSessionPage() {
   };
 
   return (
-    <div>
-      <div className="mb-6">
-        <Link href="/sessions" className="text-sm text-gray-500 hover:text-primary">
-          &larr; Sessions
-        </Link>
+    <div className="space-y-6">
+      <PageHeader
+        title="New Session"
+        breadcrumbs={[
+          { label: "Sessions", href: "/sessions" },
+          { label: "New Session" },
+        ]}
+      />
+
+      {/* Step indicator */}
+      <div className="flex items-center gap-3 max-w-form-narrow">
+        <div className={`flex items-center gap-2 text-sm font-medium ${step === "create" ? "text-primary" : "text-accent-600"}`}>
+          <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold text-white ${step === "create" ? "bg-brand-gradient" : "bg-accent"}`}>
+            {step === "create" ? "1" : "\u2713"}
+          </span>
+          Session Details
+        </div>
+        <div className="flex-1 h-0.5 bg-surface-container-high rounded-full">
+          <div className={`h-full rounded-full bg-accent transition-all duration-300 ${step === "upload" ? "w-full" : "w-0"}`} />
+        </div>
+        <div className={`flex items-center gap-2 text-sm font-medium ${step === "upload" ? "text-primary" : "text-on-surface-variant/40"}`}>
+          <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${step === "upload" ? "bg-brand-gradient text-white" : "bg-surface-container-high text-on-surface-variant/40"}`}>
+            2
+          </span>
+          Upload Files
+        </div>
       </div>
 
-      <h1 className="text-2xl font-bold text-primary mb-6">New Session</h1>
-
       {step === "create" && (
-        <form onSubmit={handleCreateSession} className="bg-white rounded-xl shadow-sm p-6 max-w-2xl space-y-4">
+        <form onSubmit={handleCreateSession} className="sa-card max-w-form-narrow space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">School</label>
+            <label className="block text-sm font-medium text-on-surface-variant mb-1.5">School</label>
             <select
               value={form.school_id}
               onChange={(e) => setForm({ ...form, school_id: e.target.value })}
-              className="w-full px-3 py-2 border rounded-lg"
+              className="sa-input"
               required
             >
               <option value="">Select a school</option>
@@ -119,28 +138,28 @@ export default function NewSessionPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Session Date</label>
+            <label className="block text-sm font-medium text-on-surface-variant mb-1.5">Session Date</label>
             <input
               type="date"
               value={form.session_date}
               onChange={(e) => setForm({ ...form, session_date: e.target.value })}
-              className="w-full px-3 py-2 border rounded-lg"
+              className="sa-input"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Classes Assessed</label>
+            <label className="block text-sm font-medium text-on-surface-variant mb-1.5">Classes Assessed</label>
             <div className="flex gap-2">
               {[9, 10, 11, 12].map((cls) => (
                 <button
                   key={cls}
                   type="button"
                   onClick={() => toggleClass(cls)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-5 py-2.5 rounded text-sm font-semibold transition-all duration-200 ${
                     form.classes_assessed.includes(cls)
-                      ? "bg-primary text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      ? "bg-brand-gradient text-white shadow-sm"
+                      : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
                   }`}
                 >
                   Class {cls}
@@ -150,22 +169,22 @@ export default function NewSessionPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Counsellor Name</label>
+            <label className="block text-sm font-medium text-on-surface-variant mb-1.5">Counsellor Name</label>
             <input
               value={form.counsellor_name}
               onChange={(e) => setForm({ ...form, counsellor_name: e.target.value })}
-              className="w-full px-3 py-2 border rounded-lg"
+              className="sa-input"
               placeholder="Your name"
             />
           </div>
 
           {user?.role === "admin" && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">LLM Provider</label>
+              <label className="block text-sm font-medium text-on-surface-variant mb-1.5">LLM Provider</label>
               <select
                 value={form.llm_provider}
                 onChange={(e) => setForm({ ...form, llm_provider: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg"
+                className="sa-input"
               >
                 <option value="groq">Groq Llama 3.3 70B (Free)</option>
                 <option value="anthropic">Claude Haiku</option>
@@ -176,62 +195,86 @@ export default function NewSessionPage() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+            <label className="block text-sm font-medium text-on-surface-variant mb-1.5">Notes</label>
             <textarea
               value={form.notes}
               onChange={(e) => setForm({ ...form, notes: e.target.value })}
-              className="w-full px-3 py-2 border rounded-lg"
+              className="sa-input"
               rows={2}
               placeholder="Optional notes about this session"
             />
           </div>
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && (
+            <div className="rounded bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+          )}
 
-          <button type="submit" className="w-full py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary-700">
-            Create Session & Continue to Upload
+          <button type="submit" className="btn-primary w-full">
+            Create Session &amp; Continue to Upload
           </button>
         </form>
       )}
 
       {step === "upload" && (
-        <form onSubmit={handleUpload} className="bg-white rounded-xl shadow-sm p-6 max-w-2xl space-y-4">
-          <p className="text-sm text-gray-500 mb-4">
+        <form onSubmit={handleUpload} className="sa-card max-w-form-narrow space-y-5">
+          <p className="text-sm text-on-surface-variant">
             Session created (ID: {sessionId}). Now upload the CSV files.
           </p>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">ZipGrade CSV</label>
-            <input
-              type="file"
-              accept=".csv"
-              onChange={(e) => setZipgradeFile(e.target.files?.[0] || null)}
-              className="w-full px-3 py-2 border rounded-lg"
-              required
-            />
-            <p className="text-xs text-gray-400 mt-1">Exported from ZipGrade with Q1-Q74 columns</p>
+            <label className="block text-sm font-medium text-on-surface-variant mb-1.5">ZipGrade CSV</label>
+            <label className="flex flex-col items-center justify-center gap-2 rounded border-2 border-dashed border-outline-variant/40 bg-surface-container-high/50 px-6 py-8 cursor-pointer hover:border-primary/40 hover:bg-primary-50/30 transition-all">
+              <svg className="w-8 h-8 text-on-surface-variant/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              {zipgradeFile ? (
+                <span className="text-sm font-medium text-primary">{zipgradeFile.name}</span>
+              ) : (
+                <span className="text-sm text-on-surface-variant/60">Click to upload ZipGrade CSV</span>
+              )}
+              <input
+                type="file"
+                accept=".csv"
+                onChange={(e) => setZipgradeFile(e.target.files?.[0] || null)}
+                className="hidden"
+                required
+              />
+            </label>
+            <p className="text-xs text-on-surface-variant/50 mt-1.5">Exported from ZipGrade with Q1-Q74 columns</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Student Info CSV</label>
-            <input
-              type="file"
-              accept=".csv"
-              onChange={(e) => setStudentInfoFile(e.target.files?.[0] || null)}
-              className="w-full px-3 py-2 border rounded-lg"
-              required
-            />
-            <p className="text-xs text-gray-400 mt-1">
+            <label className="block text-sm font-medium text-on-surface-variant mb-1.5">Student Info CSV</label>
+            <label className="flex flex-col items-center justify-center gap-2 rounded border-2 border-dashed border-outline-variant/40 bg-surface-container-high/50 px-6 py-8 cursor-pointer hover:border-primary/40 hover:bg-primary-50/30 transition-all">
+              <svg className="w-8 h-8 text-on-surface-variant/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              {studentInfoFile ? (
+                <span className="text-sm font-medium text-primary">{studentInfoFile.name}</span>
+              ) : (
+                <span className="text-sm text-on-surface-variant/60">Click to upload Student Info CSV</span>
+              )}
+              <input
+                type="file"
+                accept=".csv"
+                onChange={(e) => setStudentInfoFile(e.target.files?.[0] || null)}
+                className="hidden"
+                required
+              />
+            </label>
+            <p className="text-xs text-on-surface-variant/50 mt-1.5">
               Columns: student_id, name, class, section, parent_phone, parent_name
             </p>
           </div>
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && (
+            <div className="rounded bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+          )}
 
           <button
             type="submit"
             disabled={uploading || !zipgradeFile || !studentInfoFile}
-            className="w-full py-2.5 bg-primary text-white rounded-lg font-medium hover:bg-primary-700 disabled:opacity-50"
+            className="btn-primary w-full"
           >
             {uploading ? "Uploading & Scoring..." : "Upload & Score Students"}
           </button>

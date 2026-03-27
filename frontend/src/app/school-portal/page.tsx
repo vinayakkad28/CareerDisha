@@ -9,6 +9,8 @@ import {
   PieChart, Pie, Cell, ResponsiveContainer, Legend,
 } from "recharts";
 import Link from "next/link";
+import PageHeader from "@/components/PageHeader";
+import StatusBadge from "@/components/StatusBadge";
 
 const STREAM_COLORS: Record<string, string> = {
   "Science (PCM)": "#2980b9",
@@ -19,23 +21,9 @@ const STREAM_COLORS: Record<string, string> = {
 };
 
 const RIASEC_COLORS: Record<string, string> = {
-  R: "#27ae60", I: "#2980b9", A: "#8e44ad",
-  S: "#e67e22", E: "#c0392b", C: "#16a085",
+  R: "#e74c3c", I: "#3498db", A: "#9b59b6",
+  S: "#2ecc71", E: "#e67e22", C: "#1abc9c",
 };
-
-function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
-  return (
-    <div className="bg-white rounded-xl shadow-sm p-5">
-      <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">{label}</p>
-      <p className="text-3xl font-bold text-gray-900">{value}</p>
-      {sub && <p className="text-xs text-gray-500 mt-1">{sub}</p>}
-    </div>
-  );
-}
-
-function SectionHeader({ title }: { title: string }) {
-  return <h2 className="text-base font-semibold text-gray-700 mb-3">{title}</h2>;
-}
 
 export default function SchoolPortalPage() {
   const [school, setSchool] = useState<any>(null);
@@ -73,7 +61,7 @@ export default function SchoolPortalPage() {
     URL.revokeObjectURL(a.href);
   };
 
-  if (loading) return <LoadingSpinner message="Loading school data…" />;
+  if (loading) return <LoadingSpinner message="Loading school data\u2026" />;
   if (error) return <ErrorState message={error} />;
   if (!school) return null;
 
@@ -97,76 +85,90 @@ export default function SchoolPortalPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex justify-between items-start">
-        <div>
-          <h1 className="text-2xl font-bold text-primary">{school.name}</h1>
-          <p className="text-gray-400 text-sm mt-0.5">
-            {school.city} · {school.board} · Code: {school.code}
-          </p>
-        </div>
-        <button
-          onClick={downloadCsv}
-          className="text-sm bg-secondary text-white px-4 py-2 rounded-lg hover:bg-secondary/90"
-        >
-          Export CSV
-        </button>
-      </div>
+      <PageHeader
+        title={school.name}
+        subtitle={`${school.city} \u00b7 ${school.board} \u00b7 Code: ${school.code}`}
+        actions={
+          <button onClick={downloadCsv} className="btn-gold">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Export CSV
+          </button>
+        }
+      />
 
       {/* KPI Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Total Sessions" value={school.total_sessions} />
-        <StatCard label="Students Assessed" value={school.total_students} />
-        <StatCard label="Reports Delivered" value={school.total_delivered} />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+        <div className="sa-card">
+          <p className="text-xs font-medium text-on-surface-variant/50 uppercase tracking-wide mb-1">Total Sessions</p>
+          <p className="text-3xl font-heading font-bold text-on-surface">{school.total_sessions}</p>
+        </div>
+        <div className="sa-card">
+          <p className="text-xs font-medium text-on-surface-variant/50 uppercase tracking-wide mb-1">Students Assessed</p>
+          <p className="text-3xl font-heading font-bold text-on-surface">{school.total_students}</p>
+        </div>
+        <div className="sa-card">
+          <p className="text-xs font-medium text-on-surface-variant/50 uppercase tracking-wide mb-1">Reports Delivered</p>
+          <p className="text-3xl font-heading font-bold text-on-surface">{school.total_delivered}</p>
+        </div>
         {hasAnalytics && (
-          <>
-            <StatCard
-              label="Consent Rate"
-              value={`${analytics.consent_rate}%`}
-              sub="DPDPA compliant"
-            />
-          </>
+          <div className="sa-card">
+            <p className="text-xs font-medium text-on-surface-variant/50 uppercase tracking-wide mb-1">Consent Rate</p>
+            <p className="text-3xl font-heading font-bold text-on-surface">{analytics.consent_rate}%</p>
+            <p className="text-xs text-on-surface-variant/50 mt-1">DPDPA compliant</p>
+          </div>
         )}
       </div>
 
       {hasAnalytics && analytics.feedback_responses > 0 && (
-        <div className="grid grid-cols-3 gap-4">
-          <StatCard
-            label="NPS Score"
-            value={analytics.nps !== null ? analytics.nps : "—"}
-            sub="Would recommend CareerDisha"
-          />
-          <StatCard
-            label="Avg Rating"
-            value={analytics.avg_rating !== null ? `${analytics.avg_rating} / 5` : "—"}
-            sub="Parent satisfaction"
-          />
-          <StatCard
-            label="Feedback Responses"
-            value={analytics.feedback_responses}
-            sub="Surveys completed"
-          />
+        <div className="grid grid-cols-3 gap-5">
+          <div className="sa-card">
+            <p className="text-xs font-medium text-on-surface-variant/50 uppercase tracking-wide mb-1">NPS Score</p>
+            <p className="text-3xl font-heading font-bold text-on-surface">{analytics.nps !== null ? analytics.nps : "\u2014"}</p>
+            <p className="text-xs text-on-surface-variant/50 mt-1">Would recommend CareerDisha</p>
+          </div>
+          <div className="sa-card">
+            <p className="text-xs font-medium text-on-surface-variant/50 uppercase tracking-wide mb-1">Avg Rating</p>
+            <p className="text-3xl font-heading font-bold text-on-surface">{analytics.avg_rating !== null ? `${analytics.avg_rating} / 5` : "\u2014"}</p>
+            <p className="text-xs text-on-surface-variant/50 mt-1">Parent satisfaction</p>
+          </div>
+          <div className="sa-card">
+            <p className="text-xs font-medium text-on-surface-variant/50 uppercase tracking-wide mb-1">Feedback Responses</p>
+            <p className="text-3xl font-heading font-bold text-on-surface">{analytics.feedback_responses}</p>
+            <p className="text-xs text-on-surface-variant/50 mt-1">Surveys completed</p>
+          </div>
         </div>
       )}
 
       {hasAnalytics && (
         <>
-          {/* RIASEC Average + Stream Breakdown */}
+          {/* RIASEC Average + Bar Chart */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* RIASEC Radar */}
-            <div className="bg-white rounded-xl shadow-sm p-5">
-              <SectionHeader title="Average RIASEC Profile (School)" />
+            <div className="sa-card">
+              <h2 className="text-base font-heading font-semibold text-on-surface mb-4">Average RIASEC Profile (School)</h2>
               <RiasecRadarChart scores={analytics.riasec_averages} size={280} />
             </div>
 
             {/* RIASEC Bar */}
-            <div className="bg-white rounded-xl shadow-sm p-5">
-              <SectionHeader title="RIASEC Score Breakdown" />
+            <div className="sa-card">
+              <h2 className="text-base font-heading font-semibold text-on-surface mb-4">RIASEC Score Breakdown</h2>
               <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={riasecBarData} barCategoryGap="30%">
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                  <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                  <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} />
-                  <Tooltip formatter={(v) => [`${v}%`, "Avg Score"]} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f2f5" />
+                  <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#41474e" }} />
+                  <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: "#72787f" }} />
+                  <Tooltip
+                    formatter={(v) => [`${v}%`, "Avg Score"]}
+                    contentStyle={{
+                      borderRadius: "4px",
+                      border: "none",
+                      background: "#ffffff",
+                      boxShadow: "0 4px 16px rgb(0 0 0 / 0.08)",
+                      fontSize: "12px",
+                    }}
+                  />
                   <Bar dataKey="score" radius={[4, 4, 0, 0]}>
                     {riasecBarData.map((entry, i) => (
                       <Cell key={i} fill={entry.fill} />
@@ -180,8 +182,8 @@ export default function SchoolPortalPage() {
           {/* Stream Distribution + Top Careers */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Stream Pie */}
-            <div className="bg-white rounded-xl shadow-sm p-5">
-              <SectionHeader title="Recommended Stream Distribution" />
+            <div className="sa-card">
+              <h2 className="text-base font-heading font-semibold text-on-surface mb-4">Recommended Stream Distribution</h2>
               {streamData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={260}>
                   <PieChart>
@@ -201,32 +203,41 @@ export default function SchoolPortalPage() {
                         <Cell key={i} fill={STREAM_COLORS[entry.name] || "#bdc3c7"} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(v) => [v as number, "Students"]} />
+                    <Tooltip
+                      formatter={(v) => [v as number, "Students"]}
+                      contentStyle={{
+                        borderRadius: "4px",
+                        border: "none",
+                        background: "#ffffff",
+                        boxShadow: "0 4px 16px rgb(0 0 0 / 0.08)",
+                        fontSize: "12px",
+                      }}
+                    />
                     <Legend wrapperStyle={{ fontSize: 12 }} />
                   </PieChart>
                 </ResponsiveContainer>
               ) : (
-                <p className="text-gray-400 text-sm">No stream data available yet.</p>
+                <p className="text-on-surface-variant/50 text-sm">No stream data available yet.</p>
               )}
             </div>
 
             {/* Top Careers */}
-            <div className="bg-white rounded-xl shadow-sm p-5">
-              <SectionHeader title="Top Career Matches in School" />
-              <div className="space-y-2 max-h-[260px] overflow-y-auto">
+            <div className="sa-card">
+              <h2 className="text-base font-heading font-semibold text-on-surface mb-4">Top Career Matches in School</h2>
+              <div className="space-y-2.5 max-h-[260px] overflow-y-auto">
                 {(analytics.top_careers as { name: string; count: number }[]).map((c, i) => {
                   const max = analytics.top_careers[0]?.count || 1;
                   return (
                     <div key={i} className="flex items-center gap-3">
-                      <span className="text-xs text-gray-400 w-4 text-right">{i + 1}</span>
+                      <span className="text-xs font-heading font-bold text-on-surface-variant/40 w-4 text-right">{i + 1}</span>
                       <div className="flex-1">
                         <div className="flex justify-between mb-0.5">
-                          <span className="text-sm font-medium text-gray-700">{c.name}</span>
-                          <span className="text-xs text-gray-400">{c.count}</span>
+                          <span className="text-sm font-medium text-on-surface">{c.name}</span>
+                          <span className="text-xs text-on-surface-variant/50 tabular-nums">{c.count}</span>
                         </div>
-                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-1.5 bg-surface-container-high rounded-full overflow-hidden">
                           <div
-                            className="h-full rounded-full bg-primary"
+                            className="h-full rounded-full bg-primary transition-all duration-500"
                             style={{ width: `${(c.count / max) * 100}%` }}
                           />
                         </div>
@@ -239,20 +250,20 @@ export default function SchoolPortalPage() {
           </div>
 
           {/* Completion Stats */}
-          <div className="bg-white rounded-xl shadow-sm p-5">
-            <SectionHeader title="Report Completion" />
+          <div className="sa-card">
+            <h2 className="text-base font-heading font-semibold text-on-surface mb-4">Report Completion</h2>
             <div className="flex items-center gap-4">
-              <div className="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden">
+              <div className="flex-1 h-3 bg-surface-container-high rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-green-500 rounded-full transition-all"
+                  className="h-full bg-accent rounded-full transition-all"
                   style={{ width: `${analytics.report_completion_rate}%` }}
                 />
               </div>
-              <span className="text-sm font-semibold text-gray-700 whitespace-nowrap">
+              <span className="text-sm font-heading font-semibold text-on-surface whitespace-nowrap">
                 {analytics.report_completion_rate}% complete
               </span>
             </div>
-            <p className="text-xs text-gray-400 mt-2">
+            <p className="text-xs text-on-surface-variant/50 mt-2">
               {analytics.total_students} students assessed across {analytics.total_sessions} sessions
             </p>
           </div>
@@ -261,33 +272,23 @@ export default function SchoolPortalPage() {
 
       {/* Sessions List */}
       <div>
-        <SectionHeader title="Sessions" />
+        <h2 className="text-base font-heading font-semibold text-on-surface mb-4">Sessions</h2>
         {(school.sessions || []).length === 0 ? (
-          <p className="text-gray-400 text-sm">No sessions yet.</p>
+          <p className="text-on-surface-variant/50 text-sm">No sessions yet.</p>
         ) : (
           <div className="space-y-3">
             {school.sessions.map((s: any) => (
-              <div key={s.id} className="bg-white rounded-xl shadow-sm p-5 flex justify-between items-center">
+              <div key={s.id} className="sa-card flex justify-between items-center">
                 <div>
-                  <p className="font-medium text-gray-800">{s.session_date}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">
-                    {s.total_students} students · Classes {(s.classes_assessed || []).join(", ")} ·{" "}
-                    <span
-                      className={`font-medium ${
-                        s.status === "delivered"
-                          ? "text-green-600"
-                          : s.status === "draft"
-                          ? "text-gray-400"
-                          : "text-orange-500"
-                      }`}
-                    >
-                      {s.status}
-                    </span>
+                  <p className="font-heading font-medium text-on-surface">{s.session_date}</p>
+                  <p className="text-xs text-on-surface-variant mt-0.5">
+                    {s.total_students} students \u00b7 Classes {(s.classes_assessed || []).join(", ")} \u00b7{" "}
+                    <StatusBadge status={s.status} size="sm" />
                   </p>
                 </div>
                 <Link
                   href={`/sessions/${s.id}`}
-                  className="text-sm bg-primary text-white px-3 py-1.5 rounded-lg hover:bg-primary/90"
+                  className="btn-primary !px-3 !py-1.5 !text-xs"
                 >
                   View
                 </Link>

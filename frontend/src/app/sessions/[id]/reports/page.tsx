@@ -6,6 +6,7 @@ import Link from "next/link";
 import { reports as reportsApi } from "@/lib/api";
 import { LoadingSpinner, ErrorState } from "@/components/UIStates";
 import { useToast } from "@/components/Toast";
+import PageHeader from "@/components/PageHeader";
 
 export default function QAReportsPage() {
   const params = useParams();
@@ -51,69 +52,78 @@ export default function QAReportsPage() {
   if (!qaReport) return <LoadingSpinner message="Loading QA report..." />;
 
   return (
-    <div>
-      <div className="mb-6">
-        <Link href={`/sessions/${params.id}`} className="text-sm text-gray-500 hover:text-primary">
-          &larr; Session
-        </Link>
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        title="QA Review"
+        breadcrumbs={[
+          { label: "Sessions", href: "/sessions" },
+          { label: "Session", href: `/sessions/${params.id}` },
+          { label: "QA Review" },
+        ]}
+      />
 
-      <h1 className="text-2xl font-bold text-primary mb-6">QA Review</h1>
-
-      {/* Summary */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl p-4 shadow-sm text-center">
-          <p className="text-2xl font-bold">{qaReport.total}</p>
-          <p className="text-sm text-gray-500">Total</p>
+      {/* Summary stat cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="sa-card text-center">
+          <p className="text-3xl font-heading font-bold text-on-surface">{qaReport.total}</p>
+          <p className="text-sm text-on-surface-variant mt-1">Total</p>
         </div>
-        <div className="bg-green-50 rounded-xl p-4 shadow-sm text-center">
-          <p className="text-2xl font-bold text-green-700">{qaReport.passed}</p>
-          <p className="text-sm text-gray-500">Passed</p>
+        <div className="rounded p-6 bg-accent-50 text-center">
+          <p className="text-3xl font-heading font-bold text-accent-600">{qaReport.passed}</p>
+          <p className="text-sm text-on-surface-variant mt-1">Passed</p>
         </div>
-        <div className="bg-red-50 rounded-xl p-4 shadow-sm text-center">
-          <p className="text-2xl font-bold text-red-700">{qaReport.flagged}</p>
-          <p className="text-sm text-gray-500">Flagged</p>
+        <div className="rounded p-6 bg-red-50 text-center">
+          <p className="text-3xl font-heading font-bold text-red-700">{qaReport.flagged}</p>
+          <p className="text-sm text-on-surface-variant mt-1">Flagged</p>
         </div>
-        <div className="bg-gray-50 rounded-xl p-4 shadow-sm text-center">
-          <p className="text-2xl font-bold text-gray-500">{qaReport.pending}</p>
-          <p className="text-sm text-gray-500">Pending</p>
+        <div className="rounded p-6 bg-surface-container-high text-center">
+          <p className="text-3xl font-heading font-bold text-on-surface-variant">{qaReport.pending}</p>
+          <p className="text-sm text-on-surface-variant mt-1">Pending</p>
         </div>
       </div>
 
       {/* Flagged Details */}
       {qaReport.flagged_details.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Flagged Reports</h2>
+        <div className="sa-card !p-0">
+          <div className="px-6 py-5 flex items-center justify-between">
+            <h2 className="text-lg font-heading font-semibold text-on-surface">Flagged Reports</h2>
             <button
               onClick={handleApproveAll}
-              className="px-3 py-1.5 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600"
+              className="btn-primary"
             >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
               Approve All
             </button>
           </div>
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-surface-container-high">
             {qaReport.flagged_details.map((f: any) => (
               <div key={f.student_id} className="px-6 py-4">
                 <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <Link href={`/students/${f.student_id}`} className="font-medium text-primary hover:underline">
+                  <div className="flex items-center gap-3">
+                    <Link href={`/students/${f.student_id}`} className="font-heading font-semibold text-primary hover:text-primary-700 transition-colors">
                       {f.name}
                     </Link>
-                    <span className="text-sm text-gray-500 ml-2">Class {f.class_level}</span>
+                    <span className="text-sm text-on-surface-variant">Class {f.class_level}</span>
                   </div>
                   <button
                     onClick={() => handleApproveOne(f.student_id)}
-                    className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200"
+                    className="btn-ghost !px-3 !py-1.5 !text-xs"
                   >
                     Approve
                   </button>
                 </div>
-                <ul className="text-sm text-red-600 space-y-1">
+                <div className="rounded bg-red-50/70 px-4 py-3 space-y-1">
                   {(f.flags || []).map((flag: string, i: number) => (
-                    <li key={i}>• {flag}</li>
+                    <p key={i} className="text-sm text-red-700 flex items-start gap-2">
+                      <svg className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.27 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                      {flag}
+                    </p>
                   ))}
-                </ul>
+                </div>
               </div>
             ))}
           </div>

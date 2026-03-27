@@ -100,7 +100,7 @@ export default function SessionDetailPage() {
   const consented = students.filter((s: any) => consentStatus[s.id]).length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Page Header with breadcrumbs */}
       <PageHeader
         title={session.school_name}
@@ -116,29 +116,27 @@ export default function SessionDetailPage() {
       />
 
       {/* Session Timeline */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-4">
-        <SessionTimeline currentStatus={session.status} stats={session.stats} />
-      </div>
+      <SessionTimeline currentStatus={session.status} stats={session.stats} />
 
       {/* Stats Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
         <StatCard
           label="Total Students"
           value={sessionStats.total || students.length}
           icon="👨‍🎓"
-          accent="primary"
+          accent="blue"
         />
         <StatCard
           label="Scored"
           value={sessionStats.scored || 0}
           icon="✅"
-          accent="secondary"
+          accent="green"
         />
         <StatCard
           label="Reports Generated"
           value={sessionStats.report_generated || sessionStats.generated || 0}
           icon="📄"
-          accent="accent"
+          accent="purple"
         />
         <StatCard
           label="PDFs Ready"
@@ -154,17 +152,15 @@ export default function SessionDetailPage() {
       </div>
 
       {/* Action Toolbar */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 px-6 py-4">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
-            Actions
-          </h2>
-        </div>
+      <div className="sa-card">
+        <h2 className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-4">
+          Actions
+        </h2>
         <div className="flex gap-3 flex-wrap">
           <button
             onClick={() => setShowGenerateConfirm(true)}
             disabled={loading !== null}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50 transition-colors shadow-sm"
+            className="btn-primary"
           >
             {loading === "generate" ? (
               <>
@@ -181,7 +177,7 @@ export default function SessionDetailPage() {
           <button
             onClick={() => handleAction("qa")}
             disabled={loading !== null}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-white rounded-lg text-sm font-medium hover:bg-amber-600 disabled:opacity-50 transition-colors shadow-sm"
+            className="btn-gold"
           >
             {loading === "qa" ? (
               <>
@@ -198,7 +194,7 @@ export default function SessionDetailPage() {
           <button
             onClick={() => handleAction("pdf")}
             disabled={loading !== null}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50 transition-colors shadow-sm"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white rounded transition-all duration-200 bg-accent-600 hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading === "pdf" ? (
               <>
@@ -230,24 +226,24 @@ export default function SessionDetailPage() {
               }
             }}
             disabled={!session?.stats?.pdf_ready}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-yellow-600 text-white rounded-lg text-sm font-medium hover:bg-yellow-700 transition-colors shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+            className="btn-gold disabled:opacity-40 disabled:cursor-not-allowed disabled:filter-none disabled:shadow-none"
           >
             <span>📦</span>
             Download ZIP
           </button>
 
-          <div className="w-px bg-gray-200 mx-1 self-stretch" />
+          <div className="w-px bg-surface-container-high mx-1 self-stretch" />
 
           <Link
             href={`/sessions/${params.id}/reports`}
-            className="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+            className="btn-ghost"
           >
             <span>📋</span>
             QA Review
           </Link>
           <Link
             href={`/sessions/${params.id}/delivery`}
-            className="inline-flex items-center gap-2 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors"
+            className="btn-ghost"
           >
             <span>🚚</span>
             Delivery
@@ -256,49 +252,32 @@ export default function SessionDetailPage() {
       </div>
 
       {/* Student Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">
+      <div className="sa-card !p-0 overflow-hidden">
+        <div className="px-6 py-5 flex items-center justify-between">
+          <h2 className="text-lg font-heading font-semibold text-on-surface">
             Students
-            <span className="ml-2 text-sm font-normal text-gray-400">
+            <span className="ml-2 text-sm font-normal text-on-surface-variant">
               ({students.length})
             </span>
           </h2>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="sa-table">
             <thead>
-              <tr className="bg-gray-50/80">
-                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Class
-                </th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Holland Code
-                </th>
-                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  RIASEC Scores
-                </th>
-                <th className="text-center px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Consent
-                </th>
-                <th className="text-center px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Report
-                </th>
-                <th className="text-center px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Delivery
-                </th>
+              <tr>
+                <th>Name</th>
+                <th>Class</th>
+                <th>Holland Code</th>
+                <th>RIASEC Scores</th>
+                <th className="text-center">Consent</th>
+                <th className="text-center">Report</th>
+                <th className="text-center">Delivery</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody>
               {students.map((s: any) => (
-                <tr
-                  key={s.id}
-                  className="hover:bg-gray-50/60 transition-colors"
-                >
-                  <td className="px-5 py-3.5">
+                <tr key={s.id}>
+                  <td>
                     <Link
                       href={`/students/${s.id}`}
                       className="text-primary hover:text-primary-700 hover:underline font-medium text-sm transition-colors"
@@ -306,31 +285,31 @@ export default function SessionDetailPage() {
                       {s.name}
                     </Link>
                     {s.parent_phone && (
-                      <p className="text-xs text-gray-400 mt-0.5">
+                      <p className="text-xs text-on-surface-variant/60 mt-0.5">
                         {s.parent_phone}
                       </p>
                     )}
                   </td>
-                  <td className="px-5 py-3.5">
-                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 text-sm font-semibold text-gray-700">
+                  <td>
+                    <span className="inline-flex items-center justify-center w-8 h-8 rounded bg-surface-container-high text-sm font-semibold text-on-surface-variant">
                       {s.class_level}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5">
+                  <td>
                     <span className="font-mono font-bold text-primary text-sm tracking-wide">
                       {s.holland_code || "—"}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5">
+                  <td>
                     {s.riasec_scores ? (
                       <div className="flex gap-1.5 flex-wrap">
                         {Object.entries(s.riasec_scores).map(
                           ([k, v]) => (
                             <span
                               key={k}
-                              className="inline-flex items-center gap-0.5 text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded font-mono"
+                              className="inline-flex items-center gap-0.5 text-xs bg-surface-container-high text-on-surface-variant px-1.5 py-0.5 rounded font-mono"
                             >
-                              <span className="font-semibold text-gray-800">
+                              <span className="font-semibold text-on-surface">
                                 {k}
                               </span>
                               :{String(v)}
@@ -339,18 +318,18 @@ export default function SessionDetailPage() {
                         )}
                       </div>
                     ) : (
-                      <span className="text-gray-300">—</span>
+                      <span className="text-on-surface-variant/30">—</span>
                     )}
                   </td>
-                  <td className="px-5 py-3.5 text-center">
+                  <td className="text-center">
                     <StatusBadge
                       status={consentStatus[s.id] ? "consented" : "pending"}
                     />
                   </td>
-                  <td className="px-5 py-3.5 text-center">
+                  <td className="text-center">
                     <StatusBadge status={s.report_status || "pending"} />
                   </td>
-                  <td className="px-5 py-3.5 text-center">
+                  <td className="text-center">
                     <StatusBadge
                       status={s.delivery_status || "pending"}
                     />
@@ -363,56 +342,52 @@ export default function SessionDetailPage() {
       </div>
 
       {/* DPDPA Consent Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Parental Consent (DPDPA)
-          </h2>
-        </div>
-        <div className="px-6 py-5">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <p className="text-sm text-gray-700">
-                <span className="font-semibold text-gray-900">{consented}</span>{" "}
-                of{" "}
-                <span className="font-semibold text-gray-900">
-                  {students.length}
-                </span>{" "}
-                students have parental consent
-              </p>
-              {students.length > 0 && (
-                <div className="mt-2 w-64 h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-green-500 rounded-full transition-all duration-500"
-                    style={{
-                      width: `${
-                        students.length > 0
-                          ? (consented / students.length) * 100
-                          : 0
-                      }%`,
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-            <button
-              onClick={handleBulkConsent}
-              disabled={consentLoading || consented === students.length}
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50 transition-colors shadow-sm flex-shrink-0"
-            >
-              {consentLoading ? (
-                <>
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <span>✅</span>
-                  Mark All Consented (Paper Form)
-                </>
-              )}
-            </button>
+      <div className="sa-card">
+        <h2 className="text-lg font-heading font-semibold text-on-surface mb-5">
+          Parental Consent (DPDPA)
+        </h2>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <p className="text-sm text-on-surface-variant">
+              <span className="font-semibold text-on-surface">{consented}</span>{" "}
+              of{" "}
+              <span className="font-semibold text-on-surface">
+                {students.length}
+              </span>{" "}
+              students have parental consent
+            </p>
+            {students.length > 0 && (
+              <div className="mt-3 w-64 h-2 bg-surface-container-high rounded-full overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500 bg-accent"
+                  style={{
+                    width: `${
+                      students.length > 0
+                        ? (consented / students.length) * 100
+                        : 0
+                    }%`,
+                  }}
+                />
+              </div>
+            )}
           </div>
+          <button
+            onClick={handleBulkConsent}
+            disabled={consentLoading || consented === students.length}
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white rounded transition-all duration-200 bg-accent-600 hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+          >
+            {consentLoading ? (
+              <>
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <span>✅</span>
+                Mark All Consented (Paper Form)
+              </>
+            )}
+          </button>
         </div>
       </div>
 

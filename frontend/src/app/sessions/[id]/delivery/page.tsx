@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import Link from "next/link";
 import { reports as reportsApi, students as studentsApi, whatsapp as whatsappApi } from "@/lib/api";
 import { LoadingSpinner, ErrorState } from "@/components/UIStates";
 import { useToast } from "@/components/Toast";
+import PageHeader from "@/components/PageHeader";
 
 export default function DeliveryPage() {
   const params = useParams();
@@ -47,20 +47,19 @@ export default function DeliveryPage() {
   if (fetchError) return <ErrorState message={fetchError} onRetry={loadData} />;
   if (!data) return <LoadingSpinner />;
 
-  return (
-    <div>
-      <div className="mb-6">
-        <Link href={`/sessions/${params.id}`} className="text-sm text-gray-500 hover:text-primary">
-          &larr; Session
-        </Link>
-      </div>
+  const deliveredPct = data.total > 0 ? Math.round((data.delivered / data.total) * 100) : 0;
 
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-primary">Delivery Checklist</h1>
-        <div className="flex items-center gap-4">
-          <div className="text-sm text-gray-500">
-            {data.delivered}/{data.total} delivered
-          </div>
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title="Delivery Checklist"
+        subtitle={`${data.delivered}/${data.total} delivered`}
+        breadcrumbs={[
+          { label: "Sessions", href: "/sessions" },
+          { label: "Session", href: `/sessions/${params.id}` },
+          { label: "Delivery" },
+        ]}
+        actions={
           <button
             onClick={async () => {
               try {
@@ -73,52 +72,70 @@ export default function DeliveryPage() {
               }
             }}
             disabled={!waConfigured}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 disabled:opacity-50"
-            title={waConfigured ? "Send all reports via WhatsApp" : "WhatsApp not configured — set WHATSAPP_PROVIDER in .env"}
+            className="btn-primary"
+            title={waConfigured ? "Send all reports via WhatsApp" : "WhatsApp not configured \u2014 set WHATSAPP_PROVIDER in .env"}
           >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            </svg>
             Send All via WhatsApp
           </button>
+        }
+      />
+
+      {/* Progress bar */}
+      <div className="sa-card !py-4">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-sm font-medium text-on-surface-variant">Delivery Progress</span>
+          <span className="text-sm font-heading font-bold text-on-surface">{deliveredPct}%</span>
+        </div>
+        <div className="h-2.5 bg-surface-container-high rounded-full overflow-hidden">
+          <div
+            className="h-full rounded-full bg-accent transition-all duration-500"
+            style={{ width: `${deliveredPct}%` }}
+          />
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50">
+      {/* Delivery table */}
+      <div className="sa-card !p-0 overflow-hidden">
+        <table className="sa-table">
+          <thead>
             <tr>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Student</th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Class</th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Parent</th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Phone</th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">PDF</th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
+              <th>Student</th>
+              <th>Class</th>
+              <th>Parent</th>
+              <th>Phone</th>
+              <th>PDF</th>
+              <th>Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody>
             {(data.checklist || []).map((item: any) => (
-              <tr key={item.student_id} className="hover:bg-gray-50">
-                <td className="px-4 py-3 text-sm font-medium">{item.name}</td>
-                <td className="px-4 py-3 text-sm">{item.class_level}</td>
-                <td className="px-4 py-3 text-sm text-gray-500">{item.parent_name}</td>
-                <td className="px-4 py-3 text-sm font-mono">{item.parent_phone}</td>
-                <td className="px-4 py-3">
+              <tr key={item.student_id}>
+                <td className="font-medium text-on-surface">{item.name}</td>
+                <td className="text-on-surface-variant">{item.class_level}</td>
+                <td className="text-on-surface-variant">{item.parent_name}</td>
+                <td className="font-mono text-on-surface-variant">{item.parent_phone}</td>
+                <td>
                   {item.pdf_path && (
                     <a
                       href={studentsApi.downloadPdfURL(item.student_id)}
-                      className="text-xs text-primary hover:underline"
+                      className="text-xs font-medium text-primary hover:text-primary-700 transition-colors"
                       target="_blank"
                     >
                       Download
                     </a>
                   )}
                 </td>
-                <td className="px-4 py-3">
+                <td>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => toggleDelivery(item.student_id, item.delivery_status)}
-                      className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                      className={`px-3 py-1 rounded-full text-xs font-semibold transition-all duration-200 ${
                         item.delivery_status === "delivered"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-gray-100 text-gray-600 hover:bg-yellow-100"
+                          ? "bg-accent-100 text-accent-600"
+                          : "bg-surface-container-high text-on-surface-variant hover:bg-secondary-50 hover:text-secondary"
                       }`}
                     >
                       {item.delivery_status === "delivered" ? "Delivered" : "Mark Delivered"}
@@ -134,7 +151,7 @@ export default function DeliveryPage() {
                         }
                       }}
                       disabled={!waConfigured || !item.pdf_path}
-                      className="text-xs px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-40"
+                      className="inline-flex items-center gap-1 text-xs px-2.5 py-1 bg-accent-600 text-white rounded font-medium hover:bg-accent transition-colors disabled:opacity-40"
                       title={!waConfigured ? "WhatsApp not configured" : !item.pdf_path ? "PDF not ready" : "Send via WhatsApp"}
                     >
                       WA

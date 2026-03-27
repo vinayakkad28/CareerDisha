@@ -8,7 +8,7 @@ import { useToast } from "@/components/Toast";
 import PageHeader from "@/components/PageHeader";
 
 const BOARD_STYLES: Record<string, string> = {
-  CBSE: "bg-blue-100 text-blue-700",
+  CBSE: "bg-primary-100 text-primary",
   ICSE: "bg-purple-100 text-purple-700",
   State: "bg-amber-100 text-amber-700",
 };
@@ -73,18 +73,14 @@ export default function SchoolsPage() {
   };
 
   return (
-    <div>
+    <div className="space-y-6">
       <PageHeader
         title="Schools"
         subtitle={!loading && schoolList.length > 0 ? `${schoolList.length} school${schoolList.length !== 1 ? "s" : ""} registered` : undefined}
         actions={
           <button
             onClick={() => setShowForm(!showForm)}
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm ${
-              showForm
-                ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                : "bg-primary text-white hover:bg-primary/90"
-            }`}
+            className={showForm ? "btn-ghost" : "btn-primary"}
           >
             {showForm ? (
               <>
@@ -108,51 +104,48 @@ export default function SchoolsPage() {
       {/* Slide-down Add School Form */}
       <div
         className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          showForm ? "max-h-[500px] opacity-100 mb-6" : "max-h-0 opacity-0"
+          showForm ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-        >
-          <h3 className="text-base font-semibold text-gray-900 mb-4">Add New School</h3>
+        <form onSubmit={handleSubmit} className="sa-card">
+          <h3 className="text-base font-heading font-semibold text-on-surface mb-5">Add New School</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">School Name *</label>
+              <label className="block text-sm font-medium text-on-surface-variant mb-1.5">School Name *</label>
               <input
                 placeholder="e.g. Delhi Public School"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-colors"
+                className="sa-input"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">School Code *</label>
+              <label className="block text-sm font-medium text-on-surface-variant mb-1.5">School Code *</label>
               <input
                 placeholder="e.g. DPS_MEERUT"
                 value={form.code}
                 onChange={(e) => setForm({ ...form, code: e.target.value })}
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-colors font-mono"
+                className="sa-input font-mono"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
+              <label className="block text-sm font-medium text-on-surface-variant mb-1.5">City *</label>
               <input
                 placeholder="e.g. Meerut"
                 value={form.city}
                 onChange={(e) => setForm({ ...form, city: e.target.value })}
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-colors"
+                className="sa-input"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Board</label>
+              <label className="block text-sm font-medium text-on-surface-variant mb-1.5">Board</label>
               <select
                 value={form.board}
                 onChange={(e) => setForm({ ...form, board: e.target.value })}
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-colors bg-white"
+                className="sa-input"
               >
                 <option value="CBSE">CBSE</option>
                 <option value="ICSE">ICSE</option>
@@ -160,36 +153,33 @@ export default function SchoolsPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Contact Person</label>
+              <label className="block text-sm font-medium text-on-surface-variant mb-1.5">Contact Person</label>
               <input
                 placeholder="Principal / coordinator name"
                 value={form.contact_person}
                 onChange={(e) => setForm({ ...form, contact_person: e.target.value })}
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-colors"
+                className="sa-input"
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Contact Phone</label>
+              <label className="block text-sm font-medium text-on-surface-variant mb-1.5">Contact Phone</label>
               <input
                 placeholder="+91 XXXXX XXXXX"
                 value={form.contact_phone}
                 onChange={(e) => setForm({ ...form, contact_phone: e.target.value })}
-                className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-colors"
+                className="sa-input"
               />
             </div>
           </div>
-          <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
+          <div className="flex justify-end gap-3 mt-6 pt-5 border-t border-surface-container-high">
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="btn-ghost"
             >
               Cancel
             </button>
-            <button
-              type="submit"
-              className="px-6 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
-            >
+            <button type="submit" className="btn-primary">
               Add School
             </button>
           </div>
@@ -208,25 +198,25 @@ export default function SchoolsPage() {
           onAction={() => setShowForm(true)}
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {schoolList.map((s) => (
             <div
               key={s.id}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:border-primary/20 hover:shadow-md transition-all group"
+              className="sa-card hover:bg-surface transition-all group"
             >
               {/* School Header */}
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <div className="w-10 h-10 rounded bg-primary-100 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
                   </div>
                   <div className="min-w-0">
-                    <h3 className="font-semibold text-gray-900 truncate">{s.name}</h3>
+                    <h3 className="font-heading font-semibold text-on-surface truncate">{s.name}</h3>
                     <div className="flex items-center gap-2 mt-1">
                       {s.city && (
-                        <span className="text-sm text-gray-500 flex items-center gap-1">
+                        <span className="text-sm text-on-surface-variant flex items-center gap-1">
                           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -235,19 +225,19 @@ export default function SchoolsPage() {
                         </span>
                       )}
                       {s.board && (
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${BOARD_STYLES[s.board] || "bg-gray-100 text-gray-600"}`}>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${BOARD_STYLES[s.board] || "bg-surface-container-high text-on-surface-variant"}`}>
                           {s.board}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-400 mt-0.5 font-mono">{s.code}</p>
+                    <p className="text-xs text-on-surface-variant/50 mt-0.5 font-mono">{s.code}</p>
                   </div>
                 </div>
               </div>
 
               {/* Contact Info */}
               {(s.contact_person || s.contact_phone) && (
-                <div className="mt-3 pt-3 border-t border-gray-50 flex items-center gap-4 text-sm text-gray-500">
+                <div className="mt-4 pt-4 border-t border-surface-container-high flex items-center gap-4 text-sm text-on-surface-variant">
                   {s.contact_person && (
                     <span className="flex items-center gap-1.5">
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -268,25 +258,25 @@ export default function SchoolsPage() {
               )}
 
               {/* Stats + Actions */}
-              <div className="mt-3 pt-3 border-t border-gray-50 flex items-center justify-between">
+              <div className="mt-4 pt-4 border-t border-surface-container-high flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-1.5 text-sm">
-                    <span className="inline-flex items-center justify-center w-6 h-6 rounded bg-blue-50 text-blue-600 text-xs font-bold">
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded bg-primary-100 text-primary text-xs font-bold">
                       {s.total_sessions ?? 0}
                     </span>
-                    <span className="text-gray-500">sessions</span>
+                    <span className="text-on-surface-variant">sessions</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-sm">
-                    <span className="inline-flex items-center justify-center w-6 h-6 rounded bg-green-50 text-green-600 text-xs font-bold">
+                    <span className="inline-flex items-center justify-center w-6 h-6 rounded bg-accent-100 text-accent-600 text-xs font-bold">
                       {s.total_students ?? 0}
                     </span>
-                    <span className="text-gray-500">students</span>
+                    <span className="text-on-surface-variant">students</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
                   <Link
                     href={`/schools/${s.id}`}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/5 rounded-lg transition-colors"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary-100 rounded transition-colors"
                   >
                     View
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -298,7 +288,7 @@ export default function SchoolsPage() {
                       e.stopPropagation();
                       setDeleteTarget(s);
                     }}
-                    className="inline-flex items-center px-2 py-1.5 text-sm text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    className="inline-flex items-center px-2 py-1.5 text-sm text-on-surface-variant/50 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                     title="Delete school"
                   >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

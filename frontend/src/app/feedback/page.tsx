@@ -4,8 +4,8 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
-const NAVY = "#1a5276";
-const GOLD = "#d4ac0d";
+
+const STAR_LABELS = ["", "Poor", "Below average", "Average", "Good", "Excellent"];
 
 function FeedbackForm() {
   const searchParams = useSearchParams();
@@ -56,10 +56,14 @@ function FeedbackForm() {
 
   if (error && !studentId) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa] px-4">
+      <div className="min-h-screen flex items-center justify-center bg-surface px-4">
         <div className="text-center max-w-sm">
-          <div className="text-4xl mb-3">⚠️</div>
-          <p className="text-gray-600 text-sm">{error}</p>
+          <div className="w-14 h-14 rounded-full bg-secondary-50 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p className="text-on-surface-variant text-sm font-body">{error}</p>
         </div>
       </div>
     );
@@ -67,15 +71,19 @@ function FeedbackForm() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa] px-4">
-        <div className="text-center max-w-sm">
-          <div className="text-5xl mb-4">🙏</div>
-          <h2 className="text-xl font-bold mb-2" style={{ color: NAVY }}>Thank You!</h2>
-          <p className="text-gray-500 text-sm leading-relaxed">
+      <div className="min-h-screen flex items-center justify-center bg-surface px-4">
+        <div className="text-center max-w-sm animate-fade-in">
+          <div className="w-16 h-16 rounded-full bg-accent-50 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </div>
+          <h2 className="font-heading text-xl font-bold text-primary mb-2">Thank You!</h2>
+          <p className="text-on-surface-variant text-sm leading-relaxed font-body">
             Your feedback helps us improve career guidance for thousands of students across India.
             We truly appreciate you taking the time.
           </p>
-          <p className="text-xs text-gray-300 mt-6">— CareerDisha Team</p>
+          <p className="text-xs text-outline mt-6 font-body">— CareerDisha Team</p>
         </div>
       </div>
     );
@@ -89,12 +97,11 @@ function FeedbackForm() {
         <button
           key={String(v)}
           onClick={() => onChange(v)}
-          className="flex-1 py-2.5 rounded-xl text-sm font-medium border transition-all"
-          style={
+          className={`flex-1 py-2.5 rounded text-sm font-heading font-medium transition-all ${
             value === v
-              ? { background: NAVY, color: "white", borderColor: NAVY }
-              : { background: "#f9fafb", color: "#374151", borderColor: "#e5e7eb" }
-          }
+              ? "bg-brand-gradient text-white"
+              : "bg-surface-container-high text-on-surface hover:bg-surface-container-highest"
+          }`}
         >
           {v ? yesLabel : noLabel}
         </button>
@@ -103,28 +110,29 @@ function FeedbackForm() {
   );
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa]">
+    <div className="min-h-screen bg-surface">
       {/* Header */}
-      <header className="text-white py-5 shadow-lg" style={{ background: `linear-gradient(135deg, ${NAVY}, #0d2b3e)` }}>
-        <div className="max-w-lg mx-auto px-4 text-center">
-          <h1 className="text-xl font-bold">
+      <header className="bg-brand-gradient text-white py-5">
+        <div className="max-w-form-compact mx-auto px-4 text-center">
+          <h1 className="font-heading text-xl font-bold">
             <span className="text-white">Career</span>
-            <span style={{ color: GOLD }}>Disha</span>
+            <span className="text-secondary">Disha</span>
           </h1>
-          <p className="text-white/60 text-sm mt-1">Parent Feedback Survey</p>
+          <p className="text-white/60 text-sm mt-1 font-body">Parent Feedback Survey</p>
         </div>
       </header>
 
-      <div className="max-w-lg mx-auto px-4 py-8 space-y-5">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-          <p className="text-sm text-gray-500 leading-relaxed">
+      <div className="max-w-form-compact mx-auto px-4 py-8 space-y-5">
+        {/* Intro */}
+        <div className="sa-card">
+          <p className="text-sm text-on-surface-variant leading-relaxed font-body">
             Thank you for using CareerDisha. Your 2-minute feedback helps us improve guidance for students like yours.
           </p>
         </div>
 
         {/* Star rating */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-          <p className="text-sm font-semibold text-gray-700 mb-3">
+        <div className="sa-card">
+          <p className="text-sm font-heading font-semibold text-on-surface mb-4">
             How would you rate the career report overall?
           </p>
           <div className="flex gap-2 justify-center">
@@ -133,62 +141,67 @@ function FeedbackForm() {
                 key={star}
                 onClick={() => setRating(star)}
                 className="text-3xl transition-transform hover:scale-110"
-                style={{ opacity: rating !== null && rating < star ? 0.3 : 1 }}
               >
-                ★
+                <svg
+                  className="w-9 h-9"
+                  viewBox="0 0 24 24"
+                  fill={rating !== null && rating >= star ? "#d4ac0d" : "#f0f2f5"}
+                  stroke={rating !== null && rating >= star ? "#d4ac0d" : "#c1c7cf"}
+                  strokeWidth={1}
+                >
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
               </button>
             ))}
           </div>
           {rating && (
-            <p className="text-center text-xs text-gray-400 mt-2">
-              {["", "Poor", "Below average", "Average", "Good", "Excellent"][rating]}
+            <p className="text-center text-xs text-on-surface-variant mt-2 font-body">
+              {STAR_LABELS[rating]}
             </p>
           )}
         </div>
 
         {/* Recommendation match */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-          <p className="text-sm font-semibold text-gray-700 mb-3">
+        <div className="sa-card">
+          <p className="text-sm font-heading font-semibold text-on-surface mb-3">
             Did the recommended career/stream match what you had in mind for your child?
           </p>
           <YesNo value={recommendationMatch} onChange={setRecommendationMatch} />
         </div>
 
         {/* Most useful */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-          <p className="text-sm font-semibold text-gray-700 mb-2">
-            What was most useful in the report? <span className="font-normal text-gray-400">(optional)</span>
+        <div className="sa-card">
+          <p className="text-sm font-heading font-semibold text-on-surface mb-2">
+            What was most useful in the report?{" "}
+            <span className="font-normal text-on-surface-variant font-body">(optional)</span>
           </p>
           <textarea
             value={mostUseful}
             onChange={(e) => setMostUseful(e.target.value)}
             placeholder="e.g. The career pathways were very detailed and helpful"
             rows={3}
-            className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm
-              focus:ring-2 focus:ring-[#1a5276]/20 focus:border-[#1a5276] outline-none
-              resize-none bg-gray-50 focus:bg-white placeholder:text-gray-400"
+            className="sa-input resize-none"
           />
         </div>
 
         {/* Missing */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-          <p className="text-sm font-semibold text-gray-700 mb-2">
-            What could be improved or was missing? <span className="font-normal text-gray-400">(optional)</span>
+        <div className="sa-card">
+          <p className="text-sm font-heading font-semibold text-on-surface mb-2">
+            What could be improved or was missing?{" "}
+            <span className="font-normal text-on-surface-variant font-body">(optional)</span>
           </p>
           <textarea
             value={missing}
             onChange={(e) => setMissing(e.target.value)}
             placeholder="e.g. More information on entrance exam preparation"
             rows={3}
-            className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm
-              focus:ring-2 focus:ring-[#1a5276]/20 focus:border-[#1a5276] outline-none
-              resize-none bg-gray-50 focus:bg-white placeholder:text-gray-400"
+            className="sa-input resize-none"
           />
         </div>
 
         {/* Would recommend */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-          <p className="text-sm font-semibold text-gray-700 mb-3">
+        <div className="sa-card">
+          <p className="text-sm font-heading font-semibold text-on-surface mb-3">
             Would you recommend CareerDisha to other parents?
           </p>
           <YesNo
@@ -200,7 +213,7 @@ function FeedbackForm() {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-600 text-sm text-center">
+          <div className="bg-red-50 rounded p-3 text-red-600 text-sm text-center font-body">
             {error}
           </div>
         )}
@@ -208,14 +221,12 @@ function FeedbackForm() {
         <button
           onClick={handleSubmit}
           disabled={submitting || rating === null}
-          className="w-full py-3.5 rounded-xl font-semibold text-sm transition-all
-            hover:shadow-lg active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{ background: `linear-gradient(135deg, ${GOLD}, #b8960b)`, color: NAVY }}
+          className="btn-gold w-full py-3.5 text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {submitting ? "Submitting…" : "Submit Feedback"}
+          {submitting ? "Submitting..." : "Submit Feedback"}
         </button>
 
-        <p className="text-center text-xs text-gray-400 pb-4">
+        <p className="text-center text-xs text-outline pb-4 font-body">
           Your response is anonymous and used only to improve our service.
         </p>
       </div>
@@ -225,7 +236,13 @@ function FeedbackForm() {
 
 export default function FeedbackPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-gray-200 border-t-[#1a5276] rounded-full animate-spin" /></div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-surface">
+          <div className="w-8 h-8 border-4 border-surface-container-high border-t-primary rounded-full animate-spin" />
+        </div>
+      }
+    >
       <FeedbackForm />
     </Suspense>
   );

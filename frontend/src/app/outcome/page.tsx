@@ -4,14 +4,12 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
-const NAVY = "#1a5276";
-const GOLD = "#d4ac0d";
 
 const STREAM_OPTIONS = [
   { value: "Science (PCM)", label: "Science — PCM", sub: "Physics, Chemistry, Maths" },
   { value: "Science (PCB)", label: "Science — PCB", sub: "Physics, Chemistry, Biology" },
   { value: "Commerce", label: "Commerce", sub: "Accounts, Business Studies, Economics" },
-  { value: "Arts/Humanities", label: "Arts / Humanities", sub: "History, Geography, Political Science…" },
+  { value: "Arts/Humanities", label: "Arts / Humanities", sub: "History, Geography, Political Science..." },
   { value: "Vocational", label: "Vocational / ITI", sub: "Skill-based programme" },
   { value: "Still deciding", label: "Still deciding", sub: "Haven't chosen yet" },
 ];
@@ -58,10 +56,14 @@ function OutcomeForm() {
 
   if (error && !studentId) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa] px-4">
+      <div className="min-h-screen flex items-center justify-center bg-surface px-4">
         <div className="text-center max-w-sm">
-          <div className="text-4xl mb-3">⚠️</div>
-          <p className="text-gray-600 text-sm">{error}</p>
+          <div className="w-14 h-14 rounded-full bg-secondary-50 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p className="text-on-surface-variant text-sm font-body">{error}</p>
         </div>
       </div>
     );
@@ -69,37 +71,42 @@ function OutcomeForm() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa] px-4">
-        <div className="text-center max-w-sm">
-          <div className="text-5xl mb-4">🎉</div>
-          <h2 className="text-xl font-bold mb-2" style={{ color: NAVY }}>Thank You!</h2>
-          <p className="text-gray-500 text-sm leading-relaxed">
+      <div className="min-h-screen flex items-center justify-center bg-surface px-4">
+        <div className="text-center max-w-sm animate-fade-in">
+          <div className="w-16 h-16 rounded-full bg-accent-50 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h2 className="font-heading text-xl font-bold text-primary mb-2">Thank You!</h2>
+          <p className="text-on-surface-variant text-sm leading-relaxed font-body">
             Your response has been recorded. This helps us measure how accurately
             CareerDisha&apos;s recommendations match real-world choices — improving guidance
             for future students.
           </p>
-          <p className="text-xs text-gray-300 mt-6">— CareerDisha Team</p>
+          <p className="text-xs text-outline mt-6 font-body">— CareerDisha Team</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa]">
+    <div className="min-h-screen bg-surface">
       {/* Header */}
-      <header className="text-white py-5 shadow-lg" style={{ background: `linear-gradient(135deg, ${NAVY}, #0d2b3e)` }}>
-        <div className="max-w-lg mx-auto px-4 text-center">
-          <h1 className="text-xl font-bold">
+      <header className="bg-brand-gradient text-white py-5">
+        <div className="max-w-form-compact mx-auto px-4 text-center">
+          <h1 className="font-heading text-xl font-bold">
             <span className="text-white">Career</span>
-            <span style={{ color: GOLD }}>Disha</span>
+            <span className="text-secondary">Disha</span>
           </h1>
-          <p className="text-white/60 text-sm mt-1">6-Month Follow-Up</p>
+          <p className="text-white/60 text-sm mt-1 font-body">6-Month Follow-Up</p>
         </div>
       </header>
 
-      <div className="max-w-lg mx-auto px-4 py-8 space-y-5">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-          <p className="text-sm text-gray-600 leading-relaxed">
+      <div className="max-w-form-compact mx-auto px-4 py-8 space-y-5">
+        {/* Intro card */}
+        <div className="sa-card">
+          <p className="text-sm text-on-surface-variant leading-relaxed font-body">
             It&apos;s been 6 months since your child received their CareerDisha report.
             We&apos;d love to know — which stream did they choose? It takes less than a minute
             and helps us improve guidance for future students.
@@ -107,26 +114,28 @@ function OutcomeForm() {
         </div>
 
         {/* Stream selection */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-          <p className="text-sm font-semibold text-gray-700 mb-3">
-            Which stream / course did your child choose? <span className="text-red-400">*</span>
+        <div className="sa-card">
+          <p className="text-sm font-heading font-semibold text-on-surface mb-3">
+            Which stream / course did your child choose? <span className="text-red-500">*</span>
           </p>
           <div className="space-y-2">
             {STREAM_OPTIONS.map((opt) => (
               <button
                 key={opt.value}
                 onClick={() => setStream(opt.value)}
-                className="w-full text-left px-4 py-3 rounded-xl border transition-all"
-                style={
+                className={`w-full text-left px-4 py-3 rounded transition-all ${
                   stream === opt.value
-                    ? { background: NAVY, borderColor: NAVY, color: "white" }
-                    : { background: "#f9fafb", borderColor: "#e5e7eb", color: "#374151" }
-                }
+                    ? "bg-brand-gradient text-white"
+                    : "bg-surface-container-high text-on-surface hover:bg-surface-container-highest"
+                }`}
               >
-                <span className="text-sm font-medium block">{opt.label}</span>
+                <span className="text-sm font-heading font-medium block">
+                  {opt.label}
+                </span>
                 <span
-                  className="text-xs block mt-0.5"
-                  style={{ color: stream === opt.value ? "rgba(255,255,255,0.6)" : "#9ca3af" }}
+                  className={`text-xs block mt-0.5 font-body ${
+                    stream === opt.value ? "text-white/60" : "text-on-surface-variant"
+                  }`}
                 >
                   {opt.sub}
                 </span>
@@ -136,24 +145,22 @@ function OutcomeForm() {
         </div>
 
         {/* Career interest */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-          <p className="text-sm font-semibold text-gray-700 mb-2">
+        <div className="sa-card">
+          <p className="text-sm font-heading font-semibold text-on-surface mb-2">
             What career is your child currently interested in?{" "}
-            <span className="font-normal text-gray-400">(optional)</span>
+            <span className="font-normal text-on-surface-variant font-body">(optional)</span>
           </p>
           <input
             type="text"
             value={careerInterest}
             onChange={(e) => setCareerInterest(e.target.value)}
-            placeholder="e.g. Software engineer, Doctor, CA, Graphic designer…"
-            className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm
-              focus:ring-2 focus:ring-[#1a5276]/20 focus:border-[#1a5276] outline-none
-              bg-gray-50 focus:bg-white placeholder:text-gray-400"
+            placeholder="e.g. Software engineer, Doctor, CA, Graphic designer..."
+            className="sa-input"
           />
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-600 text-sm text-center">
+          <div className="bg-red-50 rounded p-3 text-red-600 text-sm text-center font-body">
             {error}
           </div>
         )}
@@ -161,14 +168,12 @@ function OutcomeForm() {
         <button
           onClick={handleSubmit}
           disabled={submitting || !stream}
-          className="w-full py-3.5 rounded-xl font-semibold text-sm transition-all
-            hover:shadow-lg active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{ background: `linear-gradient(135deg, ${GOLD}, #b8960b)`, color: NAVY }}
+          className="btn-gold w-full py-3.5 text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {submitting ? "Submitting…" : "Submit Response"}
+          {submitting ? "Submitting..." : "Submit Response"}
         </button>
 
-        <p className="text-center text-xs text-gray-400 pb-4">
+        <p className="text-center text-xs text-outline pb-4 font-body">
           Your response is used only for improving CareerDisha&apos;s recommendations.
         </p>
       </div>
@@ -178,7 +183,13 @@ function OutcomeForm() {
 
 export default function OutcomePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-gray-200 border-t-[#1a5276] rounded-full animate-spin" /></div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-surface">
+          <div className="w-8 h-8 border-4 border-surface-container-high border-t-primary rounded-full animate-spin" />
+        </div>
+      }
+    >
       <OutcomeForm />
     </Suspense>
   );

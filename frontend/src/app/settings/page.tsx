@@ -1,37 +1,62 @@
 "use client";
 
+import PageHeader from "@/components/PageHeader";
+
 export default function SettingsPage() {
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-primary mb-6">Settings</h1>
+    <div className="space-y-6">
+      <PageHeader title="Settings" />
 
-      <div className="bg-white rounded-xl shadow-sm p-6 max-w-2xl">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">API Configuration</h2>
-        <p className="text-sm text-gray-500 mb-4">
-          API keys are configured in the backend <code className="bg-gray-100 px-1.5 py-0.5 rounded">.env</code> file.
+      {/* API Configuration */}
+      <div className="sa-card max-w-2xl">
+        <h2 className="text-lg font-heading font-semibold text-on-surface mb-2">API Configuration</h2>
+        <p className="text-sm text-on-surface-variant mb-5">
+          API keys are configured in the backend <code className="bg-surface-container-high px-1.5 py-0.5 rounded text-xs font-mono">. env</code> file.
           Restart the backend server after making changes.
         </p>
 
-        <div className="space-y-3 text-sm">
-          <div className="flex justify-between items-center py-2 border-b">
-            <span className="text-gray-600">ANTHROPIC_API_KEY</span>
-            <span className="text-gray-400">Configured in .env</span>
-          </div>
-          <div className="flex justify-between items-center py-2 border-b">
-            <span className="text-gray-600">OPENAI_API_KEY</span>
-            <span className="text-gray-400">Configured in .env</span>
-          </div>
-          <div className="flex justify-between items-center py-2 border-b">
-            <span className="text-gray-600">GOOGLE_API_KEY</span>
-            <span className="text-gray-400">Configured in .env</span>
-          </div>
+        <div className="space-y-0">
+          {[
+            { name: "ANTHROPIC_API_KEY", label: "Anthropic (Claude)" },
+            { name: "OPENAI_API_KEY", label: "OpenAI (GPT)" },
+            { name: "GOOGLE_API_KEY", label: "Google (Gemini)" },
+          ].map((key) => (
+            <div
+              key={key.name}
+              className="flex items-center justify-between py-3.5 border-b border-surface-container-high last:border-b-0"
+            >
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center justify-center w-2 h-2 rounded-full bg-surface-container-highest" />
+                <div>
+                  <span className="text-sm font-medium text-on-surface font-mono">{key.name}</span>
+                  <p className="text-xs text-on-surface-variant/50">{key.label}</p>
+                </div>
+              </div>
+              <span className="text-xs text-on-surface-variant/50 bg-surface-container-high px-2.5 py-1 rounded-full">
+                Configured in .env
+              </span>
+            </div>
+          ))}
         </div>
+      </div>
 
-        <h2 className="text-lg font-semibold text-gray-900 mt-8 mb-4">About</h2>
-        <div className="space-y-2 text-sm text-gray-600">
-          <p><strong>CareerDisha</strong> — AI Career Counselling Platform</p>
-          <p>Version 1.0.0</p>
-          <p>For Indian school students, Class 9-12</p>
+      {/* About */}
+      <div className="sa-card max-w-2xl">
+        <h2 className="text-lg font-heading font-semibold text-on-surface mb-4">About</h2>
+        <div className="space-y-3 text-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded bg-brand-gradient flex items-center justify-center flex-shrink-0">
+              <span className="text-white font-heading font-bold text-sm">CD</span>
+            </div>
+            <div>
+              <p className="font-heading font-semibold text-on-surface">CareerDisha</p>
+              <p className="text-on-surface-variant">AI Career Counselling Platform</p>
+            </div>
+          </div>
+          <div className="pt-3 border-t border-surface-container-high space-y-1.5 text-on-surface-variant">
+            <p>Version 1.0.0</p>
+            <p>For Indian school students, Class 9-12</p>
+          </div>
         </div>
       </div>
     </div>

@@ -2,15 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import RiasecRadarChart from "@/components/RiasecRadarChart";
+import RiasecRadarChart, { RiasecBarChart } from "@/components/RiasecRadarChart";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
-const NAVY = "#1a5276";
-const GOLD = "#d4ac0d";
 const RIASEC_COLORS: Record<string, string> = {
-  R: "#27ae60", I: "#2980b9", A: "#8e44ad",
-  S: "#e67e22", E: "#c0392b", C: "#16a085",
+  R: "#e74c3c", I: "#3498db", A: "#9b59b6",
+  S: "#2ecc71", E: "#e67e22", C: "#1abc9c",
 };
 const RIASEC_NAMES: Record<string, string> = {
   R: "Realistic", I: "Investigative", A: "Artistic",
@@ -71,47 +69,11 @@ interface ReportData {
   };
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <section className="mb-8">
-      <h2
-        className="text-lg font-bold mb-4 pb-2 border-b-2"
-        style={{ color: NAVY, borderColor: GOLD }}
-      >
-        {title}
-      </h2>
+    <h2 className="font-heading text-lg font-bold text-primary mb-4">
       {children}
-    </section>
-  );
-}
-
-function Card({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div className={`bg-white rounded-xl shadow-sm border border-gray-100 p-5 ${className || ""}`}>
-      {children}
-    </div>
-  );
-}
-
-function TimelineItem({ label, items }: { label: string; items: string[] }) {
-  return (
-    <div className="mb-4">
-      <h4 className="text-sm font-semibold text-gray-600 mb-2 flex items-center gap-2">
-        <span
-          className="w-2 h-2 rounded-full inline-block"
-          style={{ backgroundColor: GOLD }}
-        />
-        {label}
-      </h4>
-      <ul className="space-y-1 ml-4">
-        {items.map((item, i) => (
-          <li key={i} className="text-sm text-gray-700 flex gap-2">
-            <span className="text-gray-300 shrink-0">·</span>
-            {item}
-          </li>
-        ))}
-      </ul>
-    </div>
+    </h2>
   );
 }
 
@@ -140,10 +102,10 @@ export default function ReportPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa]">
+      <div className="min-h-screen flex items-center justify-center bg-surface">
         <div className="text-center">
-          <div className="w-10 h-10 border-4 border-gray-200 border-t-[#1a5276] rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">Loading report…</p>
+          <div className="w-10 h-10 border-4 border-surface-container-high border-t-primary rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-on-surface-variant text-sm font-body">Loading report...</p>
         </div>
       </div>
     );
@@ -151,20 +113,20 @@ export default function ReportPage() {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa] px-4">
+      <div className="min-h-screen flex items-center justify-center bg-surface px-4">
         <div className="text-center max-w-sm">
-          <div className="text-4xl mb-3">🔒</div>
-          <h2 className="text-lg font-bold text-gray-800 mb-2">Report not available</h2>
-          <p className="text-sm text-gray-500">
+          <div className="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center mx-auto mb-4">
+            <svg className="w-7 h-7 text-on-surface-variant" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v.01M12 9v3m0-9a9 9 0 110 18 9 9 0 010-18z" />
+            </svg>
+          </div>
+          <h2 className="font-heading text-lg font-bold text-on-surface mb-2">Report not available</h2>
+          <p className="text-sm text-on-surface-variant font-body">
             {error === "Payment required"
               ? "This report requires payment. Please complete your purchase to view the full report."
               : error || "This report link is invalid or has expired."}
           </p>
-          <a
-            href="/assessment"
-            className="inline-block mt-5 px-6 py-2.5 rounded-xl text-sm font-semibold text-white"
-            style={{ backgroundColor: NAVY }}
-          >
+          <a href="/assessment" className="btn-primary mt-5 inline-flex">
             Start New Assessment
           </a>
         </div>
@@ -174,26 +136,27 @@ export default function ReportPage() {
 
   const r = data.report;
   const holland = data.holland_code || "";
-  const maxScore = Math.max(...Object.values(data.riasec_scores), 1);
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa]">
-      {/* Header */}
-      <header style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #0d2b3e 100%)` }} className="text-white py-6 shadow-lg">
-        <div className="max-w-3xl mx-auto px-4">
+    <div className="min-h-screen bg-surface">
+      {/* ── Header ── */}
+      <header className="bg-brand-gradient text-white py-8">
+        <div className="max-w-report mx-auto px-4">
           <div className="flex justify-between items-start">
             <div>
-              <p className="text-xs uppercase tracking-widest text-white/40 mb-1">CareerDisha — Career Assessment Report</p>
-              <h1 className="text-2xl font-bold">{data.student_name}</h1>
-              <p className="text-white/60 text-sm mt-1">Class {data.class_level}</p>
+              <p className="text-xs uppercase tracking-widest text-white/40 mb-1 font-body">
+                CareerDisha — Career Assessment Report
+              </p>
+              <h1 className="font-heading text-2xl font-bold">{data.student_name}</h1>
+              <p className="text-white/60 text-sm mt-1 font-body">Class {data.class_level}</p>
             </div>
             <div className="text-right">
-              <p className="text-xs text-white/40 mb-1">Holland Code</p>
+              <p className="text-xs text-white/40 mb-2 font-body">Holland Code</p>
               <div className="flex gap-1.5">
                 {holland.split("").map((l, i) => (
                   <span
                     key={i}
-                    className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shadow-sm"
+                    className="w-10 h-10 rounded-lg flex items-center justify-center font-heading font-bold text-sm text-white"
                     style={{ backgroundColor: RIASEC_COLORS[l] || "#888" }}
                   >
                     {l}
@@ -205,80 +168,57 @@ export default function ReportPage() {
         </div>
       </header>
 
-      <div className="max-w-3xl mx-auto px-4 py-8">
+      <div className="max-w-report mx-auto px-4 py-8 space-y-8">
 
-        {/* RIASEC Profile */}
-        <Section title="Your Interest Profile">
+        {/* ── Interest Profile ── */}
+        <section>
+          <SectionHeading>Your Interest Profile</SectionHeading>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <Card>
+            <div className="sa-card flex items-center justify-center">
               <RiasecRadarChart scores={data.riasec_scores} size={260} />
-            </Card>
-            <Card>
-              <div className="space-y-3">
-                {"RIASEC".split("").map((type) => {
-                  const score = data.riasec_scores[type] || 0;
-                  return (
-                    <div key={type} className="flex items-center gap-3">
-                      <div className="flex items-center gap-2 w-32 shrink-0">
-                        <span
-                          className="w-6 h-6 rounded-md flex items-center justify-center text-white text-xs font-bold"
-                          style={{ backgroundColor: RIASEC_COLORS[type] }}
-                        >
-                          {type}
-                        </span>
-                        <span className="text-xs text-gray-500">{RIASEC_NAMES[type]}</span>
-                      </div>
-                      <div className="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden">
-                        <div
-                          className="h-full rounded-full"
-                          style={{
-                            width: `${(score / maxScore) * 100}%`,
-                            backgroundColor: RIASEC_COLORS[type],
-                          }}
-                        />
-                      </div>
-                      <span className="text-sm font-semibold text-gray-700 w-10 text-right tabular-nums">
-                        {score}%
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </Card>
+            </div>
+            <div className="sa-card flex items-center">
+              <RiasecBarChart scores={data.riasec_scores} />
+            </div>
           </div>
 
           {r.riasec_analysis?.summary && (
-            <Card className="mt-4">
-              <p className="text-sm text-gray-700 leading-relaxed">{r.riasec_analysis.summary}</p>
+            <div className="sa-card mt-4">
+              <p className="text-sm text-on-surface-variant leading-relaxed font-body">
+                {r.riasec_analysis.summary}
+              </p>
               {r.riasec_analysis.primary_type_description && (
-                <div className="mt-3 pt-3 border-t border-gray-100">
-                  <p className="text-xs font-semibold text-gray-400 uppercase mb-1">
+                <div className="mt-4 pt-4 border-t border-surface-container-high">
+                  <p className="text-xs font-heading font-semibold text-on-surface-variant uppercase mb-1">
                     Primary Type — {RIASEC_NAMES[holland[0]] || holland[0]}
                   </p>
-                  <p className="text-sm text-gray-700">{r.riasec_analysis.primary_type_description}</p>
+                  <p className="text-sm text-on-surface font-body">
+                    {r.riasec_analysis.primary_type_description}
+                  </p>
                 </div>
               )}
-            </Card>
+            </div>
           )}
-        </Section>
+        </section>
 
-        {/* Stream Recommendation */}
+        {/* ── Stream Recommendation ── */}
         {r.stream_recommendation && (
-          <Section title="Stream Recommendation">
-            <Card>
+          <section>
+            <SectionHeading>Stream Recommendation</SectionHeading>
+            <div className="sa-card border-l-4 border-primary">
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div>
-                  <h3 className="text-xl font-bold" style={{ color: NAVY }}>
+                  <h3 className="font-heading text-xl font-bold text-primary">
                     {r.stream_recommendation.recommended_stream}
                   </h3>
                   {r.stream_recommendation.confidence && (
                     <span
-                      className={`inline-block mt-1 px-3 py-0.5 rounded-full text-xs font-medium ${
+                      className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-heading font-semibold ${
                         r.stream_recommendation.confidence === "High"
-                          ? "bg-green-100 text-green-700"
+                          ? "bg-accent-50 text-accent-600"
                           : r.stream_recommendation.confidence === "Medium"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : "bg-gray-100 text-gray-600"
+                          ? "bg-secondary-50 text-secondary-600"
+                          : "bg-surface-container-high text-on-surface-variant"
                       }`}
                     >
                       Confidence: {r.stream_recommendation.confidence}
@@ -287,25 +227,34 @@ export default function ReportPage() {
                 </div>
                 {r.stream_recommendation.alternative_stream && (
                   <div className="text-right">
-                    <p className="text-xs text-gray-400">Alternative</p>
-                    <p className="text-sm font-medium text-gray-600">{r.stream_recommendation.alternative_stream}</p>
+                    <p className="text-xs text-on-surface-variant font-body">Alternative</p>
+                    <p className="text-sm font-heading font-semibold text-on-surface">
+                      {r.stream_recommendation.alternative_stream}
+                    </p>
                   </div>
                 )}
               </div>
 
               {r.stream_recommendation.reasoning && (
-                <p className="mt-3 text-sm text-gray-700 leading-relaxed">
+                <p className="mt-4 text-sm text-on-surface-variant leading-relaxed font-body">
                   {r.stream_recommendation.reasoning}
                 </p>
               )}
 
               {r.stream_recommendation.why_this_stream && r.stream_recommendation.why_this_stream.length > 0 && (
-                <div className="mt-4">
-                  <p className="text-xs font-semibold text-gray-400 uppercase mb-2">Why This Stream</p>
-                  <ul className="space-y-1">
+                <div className="mt-5">
+                  <p className="text-xs font-heading font-semibold text-on-surface-variant uppercase mb-2">
+                    Why This Stream
+                  </p>
+                  <ul className="space-y-1.5">
                     {r.stream_recommendation.why_this_stream.map((reason, i) => (
-                      <li key={i} className="text-sm text-gray-700 flex gap-2">
-                        <span style={{ color: GOLD }}>✓</span> {reason}
+                      <li key={i} className="text-sm text-on-surface font-body flex gap-2 items-start">
+                        <span className="text-accent shrink-0 mt-0.5">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        </span>
+                        {reason}
                       </li>
                     ))}
                   </ul>
@@ -313,76 +262,100 @@ export default function ReportPage() {
               )}
 
               {r.stream_recommendation.subject_combination && (
-                <div className="mt-3 bg-blue-50 rounded-lg px-4 py-3">
-                  <p className="text-xs font-semibold text-blue-600 uppercase mb-1">Recommended Subjects</p>
-                  <p className="text-sm text-blue-800">{r.stream_recommendation.subject_combination}</p>
+                <div className="mt-4 bg-primary-50 rounded p-4">
+                  <p className="text-xs font-heading font-semibold text-primary uppercase mb-1">
+                    Recommended Subjects
+                  </p>
+                  <p className="text-sm text-primary-700 font-body">
+                    {r.stream_recommendation.subject_combination}
+                  </p>
                 </div>
               )}
-            </Card>
-          </Section>
+            </div>
+          </section>
         )}
 
-        {/* Career Matches */}
+        {/* ── Career Matches ── */}
         {r.career_matches && r.career_matches.length > 0 && (
-          <Section title="Career Matches">
+          <section>
+            <SectionHeading>Career Matches</SectionHeading>
             <div className="space-y-4">
               {r.career_matches.map((career, i) => (
-                <Card key={i}>
+                <div key={i} className="sa-card">
                   <div className="flex items-start gap-4">
+                    {/* Rank badge */}
                     <div
-                      className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm shrink-0"
-                      style={{ backgroundColor: i === 0 ? GOLD : NAVY }}
+                      className={`w-11 h-11 rounded-lg flex items-center justify-center font-heading font-bold text-sm text-white shrink-0 ${
+                        i === 0 ? "bg-gold-gradient" : "bg-brand-gradient"
+                      }`}
                     >
                       #{career.rank || i + 1}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 flex-wrap">
                         <div>
-                          <h3 className="font-bold text-gray-900">{career.career_name}</h3>
+                          <h3 className="font-heading font-bold text-on-surface">
+                            {career.career_name}
+                          </h3>
                           {career.career_name_hindi && (
-                            <p className="text-xs text-gray-400">{career.career_name_hindi}</p>
+                            <p className="text-xs text-on-surface-variant font-body mt-0.5">
+                              {career.career_name_hindi}
+                            </p>
                           )}
                         </div>
                         {career.match_score && (
-                          <span className="text-sm font-bold px-2 py-0.5 rounded-lg bg-green-50 text-green-700 shrink-0">
+                          <span className="text-sm font-heading font-bold px-3 py-1 rounded-full bg-accent-50 text-accent-600 shrink-0">
                             {career.match_score}% match
                           </span>
                         )}
                       </div>
 
                       {career.why_it_fits && (
-                        <p className="mt-2 text-sm text-gray-600 leading-relaxed">{career.why_it_fits}</p>
+                        <p className="mt-3 text-sm text-on-surface-variant leading-relaxed font-body">
+                          {career.why_it_fits}
+                        </p>
                       )}
 
-                      <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {career.salary_range && (
-                          <div className="bg-gray-50 rounded-lg p-3">
-                            <p className="text-xs font-semibold text-gray-400 uppercase mb-1">Salary</p>
-                            <p className="text-sm text-gray-700">{career.salary_range}</p>
+                          <div className="bg-surface-container-high rounded p-3">
+                            <p className="text-xs font-heading font-semibold text-on-surface-variant uppercase mb-1">
+                              Salary
+                            </p>
+                            <p className="text-sm text-on-surface font-body">{career.salary_range}</p>
                           </div>
                         )}
                         {career.growth_outlook && (
-                          <div className="bg-gray-50 rounded-lg p-3">
-                            <p className="text-xs font-semibold text-gray-400 uppercase mb-1">Growth Outlook</p>
-                            <p className="text-sm text-gray-700">{career.growth_outlook}</p>
+                          <div className="bg-surface-container-high rounded p-3">
+                            <p className="text-xs font-heading font-semibold text-on-surface-variant uppercase mb-1">
+                              Growth Outlook
+                            </p>
+                            <p className="text-sm text-on-surface font-body">{career.growth_outlook}</p>
                           </div>
                         )}
                       </div>
 
                       {career.education_pathway && (
                         <div className="mt-3">
-                          <p className="text-xs font-semibold text-gray-400 uppercase mb-1">Education Pathway</p>
-                          <p className="text-sm text-gray-700">{career.education_pathway}</p>
+                          <p className="text-xs font-heading font-semibold text-on-surface-variant uppercase mb-1">
+                            Education Pathway
+                          </p>
+                          <p className="text-sm text-on-surface font-body">{career.education_pathway}</p>
                         </div>
                       )}
 
-                      <div className="mt-3 flex flex-wrap gap-3">
+                      <div className="mt-3 flex flex-wrap gap-4">
                         {career.entrance_exams && career.entrance_exams.length > 0 && (
                           <div>
-                            <p className="text-xs font-semibold text-gray-400 uppercase mb-1">Entrance Exams</p>
-                            <div className="flex flex-wrap gap-1">
+                            <p className="text-xs font-heading font-semibold text-on-surface-variant uppercase mb-1.5">
+                              Entrance Exams
+                            </p>
+                            <div className="flex flex-wrap gap-1.5">
                               {career.entrance_exams.map((e, j) => (
-                                <span key={j} className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">
+                                <span
+                                  key={j}
+                                  className="text-xs bg-primary-50 text-primary-600 px-2.5 py-1 rounded-full font-body"
+                                >
                                   {e}
                                 </span>
                               ))}
@@ -391,10 +364,15 @@ export default function ReportPage() {
                         )}
                         {career.top_colleges && career.top_colleges.length > 0 && (
                           <div>
-                            <p className="text-xs font-semibold text-gray-400 uppercase mb-1">Top Colleges</p>
-                            <div className="flex flex-wrap gap-1">
+                            <p className="text-xs font-heading font-semibold text-on-surface-variant uppercase mb-1.5">
+                              Top Colleges
+                            </p>
+                            <div className="flex flex-wrap gap-1.5">
                               {career.top_colleges.slice(0, 3).map((c, j) => (
-                                <span key={j} className="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full">
+                                <span
+                                  key={j}
+                                  className="text-xs bg-accent-50 text-accent-600 px-2.5 py-1 rounded-full font-body"
+                                >
                                   {c}
                                 </span>
                               ))}
@@ -404,149 +382,220 @@ export default function ReportPage() {
                       </div>
                     </div>
                   </div>
-                </Card>
+                </div>
               ))}
             </div>
-          </Section>
+          </section>
         )}
 
-        {/* Action Plan */}
+        {/* ── Action Plan ── */}
         {r.action_plan && (
-          <Section title="Action Plan">
-            <Card>
+          <section>
+            <SectionHeading>Action Plan</SectionHeading>
+
+            {/* Time-period cards in a row */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {r.action_plan.next_3_months && r.action_plan.next_3_months.length > 0 && (
-                <TimelineItem label="Next 3 Months" items={r.action_plan.next_3_months} />
-              )}
-              {r.action_plan.next_1_year && r.action_plan.next_1_year.length > 0 && (
-                <TimelineItem label="Next 1 Year" items={r.action_plan.next_1_year} />
-              )}
-              {r.action_plan.next_2_3_years && r.action_plan.next_2_3_years.length > 0 && (
-                <TimelineItem label="2–3 Years Ahead" items={r.action_plan.next_2_3_years} />
-              )}
-            </Card>
-
-            {(r.action_plan.recommended_books || r.action_plan.recommended_youtube || r.action_plan.recommended_websites) && (
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-                {r.action_plan.recommended_books && r.action_plan.recommended_books.length > 0 && (
-                  <Card>
-                    <p className="text-xs font-semibold text-gray-400 uppercase mb-2">Books</p>
-                    <ul className="space-y-1">
-                      {r.action_plan.recommended_books.map((b, i) => (
-                        <li key={i} className="text-xs text-gray-700 flex gap-1">
-                          <span style={{ color: NAVY }}>📚</span> {b}
-                        </li>
-                      ))}
-                    </ul>
-                  </Card>
-                )}
-                {r.action_plan.recommended_youtube && r.action_plan.recommended_youtube.length > 0 && (
-                  <Card>
-                    <p className="text-xs font-semibold text-gray-400 uppercase mb-2">YouTube Channels</p>
-                    <ul className="space-y-1">
-                      {r.action_plan.recommended_youtube.map((y, i) => (
-                        <li key={i} className="text-xs text-gray-700 flex gap-1">
-                          <span>▶</span> {y}
-                        </li>
-                      ))}
-                    </ul>
-                  </Card>
-                )}
-                {r.action_plan.recommended_websites && r.action_plan.recommended_websites.length > 0 && (
-                  <Card>
-                    <p className="text-xs font-semibold text-gray-400 uppercase mb-2">Websites</p>
-                    <ul className="space-y-1">
-                      {r.action_plan.recommended_websites.map((w, i) => (
-                        <li key={i} className="text-xs text-gray-700 flex gap-1">
-                          <span style={{ color: GOLD }}>🔗</span> {w}
-                        </li>
-                      ))}
-                    </ul>
-                  </Card>
-                )}
-              </div>
-            )}
-          </Section>
-        )}
-
-        {/* Personal Note */}
-        {r.personal_note && (
-          <Section title={`A Note for ${data.student_name.split(" ")[0]}`}>
-            <Card>
-              <div
-                className="text-sm text-gray-700 leading-relaxed whitespace-pre-line italic border-l-4 pl-4"
-                style={{ borderColor: GOLD }}
-              >
-                {r.personal_note}
-              </div>
-            </Card>
-          </Section>
-        )}
-
-        {/* Parent Section */}
-        {r.parent_section && (
-          <Section title="For Parents / अभिभावकों के लिए">
-            <Card>
-              {r.parent_section.recommendation_summary && (
-                <p className="text-sm text-gray-700 leading-relaxed mb-4">
-                  {r.parent_section.recommendation_summary}
-                </p>
-              )}
-              {r.parent_section.recommendation_summary_hindi && (
-                <p className="text-sm text-gray-600 leading-relaxed mb-4 italic">
-                  {r.parent_section.recommendation_summary_hindi}
-                </p>
-              )}
-
-              {r.parent_section.what_to_do_now && r.parent_section.what_to_do_now.length > 0 && (
-                <div className="mb-4">
-                  <p className="text-xs font-semibold text-gray-400 uppercase mb-2">What To Do Now</p>
-                  <ul className="space-y-1">
-                    {r.parent_section.what_to_do_now.map((item, i) => (
-                      <li key={i} className="text-sm text-gray-700 flex gap-2">
-                        <span style={{ color: GOLD }}>✓</span> {item}
+                <div className="rounded p-5 bg-primary-50">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center">
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </span>
+                    <h4 className="text-sm font-heading font-bold text-primary">Next 3 Months</h4>
+                  </div>
+                  <ul className="space-y-1.5">
+                    {r.action_plan.next_3_months.map((item, i) => (
+                      <li key={i} className="text-xs text-primary-700 font-body flex gap-1.5 items-start">
+                        <span className="text-primary mt-0.5 shrink-0">&#x2022;</span>
+                        {item}
                       </li>
                     ))}
                   </ul>
                 </div>
               )}
+              {r.action_plan.next_1_year && r.action_plan.next_1_year.length > 0 && (
+                <div className="rounded p-5 bg-secondary-50">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="w-7 h-7 rounded-full bg-secondary text-white flex items-center justify-center">
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </span>
+                    <h4 className="text-sm font-heading font-bold text-secondary-600">Next 1 Year</h4>
+                  </div>
+                  <ul className="space-y-1.5">
+                    {r.action_plan.next_1_year.map((item, i) => (
+                      <li key={i} className="text-xs text-secondary-600 font-body flex gap-1.5 items-start">
+                        <span className="text-secondary mt-0.5 shrink-0">&#x2022;</span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {r.action_plan.next_2_3_years && r.action_plan.next_2_3_years.length > 0 && (
+                <div className="rounded p-5 bg-accent-50">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="w-7 h-7 rounded-full bg-accent text-white flex items-center justify-center">
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </span>
+                    <h4 className="text-sm font-heading font-bold text-accent-600">2-3 Years Ahead</h4>
+                  </div>
+                  <ul className="space-y-1.5">
+                    {r.action_plan.next_2_3_years.map((item, i) => (
+                      <li key={i} className="text-xs text-accent-600 font-body flex gap-1.5 items-start">
+                        <span className="text-accent mt-0.5 shrink-0">&#x2022;</span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            {/* Resources */}
+            {(r.action_plan.recommended_books || r.action_plan.recommended_youtube || r.action_plan.recommended_websites) && (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+                {r.action_plan.recommended_books && r.action_plan.recommended_books.length > 0 && (
+                  <div className="sa-card">
+                    <p className="text-xs font-heading font-semibold text-on-surface-variant uppercase mb-3">
+                      Books
+                    </p>
+                    <ul className="space-y-1.5">
+                      {r.action_plan.recommended_books.map((b, i) => (
+                        <li key={i} className="text-xs text-on-surface font-body flex gap-1.5 items-start">
+                          <span className="text-primary shrink-0">&#x25A0;</span> {b}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {r.action_plan.recommended_youtube && r.action_plan.recommended_youtube.length > 0 && (
+                  <div className="sa-card">
+                    <p className="text-xs font-heading font-semibold text-on-surface-variant uppercase mb-3">
+                      YouTube Channels
+                    </p>
+                    <ul className="space-y-1.5">
+                      {r.action_plan.recommended_youtube.map((y, i) => (
+                        <li key={i} className="text-xs text-on-surface font-body flex gap-1.5 items-start">
+                          <span className="text-secondary shrink-0">&#x25B6;</span> {y}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {r.action_plan.recommended_websites && r.action_plan.recommended_websites.length > 0 && (
+                  <div className="sa-card">
+                    <p className="text-xs font-heading font-semibold text-on-surface-variant uppercase mb-3">
+                      Websites
+                    </p>
+                    <ul className="space-y-1.5">
+                      {r.action_plan.recommended_websites.map((w, i) => (
+                        <li key={i} className="text-xs text-on-surface font-body flex gap-1.5 items-start">
+                          <span className="text-accent shrink-0">&#x2192;</span> {w}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* ── Personal Note ── */}
+        {r.personal_note && (
+          <section>
+            <SectionHeading>A Note for {data.student_name.split(" ")[0]}</SectionHeading>
+            <div className="sa-card border-l-4 border-secondary">
+              <p className="text-sm text-on-surface-variant leading-relaxed whitespace-pre-line italic font-body">
+                {r.personal_note}
+              </p>
+            </div>
+          </section>
+        )}
+
+        {/* ── Parent Section ── */}
+        {r.parent_section && (
+          <section>
+            <SectionHeading>For Parents / &#x0905;&#x092D;&#x093F;&#x092D;&#x093E;&#x0935;&#x0915;&#x094B;&#x0902; &#x0915;&#x0947; &#x0932;&#x093F;&#x090F;</SectionHeading>
+            <div className="sa-card">
+              {r.parent_section.recommendation_summary && (
+                <p className="text-sm text-on-surface leading-relaxed mb-4 font-body">
+                  {r.parent_section.recommendation_summary}
+                </p>
+              )}
+              {r.parent_section.recommendation_summary_hindi && (
+                <p className="text-sm text-on-surface-variant leading-relaxed mb-5 italic font-body">
+                  {r.parent_section.recommendation_summary_hindi}
+                </p>
+              )}
+
+              {r.parent_section.what_to_do_now && r.parent_section.what_to_do_now.length > 0 && (
+                <div className="mb-5">
+                  <p className="text-xs font-heading font-semibold text-on-surface-variant uppercase mb-3">
+                    What To Do Now
+                  </p>
+                  <ol className="space-y-2">
+                    {r.parent_section.what_to_do_now.map((item, i) => (
+                      <li key={i} className="text-sm text-on-surface font-body flex gap-3 items-start">
+                        <span className="w-6 h-6 rounded-full bg-brand-gradient text-white flex items-center justify-center text-xs font-heading font-bold shrink-0">
+                          {i + 1}
+                        </span>
+                        {item}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
 
               {r.parent_section.faqs && r.parent_section.faqs.length > 0 && (
                 <div>
-                  <p className="text-xs font-semibold text-gray-400 uppercase mb-3">Common Questions</p>
+                  <p className="text-xs font-heading font-semibold text-on-surface-variant uppercase mb-3">
+                    Common Questions
+                  </p>
                   <div className="space-y-3">
                     {r.parent_section.faqs.map((faq, i) => (
-                      <div key={i} className="bg-gray-50 rounded-lg p-3">
-                        <p className="text-sm font-semibold text-gray-800 mb-1">{faq.question_en}</p>
+                      <div key={i} className="bg-surface-container-high rounded p-4">
+                        <p className="text-sm font-heading font-semibold text-on-surface mb-1">
+                          {faq.question_en}
+                        </p>
                         {faq.question_hi && (
-                          <p className="text-xs text-gray-400 mb-1">{faq.question_hi}</p>
+                          <p className="text-xs text-on-surface-variant mb-2 font-body">{faq.question_hi}</p>
                         )}
-                        <p className="text-sm text-gray-700">{faq.answer_en}</p>
+                        <p className="text-sm text-on-surface font-body">{faq.answer_en}</p>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
-            </Card>
-          </Section>
+            </div>
+          </section>
         )}
 
-        {/* Footer */}
-        <div className="text-center pt-4 pb-8 border-t border-gray-200 mt-8">
-          <p className="text-xs text-gray-400">
-            CareerDisha — AI Career Counselling for Indian Students
-          </p>
-          <p className="text-xs text-gray-300 mt-1">
-            This report is personal and confidential. Token: {token.slice(0, 8)}…
-          </p>
+        {/* ── Footer ── */}
+        <div className="text-center pt-6 pb-8 mt-8">
           <a
             href={`${API_BASE}/d2c/pdf/${token}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block mt-4 px-6 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-opacity"
-            style={{ backgroundColor: NAVY }}
+            className="btn-primary px-8 py-3"
           >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
             Download PDF Report
           </a>
+          <p className="text-xs text-on-surface-variant mt-4 font-body">
+            CareerDisha — AI Career Counselling for Indian Students
+          </p>
+          <p className="text-xs text-outline mt-1 font-body">
+            This report is personal and confidential. Token: {token.slice(0, 8)}...
+          </p>
         </div>
       </div>
     </div>

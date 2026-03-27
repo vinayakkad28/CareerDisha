@@ -3,13 +3,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/components/Toast";
+import { RiasecBarChart } from "@/components/RiasecRadarChart";
 
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api").replace(/\/api\/?$/, "");
 
 /* ── brand tokens ─────────────────────────────────────────── */
 const NAVY = "#1a5276";
 const GOLD = "#d4ac0d";
-const NAVY_DARK = "#0d2b3e";
 
 const RIASEC_LABELS: Record<string, string> = {
   R: "Realistic",
@@ -83,18 +83,10 @@ function cls(...classes: (string | false | undefined | null)[]) {
 /* ── module-level components (stable identity — never defined inside render) ── */
 function Logo() {
   return (
-    <h1 className="text-2xl font-bold tracking-tight">
+    <h1 className="text-2xl font-heading font-bold tracking-tight">
       <span className="text-white">Career</span>
-      <span style={{ color: GOLD }}>Disha</span>
+      <span className="text-secondary">Disha</span>
     </h1>
-  );
-}
-
-function Card({ children, className: extra }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div className={cls("bg-white rounded-2xl shadow-sm border border-gray-100 p-6", extra)}>
-      {children}
-    </div>
   );
 }
 
@@ -106,10 +98,11 @@ function OptionButtons({ options, value, onChange }: { options: string[]; value:
           key={opt}
           onClick={() => onChange(opt)}
           className={cls(
-            "px-4 py-2 rounded-xl text-sm font-medium transition-all border",
-            value === opt ? "text-white border-transparent shadow-sm" : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
+            "px-4 py-2 rounded text-sm font-medium transition-all",
+            value === opt
+              ? "btn-primary !inline-flex"
+              : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
           )}
-          style={value === opt ? { background: `linear-gradient(135deg, ${NAVY} 0%, ${NAVY_DARK} 100%)` } : undefined}
         >
           {opt}
         </button>
@@ -120,19 +113,19 @@ function OptionButtons({ options, value, onChange }: { options: string[]; value:
 
 function Header({ step, progressPct, subtitle }: { step: number; progressPct: number; subtitle?: string }) {
   return (
-    <header className="bg-brand-gradient text-white py-5 shadow-lg">
-      <div className="max-w-lg mx-auto px-4 text-center">
+    <header className="bg-brand-gradient text-white py-5 sticky top-0 z-20">
+      <div className="max-w-form-narrow mx-auto px-4 text-center">
         <Logo />
-        {subtitle && <p className="text-white/60 text-sm mt-1">{subtitle}</p>}
+        {subtitle && <p className="text-white/60 font-body text-sm mt-1">{subtitle}</p>}
         {step >= 1 && step <= 7 && (
           <>
-            <div className="mt-3 bg-white/10 rounded-full h-2 overflow-hidden">
+            <div className="mt-3 bg-surface-container-high/20 rounded-full h-2 overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-500"
                 style={{ width: `${progressPct}%`, background: `linear-gradient(90deg, ${GOLD}, #2ecc71)` }}
               />
             </div>
-            <p className="text-white/40 text-xs mt-1">Step {step} of 8</p>
+            <p className="text-white/40 text-xs mt-1 font-body">Step {step} of 8</p>
           </>
         )}
       </div>
@@ -143,19 +136,20 @@ function Header({ step, progressPct, subtitle }: { step: number; progressPct: nu
 function ErrorBanner({ error }: { error: string }) {
   if (!error) return null;
   return (
-    <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-600 text-sm text-center">
+    <div className="sa-card bg-red-50 text-red-600 text-sm text-center">
       {error}
     </div>
   );
 }
 
 function PrimaryBtn({
-  children, onClick, disabled, loading, className: extra,
+  children, onClick, disabled, loading, gold, className: extra,
 }: {
   children: React.ReactNode;
   onClick?: () => void;
   disabled?: boolean;
   loading?: boolean;
+  gold?: boolean;
   className?: string;
 }) {
   return (
@@ -163,12 +157,11 @@ function PrimaryBtn({
       onClick={onClick}
       disabled={disabled || loading}
       className={cls(
-        "w-full py-3.5 rounded-xl font-semibold text-sm transition-all duration-200",
+        gold ? "btn-gold" : "btn-gold",
+        "w-full py-3.5 font-heading font-bold text-sm",
         "disabled:opacity-40 disabled:cursor-not-allowed",
-        "hover:shadow-lg active:scale-[0.98]",
         extra
       )}
-      style={{ background: `linear-gradient(135deg, ${GOLD} 0%, #b8960b 100%)`, color: NAVY }}
     >
       {loading ? (
         <span className="inline-flex items-center gap-2">
@@ -520,18 +513,18 @@ export default function AssessmentPage() {
      ═══════════════════════════════════════════════════════════ */
   if (step === 1) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa]">
+      <div className="min-h-screen bg-surface font-body">
         <Header step={step} progressPct={progressPct} />
-        <div className="max-w-lg mx-auto px-4 py-8 space-y-5">
-          <Card>
+        <div className="max-w-form-narrow mx-auto px-4 py-8 space-y-5">
+          <div className="sa-card">
             <div className="text-center mb-6">
-              <h2 className="text-xl font-bold" style={{ color: NAVY }}>
+              <h2 className="text-xl font-heading font-bold text-primary">
                 AI Career Assessment
               </h2>
-              <p className="text-gray-400 text-sm">
+              <p className="text-on-surface-variant/60 text-sm font-body">
                 एआई करियर मूल्यांकन
               </p>
-              <p className="text-gray-600 text-sm mt-3 leading-relaxed">
+              <p className="text-on-surface-variant text-sm mt-3 leading-relaxed">
                 Discover your ideal career path in 20 minutes. Answer 74
                 research-backed questions and get a personalized career report
                 powered by AI.
@@ -540,7 +533,7 @@ export default function AssessmentPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-heading font-semibold text-on-surface mb-1">
                   Student Name <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -548,49 +541,44 @@ export default function AssessmentPage() {
                   value={studentName}
                   onChange={(e) => { setStudentName(e.target.value); if (e.target.value.trim()) setNameError(""); }}
                   placeholder="Enter your full name"
-                  className={`w-full px-4 py-2.5 border rounded-xl text-sm
-                    focus:ring-2 focus:ring-[#1a5276]/20 outline-none
-                    transition-all bg-gray-50 focus:bg-white placeholder:text-gray-400 ${
-                    nameError ? "border-red-400 focus:border-red-400" : "border-gray-200 focus:border-[#1a5276]"
-                  }`}
+                  className={cls(
+                    "sa-input",
+                    nameError && "!border-red-400 focus:!border-red-400"
+                  )}
                 />
                 {nameError && <p className="text-red-500 text-xs mt-1">{nameError}</p>}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-heading font-semibold text-on-surface mb-1">
                   Email{" "}
-                  <span className="text-gray-400 font-normal">(optional)</span>
+                  <span className="text-on-surface-variant font-normal font-body">(optional)</span>
                 </label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@email.com"
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm
-                    focus:ring-2 focus:ring-[#1a5276]/20 focus:border-[#1a5276] outline-none
-                    transition-all bg-gray-50 focus:bg-white placeholder:text-gray-400"
+                  className="sa-input"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-heading font-semibold text-on-surface mb-1">
                   Parent / Guardian Phone{" "}
-                  <span className="text-gray-400 font-normal">(optional)</span>
+                  <span className="text-on-surface-variant font-normal font-body">(optional)</span>
                 </label>
                 <input
                   type="tel"
                   value={parentPhone}
                   onChange={(e) => setParentPhone(e.target.value)}
                   placeholder="WhatsApp number"
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm
-                    focus:ring-2 focus:ring-[#1a5276]/20 focus:border-[#1a5276] outline-none
-                    transition-all bg-gray-50 focus:bg-white placeholder:text-gray-400"
+                  className="sa-input"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-heading font-semibold text-on-surface mb-2">
                   Class
                 </label>
                 <OptionButtons
@@ -600,14 +588,14 @@ export default function AssessmentPage() {
                 />
               </div>
             </div>
-          </Card>
+          </div>
 
           <ErrorBanner error={error} />
           <PrimaryBtn loading={loading} onClick={handleStart} disabled={!studentName.trim()}>
             Start Assessment
           </PrimaryBtn>
 
-          <p className="text-center text-xs text-gray-400">
+          <p className="text-center text-xs text-on-surface-variant font-body">
             Takes approximately 20 minutes &middot; 74 questions &middot; No
             login required
           </p>
@@ -621,21 +609,21 @@ export default function AssessmentPage() {
      ═══════════════════════════════════════════════════════════ */
   if (step === 2) {
     return (
-      <div className="min-h-screen bg-[#f8f9fa]">
+      <div className="min-h-screen bg-surface font-body">
         <Header step={step} progressPct={progressPct} subtitle="Help us personalize your report" />
-        <div className="max-w-lg mx-auto px-4 py-8 space-y-5">
-          <Card>
-            <h3 className="text-lg font-bold mb-1" style={{ color: NAVY }}>
+        <div className="max-w-form-narrow mx-auto px-4 py-8 space-y-5">
+          <div className="sa-card">
+            <h3 className="text-lg font-heading font-bold text-primary mb-1">
               Help us personalize your report
             </h3>
-            <p className="text-gray-500 text-sm mb-5">
+            <p className="text-on-surface-variant text-sm mb-5">
               This information is optional but helps us give more relevant
               recommendations.
             </p>
 
             <div className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-heading font-semibold text-on-surface mb-2">
                   Gender
                 </label>
                 <OptionButtons
@@ -646,7 +634,7 @@ export default function AssessmentPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-heading font-semibold text-on-surface mb-2">
                   Family Income Bracket
                 </label>
                 <OptionButtons
@@ -657,7 +645,7 @@ export default function AssessmentPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-heading font-semibold text-on-surface mb-2">
                   Location
                 </label>
                 <OptionButtons
@@ -668,7 +656,7 @@ export default function AssessmentPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-heading font-semibold text-on-surface mb-2">
                   Parental Education
                 </label>
                 <OptionButtons
@@ -679,14 +667,14 @@ export default function AssessmentPage() {
               </div>
 
               <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-gray-700">
+                <label className="text-sm font-heading font-semibold text-on-surface">
                   First-generation learner?
                 </label>
                 <button
                   onClick={() => setFirstGen(!firstGen)}
                   className={cls(
                     "w-12 h-6 rounded-full transition-all relative",
-                    firstGen ? "bg-green-500" : "bg-gray-300"
+                    firstGen ? "bg-accent" : "bg-surface-container-highest"
                   )}
                 >
                   <span
@@ -699,13 +687,13 @@ export default function AssessmentPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-heading font-semibold text-on-surface mb-2">
                   Academic Marks{" "}
-                  <span className="text-gray-400 font-normal">(optional %)</span>
+                  <span className="text-on-surface-variant font-normal font-body">(optional %)</span>
                 </label>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">
+                    <label className="block text-xs text-on-surface-variant mb-1 font-body">
                       Maths
                     </label>
                     <input
@@ -715,13 +703,11 @@ export default function AssessmentPage() {
                       value={mathMarks}
                       onChange={(e) => setMathMarks(e.target.value)}
                       placeholder="%"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm
-                        focus:ring-2 focus:ring-[#1a5276]/20 focus:border-[#1a5276] outline-none
-                        bg-gray-50 focus:bg-white placeholder:text-gray-400"
+                      className="sa-input"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">
+                    <label className="block text-xs text-on-surface-variant mb-1 font-body">
                       Science
                     </label>
                     <input
@@ -731,13 +717,11 @@ export default function AssessmentPage() {
                       value={scienceMarks}
                       onChange={(e) => setScienceMarks(e.target.value)}
                       placeholder="%"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm
-                        focus:ring-2 focus:ring-[#1a5276]/20 focus:border-[#1a5276] outline-none
-                        bg-gray-50 focus:bg-white placeholder:text-gray-400"
+                      className="sa-input"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">
+                    <label className="block text-xs text-on-surface-variant mb-1 font-body">
                       English
                     </label>
                     <input
@@ -747,22 +731,20 @@ export default function AssessmentPage() {
                       value={englishMarks}
                       onChange={(e) => setEnglishMarks(e.target.value)}
                       placeholder="%"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm
-                        focus:ring-2 focus:ring-[#1a5276]/20 focus:border-[#1a5276] outline-none
-                        bg-gray-50 focus:bg-white placeholder:text-gray-400"
+                      className="sa-input"
                     />
                   </div>
                 </div>
               </div>
             </div>
-          </Card>
+          </div>
 
           <ErrorBanner error={error} />
           <PrimaryBtn loading={loading} onClick={handleContextContinue}>Continue</PrimaryBtn>
           <div className="text-center">
             <button
               onClick={handleContextSkip}
-              className="text-sm text-gray-400 hover:text-gray-600 underline transition-colors"
+              className="btn-ghost text-sm"
             >
               Skip this step
             </button>
@@ -780,14 +762,14 @@ export default function AssessmentPage() {
     const allSEAnswered = Object.keys(selfEfficacy).length === 6;
 
     return (
-      <div className="min-h-screen bg-[#f8f9fa]">
+      <div className="min-h-screen bg-surface font-body">
         <Header step={step} progressPct={progressPct} subtitle="How confident are you in these areas?" />
-        <div className="max-w-lg mx-auto px-4 py-8 space-y-5">
-          <Card>
-            <h3 className="text-lg font-bold mb-1" style={{ color: NAVY }}>
+        <div className="max-w-form-narrow mx-auto px-4 py-8 space-y-5">
+          <div className="sa-card">
+            <h3 className="text-lg font-heading font-bold text-primary mb-1">
               Self-Confidence Check
             </h3>
-            <p className="text-gray-500 text-sm mb-5">
+            <p className="text-on-surface-variant text-sm mb-5">
               Rate your confidence in each area. This takes about 30 seconds.
             </p>
 
@@ -796,7 +778,7 @@ export default function AssessmentPage() {
                 const val = selfEfficacy[domain];
                 return (
                   <div key={domain}>
-                    <p className="text-sm font-medium text-gray-700 mb-2">
+                    <p className="text-sm font-heading font-semibold text-on-surface mb-2">
                       {domain}
                     </p>
                     <div className="flex gap-1.5">
@@ -807,18 +789,11 @@ export default function AssessmentPage() {
                             setSelfEfficacy((p) => ({ ...p, [domain]: score }))
                           }
                           className={cls(
-                            "flex-1 py-2 rounded-xl text-center transition-all text-xs leading-tight border",
+                            "flex-1 py-2 rounded text-center transition-all text-xs leading-tight font-medium",
                             val === score
-                              ? "text-white border-transparent shadow-sm font-semibold"
-                              : "bg-gray-50 text-gray-500 border-gray-100 hover:bg-gray-100"
+                              ? "btn-primary !py-2 !px-1 !text-xs"
+                              : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
                           )}
-                          style={
-                            val === score
-                              ? {
-                                  background: `linear-gradient(135deg, ${NAVY} 0%, ${NAVY_DARK} 100%)`,
-                                }
-                              : undefined
-                          }
                         >
                           {seLabels[score - 1] || score}
                         </button>
@@ -828,11 +803,11 @@ export default function AssessmentPage() {
                 );
               })}
             </div>
-          </Card>
+          </div>
 
           <ErrorBanner error={error} />
           {!allSEAnswered && (
-            <p className="text-center text-xs text-amber-600">
+            <p className="text-center text-xs text-secondary-500 font-body">
               {6 - Object.keys(selfEfficacy).length} subject{6 - Object.keys(selfEfficacy).length !== 1 ? "s" : ""} still unrated — scroll up to complete
             </p>
           )}
@@ -854,11 +829,11 @@ export default function AssessmentPage() {
   if (step === 4) {
     if (!questions || questions.length === 0) {
       return (
-        <div className="min-h-screen bg-[#f8f9fa]">
+        <div className="min-h-screen bg-surface font-body">
           <Header step={step} progressPct={progressPct} subtitle="Loading assessment..." />
-          <div className="max-w-lg mx-auto px-4 py-16 text-center">
-            <div className="w-10 h-10 border-3 border-gray-300 border-t-gray-600 rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-gray-500 text-sm">Loading questions...</p>
+          <div className="max-w-form-narrow mx-auto px-4 py-16 text-center">
+            <div className="w-10 h-10 border-3 border-surface-container-highest border-t-primary rounded-full animate-spin mx-auto mb-4" />
+            <p className="text-on-surface-variant text-sm">Loading questions...</p>
             {error && (
               <p className="text-red-500 text-sm mt-2">{error}</p>
             )}
@@ -871,14 +846,14 @@ export default function AssessmentPage() {
     const selectedAnswer = q ? answers[String(q.id)] : undefined;
 
     return (
-      <div className="min-h-screen bg-[#f8f9fa]">
-        <header className="bg-brand-gradient text-white py-5 shadow-lg sticky top-0 z-20">
-          <div className="max-w-lg mx-auto px-4 text-center">
+      <div className="min-h-screen bg-surface font-body">
+        <header className="bg-brand-gradient text-white py-5 sticky top-0 z-20">
+          <div className="max-w-form-narrow mx-auto px-4 text-center">
             <Logo />
-            <p className="text-white/60 text-sm mt-1">
+            <p className="text-white/60 text-sm mt-1 font-body">
               Question {currentQ + 1} of {totalQ}
             </p>
-            <div className="mt-3 bg-white/10 rounded-full h-2 overflow-hidden">
+            <div className="mt-3 bg-surface-container-high/20 rounded-full h-2 overflow-hidden">
               <div
                 className="h-full rounded-full transition-all duration-300"
                 style={{
@@ -887,20 +862,28 @@ export default function AssessmentPage() {
                 }}
               />
             </div>
-            <p className="text-white/40 text-xs mt-1">
+            <p className="text-white/40 text-xs mt-1 font-body">
               {answeredCount} answered
             </p>
           </div>
         </header>
 
-        <div className="max-w-lg mx-auto px-4 py-8">
-          <Card className="mb-6">
-            <p className="text-base font-medium text-gray-800 leading-relaxed mb-1">
-              {q?.text}
-            </p>
-            {q?.text_hi && (
-              <p className="text-sm text-gray-400">{q.text_hi}</p>
-            )}
+        <div className="max-w-form-narrow mx-auto px-4 py-8">
+          <div className="sa-card mb-6 animate-slide-in">
+            {/* Numbered badge */}
+            <div className="flex items-start gap-3 mb-4">
+              <span className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-sm font-heading font-bold shrink-0">
+                {currentQ + 1}
+              </span>
+              <div>
+                <p className="text-base font-heading font-medium text-on-surface leading-relaxed">
+                  {q?.text}
+                </p>
+                {q?.text_hi && (
+                  <p className="text-sm text-on-surface-variant/60 mt-1">{q.text_hi}</p>
+                )}
+              </div>
+            </div>
 
             <div className="mt-6 space-y-2">
               {SCALE_LABELS.map((label, i) => {
@@ -924,41 +907,32 @@ export default function AssessmentPage() {
                       }
                     }}
                     className={cls(
-                      "w-full py-3 px-4 rounded-xl text-left text-sm font-medium transition-all border",
+                      "w-full py-3 px-4 rounded text-left text-sm font-medium transition-all",
                       isSelected
-                        ? "text-white border-transparent shadow-sm"
-                        : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
+                        ? "btn-primary !w-full !py-3 !px-4 !text-left !text-sm"
+                        : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
                     )}
-                    style={
-                      isSelected
-                        ? {
-                            background: `linear-gradient(135deg, ${NAVY} 0%, ${NAVY_DARK} 100%)`,
-                          }
-                        : undefined
-                    }
                   >
-                    <span className="inline-block w-6">{score}.</span> {label}
+                    <span className="inline-block w-6 font-heading">{score}.</span> {label}
                   </button>
                 );
               })}
             </div>
-          </Card>
+          </div>
 
           {/* Navigation */}
           <div className="flex gap-3">
             <button
               onClick={() => setCurrentQ((c) => Math.max(0, c - 1))}
               disabled={currentQ === 0}
-              className="flex-1 py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-600
-                hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+              className="btn-ghost flex-1 py-3 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               Previous
             </button>
             {currentQ < totalQ - 1 ? (
               <button
                 onClick={() => setCurrentQ((c) => c + 1)}
-                className="flex-1 py-3 rounded-xl text-sm font-medium border border-gray-200 text-gray-600
-                  hover:bg-gray-100 transition-all"
+                className="btn-ghost flex-1 py-3"
               >
                 Next
               </button>
@@ -966,21 +940,20 @@ export default function AssessmentPage() {
               <button
                 onClick={handleSubmitAssessment}
                 disabled={!allAnswered || loading}
-                className="flex-1 py-3 rounded-xl text-sm font-semibold text-white
-                  disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                style={{
-                  background: allAnswered
-                    ? `linear-gradient(135deg, ${GOLD} 0%, #b8960b 100%)`
-                    : "#9ca3af",
-                  color: allAnswered ? NAVY : "white",
-                }}
+                className={cls(
+                  "flex-1 py-3 rounded font-heading font-bold text-sm transition-all",
+                  "disabled:opacity-40 disabled:cursor-not-allowed",
+                  allAnswered ? "btn-gold" : "bg-surface-container-highest text-on-surface-variant"
+                )}
               >
                 {loading ? "Submitting..." : "Submit Assessment"}
               </button>
             )}
           </div>
 
-          <ErrorBanner error={error} />
+          <div className="mt-4">
+            <ErrorBanner error={error} />
+          </div>
         </div>
       </div>
     );
@@ -991,9 +964,6 @@ export default function AssessmentPage() {
      ═══════════════════════════════════════════════════════════ */
   if (step === 5) {
     const pd = previewData;
-    const maxScore = pd
-      ? Math.max(...Object.values(pd.riasec_scores), 1)
-      : 1;
 
     const PRICING = [
       {
@@ -1037,21 +1007,21 @@ export default function AssessmentPage() {
     ];
 
     return (
-      <div className="min-h-screen bg-[#f8f9fa]">
+      <div className="min-h-screen bg-surface font-body">
         <Header step={step} progressPct={progressPct} subtitle="Your Preview Results" />
-        <div className="max-w-lg mx-auto px-4 py-8 space-y-6">
+        <div className="max-w-form-narrow mx-auto px-4 py-8 space-y-6">
           {/* Holland Code */}
           {pd && (
             <>
-              <Card className="text-center">
-                <p className="text-xs uppercase tracking-widest text-gray-400 mb-2">
+              <div className="sa-card text-center">
+                <p className="text-xs font-heading uppercase tracking-widest text-on-surface-variant mb-2">
                   Your Holland Code
                 </p>
                 <div className="flex justify-center gap-2 mb-3">
                   {pd.holland_code.split("").map((letter, i) => (
                     <span
                       key={i}
-                      className="w-14 h-14 rounded-xl flex items-center justify-center text-white text-xl font-bold shadow-sm"
+                      className="w-14 h-14 rounded flex items-center justify-center text-white text-xl font-heading font-bold"
                       style={{
                         backgroundColor: RIASEC_COLORS[letter] || "#888",
                       }}
@@ -1060,195 +1030,146 @@ export default function AssessmentPage() {
                     </span>
                   ))}
                 </div>
-                <p className="text-gray-500 text-sm">
+                <p className="text-on-surface-variant text-sm">
                   {pd.holland_code
                     .split("")
                     .map((l) => RIASEC_LABELS[l] || l)
                     .join(" / ")}
                 </p>
-              </Card>
+              </div>
 
               {/* RIASEC bar chart */}
-              <Card>
-                <p className="text-xs uppercase tracking-widest text-gray-400 mb-4 text-center">
+              <div className="sa-card">
+                <p className="text-xs font-heading uppercase tracking-widest text-on-surface-variant mb-4 text-center">
                   Your Interest Profile
                 </p>
-                <div className="space-y-3">
-                  {"RIASEC".split("").map((type) => {
-                    const score = pd.riasec_scores[type] || 0;
-                    const widthPct =
-                      maxScore > 0 ? (score / maxScore) * 100 : 0;
-                    return (
-                      <div key={type} className="flex items-center gap-3">
-                        <div className="w-28 flex items-center gap-2 shrink-0">
-                          <span
-                            className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold shrink-0"
-                            style={{
-                              backgroundColor: RIASEC_COLORS[type],
-                            }}
-                          >
-                            {type}
-                          </span>
-                          <span className="text-xs text-gray-500 truncate">
-                            {RIASEC_LABELS[type]}
-                          </span>
-                        </div>
-                        <div className="flex-1 bg-gray-100 rounded-full h-5 relative overflow-hidden">
-                          <div
-                            className="h-full rounded-full transition-all duration-700 ease-out"
-                            style={{
-                              width: `${widthPct}%`,
-                              backgroundColor: RIASEC_COLORS[type],
-                              minWidth: score > 0 ? "8px" : "0px",
-                            }}
-                          />
-                        </div>
-                        <span className="text-sm font-semibold text-gray-700 w-12 text-right tabular-nums">
-                          {score}%
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </Card>
+                <RiasecBarChart scores={pd.riasec_scores} />
+              </div>
 
               {/* Stream recommendation */}
-              <Card className="text-center">
-                <p className="text-xs uppercase tracking-widest text-gray-400 mb-2">
+              <div className="sa-card text-center">
+                <p className="text-xs font-heading uppercase tracking-widest text-on-surface-variant mb-2">
                   Recommended Stream
                 </p>
-                <h2 className="text-2xl font-bold" style={{ color: NAVY }}>
+                <h2 className="text-2xl font-heading font-bold text-primary">
                   {pd.recommended_stream}
                 </h2>
                 <span
                   className={cls(
-                    "inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium",
+                    "inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold",
                     pd.confidence === "High"
-                      ? "bg-green-100 text-green-700"
+                      ? "bg-accent-100 text-accent-600"
                       : pd.confidence === "Medium"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-gray-100 text-gray-600"
+                      ? "bg-secondary-100 text-secondary-600"
+                      : "bg-surface-container-high text-on-surface-variant"
                   )}
                 >
                   Confidence: {pd.confidence}
                 </span>
-              </Card>
+              </div>
 
-              {/* Career teasers */}
+              {/* Career teasers as pills */}
               {pd.career_teasers && pd.career_teasers.length > 0 && (
-                <Card>
-                  <p className="text-xs uppercase tracking-widest text-gray-400 mb-3 text-center">
+                <div className="sa-card">
+                  <p className="text-xs font-heading uppercase tracking-widest text-on-surface-variant mb-3 text-center">
                     Top Career Matches
                   </p>
-                  <div className="space-y-2">
+                  <div className="flex flex-wrap justify-center gap-2">
                     {pd.career_teasers.slice(0, 3).map((career, i) => (
-                      <div
+                      <span
                         key={i}
-                        className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-secondary-50 text-on-surface rounded-full text-sm font-medium"
                       >
                         <span
-                          className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-bold shrink-0"
-                          style={{ backgroundColor: GOLD }}
+                          className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 bg-secondary"
                         >
                           {i + 1}
                         </span>
-                        <span className="text-sm font-medium text-gray-700">
-                          {typeof career === "string" ? career : (career as {name: string}).name}
-                        </span>
-                      </div>
+                        {typeof career === "string" ? career : (career as {name: string}).name}
+                      </span>
                     ))}
                   </div>
-                </Card>
+                </div>
               )}
             </>
           )}
 
           {/* Blurred/locked full report preview */}
-          <Card className="relative overflow-hidden">
+          <div className="sa-card relative overflow-hidden">
             <div className="filter blur-[2px] opacity-50 pointer-events-none select-none">
-              <p className="text-sm font-medium text-gray-700 mb-2">
+              <p className="text-sm font-heading font-medium text-on-surface mb-2">
                 Detailed Career Pathways
               </p>
-              <p className="text-xs text-gray-500 mb-1">
+              <p className="text-xs text-on-surface-variant mb-1">
                 Software Engineering - Expected salary: 8-25 LPA
               </p>
-              <p className="text-xs text-gray-500 mb-1">
+              <p className="text-xs text-on-surface-variant mb-1">
                 Data Science - Expected salary: 6-20 LPA
               </p>
-              <p className="text-xs text-gray-500 mb-3">
+              <p className="text-xs text-on-surface-variant mb-3">
                 Product Management - Expected salary: 10-30 LPA
               </p>
-              <p className="text-sm font-medium text-gray-700 mb-2">
+              <p className="text-sm font-heading font-medium text-on-surface mb-2">
                 Recommended Colleges (NIRF 2024)
               </p>
-              <p className="text-xs text-gray-500 mb-1">
+              <p className="text-xs text-on-surface-variant mb-1">
                 1. IIT Bombay - Rank #1
               </p>
-              <p className="text-xs text-gray-500 mb-1">
+              <p className="text-xs text-on-surface-variant mb-1">
                 2. IIT Delhi - Rank #2
               </p>
             </div>
             <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
               <div className="text-center px-4">
-                <div className="text-3xl mb-2">🔒</div>
-                <p
-                  className="text-sm font-bold mb-2"
-                  style={{ color: NAVY }}
-                >
+                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-secondary-50 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <p className="text-sm font-heading font-bold text-primary mb-2">
                   Your full 12-page report includes:
                 </p>
-                <ul className="text-xs text-gray-600 space-y-1 text-left inline-block">
-                  <li>&#x2713; Detailed career pathways &amp; roadmaps</li>
-                  <li>&#x2713; College lists with NIRF rankings</li>
-                  <li>&#x2713; Salary data &amp; job market outlook</li>
-                  <li>&#x2713; Personalized action plan</li>
-                  <li>&#x2713; Parent guide &amp; next steps</li>
+                <ul className="text-xs text-on-surface-variant space-y-1 text-left inline-block">
+                  <li className="flex items-center gap-1.5"><span className="text-accent">&#x2713;</span> Detailed career pathways &amp; roadmaps</li>
+                  <li className="flex items-center gap-1.5"><span className="text-accent">&#x2713;</span> College lists with NIRF rankings</li>
+                  <li className="flex items-center gap-1.5"><span className="text-accent">&#x2713;</span> Salary data &amp; job market outlook</li>
+                  <li className="flex items-center gap-1.5"><span className="text-accent">&#x2713;</span> Personalized action plan</li>
+                  <li className="flex items-center gap-1.5"><span className="text-accent">&#x2713;</span> Parent guide &amp; next steps</li>
                 </ul>
               </div>
             </div>
-          </Card>
+          </div>
 
           {/* Pricing cards */}
           <div className="space-y-4">
-            <h3
-              className="text-lg font-bold text-center"
-              style={{ color: NAVY }}
-            >
+            <h3 className="text-lg font-heading font-bold text-center text-primary">
               Unlock Your Full Report
             </h3>
             {PRICING.map((plan) => (
               <div
                 key={plan.tier}
                 className={cls(
-                  "rounded-2xl border-2 p-5 transition-all",
-                  plan.highlight
-                    ? "border-[#d4ac0d] shadow-lg shadow-[#d4ac0d]/10 bg-white"
-                    : "border-gray-200 bg-white"
+                  "sa-card transition-all",
+                  plan.highlight && "ring-2 ring-secondary shadow-lg shadow-secondary/10"
                 )}
               >
                 {plan.highlight && (
-                  <span
-                    className="inline-block px-3 py-0.5 rounded-full text-xs font-bold mb-2 text-white"
-                    style={{ backgroundColor: GOLD }}
-                  >
+                  <span className="inline-block px-3 py-0.5 rounded-full text-xs font-heading font-bold mb-2 text-white bg-secondary">
                     MOST POPULAR
                   </span>
                 )}
                 <div className="flex items-baseline justify-between mb-3">
-                  <h4
-                    className="text-lg font-bold"
-                    style={{ color: NAVY }}
-                  >
+                  <h4 className="text-lg font-heading font-bold text-primary">
                     {plan.name}
                   </h4>
-                  <span className="text-2xl font-bold" style={{ color: NAVY }}>
+                  <span className="text-2xl font-heading font-bold text-primary">
                     {plan.price}
                   </span>
                 </div>
                 <ul className="space-y-1.5 mb-4">
                   {plan.features.map((f, i) => (
-                    <li key={i} className="text-sm text-gray-600 flex items-start gap-2">
-                      <span className="text-green-500 mt-0.5">&#x2713;</span>
+                    <li key={i} className="text-sm text-on-surface-variant flex items-start gap-2">
+                      <span className="text-accent mt-0.5">&#x2713;</span>
                       {f}
                     </li>
                   ))}
@@ -1257,20 +1178,10 @@ export default function AssessmentPage() {
                   onClick={() => handleUnlockReport(plan.tier)}
                   disabled={loading}
                   className={cls(
-                    "w-full py-3 rounded-xl font-semibold text-sm transition-all",
-                    "hover:shadow-lg active:scale-[0.98] disabled:opacity-40"
+                    "w-full py-3 font-heading font-bold text-sm transition-all",
+                    "disabled:opacity-40 disabled:cursor-not-allowed",
+                    plan.highlight ? "btn-gold" : "btn-primary"
                   )}
-                  style={
-                    plan.highlight
-                      ? {
-                          background: `linear-gradient(135deg, ${GOLD} 0%, #b8960b 100%)`,
-                          color: NAVY,
-                        }
-                      : {
-                          background: `linear-gradient(135deg, ${NAVY} 0%, ${NAVY_DARK} 100%)`,
-                          color: "white",
-                        }
-                  }
                 >
                   Unlock {plan.name} Report
                 </button>
@@ -1291,22 +1202,40 @@ export default function AssessmentPage() {
     const isMock = !paymentData?.razorpay_key;
 
     return (
-      <div className="min-h-screen bg-[#f8f9fa]">
+      <div className="min-h-screen bg-surface font-body">
         <Header step={step} progressPct={progressPct} subtitle="Complete Payment" />
-        <div className="max-w-lg mx-auto px-4 py-8 space-y-5">
-          <Card className="text-center">
-            <h3 className="text-lg font-bold mb-2" style={{ color: NAVY }}>
+        <div className="max-w-form-narrow mx-auto px-4 py-8 space-y-5">
+          <div className="sa-card text-center">
+            <h3 className="text-lg font-heading font-bold text-primary mb-2">
               Complete Your Payment
             </h3>
-            <p className="text-gray-500 text-sm mb-4">
+            <p className="text-on-surface-variant text-sm mb-4">
               {paymentData
                 ? `Amount: ₹${(paymentData.amount / 100).toLocaleString("en-IN")}`
                 : "Preparing payment..."}
             </p>
 
+            {/* Order summary */}
+            {paymentData && (
+              <div className="sa-card bg-surface-container-high mb-4 text-left">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-on-surface-variant">Career Assessment Report</span>
+                  <span className="font-heading font-bold text-on-surface">
+                    ₹{(paymentData.amount / 100).toLocaleString("en-IN")}
+                  </span>
+                </div>
+                <div className="mt-2 pt-2 border-t border-surface-container-highest flex justify-between items-center text-sm">
+                  <span className="font-heading font-semibold text-on-surface">Total</span>
+                  <span className="font-heading font-bold text-primary text-lg">
+                    ₹{(paymentData.amount / 100).toLocaleString("en-IN")}
+                  </span>
+                </div>
+              </div>
+            )}
+
             {isMock ? (
               <div className="space-y-3">
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-amber-700 text-xs">
+                <div className="sa-card bg-secondary-50 text-secondary-600 text-xs text-center">
                   Development Mode — Razorpay is not configured. Click below to
                   simulate a successful payment.
                 </div>
@@ -1315,11 +1244,15 @@ export default function AssessmentPage() {
                 </PrimaryBtn>
               </div>
             ) : (
-              <PrimaryBtn loading={loading} onClick={handlePayment}>
-                Pay with Razorpay
-              </PrimaryBtn>
+              <button
+                onClick={handlePayment}
+                disabled={loading}
+                className="btn-primary w-full py-3.5 font-heading font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {loading ? "Processing..." : "Pay with Razorpay"}
+              </button>
             )}
-          </Card>
+          </div>
           <ErrorBanner error={error} />
         </div>
       </div>
@@ -1331,12 +1264,10 @@ export default function AssessmentPage() {
      ═══════════════════════════════════════════════════════════ */
   if (step === 7) {
     return (
-      <div className="min-h-screen bg-brand-gradient flex items-center justify-center">
+      <div className="min-h-screen bg-brand-gradient flex items-center justify-center font-body">
         <div className="text-center px-6 max-w-sm">
-          <h1 className="text-2xl font-bold tracking-tight mb-8">
-            <span className="text-white">Career</span>
-            <span style={{ color: GOLD }}>Disha</span>
-          </h1>
+          <Logo />
+          <div className="mt-8" />
 
           {/* Animated loader */}
           <div className="relative w-20 h-20 mx-auto mb-6">
@@ -1358,7 +1289,7 @@ export default function AssessmentPage() {
             />
           </div>
 
-          <h2 className="text-white text-lg font-semibold mb-2">
+          <h2 className="text-white text-lg font-heading font-bold mb-2">
             Generating your personalized report...
           </h2>
           <p className="text-white/50 text-sm mb-4">
@@ -1371,9 +1302,8 @@ export default function AssessmentPage() {
             {[0, 1, 2].map((i) => (
               <div
                 key={i}
-                className="w-2.5 h-2.5 rounded-full animate-pulse"
+                className="w-2.5 h-2.5 rounded-full bg-secondary animate-pulse"
                 style={{
-                  backgroundColor: GOLD,
                   animationDelay: `${i * 0.3}s`,
                 }}
               />
@@ -1404,31 +1334,35 @@ export default function AssessmentPage() {
     const whatsappUrl = `https://wa.me/?text=${shareText}`;
 
     return (
-      <div className="min-h-screen bg-[#f8f9fa]">
+      <div className="min-h-screen bg-surface font-body">
         <Header step={step} progressPct={progressPct} subtitle="Report Ready" />
-        <div className="max-w-lg mx-auto px-4 py-8 space-y-6">
+        <div className="max-w-form-narrow mx-auto px-4 py-8 space-y-6">
           {/* Celebration */}
-          <Card className="text-center">
-            <div className="text-5xl mb-3">🎉</div>
-            <h2 className="text-xl font-bold mb-1" style={{ color: NAVY }}>
+          <div className="sa-card text-center">
+            <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-accent-100 flex items-center justify-center">
+              <svg className="w-8 h-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-heading font-bold text-primary mb-1">
               Your Career Report is Ready!
             </h2>
-            <p className="text-gray-500 text-sm">
+            <p className="text-on-surface-variant text-sm">
               Your personalized 12-page career report has been generated.
             </p>
-          </Card>
+          </div>
 
           {/* Holland Code recap */}
           {previewData && (
-            <Card className="text-center">
-              <p className="text-xs uppercase tracking-widest text-gray-400 mb-2">
+            <div className="sa-card text-center">
+              <p className="text-xs font-heading uppercase tracking-widest text-on-surface-variant mb-2">
                 Your Holland Code
               </p>
               <div className="flex justify-center gap-2 mb-2">
                 {previewData.holland_code.split("").map((letter, i) => (
                   <span
                     key={i}
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-sm"
+                    className="w-12 h-12 rounded flex items-center justify-center text-white text-lg font-heading font-bold"
                     style={{
                       backgroundColor: RIASEC_COLORS[letter] || "#888",
                     }}
@@ -1437,10 +1371,10 @@ export default function AssessmentPage() {
                   </span>
                 ))}
               </div>
-              <p className="text-sm font-medium" style={{ color: NAVY }}>
+              <p className="text-sm font-heading font-medium text-primary">
                 {previewData.recommended_stream}
               </p>
-            </Card>
+            </div>
           )}
 
           {/* Download PDF */}
@@ -1448,12 +1382,7 @@ export default function AssessmentPage() {
             href={pdfUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="block w-full py-3.5 rounded-xl font-semibold text-sm text-center
-              transition-all hover:shadow-lg active:scale-[0.98]"
-            style={{
-              background: `linear-gradient(135deg, ${GOLD} 0%, #b8960b 100%)`,
-              color: NAVY,
-            }}
+            className="btn-gold block w-full py-3.5 font-heading font-bold text-sm text-center"
           >
             Download Full Report (PDF)
           </a>
@@ -1463,9 +1392,7 @@ export default function AssessmentPage() {
             href={webReportUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="block w-full py-3.5 rounded-xl font-semibold text-sm text-center
-              transition-all hover:shadow-lg active:scale-[0.98] border-2"
-            style={{ borderColor: NAVY, color: NAVY }}
+            className="btn-ghost block w-full py-3.5 font-heading font-bold text-sm text-center"
           >
             View Report Online
           </a>
@@ -1475,9 +1402,9 @@ export default function AssessmentPage() {
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="block w-full py-3.5 rounded-xl font-semibold text-sm text-center
-              transition-all hover:shadow-lg active:scale-[0.98] border-2"
-            style={{ borderColor: "#25D366", color: "#25D366" }}
+            className="block w-full py-3.5 rounded font-heading font-bold text-sm text-center
+              transition-all hover:shadow-lg active:scale-[0.98]"
+            style={{ backgroundColor: "#25D366", color: "white" }}
           >
             Share on WhatsApp
           </a>
@@ -1486,14 +1413,14 @@ export default function AssessmentPage() {
           <div className="text-center pt-2">
             <a
               href="/assessment"
-              className="text-sm text-gray-400 hover:text-gray-600 underline transition-colors"
+              className="text-sm text-on-surface-variant hover:text-on-surface underline transition-colors"
             >
               Take the assessment again
             </a>
           </div>
 
           {/* Footer */}
-          <p className="text-center text-xs text-gray-400 pb-6">
+          <p className="text-center text-xs text-on-surface-variant pb-6">
             &copy; {new Date().getFullYear()} CareerDisha. AI Career Assessment.
           </p>
         </div>

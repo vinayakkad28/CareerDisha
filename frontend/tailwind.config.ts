@@ -8,6 +8,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        heading: ["var(--font-manrope)", "system-ui", "sans-serif"],
+        body: ["var(--font-public-sans)", "system-ui", "sans-serif"],
+      },
       colors: {
         primary: {
           DEFAULT: "#1a5276",
@@ -42,6 +46,42 @@ const config: Config = {
           500: "#2ecc71",
           600: "#27ae60",
         },
+        surface: {
+          DEFAULT: "#f8f9fa",
+          container: "#ffffff",
+          "container-high": "#f0f2f5",
+          "container-highest": "#e7e8e9",
+          dim: "#d9dadb",
+        },
+        "on-surface": {
+          DEFAULT: "#191c1d",
+          variant: "#41474e",
+        },
+        outline: {
+          DEFAULT: "#72787f",
+          variant: "#c1c7cf",
+        },
+        riasec: {
+          r: "#e74c3c",
+          i: "#3498db",
+          a: "#9b59b6",
+          s: "#2ecc71",
+          e: "#e67e22",
+          c: "#1abc9c",
+        },
+      },
+      borderRadius: {
+        sa: "4px",
+      },
+      spacing: {
+        sidebar: "264px",
+      },
+      maxWidth: {
+        admin: "1200px",
+        public: "720px",
+        "form-narrow": "640px",
+        "form-compact": "560px",
+        report: "800px",
       },
     },
   },

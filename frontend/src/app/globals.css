@@ -4,24 +4,36 @@
 
 :root {
   --cd-primary: #1a5276;
+  --cd-primary-dark: #0d2b3e;
   --cd-secondary: #d4ac0d;
+  --cd-secondary-dark: #b8960b;
   --cd-accent: #2ecc71;
   --cd-bg: #f8f9fa;
-  --cd-text: #2c3e50;
+  --cd-surface: #ffffff;
+  --cd-surface-high: #f0f2f5;
+  --cd-text: #191c1d;
+  --cd-text-muted: #41474e;
 }
 
 body {
   color: var(--cd-text);
   background: var(--cd-bg);
-  font-family: system-ui, -apple-system, sans-serif;
 }
 
+/* ── Scholarly Architect: Animations ────────────────────── */
 @keyframes slide-in {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 .animate-slide-in {
-  animation: slide-in 0.2s ease-out;
+  animation: slide-in 0.25s ease-out;
+}
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
 }
 
 /* ── Custom scrollbar ─────────────────────────────────────── */
@@ -29,29 +41,100 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: #c1c7cf;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
+  background: #72787f;
 }
 
-/* ── Card hover effect ────────────────────────────────────── */
-.card-hover {
-  transition: box-shadow 0.2s, transform 0.2s;
+/* ── Scholarly Architect: Gradient Buttons ──────────────── */
+.btn-primary {
+  @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white rounded transition-all duration-200;
+  background: linear-gradient(135deg, #1a5276 0%, #0d2b3e 100%);
 }
-.card-hover:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transform: translateY(-1px);
+.btn-primary:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 16px rgba(26, 82, 118, 0.2);
+}
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: none;
+  box-shadow: none;
 }
 
-/* ── Gradient backgrounds ─────────────────────────────────── */
+.btn-gold {
+  @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white rounded transition-all duration-200;
+  background: linear-gradient(135deg, #d4ac0d 0%, #b8960b 100%);
+}
+.btn-gold:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 16px rgba(212, 172, 13, 0.25);
+}
+
+.btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold rounded transition-all duration-200;
+  color: #1a5276;
+  border: 1px solid rgba(193, 199, 207, 0.3);
+  background: transparent;
+}
+.btn-ghost:hover {
+  background-color: #f0f2f5;
+}
+
+.btn-danger {
+  @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white rounded transition-all duration-200;
+  @apply bg-red-600 hover:bg-red-700;
+}
+
+/* ── Scholarly Architect: Tonal Cards (no borders) ─────── */
+.sa-card {
+  @apply bg-white rounded p-6;
+}
+
+/* ── Scholarly Architect: Tonal Input Fields ───────────── */
+.sa-input {
+  @apply w-full px-4 py-2.5 text-sm rounded outline-none transition-all duration-200 border-2 border-transparent;
+  background-color: #f0f2f5;
+  color: #191c1d;
+}
+.sa-input:focus {
+  @apply border-primary ring-0;
+}
+.sa-input::placeholder {
+  color: rgba(65, 71, 78, 0.5);
+}
+
+/* ── Scholarly Architect: Table Styles ─────────────────── */
+.sa-table {
+  @apply w-full text-sm;
+}
+.sa-table thead th {
+  @apply text-left text-xs font-semibold uppercase tracking-wider px-4 py-3;
+  color: #41474e;
+  background-color: #f0f2f5;
+}
+.sa-table tbody td {
+  @apply px-4 py-3.5;
+}
+.sa-table tbody tr {
+  @apply transition-colors duration-150;
+}
+.sa-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* ── Legacy gradient classes ───────────────────────────── */
 .bg-brand-gradient {
   background: linear-gradient(135deg, #1a5276 0%, #0d2b3e 100%);
 }
 .bg-gold-gradient {
   background: linear-gradient(135deg, #d4ac0d 0%, #b8960b 100%);
+}
+.bg-sidebar-gradient {
+  background: linear-gradient(180deg, #1a5276 0%, #143d54 100%);
 }

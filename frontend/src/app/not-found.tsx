@@ -2,27 +2,37 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa] px-4">
-      <div className="text-center max-w-sm">
-        <p className="text-7xl font-bold text-gray-200 mb-2">404</p>
-        <h2 className="text-xl font-bold text-gray-800 mb-2">Page not found</h2>
-        <p className="text-gray-500 text-sm mb-8">
-          The page you&apos;re looking for doesn&apos;t exist or has been moved.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <Link
-            href="/"
-            className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white"
-            style={{ background: "#1a5276" }}
-          >
-            Go Home
+    <div className="min-h-screen flex flex-col bg-surface font-body">
+      {/* ── Minimal Glassmorphic Navbar ─────────────────────── */}
+      <nav className="backdrop-blur-xl bg-primary/80 px-6 py-4">
+        <div className="max-w-6xl mx-auto">
+          <Link href="/" className="font-heading text-xl font-extrabold tracking-tight">
+            <span className="text-white">Career</span>
+            <span className="text-secondary">Disha</span>
           </Link>
-          <Link
-            href="/assessment"
-            className="px-6 py-2.5 rounded-xl text-sm font-semibold border border-gray-200 text-gray-700 hover:bg-gray-50"
-          >
-            Start Assessment
-          </Link>
+        </div>
+      </nav>
+
+      {/* ── Centered 404 Content ───────────────────────────── */}
+      <div className="flex-1 flex items-center justify-center px-4">
+        <div className="text-center max-w-md">
+          <p className="font-heading text-[120px] sm:text-[160px] font-extrabold leading-none text-surface-container-high select-none">
+            404
+          </p>
+          <h2 className="font-heading text-2xl sm:text-3xl font-extrabold text-on-surface -mt-4 mb-3">
+            Page not found
+          </h2>
+          <p className="font-body text-on-surface-variant text-sm mb-10 leading-relaxed">
+            The page you&apos;re looking for doesn&apos;t exist or has been moved.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/" className="btn-primary px-8 py-3 rounded-lg">
+              Go Home
+            </Link>
+            <Link href="/assessment" className="btn-ghost px-8 py-3 rounded-lg">
+              Start Assessment
+            </Link>
+          </div>
         </div>
       </div>
     </div>

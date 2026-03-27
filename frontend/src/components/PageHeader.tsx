@@ -16,18 +16,22 @@ interface Props {
 
 export default function PageHeader({ title, breadcrumbs, actions, subtitle }: Props) {
   return (
-    <div className="mb-6">
+    <div className="mb-8">
       {breadcrumbs && breadcrumbs.length > 0 && (
-        <nav className="flex items-center gap-1.5 text-sm text-gray-400 mb-2">
+        <nav className="flex items-center gap-1.5 text-sm text-on-surface-variant/60 mb-3">
           {breadcrumbs.map((crumb, i) => (
             <span key={i} className="flex items-center gap-1.5">
-              {i > 0 && <span>/</span>}
+              {i > 0 && (
+                <svg className="w-3.5 h-3.5 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              )}
               {crumb.href ? (
                 <Link href={crumb.href} className="hover:text-primary transition-colors">
                   {crumb.label}
                 </Link>
               ) : (
-                <span className="text-gray-600">{crumb.label}</span>
+                <span className="text-on-surface-variant">{crumb.label}</span>
               )}
             </span>
           ))}
@@ -35,8 +39,8 @@ export default function PageHeader({ title, breadcrumbs, actions, subtitle }: Pr
       )}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-          {subtitle && <p className="text-sm text-gray-500 mt-1">{subtitle}</p>}
+          <h1 className="text-2xl font-heading font-bold text-on-surface">{title}</h1>
+          {subtitle && <p className="text-sm text-on-surface-variant mt-1">{subtitle}</p>}
         </div>
         {actions && <div className="flex items-center gap-3">{actions}</div>}
       </div>

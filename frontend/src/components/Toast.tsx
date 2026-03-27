@@ -20,6 +20,13 @@ export const useToast = () => useContext(ToastContext);
 
 let nextId = 0;
 
+const TOAST_STYLES: Record<ToastType, string> = {
+  success: "bg-accent-600 text-white",
+  error: "bg-red-600 text-white",
+  info: "bg-primary text-white",
+  warning: "bg-amber-600 text-white",
+};
+
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
@@ -31,13 +38,6 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     }, 4000);
   }, []);
 
-  const colors: Record<ToastType, string> = {
-    success: "bg-green-600",
-    error: "bg-red-600",
-    info: "bg-primary",
-    warning: "bg-yellow-600",
-  };
-
   return (
     <ToastContext.Provider value={{ toast }}>
       {children}
@@ -45,7 +45,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`${colors[t.type]} text-white px-4 py-3 rounded-lg shadow-lg text-sm animate-slide-in`}
+            className={`${TOAST_STYLES[t.type]} px-4 py-3 rounded shadow-lg text-sm font-medium animate-slide-in`}
           >
             {t.message}
           </div>

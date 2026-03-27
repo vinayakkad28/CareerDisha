@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -32,47 +33,76 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-gradient relative overflow-hidden">
-      {/* Subtle background pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
-          backgroundSize: "40px 40px",
-        }}
-      />
+    <div className="min-h-screen flex font-body">
+      {/* ── Left Panel: Navy Gradient with Branding ──────── */}
+      <div className="hidden lg:flex lg:w-[55%] bg-brand-gradient relative overflow-hidden flex-col items-center justify-center px-12">
+        {/* Subtle dot pattern */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
+            backgroundSize: "40px 40px",
+          }}
+        />
+        {/* Decorative orbs */}
+        <div className="absolute top-20 right-20 w-72 h-72 bg-secondary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 left-10 w-56 h-56 bg-accent/10 rounded-full blur-3xl" />
 
-      <div className="relative z-10 w-full max-w-md px-4">
-        {/* Login Card */}
-        <div className="bg-white rounded-2xl shadow-2xl p-8 sm:p-10">
-          {/* Logo */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold tracking-tight">
-              <span style={{ color: "#1a5276" }}>Career</span>
-              <span style={{ color: "#d4ac0d" }}>Disha</span>
-            </h1>
-            <p className="text-gray-500 text-sm mt-2 tracking-wide">
-              AI-Powered Career Counselling for Indian Schools
+        <div className="relative z-10 max-w-md text-center">
+          <Link href="/" className="font-heading text-4xl font-extrabold tracking-tight inline-block mb-6">
+            <span className="text-white">Career</span>
+            <span className="text-secondary">Disha</span>
+          </Link>
+          <p className="font-body text-white/60 text-lg leading-relaxed">
+            AI-Powered Career Counselling for Indian Schools.
+            Science-backed assessments. Personalised career reports.
+          </p>
+          <div className="flex items-center justify-center gap-6 mt-10">
+            {["RIASEC Based", "74 Questions", "PDF Reports"].map((pill) => (
+              <span
+                key={pill}
+                className="text-xs text-white/40 bg-white/5 px-3 py-1.5 rounded-full font-body"
+              >
+                {pill}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Right Panel: Login Form ──────────────────────── */}
+      <div className="w-full lg:w-[45%] bg-surface-container flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-sm">
+          {/* Mobile logo */}
+          <div className="lg:hidden text-center mb-10">
+            <Link href="/" className="font-heading text-3xl font-extrabold tracking-tight inline-block">
+              <span className="text-primary">Career</span>
+              <span className="text-secondary">Disha</span>
+            </Link>
+            <p className="font-body text-on-surface-variant text-sm mt-2">
+              AI-Powered Career Counselling
             </p>
           </div>
 
-          {/* Form */}
+          <h2 className="font-heading text-2xl font-extrabold text-on-surface mb-1">
+            Welcome back
+          </h2>
+          <p className="font-body text-on-surface-variant text-sm mb-8">
+            Sign in to your counsellor dashboard
+          </p>
+
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block font-body text-sm font-medium text-on-surface mb-1.5">
                 Email{" "}
-                <span className="text-gray-400 font-normal">(for counsellor accounts)</span>
+                <span className="text-on-surface-variant font-normal">(for counsellor accounts)</span>
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm
-                  focus:ring-2 focus:ring-[#1a5276]/20 focus:border-[#1a5276] outline-none
-                  transition-all duration-200 bg-gray-50 focus:bg-white
-                  placeholder:text-gray-400"
+                className="sa-input"
                 placeholder="you@example.com"
                 autoFocus
               />
@@ -80,7 +110,7 @@ export default function LoginPage() {
 
             {/* Password Field */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block font-body text-sm font-medium text-on-surface mb-1.5">
                 Password
               </label>
               <div className="relative">
@@ -88,17 +118,14 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl text-sm
-                    focus:ring-2 focus:ring-[#1a5276]/20 focus:border-[#1a5276] outline-none
-                    transition-all duration-200 bg-gray-50 focus:bg-white
-                    placeholder:text-gray-400"
+                  className="sa-input pr-14"
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400
-                    hover:text-gray-600 transition-colors p-1 text-sm select-none"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant/60
+                    hover:text-on-surface transition-colors p-1 text-xs font-semibold select-none"
                   tabIndex={-1}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
@@ -109,9 +136,9 @@ export default function LoginPage() {
 
             {/* Error Message */}
             {error && (
-              <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-100 rounded-xl">
-                <span className="text-red-400 text-sm mt-0.5 shrink-0">!</span>
-                <p className="text-red-600 text-sm">{error}</p>
+              <div className="flex items-start gap-2.5 p-3 bg-red-50 rounded animate-slide-in">
+                <span className="text-red-500 text-sm mt-0.5 shrink-0 font-bold">!</span>
+                <p className="font-body text-red-600 text-sm">{error}</p>
               </div>
             )}
 
@@ -119,12 +146,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 text-white rounded-xl font-semibold text-sm
-                transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed
-                hover:shadow-lg hover:shadow-[#1a5276]/25 active:scale-[0.98]"
-              style={{
-                background: "linear-gradient(135deg, #1a5276 0%, #0d2b3e 100%)",
-              }}
+              className="btn-primary w-full py-3 rounded-lg text-base"
             >
               {loading ? (
                 <span className="inline-flex items-center gap-2">
@@ -155,18 +177,13 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="mt-8 pt-6 border-t border-gray-100">
-            <p className="text-center text-xs text-gray-400 tracking-wide">
+          {/* Footer */}
+          <div className="mt-10 pt-6">
+            <p className="text-center font-body text-xs text-on-surface-variant/50 tracking-wide">
               Powered by AI &middot; CBSE Compliant
             </p>
           </div>
         </div>
-
-        {/* Footer below card */}
-        <p className="text-center text-xs text-white/40 mt-6">
-          &copy; {new Date().getFullYear()} CareerDisha. All rights reserved.
-        </p>
       </div>
     </div>
   );

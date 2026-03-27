@@ -1,13 +1,13 @@
 "use client";
 
 const STEPS = [
-  { key: "draft", label: "Draft" },
-  { key: "scored", label: "Scored" },
-  { key: "generating", label: "Generating" },
-  { key: "generated", label: "Generated" },
-  { key: "qa_review", label: "QA Review" },
-  { key: "pdf_ready", label: "PDFs Ready" },
-  { key: "delivered", label: "Delivered" },
+  { key: "draft", label: "Draft", color: "gray" },
+  { key: "scored", label: "Scored", color: "blue" },
+  { key: "generating", label: "Generating", color: "amber" },
+  { key: "generated", label: "Generated", color: "purple" },
+  { key: "qa_review", label: "QA Review", color: "orange" },
+  { key: "pdf_ready", label: "PDFs Ready", color: "teal" },
+  { key: "delivered", label: "Delivered", color: "green" },
 ];
 
 interface Stats {
@@ -63,28 +63,33 @@ export default function SessionTimeline({ currentStatus, stats }: Props) {
   const isActive = currentStatus === "generating";
 
   return (
-    <div>
-      <div className="flex items-center gap-0 overflow-x-auto py-4">
+    <div className="sa-card">
+      <div className="flex items-center justify-between overflow-x-auto py-4 px-2">
         {STEPS.map((step, i) => {
           const isDone = i <= currentIdx;
           const isCurrent = i === currentIdx;
           const stepProgress = isCurrent || isDone ? getStepProgress(step.key, stats) : null;
 
           return (
-            <div key={step.key} className="flex items-center">
-              <div className="flex flex-col items-center min-w-[80px]">
+            <div key={step.key} className="flex items-center flex-1">
+              <div className="flex flex-col items-center w-full">
                 {/* Circle */}
                 <div className="relative">
                   <div
-                    className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-colors ${
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
                       isDone
-                        ? "bg-primary border-primary text-white"
-                        : "bg-white border-gray-300 text-gray-400"
-                    } ${isCurrent ? "ring-2 ring-primary/30 ring-offset-2" : ""}`}
+                        ? "bg-primary text-white"
+                        : "bg-surface-container-high text-on-surface-variant/40"
+                    } ${isCurrent ? "ring-3 ring-primary/20 ring-offset-2" : ""}`}
                   >
-                    {isDone ? "\u2713" : i + 1}
+                    {isDone ? (
+                      <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    ) : (
+                      i + 1
+                    )}
                   </div>
-                  {/* Pulsing dot for active step */}
                   {isCurrent && isActive && (
                     <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
@@ -93,17 +98,15 @@ export default function SessionTimeline({ currentStatus, stats }: Props) {
                   )}
                 </div>
                 {/* Label */}
-                <span
-                  className={`text-xs mt-1.5 text-center font-medium ${
-                    isDone ? "text-primary" : "text-gray-400"
-                  } ${isCurrent && isActive ? "text-amber-600" : ""}`}
-                >
+                <span className={`text-xs mt-2 text-center font-medium ${
+                  isDone ? "text-primary" : "text-on-surface-variant/40"
+                } ${isCurrent && isActive ? "text-amber-600" : ""}`}>
                   {step.label}
                 </span>
                 {/* Progress count */}
                 {stepProgress && (
-                  <span className={`text-[10px] mt-0.5 ${
-                    isCurrent && isActive ? "text-amber-500 font-semibold" : "text-gray-400"
+                  <span className={`text-[10px] mt-0.5 font-mono ${
+                    isCurrent && isActive ? "text-amber-500 font-semibold" : "text-on-surface-variant/50"
                   }`}>
                     {stepProgress}
                   </span>
@@ -111,11 +114,9 @@ export default function SessionTimeline({ currentStatus, stats }: Props) {
               </div>
               {/* Connector line */}
               {i < STEPS.length - 1 && (
-                <div
-                  className={`h-0.5 w-8 transition-colors ${
-                    i < currentIdx ? "bg-primary" : "bg-gray-200"
-                  }`}
-                />
+                <div className={`h-0.5 w-full min-w-[24px] -mt-6 transition-colors ${
+                  i < currentIdx ? "bg-primary" : "bg-surface-container-highest"
+                }`} />
               )}
             </div>
           );
@@ -124,16 +125,16 @@ export default function SessionTimeline({ currentStatus, stats }: Props) {
 
       {/* Overall progress bar */}
       {stats && stats.total > 0 && (
-        <div className="mt-1 px-2">
-          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+        <div className="mt-2 px-2">
+          <div className="h-1.5 bg-surface-container-high rounded-full overflow-hidden">
             <div
-              className={`h-full rounded-full transition-all duration-700 ease-out ${
-                isActive ? "bg-amber-400" : "bg-primary"
-              }`}
+              className="h-full rounded-full transition-all duration-700 ease-out bg-brand-gradient"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="text-[10px] text-gray-400 mt-1 text-right">{progress}% complete</p>
+          <p className="text-[10px] text-on-surface-variant/50 mt-1.5 text-right font-medium">
+            {progress}% complete
+          </p>
         </div>
       )}
     </div>
