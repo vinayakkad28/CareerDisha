@@ -9,39 +9,27 @@ interface Props {
 }
 
 const ICON_BG: Record<string, string> = {
-  blue: "bg-primary-100 text-primary",
-  green: "bg-accent-100 text-accent-600",
-  purple: "bg-purple-100 text-purple-600",
-  amber: "bg-amber-100 text-amber-600",
-  teal: "bg-teal-100 text-teal-600",
+  blue: "bg-blue-50 text-blue-600",
+  green: "bg-green-50 text-green-600",
+  purple: "bg-purple-50 text-purple-600",
+  amber: "bg-amber-50 text-amber-600",
+  teal: "bg-teal-50 text-teal-600",
   gray: "bg-gray-100 text-gray-500",
 };
 
-const ACCENT_BAR: Record<string, string> = {
-  blue: "bg-primary",
-  green: "bg-accent",
-  purple: "bg-purple-500",
-  amber: "bg-amber-500",
-  teal: "bg-teal-500",
-  gray: "bg-gray-300",
-};
 
 export default function StatCard({ label, value, icon, accent = "blue", subtitle }: Props) {
   return (
-    <div className="sa-card relative overflow-hidden">
-      {/* Subtle left accent */}
-      <div className={`absolute left-0 top-0 bottom-0 w-1 ${ACCENT_BAR[accent]}`} />
-      <div className="flex items-start justify-between pl-3">
-        <div>
-          <p className="text-sm font-medium text-on-surface-variant">{label}</p>
-          <p className="text-2xl font-heading font-bold text-on-surface mt-1">{value}</p>
-          {subtitle && <p className="text-xs text-on-surface-variant/60 mt-1">{subtitle}</p>}
+    <div className="bg-white p-6 rounded-lg flex items-center gap-4">
+      {icon && (
+        <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${ICON_BG[accent]}`}>
+          {icon}
         </div>
-        {icon && (
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${ICON_BG[accent]}`}>
-            {icon}
-          </div>
-        )}
+      )}
+      <div>
+        <p className="text-xs font-medium text-on-surface-variant uppercase tracking-wider">{label}</p>
+        <p className="text-2xl font-extrabold text-primary font-heading">{value}</p>
+        {subtitle && <p className="text-xs text-on-surface-variant/60 mt-1">{subtitle}</p>}
       </div>
     </div>
   );

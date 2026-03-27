@@ -83,71 +83,58 @@ function FeedbackForm() {
             Your feedback helps us improve career guidance for thousands of students across India.
             We truly appreciate you taking the time.
           </p>
-          <p className="text-xs text-outline mt-6 font-body">— CareerDisha Team</p>
+          <p className="text-xs text-outline mt-6 font-body">&mdash; CareerDisha Team</p>
         </div>
       </div>
     );
   }
 
-  const YesNo = ({
-    value, onChange, yesLabel = "Yes", noLabel = "No",
-  }: { value: boolean | null; onChange: (v: boolean) => void; yesLabel?: string; noLabel?: string }) => (
-    <div className="flex gap-3">
-      {[true, false].map((v) => (
-        <button
-          key={String(v)}
-          onClick={() => onChange(v)}
-          className={`flex-1 py-2.5 rounded text-sm font-heading font-medium transition-all ${
-            value === v
-              ? "bg-brand-gradient text-white"
-              : "bg-surface-container-high text-on-surface hover:bg-surface-container-highest"
-          }`}
-        >
-          {v ? yesLabel : noLabel}
-        </button>
-      ))}
-    </div>
-  );
-
   return (
-    <div className="min-h-screen bg-surface">
-      {/* Header */}
-      <header className="bg-brand-gradient text-white py-5">
-        <div className="max-w-form-compact mx-auto px-4 text-center">
-          <h1 className="font-heading text-xl font-bold">
-            <span className="text-white">Career</span>
-            <span className="text-secondary">Disha</span>
-          </h1>
-          <p className="text-white/60 text-sm mt-1 font-body">Parent Feedback Survey</p>
+    <div className="min-h-screen bg-surface font-body text-on-surface">
+      {/* Top Navigation */}
+      <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-lg">
+        <div className="flex justify-between items-center w-full max-w-public mx-auto px-6 h-16">
+          <span className="text-2xl font-black text-primary font-heading">CareerDisha</span>
         </div>
       </header>
 
-      <div className="max-w-form-compact mx-auto px-4 py-8 space-y-5">
-        {/* Intro */}
-        <div className="sa-card">
-          <p className="text-sm text-on-surface-variant leading-relaxed font-body">
-            Thank you for using CareerDisha. Your 2-minute feedback helps us improve guidance for students like yours.
-          </p>
+      <main className="max-w-form-compact mx-auto py-8 px-4 sm:px-0 flex flex-col gap-6">
+        {/* Header Banner */}
+        <div className="w-full bg-brand-gradient p-8 rounded-xl shadow-sm overflow-hidden relative">
+          <div className="relative z-10">
+            <h1 className="font-heading font-bold text-white text-3xl tracking-tight">CareerDisha</h1>
+            <p className="font-heading text-white/90 text-lg font-medium mt-1">Parent Feedback Survey</p>
+            <p className="text-white/70 text-sm mt-2 font-body italic">Building scientific career paths together</p>
+          </div>
+          <div className="absolute -right-10 -bottom-10 opacity-10">
+            <svg className="w-40 h-40 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z" />
+            </svg>
+          </div>
         </div>
 
-        {/* Star rating */}
-        <div className="sa-card">
-          <p className="text-sm font-heading font-semibold text-on-surface mb-4">
-            How would you rate the career report overall?
+        {/* Intro Card */}
+        <section className="bg-white p-8 rounded-xl">
+          <p className="text-on-surface-variant font-body text-lg leading-relaxed">
+            Thank you for using CareerDisha. Your 2-minute feedback helps us improve guidance for students like yours.
           </p>
-          <div className="flex gap-2 justify-center">
+        </section>
+
+        {/* Star Rating Card */}
+        <section className="bg-white p-8 rounded-xl flex flex-col gap-4">
+          <h2 className="font-heading font-semibold text-primary text-xl">How would you rate the career report overall?</h2>
+          <div className="flex items-center gap-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
                 key={star}
                 onClick={() => setRating(star)}
-                className="text-3xl transition-transform hover:scale-110"
+                className="transition-transform hover:scale-110"
               >
                 <svg
-                  className="w-9 h-9"
+                  className="w-10 h-10"
                   viewBox="0 0 24 24"
-                  fill={rating !== null && rating >= star ? "#d4ac0d" : "#f0f2f5"}
-                  stroke={rating !== null && rating >= star ? "#d4ac0d" : "#c1c7cf"}
-                  strokeWidth={1}
+                  fill={rating !== null && rating >= star ? "#D4AC0D" : "#E1E3E4"}
+                  stroke="none"
                 >
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                 </svg>
@@ -155,62 +142,98 @@ function FeedbackForm() {
             ))}
           </div>
           {rating && (
-            <p className="text-center text-xs text-on-surface-variant mt-2 font-body">
+            <p className="font-body font-semibold text-primary uppercase text-xs tracking-widest mt-1">
               {STAR_LABELS[rating]}
             </p>
           )}
-        </div>
+        </section>
 
-        {/* Recommendation match */}
-        <div className="sa-card">
-          <p className="text-sm font-heading font-semibold text-on-surface mb-3">
+        {/* Recommendation Match Card */}
+        <section className="bg-white p-8 rounded-xl flex flex-col gap-6">
+          <h2 className="font-heading font-semibold text-primary text-xl">
             Did the recommended career/stream match what you had in mind for your child?
-          </p>
-          <YesNo value={recommendationMatch} onChange={setRecommendationMatch} />
-        </div>
+          </h2>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setRecommendationMatch(true)}
+              className={`flex-1 flex items-center justify-center gap-2 py-4 rounded-xl font-body font-semibold transition-all active:scale-[0.98] ${
+                recommendationMatch === true
+                  ? "bg-primary text-white"
+                  : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
+              }`}
+            >
+              {recommendationMatch === true && (
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
+                </svg>
+              )}
+              Yes
+            </button>
+            <button
+              onClick={() => setRecommendationMatch(false)}
+              className={`flex-1 py-4 rounded-xl font-body font-semibold transition-all active:scale-[0.98] ${
+                recommendationMatch === false
+                  ? "bg-primary text-white"
+                  : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
+              }`}
+            >
+              No
+            </button>
+          </div>
+        </section>
 
-        {/* Most useful */}
-        <div className="sa-card">
-          <p className="text-sm font-heading font-semibold text-on-surface mb-2">
-            What was most useful in the report?{" "}
-            <span className="font-normal text-on-surface-variant font-body">(optional)</span>
-          </p>
+        {/* Most Useful Textarea Card */}
+        <section className="bg-white p-8 rounded-xl flex flex-col gap-4">
+          <label className="font-heading font-semibold text-primary text-xl">
+            What was most useful in the report? <span className="text-on-surface-variant font-normal text-sm">(optional)</span>
+          </label>
           <textarea
             value={mostUseful}
             onChange={(e) => setMostUseful(e.target.value)}
-            placeholder="e.g. The career pathways were very detailed and helpful"
-            rows={3}
-            className="sa-input resize-none"
+            className="w-full h-32 bg-surface-container-high border-none rounded-xl p-4 font-body text-on-surface focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-on-surface-variant/50 outline-none resize-none"
+            placeholder="Share your thoughts on specific sections or insights..."
           />
-        </div>
+        </section>
 
-        {/* Missing */}
-        <div className="sa-card">
-          <p className="text-sm font-heading font-semibold text-on-surface mb-2">
-            What could be improved or was missing?{" "}
-            <span className="font-normal text-on-surface-variant font-body">(optional)</span>
-          </p>
+        {/* Missing Textarea Card */}
+        <section className="bg-white p-8 rounded-xl flex flex-col gap-4">
+          <label className="font-heading font-semibold text-primary text-xl">
+            What could be improved or was missing? <span className="text-on-surface-variant font-normal text-sm">(optional)</span>
+          </label>
           <textarea
             value={missing}
             onChange={(e) => setMissing(e.target.value)}
-            placeholder="e.g. More information on entrance exam preparation"
-            rows={3}
-            className="sa-input resize-none"
+            className="w-full h-32 bg-surface-container-high border-none rounded-xl p-4 font-body text-on-surface focus:ring-2 focus:ring-primary focus:bg-white transition-all placeholder:text-on-surface-variant/50 outline-none resize-none"
+            placeholder="Help us identify gaps or areas for clarification..."
           />
-        </div>
+        </section>
 
-        {/* Would recommend */}
-        <div className="sa-card">
-          <p className="text-sm font-heading font-semibold text-on-surface mb-3">
-            Would you recommend CareerDisha to other parents?
-          </p>
-          <YesNo
-            value={wouldRecommend}
-            onChange={setWouldRecommend}
-            yesLabel="Yes, definitely"
-            noLabel="Not really"
-          />
-        </div>
+        {/* Would Recommend Card */}
+        <section className="bg-white p-8 rounded-xl flex flex-col gap-6">
+          <h2 className="font-heading font-semibold text-primary text-xl">Would you recommend CareerDisha to other parents?</h2>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setWouldRecommend(true)}
+              className={`flex-1 py-4 rounded-xl font-body font-semibold transition-all active:scale-[0.98] ${
+                wouldRecommend === true
+                  ? "bg-primary text-white"
+                  : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
+              }`}
+            >
+              Yes, definitely
+            </button>
+            <button
+              onClick={() => setWouldRecommend(false)}
+              className={`flex-1 py-4 rounded-xl font-body font-semibold transition-all active:scale-[0.98] ${
+                wouldRecommend === false
+                  ? "bg-primary text-white"
+                  : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest"
+              }`}
+            >
+              Not really
+            </button>
+          </div>
+        </section>
 
         {error && (
           <div className="bg-red-50 rounded p-3 text-red-600 text-sm text-center font-body">
@@ -218,18 +241,36 @@ function FeedbackForm() {
           </div>
         )}
 
-        <button
-          onClick={handleSubmit}
-          disabled={submitting || rating === null}
-          className="btn-gold w-full py-3.5 text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          {submitting ? "Submitting..." : "Submit Feedback"}
-        </button>
+        {/* Submit Button */}
+        <div className="mt-4">
+          <button
+            onClick={handleSubmit}
+            disabled={submitting || rating === null}
+            className="w-full py-5 bg-gold-gradient text-white rounded-xl font-heading font-extrabold text-xl shadow-lg transition-all hover:shadow-xl active:scale-[0.99] flex items-center justify-center gap-3 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {submitting ? "Submitting..." : "Submit Feedback"}
+            {!submitting && (
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 12h14" />
+              </svg>
+            )}
+          </button>
+          <p className="text-center mt-6 text-xs text-slate-500 font-body leading-relaxed max-w-[400px] mx-auto">
+            Privacy Policy: Your feedback is confidential and used solely for quality improvement.
+          </p>
+        </div>
+      </main>
 
-        <p className="text-center text-xs text-outline pb-4 font-body">
-          Your response is anonymous and used only to improve our service.
-        </p>
-      </div>
+      {/* Footer */}
+      <footer className="bg-slate-50 w-full py-12 px-4 flex flex-col items-center gap-4 text-center mt-12">
+        <div className="font-heading font-bold text-primary text-xl">CareerDisha</div>
+        <p className="font-body text-xs text-slate-500 max-w-md">Scientific Career Counselling for Indian Students.</p>
+        <div className="flex gap-6 mt-2">
+          <span className="font-body text-xs text-slate-500 opacity-80">Privacy Policy</span>
+          <span className="font-body text-xs text-slate-500 opacity-80">Terms of Service</span>
+          <span className="font-body text-xs text-slate-500 opacity-80">Contact Us</span>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { sessions as sessionsApi } from "@/lib/api";
-import { LoadingSpinner, ErrorState, EmptyState } from "@/components/UIStates";
-import PageHeader from "@/components/PageHeader";
+import { LoadingSpinner, ErrorState } from "@/components/UIStates";
 import StatusBadge from "@/components/StatusBadge";
 
 export default function SessionsPage() {
@@ -26,116 +25,119 @@ export default function SessionsPage() {
   if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />;
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Sessions"
-        subtitle={sessionList.length > 0 ? `${sessionList.length} session${sessionList.length !== 1 ? "s" : ""}` : undefined}
-        actions={
-          <Link href="/sessions/new" className="btn-primary">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            New Session
-          </Link>
-        }
-      />
+    <div className="max-w-admin mx-auto">
+      {/* Page Header */}
+      <div className="flex justify-between items-end mb-8">
+        <div>
+          <h1 className="text-3xl font-extrabold text-[#1A5276] font-heading tracking-tight">Sessions</h1>
+          {sessionList.length > 0 && (
+            <p className="text-slate-500 mt-1 font-medium">
+              {sessionList.length} session{sessionList.length !== 1 ? "s" : ""} in progress
+            </p>
+          )}
+        </div>
+        <Link
+          href="/sessions/new"
+          className="bg-brand-gradient text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 shadow-lg active:scale-95 transition-all"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>New Session</span>
+        </Link>
+      </div>
 
       {sessionList.length === 0 ? (
-        <EmptyState
-          title="No sessions yet"
-          description="Create a session to start assessing students"
-          actionLabel="New Session"
-          onAction={() => router.push("/sessions/new")}
-        />
+        <div className="bg-[#F0F2F5]/50 border-2 border-dashed border-slate-200 rounded-xl p-12 text-center max-w-2xl mx-auto">
+          <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+            <svg className="w-10 h-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-[#1A5276] mb-2">No upcoming sessions?</h3>
+          <p className="text-slate-500 mb-8 max-w-xs mx-auto">
+            Create a session to start assessing students and generating career insights.
+          </p>
+          <button
+            onClick={() => router.push("/sessions/new")}
+            className="bg-[#D4AC0D] hover:bg-[#B8960B] text-white px-8 py-3 rounded-lg font-bold transition-all shadow-md flex items-center gap-2 mx-auto active:scale-95"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>Create a Session</span>
+          </button>
+        </div>
       ) : (
-        <div className="sa-card !p-0 overflow-hidden">
-          <div className="overflow-x-auto hidden sm:block">
-            <table className="sa-table">
-              <thead>
-                <tr>
-                  <th>School</th>
-                  <th>Date</th>
-                  <th>Classes</th>
-                  <th className="text-right">Students</th>
-                  <th className="text-center">Status</th>
-                  <th className="text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sessionList.map((s) => (
-                  <tr
-                    key={s.id}
-                    onClick={() => router.push(`/sessions/${s.id}`)}
-                    className="cursor-pointer group"
-                  >
-                    <td>
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded bg-primary-100 flex items-center justify-center flex-shrink-0">
-                          <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                          </svg>
-                        </div>
-                        <div className="min-w-0">
-                          <p className="font-medium text-on-surface group-hover:text-primary transition-colors truncate">
-                            {s.school_name}
-                          </p>
-                          {s.school_city && (
-                            <p className="text-xs text-on-surface-variant/60">{s.school_city}</p>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <span className="text-on-surface-variant">{s.session_date}</span>
-                    </td>
-                    <td>
-                      <div className="flex gap-1 flex-wrap">
-                        {(s.classes_assessed || []).map((cls: string | number) => (
-                          <span
-                            key={cls}
-                            className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-surface-container-high text-on-surface-variant"
-                          >
-                            {cls}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      <span className="font-medium text-on-surface tabular-nums">{s.total_students}</span>
-                    </td>
-                    <td className="text-center">
-                      <StatusBadge status={s.status} />
-                    </td>
-                    <td className="text-right">
-                      <span className="text-on-surface-variant/30 group-hover:text-primary transition-colors">
-                        <svg className="w-5 h-5 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </span>
-                    </td>
+        <>
+          {/* Data Table Card */}
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-12">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[#F0F2F5] text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+                    <th className="px-6 py-4">School</th>
+                    <th className="px-6 py-4">Date</th>
+                    <th className="px-6 py-4">Classes</th>
+                    <th className="px-6 py-4">Students</th>
+                    <th className="px-6 py-4">Status</th>
+                    <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y-0">
+                  {sessionList.map((s) => (
+                    <tr
+                      key={s.id}
+                      onClick={() => router.push(`/sessions/${s.id}`)}
+                      className="group hover:bg-[#F0F2F5] transition-colors cursor-pointer"
+                    >
+                      <td className="px-6 py-5">
+                        <div className="font-bold text-[#1A5276]">{s.school_name}</div>
+                        {s.school_city && (
+                          <div className="text-xs text-slate-400">{s.school_city}</div>
+                        )}
+                      </td>
+                      <td className="px-6 py-5 text-sm text-slate-600">{s.session_date}</td>
+                      <td className="px-6 py-5">
+                        <div className="flex gap-2 flex-wrap">
+                          {(s.classes_assessed || []).map((cls: string | number) => (
+                            <span
+                              key={cls}
+                              className="px-2 py-0.5 bg-slate-100 text-[10px] font-bold rounded uppercase"
+                            >
+                              Class {cls}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 text-sm font-medium">{s.total_students}</td>
+                      <td className="px-6 py-5">
+                        <StatusBadge status={s.status} />
+                      </td>
+                      <td className="px-6 py-5 text-right">
+                        <svg className="w-5 h-5 inline-block text-slate-300 group-hover:text-[#1A5276] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          {/* Mobile cards (visible on small screens where table is harder to use) */}
-          <div className="sm:hidden divide-y divide-surface-container-high">
+          {/* Mobile cards (visible on small screens) */}
+          <div className="sm:hidden divide-y divide-surface-container-high bg-white rounded-xl shadow-sm overflow-hidden">
             {sessionList.map((s) => (
               <Link
                 key={`mobile-${s.id}`}
                 href={`/sessions/${s.id}`}
-                className="block px-4 py-4 hover:bg-surface transition-colors"
+                className="block px-4 py-4 hover:bg-[#F0F2F5] transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded bg-primary-100 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                  </div>
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium text-on-surface truncate">{s.school_name}</p>
-                    <p className="text-xs text-on-surface-variant/60 mt-0.5">
+                    <p className="font-bold text-[#1A5276] truncate">{s.school_name}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">
                       {s.session_date} -- {s.total_students} students
                     </p>
                   </div>
@@ -146,7 +148,7 @@ export default function SessionsPage() {
                     {(s.classes_assessed || []).map((cls: string | number) => (
                       <span
                         key={cls}
-                        className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-surface-container-high text-on-surface-variant"
+                        className="px-2 py-0.5 bg-slate-100 text-[10px] font-bold rounded uppercase"
                       >
                         Class {cls}
                       </span>
@@ -156,7 +158,7 @@ export default function SessionsPage() {
               </Link>
             ))}
           </div>
-        </div>
+        </>
       )}
     </div>
   );

@@ -1,13 +1,13 @@
 "use client";
 
 const STEPS = [
-  { key: "draft", label: "Draft", color: "gray" },
-  { key: "scored", label: "Scored", color: "blue" },
-  { key: "generating", label: "Generating", color: "amber" },
-  { key: "generated", label: "Generated", color: "purple" },
-  { key: "qa_review", label: "QA Review", color: "orange" },
-  { key: "pdf_ready", label: "PDFs Ready", color: "teal" },
-  { key: "delivered", label: "Delivered", color: "green" },
+  { key: "draft", label: "Draft", icon: "check" },
+  { key: "scored", label: "Scored", icon: "check" },
+  { key: "generating", label: "Generating", icon: "check" },
+  { key: "generated", label: "Generated", icon: "dot" },
+  { key: "qa_review", label: "QA Review", icon: "hourglass_empty" },
+  { key: "pdf_ready", label: "PDFs Ready", icon: "description" },
+  { key: "delivered", label: "Delivered", icon: "local_shipping" },
 ];
 
 interface Stats {
@@ -63,61 +63,77 @@ export default function SessionTimeline({ currentStatus, stats }: Props) {
   const isActive = currentStatus === "generating";
 
   return (
-    <div className="sa-card">
-      <div className="flex items-center justify-between overflow-x-auto py-4 px-2">
+    <section className="bg-white p-8 rounded-lg shadow-sm">
+      <div className="flex justify-between relative mb-12">
+        {/* Progress Line Background */}
+        <div className="absolute top-5 left-0 w-full h-0.5 bg-slate-200 -z-10" />
+        {/* Completed Progress Line */}
+        <div
+          className="absolute top-5 left-0 h-0.5 bg-primary -z-10 transition-all duration-500"
+          style={{ width: `${currentIdx > 0 ? (currentIdx / (STEPS.length - 1)) * 100 : 0}%` }}
+        />
+
         {STEPS.map((step, i) => {
-          const isDone = i <= currentIdx;
+          const isDone = i < currentIdx;
           const isCurrent = i === currentIdx;
+          const isFuture = i > currentIdx;
           const stepProgress = isCurrent || isDone ? getStepProgress(step.key, stats) : null;
 
           return (
-            <div key={step.key} className="flex items-center flex-1">
-              <div className="flex flex-col items-center w-full">
-                {/* Circle */}
-                <div className="relative">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
-                      isDone
-                        ? "bg-primary text-white"
-                        : "bg-surface-container-high text-on-surface-variant/40"
-                    } ${isCurrent ? "ring-3 ring-primary/20 ring-offset-2" : ""}`}
-                  >
-                    {isDone ? (
-                      <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
+            <div key={step.key} className="flex flex-col items-center gap-3 bg-white px-2">
+              {/* Circle */}
+              <div className="relative">
+                {isDone ? (
+                  <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                ) : isCurrent ? (
+                  <div className="w-10 h-10 rounded-full bg-white border-2 border-purple-500 ring-4 ring-purple-100 flex items-center justify-center">
+                    <div className="w-3 h-3 rounded-full bg-purple-500" />
+                  </div>
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center">
+                    {step.icon === "hourglass_empty" ? (
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 2v6h.01L6 8.01 10 12l-4 4 .01.01H6V22h12v-5.99h-.01L18 16l-4-4 4-3.99-.01-.01H18V2H6zm10 14.5V20H8v-3.5l4-4 4 4zm-4-5l-4-4V4h8v3.5l-4 4z"/></svg>
+                    ) : step.icon === "description" ? (
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                    ) : step.icon === "local_shipping" ? (
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
                     ) : (
-                      i + 1
+                      <span className="text-sm font-bold">{i + 1}</span>
                     )}
                   </div>
-                  {isCurrent && isActive && (
-                    <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500" />
-                    </span>
-                  )}
-                </div>
-                {/* Label */}
-                <span className={`text-xs mt-2 text-center font-medium ${
-                  isDone ? "text-primary" : "text-on-surface-variant/40"
-                } ${isCurrent && isActive ? "text-amber-600" : ""}`}>
-                  {step.label}
-                </span>
-                {/* Progress count */}
-                {stepProgress && (
-                  <span className={`text-[10px] mt-0.5 font-mono ${
-                    isCurrent && isActive ? "text-amber-500 font-semibold" : "text-on-surface-variant/50"
-                  }`}>
-                    {stepProgress}
+                )}
+                {isCurrent && isActive && (
+                  <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500" />
                   </span>
                 )}
               </div>
-              {/* Connector line */}
-              {i < STEPS.length - 1 && (
-                <div className={`h-0.5 w-full min-w-[24px] -mt-6 transition-colors ${
-                  i < currentIdx ? "bg-primary" : "bg-surface-container-highest"
-                }`} />
-              )}
+              {/* Label */}
+              <div className="text-center">
+                <p className={`text-xs font-bold ${
+                  isDone ? "text-primary" :
+                  isCurrent ? "text-purple-700" :
+                  "text-slate-400"
+                } ${isCurrent && isActive ? "text-amber-600" : ""}`}>
+                  {step.label}
+                </p>
+                {/* Progress count */}
+                {stepProgress && (
+                  <p className={`text-[10px] mt-0.5 ${
+                    isCurrent && isActive ? "text-amber-500 font-semibold" : "text-slate-400"
+                  }`}>
+                    {stepProgress}
+                  </p>
+                )}
+                {isFuture && stats && stats.total > 0 && (
+                  <p className="text-[10px] text-slate-400">0/{stats.total}</p>
+                )}
+              </div>
             </div>
           );
         })}
@@ -125,18 +141,19 @@ export default function SessionTimeline({ currentStatus, stats }: Props) {
 
       {/* Overall progress bar */}
       {stats && stats.total > 0 && (
-        <div className="mt-2 px-2">
-          <div className="h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+        <div className="mt-8 space-y-2">
+          <div className="flex justify-between items-end">
+            <span className="text-xs font-bold text-primary uppercase tracking-widest">Overall Progress</span>
+            <span className="text-sm font-bold text-primary">{progress}%</span>
+          </div>
+          <div className="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
             <div
-              className="h-full rounded-full transition-all duration-700 ease-out bg-brand-gradient"
+              className="h-full bg-brand-gradient rounded-full transition-all duration-700 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="text-[10px] text-on-surface-variant/50 mt-1.5 text-right font-medium">
-            {progress}% complete
-          </p>
         </div>
       )}
-    </div>
+    </section>
   );
 }
