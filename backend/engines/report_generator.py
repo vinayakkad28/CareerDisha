@@ -59,6 +59,16 @@ FINANCIAL PLANNING:
 - Mention relevant scholarships (National Scholarship Portal, state scholarships, institution-specific).
 - Include a brief note on education loan options and expected ROI timeline.
 
+DEEP REPORT REQUIREMENTS:
+- personality_portrait.who_you_are must be at least 300 words, written in second person ("you"), specific to THIS student's exact score pattern. Make them feel truly understood.
+- career_deep_dive.day_in_the_life must be at least 150 words and read like a scene from a novel — specific, sensory, exciting.
+- career_deep_dive.journey_map must cover all 7 stages with concrete, actionable items at each stage.
+- stream_comparison.all_streams must include ALL FIVE streams evaluated for this student. Never skip a stream.
+- hidden_gems must be careers this student is unlikely to know — avoid Software Engineer, Doctor, Engineer. Think: UX Researcher, Actuary, Science Journalist, Clinical Psychologist, Biomechanical Engineer.
+- financial_roadmap.roi_simple must use actual numbers (do the math).
+- financial_roadmap.top_scholarships must be REAL named scholarships relevant to this career path.
+- confidence_builder.your_evidence must reference specific aspects of their actual responses, not be generic.
+
 You MUST respond with ONLY valid JSON (no markdown, no code blocks). Follow the exact structure specified."""
 
 
@@ -213,10 +223,99 @@ Generate a complete career assessment report as JSON with this EXACT structure:
     ],
     "conversation_starters": ["Question for parent to ask child 1", "Question 2", "Question 3"]
   }},
-  "personal_note": "Dear {{{{name}}}}, ... (2-3 warm paragraphs addressing the student directly in second person. Reference their specific RIASEC strengths. Be encouraging and specific to their profile.)"
+  "personal_note": "Dear {{{{name}}}}, ... (2-3 warm paragraphs addressing the student directly in second person. Reference their specific RIASEC strengths. Be encouraging and specific to their profile.)",
+
+  "personality_portrait": {{
+    "who_you_are": "3-4 paragraph personal portrait of this student (minimum 300 words). Written directly to the student in second person. Specific to their exact RIASEC pattern, not just their top type. Explain what kind of thinker they are, what environments make them thrive, how they approach problems, what they find meaningful. Make it feel like someone who truly knows them.",
+    "your_strengths": ["Strength 1 with a real-world example of how this shows up", "Strength 2", "Strength 3", "Strength 4", "Strength 5"],
+    "what_energizes_you": "Specific description of the environments, tasks, and problems that will make this student excited to go to work",
+    "natural_challenges": "1-2 things this profile typically struggles with — framed constructively as areas to develop",
+    "your_future_self": "A paragraph about the kind of professional this student is becoming — not a job title but a description. In 10 years, you will likely be the person who..."
+  }},
+
+  "career_deep_dive": {{
+    "career_name": "Career #1 name (the strongest match from career_matches)",
+    "day_in_the_life": "Write a vivid, specific 200-word paragraph: a Tuesday morning in 2025 for a [career] professional in India. Real tasks (e.g., At 10am, she is reviewing her model precision-recall curve on a Bangalore fintech dataset). Real environment. Real colleagues. Make it exciting.",
+    "why_this_fits_you_deeply": "3-4 paragraphs connecting specific RIASEC scores to specific aspects of this career. Not generic. Reference actual score values. E.g., Your Investigative score of 78% means you need work where there are no fixed answers...",
+    "the_honest_truth": "2 paragraphs about real challenges: what is hard, what the frustrating parts are, what people do not tell you. Be honest and specific. This builds trust and prepares the student.",
+    "journey_map": [
+      {{"stage": "Now (Class 10)", "actions": ["2-3 specific things to do this year"]}},
+      {{"stage": "Class 11-12", "actions": ["Stream choice, key subjects to master, competitions to enter"]}},
+      {{"stage": "After 12th (Age 17-18)", "actions": ["Entrance exam strategy, college selection approach"]}},
+      {{"stage": "College Years (Age 18-22)", "actions": ["Internships, projects, skills to build"]}},
+      {{"stage": "First Job (Age 22-23)", "description": "What entry-level reality looks like — actual job title, typical company, typical salary range"}},
+      {{"stage": "5 Years In (Age 27)", "description": "What career looks like with experience — role, responsibilities, typical CTC"}},
+      {{"stage": "10 Years In (Age 32)", "description": "Senior professional — what leadership looks like in this career"}}
+    ],
+    "salary_by_company_tier": {{
+      "tier1_mnc": "Rs X-Y LPA (Google, Amazon, Microsoft)",
+      "tier2_it": "Rs A-B LPA (TCS, Infosys, Wipro)",
+      "startup": "Rs C-D LPA (funded startup with ESOPs)",
+      "government": "Rs E-F LPA (ISRO, DRDO, PSU equivalent if applicable)"
+    }}
+  }},
+
+  "stream_comparison": {{
+    "all_streams": [
+      {{
+        "stream": "Science (PCM)",
+        "fit": "Strong / Moderate / Weak",
+        "fit_reason": "1-2 specific sentences tied to their RIASEC scores",
+        "opens": ["3 career paths this enables"],
+        "challenge_for_this_profile": "What will be hard for this specific RIASEC pattern in this stream"
+      }}
+    ],
+    "decision_framework": "3 questions the student can answer to confirm their choice. E.g., If you enjoy figuring out how machines work then PCM. If living systems fascinate you more than circuits then PCB."
+  }},
+
+  "hidden_gems": [
+    {{
+      "career_name": "Career name (lesser-known but strong match)",
+      "why_you_probably_never_considered_it": "The real reason this career is invisible to most Indian students",
+      "what_it_actually_is": "Plain language explanation in 2-3 sentences",
+      "why_it_fits_your_profile": "Specific connection to RIASEC scores",
+      "salary_snapshot": "Entry: Rs X LPA, with 5 years: Rs Y LPA",
+      "first_step": "One concrete thing to do this week to explore this career"
+    }}
+  ],
+
+  "financial_roadmap": {{
+    "education_cost": {{
+      "government_college": "Rs X Lakh total for 4-year degree (including hostel)",
+      "private_college_mid": "Rs Y Lakh total for 4 years at mid-tier private",
+      "private_college_top": "Rs Z Lakh total for 4 years at top private"
+    }},
+    "earnings_timeline": [
+      {{"period": "Year 1 (Age 22)", "ctc": "Rs X-Y LPA", "note": "Entry level, typical company"}},
+      {{"period": "Year 3 (Age 24)", "ctc": "Rs A-B LPA", "note": "After promotion / job switch"}},
+      {{"period": "Year 5 (Age 26)", "ctc": "Rs C-D LPA", "note": "Mid-level professional"}},
+      {{"period": "Year 10 (Age 31)", "ctc": "Rs E-F LPA", "note": "Senior / specialist role"}}
+    ],
+    "roi_simple": "At a government college (Rs X Lakh cost) earning Rs Y LPA in Year 1, you recover your full education investment in N months. At a private college (Rs Z Lakh), it takes M months.",
+    "top_scholarships": [
+      {{
+        "name": "Real scholarship name (e.g., INSPIRE Scholarship, KVPY, NSP Central Sector)",
+        "amount": "Rs X per year",
+        "eligibility": "Specific eligibility criteria for this student stream/career",
+        "how_to_apply": "Specific portal/deadline"
+      }}
+    ],
+    "education_loan_guidance": "Vidyalakshmi portal (vidyalakshmi.co.in) — typical interest 8-12%, moratorium during study + 1 year, EMI starts at Rs X/month for Rs Y lakh loan"
+  }},
+
+  "confidence_builder": {{
+    "your_confidence_snapshot": "Warm, honest 1-2 paragraph analysis of self-efficacy scores. What they mean and what they do not mean. If no SE data: acknowledge and give general encouragement.",
+    "gap_analysis": "If any interest > confidence gaps detected: address directly. E.g., You have high interest in science but feel less confident — this is extremely common and here is why it does not define your potential...",
+    "thirty_day_challenges": [
+      {{"challenge": "Specific activity (e.g., Complete one module of NPTEL Python course)", "why": "What this will prove to you about yourself"}},
+      {{"challenge": "Second challenge", "why": "Its purpose"}},
+      {{"challenge": "Third challenge", "why": "Its purpose"}}
+    ],
+    "your_evidence": "A specific, evidence-based paragraph: The fact that you answered these questions the way you did tells us that [specific evidence from their response pattern]. This is not motivation — it is data."
+  }}
 }}
 
-Include exactly 5 careers in career_matches. Make all content specific, actionable, and India-focused.
+Include exactly 5 careers in career_matches. Include exactly 2 careers in hidden_gems. stream_comparison.all_streams must have exactly 5 entries (Science PCM, Science PCB, Commerce with Maths, Commerce without Maths, Arts/Humanities). financial_roadmap.top_scholarships must have at least 3 real, named scholarships. Make all content specific, actionable, and India-focused.
 
 Make recommended_books, recommended_youtube, and recommended_websites REAL — use actual Indian book titles, actual YouTube channel names (like Physics Wallah, Unacademy, Khan Academy Hindi), and actual websites (SWAYAM, NPTEL, Coursera). Do NOT invent fictional resources."""
 
@@ -250,7 +349,8 @@ class LLMClient:
                 else:
                     raise
 
-    def _call_anthropic(self, system_prompt: str, user_prompt: str) -> tuple[dict, float]:
+    def _call_anthropic_single(self, system_prompt: str, user_prompt: str) -> tuple[dict, float]:
+        """Single Anthropic API call. Returns (parsed_json, cost_usd)."""
         import anthropic
         client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
         response = client.messages.create(
@@ -272,6 +372,35 @@ class LLMClient:
         cost = (input_tokens * 0.25 + output_tokens * 1.25) / 1_000_000
         return parsed, cost
 
+    def _call_anthropic(self, system_prompt: str, user_prompt: str) -> tuple[dict, float]:
+        """Two-pass Anthropic generation to fit within 8192 max_tokens per call."""
+        # Pass 1: Generate core sections only
+        pass1_suffix = (
+            "\n\nIMPORTANT: In this response, generate ONLY these top-level JSON keys: "
+            "riasec_profile, stream_recommendation, career_matches, action_plan, "
+            "parent_section, personal_note. Do NOT include personality_portrait, "
+            "career_deep_dive, stream_comparison, hidden_gems, financial_roadmap, "
+            "or confidence_builder — those will be generated separately."
+        )
+        result1, cost1 = self._call_anthropic_single(system_prompt, user_prompt + pass1_suffix)
+
+        # Pass 2: Generate new expanded sections with Pass 1 as context
+        pass1_summary = json.dumps(result1, ensure_ascii=False)[:4000]
+        pass2_suffix = (
+            f"\n\nIMPORTANT: The following sections have ALREADY been generated:\n"
+            f"{pass1_summary}\n\n"
+            f"In this response, generate ONLY these top-level JSON keys: "
+            f"personality_portrait, career_deep_dive, stream_comparison, hidden_gems, "
+            f"financial_roadmap, confidence_builder. Do NOT include riasec_profile, "
+            f"stream_recommendation, career_matches, action_plan, parent_section, "
+            f"or personal_note. Ensure consistency with the already-generated content above."
+        )
+        result2, cost2 = self._call_anthropic_single(system_prompt, user_prompt + pass2_suffix)
+
+        # Merge both results
+        merged = {**result1, **result2}
+        return merged, cost1 + cost2
+
     def _call_openai(self, system_prompt: str, user_prompt: str) -> tuple[dict, float]:
         import openai
         client = openai.OpenAI(api_key=OPENAI_API_KEY)
@@ -281,7 +410,7 @@ class LLMClient:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            max_tokens=8192,
+            max_tokens=12000,
             response_format={"type": "json_object"},
         )
         text = response.choices[0].message.content
@@ -304,7 +433,7 @@ class LLMClient:
             user_prompt,
             generation_config=genai.types.GenerationConfig(
                 response_mime_type="application/json",
-                max_output_tokens=8192,
+                max_output_tokens=12000,
             ),
         )
         parsed = json.loads(response.text)
@@ -324,7 +453,7 @@ class LLMClient:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            max_tokens=8192,
+            max_tokens=12000,
             response_format={"type": "json_object"},
         )
         text = response.choices[0].message.content

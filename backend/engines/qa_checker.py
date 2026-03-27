@@ -151,7 +151,41 @@ def validate_report(student: Student) -> list[str]:
     if not conversation_starters or len(conversation_starters) < 3:
         flags.append("[WARNING] parent_section.conversation_starters missing or has < 3 items")
 
-    # 9. College whitelist check (if whitelist exists)
+    # 10. Personality portrait
+    portrait = report.get("personality_portrait", {})
+    if not portrait.get("who_you_are"):
+        flags.append("[WARNING] personality_portrait.who_you_are missing")
+    elif len(portrait.get("who_you_are", "")) < 300:
+        flags.append("[WARNING] personality_portrait.who_you_are too short (< 300 chars)")
+
+    # 11. Career deep dive
+    deep_dive = report.get("career_deep_dive", {})
+    if not deep_dive.get("day_in_the_life"):
+        flags.append("[WARNING] career_deep_dive.day_in_the_life missing")
+    if not deep_dive.get("journey_map") or len(deep_dive.get("journey_map", [])) < 5:
+        flags.append("[WARNING] career_deep_dive.journey_map missing or < 5 stages")
+
+    # 12. Stream comparison
+    stream_comp = report.get("stream_comparison", {})
+    if not stream_comp.get("all_streams") or len(stream_comp.get("all_streams", [])) != 5:
+        flags.append("[WARNING] stream_comparison.all_streams must have exactly 5 streams")
+
+    # 13. Hidden gems
+    hidden = report.get("hidden_gems", [])
+    if not hidden or len(hidden) < 2:
+        flags.append("[WARNING] hidden_gems missing or < 2 careers")
+
+    # 14. Financial roadmap
+    fin = report.get("financial_roadmap", {})
+    if not fin.get("top_scholarships") or len(fin.get("top_scholarships", [])) < 2:
+        flags.append("[WARNING] financial_roadmap.top_scholarships missing or < 2")
+
+    # 15. Confidence builder
+    conf = report.get("confidence_builder", {})
+    if not conf.get("thirty_day_challenges") or len(conf.get("thirty_day_challenges", [])) < 3:
+        flags.append("[WARNING] confidence_builder.thirty_day_challenges missing or < 3")
+
+    # 16. College whitelist check (if whitelist exists)
     whitelist = load_colleges_whitelist()
     if whitelist:
         for career in careers:
@@ -185,7 +219,8 @@ def run_qa_checks(session_id: int) -> dict:
 
         for student in students:
             flags = validate_report(student)
-            if flags:
+            hard_flags = [f for f in flags if not f.startswith("[WARNING]")]
+            if hard_flags:
                 student.report_status = "qa_flagged"
                 student.qa_flags = flags
                 flagged += 1
@@ -196,7 +231,7 @@ def run_qa_checks(session_id: int) -> dict:
                 })
             else:
                 student.report_status = "qa_passed"
-                student.qa_flags = []
+                student.qa_flags = flags  # store warnings even for passed reports
                 passed += 1
 
         db.commit()

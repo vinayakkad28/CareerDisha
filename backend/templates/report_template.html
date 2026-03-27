@@ -147,7 +147,74 @@
     </div>
 </div>
 
-<!-- PAGE 3: RIASEC PROFILE -->
+<!-- PERSONALITY PORTRAIT -->
+<div class="page-break">
+    {% if report.personality_portrait %}
+    <h1>Your Personality Portrait</h1>
+
+    <div style="font-size: 10pt; line-height: 1.7; color: #333; margin-bottom: 16px;">
+        {{ report.personality_portrait.who_you_are }}
+    </div>
+
+    <div style="display: flex; gap: 12px; margin: 16px 0;">
+        <div style="flex: 1;">
+            <h2>Your Natural Strengths</h2>
+            <ul style="padding-left: 16px; font-size: 9.5pt;">
+                {% for strength in report.personality_portrait.your_strengths %}
+                <li style="margin-bottom: 6px;">{{ strength }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div style="flex: 1;">
+            <h2>What Energizes You</h2>
+            <div class="info-box">{{ report.personality_portrait.what_energizes_you }}</div>
+            <h2 style="margin-top: 10px;">Areas to Develop</h2>
+            <div class="info-box">{{ report.personality_portrait.natural_challenges }}</div>
+        </div>
+    </div>
+
+    <div style="background: linear-gradient(135deg, #1a5276 0%, #0d2b3e 100%); color: white; padding: 16px; border-radius: 8px; margin-top: 12px;">
+        <h2 style="color: #d4ac0d; border-bottom: 1px solid rgba(212,172,13,0.3); padding-bottom: 6px;">Your Future Self</h2>
+        <p style="font-size: 9.5pt; line-height: 1.7; margin: 0;">{{ report.personality_portrait.your_future_self }}</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- CONFIDENCE BUILDER -->
+{% if report.confidence_builder %}
+<div class="page-break">
+    <h1>Building Your Confidence</h1>
+
+    <p style="font-size: 9.5pt; line-height: 1.6; margin-bottom: 14px;">{{ report.confidence_builder.your_confidence_snapshot }}</p>
+
+    {% if report.confidence_builder.gap_analysis %}
+    <div style="background: #fef9e7; border: 1px solid #d4ac0d; border-radius: 8px; padding: 12px; margin-bottom: 14px;">
+        <h2 style="color: #b7950b; margin-bottom: 6px;">Interest vs Confidence: Your Gaps</h2>
+        <p style="font-size: 9.5pt;">{{ report.confidence_builder.gap_analysis }}</p>
+    </div>
+    {% endif %}
+
+    <h2>Your 30-Day Confidence Challenges</h2>
+    {% for challenge in report.confidence_builder.thirty_day_challenges %}
+    <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 8px 12px; border: 1px solid #eee; border-radius: 6px;">
+        <span style="background: #1a5276; color: white; border-radius: 50%; width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; font-size: 9pt; font-weight: 700; margin-right: 12px; flex-shrink: 0;">{{ loop.index }}</span>
+        <div>
+            <p style="font-weight: 600; font-size: 9.5pt; margin-bottom: 2px;">{{ challenge.challenge }}</p>
+            <p style="font-size: 8.5pt; color: #666;">{{ challenge.why }}</p>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% if report.confidence_builder.your_evidence %}
+    <div style="background: linear-gradient(135deg, #1a5276 0%, #0d2b3e 100%); color: white; padding: 14px; border-radius: 8px; margin-top: 14px;">
+        <h2 style="color: #d4ac0d; border-bottom: 1px solid rgba(212,172,13,0.3); padding-bottom: 6px; margin-bottom: 8px;">The Evidence For You</h2>
+        <p style="font-size: 9.5pt; line-height: 1.7;">{{ report.confidence_builder.your_evidence }}</p>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- INTEREST PROFILE (RIASEC) -->
 <div class="page-break">
     <h1>Your Interest Profile</h1>
 
@@ -192,81 +259,57 @@
     {% endif %}
 </div>
 
-<!-- PAGES 4-5: CAREER MATCHES -->
+<!-- STREAM COMPARISON MATRIX -->
+{% if report.stream_comparison and report.stream_comparison.all_streams %}
 <div class="page-break">
-    <h1>Your Top Career Matches</h1>
+    <h1>How Every Stream Fits Your Profile</h1>
+    <table style="width: 100%; border-collapse: collapse; font-size: 9pt; margin-bottom: 12px;">
+        <tr style="background: #1a5276; color: white;">
+            <th style="padding: 6px 10px; text-align: left; width: 25%;">Stream</th>
+            <th style="padding: 6px 10px; text-align: center; width: 15%;">Fit</th>
+            <th style="padding: 6px 10px; text-align: left;">Why (Based on Your Scores)</th>
+        </tr>
+        {% for s in report.stream_comparison.all_streams %}
+        <tr style="border-bottom: 1px solid #eee; {% if loop.index is even %}background: #f9f9f9;{% endif %}">
+            <td style="padding: 5px 10px; font-weight: 600;">{{ s.stream }}</td>
+            <td style="padding: 5px 10px; text-align: center;">
+                <span style="padding: 2px 10px; border-radius: 10px; font-size: 8pt; font-weight: 700;
+                    {% if s.fit == 'Strong' %}background: #d5f5e3; color: #27ae60;
+                    {% elif s.fit == 'Moderate' %}background: #fef9e7; color: #b7950b;
+                    {% else %}background: #fde8e8; color: #e74c3c;{% endif %}">
+                    {{ s.fit }}
+                </span>
+            </td>
+            <td style="padding: 5px 10px; font-size: 8.5pt;">{{ s.fit_reason }}</td>
+        </tr>
+        {% endfor %}
+    </table>
 
-    {% if report.career_matches %}
-    {% for career in report.career_matches[:5] %}
-    <div class="career-card">
-        <div class="career-header">
-            <span class="rank-badge">{{ career.rank or loop.index }}</span>
-            <span class="career-name">{{ career.career_name }}</span>
-            {% if career.career_name_hindi %}
-            <span class="career-name-hindi hindi">{{ career.career_name_hindi }}</span>
-            {% endif %}
-        </div>
-
-        {% if career.match_score %}
-        <div class="match-bar">
-            <div class="match-fill" style="width: {{ career.match_score }}%;"></div>
-        </div>
-        <div class="text-sm text-muted">{{ career.match_score }}% match</div>
+    {% if report.stream_comparison.all_streams %}
+    <h2>Career Paths Each Stream Opens</h2>
+    {% for s in report.stream_comparison.all_streams %}
+    <div style="margin-bottom: 8px; padding: 6px 10px; border-left: 3px solid {% if s.fit == 'Strong' %}#27ae60{% elif s.fit == 'Moderate' %}#b7950b{% else %}#e74c3c{% endif %}; background: #f8f9fa; border-radius: 0 4px 4px 0;">
+        <p style="font-weight: 600; font-size: 9pt; margin-bottom: 2px;">{{ s.stream }}</p>
+        {% if s.opens %}
+        <p style="font-size: 8.5pt; color: #555;">Opens: {{ s.opens | join(', ') if s.opens is iterable and s.opens is not string else s.opens }}</p>
         {% endif %}
-
-        {% if career.why_it_fits %}
-        <p class="career-detail" style="margin-top: 4px;">{{ career.why_it_fits }}</p>
-        {% endif %}
-
-        {% if career.education_pathway %}
-        <p class="career-detail"><strong>Pathway:</strong> {{ career.education_pathway }}</p>
-        {% endif %}
-
-        {% if career.entrance_exams %}
-        <p class="career-detail"><strong>Entrance Exams:</strong> {{ career.entrance_exams | join(', ') if career.entrance_exams is iterable and career.entrance_exams is not string else career.entrance_exams }}</p>
-        {% endif %}
-
-        {% if career.top_colleges %}
-        <p class="career-detail"><strong>Top Colleges:</strong> {{ career.top_colleges | join(', ') if career.top_colleges is iterable and career.top_colleges is not string else career.top_colleges }}</p>
-        {% endif %}
-
-        {% if career.salary_range %}
-        <p class="career-detail"><strong>Salary:</strong> {{ career.salary_range }}</p>
-        {% endif %}
-
-        {% if career.growth_outlook %}
-        <p class="career-detail"><strong>Growth:</strong> {{ career.growth_outlook }}</p>
-        {% endif %}
-
-        {% if career.education_cost %}
-        <p class="career-detail"><strong>Education Cost:</strong> {{ career.education_cost }}</p>
-        {% endif %}
-
-        {% if career.scholarship_options %}
-        <p class="career-detail" style="color: #27ae60;"><strong>Scholarships:</strong> {{ career.scholarship_options }}</p>
-        {% endif %}
-
-        {% if career.coaching_needed %}
-        <p class="career-detail"><strong>Coaching:</strong> {{ career.coaching_needed }}</p>
+        {% if s.challenge_for_this_profile %}
+        <p style="font-size: 8.5pt; color: #888; font-style: italic;">Challenge: {{ s.challenge_for_this_profile }}</p>
         {% endif %}
     </div>
     {% endfor %}
     {% endif %}
-</div>
 
-<!-- PERSONAL NOTE -->
-<div class="page-break">
-    {% if report.personal_note %}
-    <div style="padding: 2cm 1cm; text-align: center;">
-        <h1 style="border-bottom: none; text-align: center; color: {{ brand.primary }}; font-size: 16pt;">A Note Just For You</h1>
-        <div style="max-width: 85%; margin: 1.5cm auto; font-size: 11pt; line-height: 1.8; text-align: left; color: #333;">
-            {{ report.personal_note }}
-        </div>
+    {% if report.stream_comparison.decision_framework %}
+    <div class="info-box" style="border-left: 3px solid #d4ac0d; margin-top: 12px;">
+        <h3>How to Decide: 3 Questions</h3>
+        <p>{{ report.stream_comparison.decision_framework }}</p>
     </div>
     {% endif %}
 </div>
+{% endif %}
 
-<!-- PAGE 6: STREAM RECOMMENDATION / ROADMAP -->
+<!-- STREAM RECOMMENDATION / ROADMAP -->
 <div class="page-break">
     {% if student.class_level == 10 %}
     <h1>Stream Recommendation</h1>
@@ -335,7 +378,184 @@
     {% endif %}
 </div>
 
-<!-- PAGE 7: ACTION PLAN -->
+<!-- CAREER #1 DEEP DIVE -->
+<div class="page-break">
+    {% if report.career_deep_dive %}
+    <h1>Deep Dive: {{ report.career_deep_dive.career_name }}</h1>
+    <p style="font-size: 8.5pt; color: #888; margin-bottom: 16px;">Your #1 career match — explored in full detail</p>
+
+    <!-- Day in the Life -->
+    <div style="background: #f0f7ff; border-left: 4px solid #1a5276; padding: 14px; border-radius: 0 8px 8px 0; margin-bottom: 14px;">
+        <h2 style="margin-bottom: 8px;">A Day in the Life</h2>
+        <p style="font-size: 9.5pt; line-height: 1.7; font-style: italic;">{{ report.career_deep_dive.day_in_the_life }}</p>
+    </div>
+
+    <!-- Why it fits deeply -->
+    <h2>Why This Career Fits Your Profile Specifically</h2>
+    <p style="font-size: 9.5pt; line-height: 1.6;">{{ report.career_deep_dive.why_this_fits_you_deeply }}</p>
+
+    <!-- The Honest Truth -->
+    <div style="background: #fff8f0; border: 1px solid #e67e22; border-radius: 8px; padding: 12px; margin: 12px 0;">
+        <h2 style="color: #e67e22; margin-bottom: 6px;">The Honest Truth</h2>
+        <p style="font-size: 9.5pt; line-height: 1.6;">{{ report.career_deep_dive.the_honest_truth }}</p>
+    </div>
+
+    <!-- Salary by tier -->
+    {% if report.career_deep_dive.salary_by_company_tier %}
+    <h2 style="margin-top: 12px;">Salary Reality in India (2025)</h2>
+    <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
+        <tr style="background: #1a5276; color: white;">
+            <th style="padding: 6px 10px; text-align: left;">Company Type</th>
+            <th style="padding: 6px 10px; text-align: left;">Expected CTC</th>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 5px 10px;">Tier 1 MNC (Google, Amazon, Microsoft)</td>
+            <td style="padding: 5px 10px; font-weight: 700; color: #27ae60;">{{ report.career_deep_dive.salary_by_company_tier.tier1_mnc }}</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee; background: #f9f9f9;">
+            <td style="padding: 5px 10px;">Tier 2 IT (TCS, Infosys, Wipro)</td>
+            <td style="padding: 5px 10px;">{{ report.career_deep_dive.salary_by_company_tier.tier2_it }}</td>
+        </tr>
+        <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 5px 10px;">Funded Startup</td>
+            <td style="padding: 5px 10px;">{{ report.career_deep_dive.salary_by_company_tier.startup }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 5px 10px;">Government / PSU</td>
+            <td style="padding: 5px 10px;">{{ report.career_deep_dive.salary_by_company_tier.government }}</td>
+        </tr>
+    </table>
+    {% endif %}
+    {% endif %}
+</div>
+
+<!-- CAREER #1 JOURNEY MAP -->
+<div class="page-break">
+    {% if report.career_deep_dive and report.career_deep_dive.journey_map %}
+    <h1>Your Journey to Becoming a {{ report.career_deep_dive.career_name }}</h1>
+
+    <div style="margin-top: 16px;">
+        {% for stage in report.career_deep_dive.journey_map %}
+        <div style="display: flex; margin-bottom: 16px; align-items: flex-start;">
+            <div style="width: 140px; flex-shrink: 0; background: #1a5276; color: white; padding: 6px 10px; border-radius: 6px; font-size: 8.5pt; font-weight: 700; text-align: center; margin-right: 14px;">
+                {{ stage.stage }}
+            </div>
+            <div style="flex: 1; border-left: 2px solid #d4ac0d; padding-left: 14px;">
+                {% if stage.actions %}
+                <ul style="padding-left: 14px; font-size: 9.5pt; margin: 0;">
+                    {% for action in stage.actions %}
+                    <li style="margin-bottom: 3px;">{{ action }}</li>
+                    {% endfor %}
+                </ul>
+                {% elif stage.description %}
+                <p style="font-size: 9.5pt; margin: 0; line-height: 1.5;">{{ stage.description }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- TOP CAREER MATCHES -->
+<div class="page-break">
+    <h1>Your Top Career Matches</h1>
+
+    {% if report.career_matches %}
+    {% for career in report.career_matches[:5] %}
+    <div class="career-card">
+        <div class="career-header">
+            <span class="rank-badge">{{ career.rank or loop.index }}</span>
+            <span class="career-name">{{ career.career_name }}</span>
+            {% if career.career_name_hindi %}
+            <span class="career-name-hindi hindi">{{ career.career_name_hindi }}</span>
+            {% endif %}
+        </div>
+
+        {% if career.match_score %}
+        <div class="match-bar">
+            <div class="match-fill" style="width: {{ career.match_score }}%;"></div>
+        </div>
+        <div class="text-sm text-muted">{{ career.match_score }}% match</div>
+        {% endif %}
+
+        {% if career.why_it_fits %}
+        <p class="career-detail" style="margin-top: 4px;">{{ career.why_it_fits }}</p>
+        {% endif %}
+
+        {% if career.education_pathway %}
+        <p class="career-detail"><strong>Pathway:</strong> {{ career.education_pathway }}</p>
+        {% endif %}
+
+        {% if career.entrance_exams %}
+        <p class="career-detail"><strong>Entrance Exams:</strong> {{ career.entrance_exams | join(', ') if career.entrance_exams is iterable and career.entrance_exams is not string else career.entrance_exams }}</p>
+        {% endif %}
+
+        {% if career.top_colleges %}
+        <p class="career-detail"><strong>Top Colleges:</strong> {{ career.top_colleges | join(', ') if career.top_colleges is iterable and career.top_colleges is not string else career.top_colleges }}</p>
+        {% endif %}
+
+        {% if career.salary_range %}
+        <p class="career-detail"><strong>Salary:</strong> {{ career.salary_range }}</p>
+        {% endif %}
+
+        {% if career.growth_outlook %}
+        <p class="career-detail"><strong>Growth:</strong> {{ career.growth_outlook }}</p>
+        {% endif %}
+
+        {% if career.education_cost %}
+        <p class="career-detail"><strong>Education Cost:</strong> {{ career.education_cost }}</p>
+        {% endif %}
+
+        {% if career.scholarship_options %}
+        <p class="career-detail" style="color: #27ae60;"><strong>Scholarships:</strong> {{ career.scholarship_options }}</p>
+        {% endif %}
+
+        {% if career.coaching_needed %}
+        <p class="career-detail"><strong>Coaching:</strong> {{ career.coaching_needed }}</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
+<!-- HIDDEN GEMS -->
+<div class="page-break">
+    {% if report.hidden_gems %}
+    <h1>Careers You've Probably Never Considered</h1>
+    <p style="font-size: 9.5pt; color: #555; margin-bottom: 16px;">Most students with your profile think of a handful of obvious paths. These lesser-known careers match your interests just as strongly — and most students have never heard of them.</p>
+
+    {% for gem in report.hidden_gems %}
+    <div style="border: 1px solid #d4ac0d; border-radius: 8px; padding: 12px 14px; margin-bottom: 12px; background: #fffef5;">
+        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+            <span style="background: #d4ac0d; color: #1a5276; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 9pt; margin-right: 10px;">&#10022;</span>
+            <span style="font-size: 11pt; font-weight: 700; color: #1a5276;">{{ gem.career_name }}</span>
+        </div>
+        <p style="font-size: 9pt; color: #777; font-style: italic; margin-bottom: 6px;">{{ gem.why_you_probably_never_considered_it }}</p>
+        <p style="font-size: 9.5pt; margin-bottom: 6px;"><strong>What it is:</strong> {{ gem.what_it_actually_is }}</p>
+        <p style="font-size: 9.5pt; margin-bottom: 6px;"><strong>Why it fits you:</strong> {{ gem.why_it_fits_your_profile }}</p>
+        <div style="display: flex; gap: 12px; margin-top: 8px;">
+            <span style="font-size: 9pt; color: #27ae60; font-weight: 600;">{{ gem.salary_snapshot }}</span>
+            <span style="font-size: 9pt; color: #1a5276; border-left: 1px solid #ddd; padding-left: 12px;"><strong>Start here:</strong> {{ gem.first_step }}</span>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
+<!-- PERSONAL NOTE -->
+<div class="page-break">
+    {% if report.personal_note %}
+    <div style="padding: 2cm 1cm; text-align: center;">
+        <h1 style="border-bottom: none; text-align: center; color: {{ brand.primary }}; font-size: 16pt;">A Note Just For You</h1>
+        <div style="max-width: 85%; margin: 1.5cm auto; font-size: 11pt; line-height: 1.8; text-align: left; color: #333;">
+            {{ report.personal_note }}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- ACTION PLAN -->
 <div class="page-break">
     <h1>Your Action Plan</h1>
 
@@ -430,7 +650,80 @@
     {% endif %}
 </div>
 
-<!-- PAGE 8: PARENT SECTION -->
+<!-- FINANCIAL ROADMAP -->
+<div class="page-break">
+    {% if report.financial_roadmap %}
+    <h1>Your Financial Roadmap</h1>
+    <p style="font-size: 9pt; color: #888; margin-bottom: 14px;">Based on your top career match — specific to India, 2025 data</p>
+
+    <!-- Education cost -->
+    {% if report.financial_roadmap.education_cost %}
+    <h2>Education Investment</h2>
+    <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+        <div style="flex: 1; background: #d5f5e3; border-radius: 8px; padding: 10px; text-align: center;">
+            <p style="font-size: 8pt; color: #555; margin-bottom: 4px;">Government College</p>
+            <p style="font-size: 13pt; font-weight: 800; color: #27ae60;">{{ report.financial_roadmap.education_cost.government_college }}</p>
+        </div>
+        <div style="flex: 1; background: #fef9e7; border-radius: 8px; padding: 10px; text-align: center;">
+            <p style="font-size: 8pt; color: #555; margin-bottom: 4px;">Mid-tier Private</p>
+            <p style="font-size: 13pt; font-weight: 800; color: #b7950b;">{{ report.financial_roadmap.education_cost.private_college_mid }}</p>
+        </div>
+        <div style="flex: 1; background: #fde8e8; border-radius: 8px; padding: 10px; text-align: center;">
+            <p style="font-size: 8pt; color: #555; margin-bottom: 4px;">Top Private</p>
+            <p style="font-size: 13pt; font-weight: 800; color: #e74c3c;">{{ report.financial_roadmap.education_cost.private_college_top }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ROI -->
+    {% if report.financial_roadmap.roi_simple %}
+    <div style="background: #1a5276; color: white; padding: 12px 16px; border-radius: 8px; margin-bottom: 14px;">
+        <h2 style="color: #d4ac0d; border-bottom: 1px solid rgba(212,172,13,0.3); padding-bottom: 4px; margin-bottom: 8px;">Return on Investment</h2>
+        <p style="font-size: 9.5pt; line-height: 1.6;">{{ report.financial_roadmap.roi_simple }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Earnings timeline -->
+    {% if report.financial_roadmap.earnings_timeline %}
+    <h2>Your Earnings Trajectory</h2>
+    <table style="width: 100%; border-collapse: collapse; font-size: 9pt; margin-bottom: 14px;">
+        <tr style="background: #1a5276; color: white;">
+            <th style="padding: 5px 10px; text-align: left;">Stage</th>
+            <th style="padding: 5px 10px; text-align: left;">Expected CTC</th>
+            <th style="padding: 5px 10px; text-align: left;">Context</th>
+        </tr>
+        {% for row in report.financial_roadmap.earnings_timeline %}
+        <tr style="border-bottom: 1px solid #eee; {% if loop.index is even %}background: #f9f9f9;{% endif %}">
+            <td style="padding: 4px 10px; font-weight: 600;">{{ row.period }}</td>
+            <td style="padding: 4px 10px; color: #27ae60; font-weight: 700;">{{ row.ctc }}</td>
+            <td style="padding: 4px 10px; color: #666;">{{ row.note }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    <!-- Scholarships -->
+    {% if report.financial_roadmap.top_scholarships %}
+    <h2>Scholarships to Apply For</h2>
+    {% for sch in report.financial_roadmap.top_scholarships %}
+    <div style="border-left: 3px solid #27ae60; padding: 6px 10px; margin-bottom: 8px; background: #f9fef9; border-radius: 0 4px 4px 0;">
+        <p style="font-weight: 700; font-size: 9.5pt; margin-bottom: 2px; color: #27ae60;">{{ sch.name }} — {{ sch.amount }}</p>
+        <p style="font-size: 8.5pt; color: #555; margin-bottom: 2px;"><strong>Eligibility:</strong> {{ sch.eligibility }}</p>
+        <p style="font-size: 8.5pt; color: #555;"><strong>Apply at:</strong> {{ sch.how_to_apply }}</p>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if report.financial_roadmap.education_loan_guidance %}
+    <div class="info-box" style="margin-top: 10px;">
+        <h3>Education Loan Guidance</h3>
+        <p>{{ report.financial_roadmap.education_loan_guidance }}</p>
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
+
+<!-- PARENT SECTION -->
 <div class="page-break">
     {% if report.parent_section %}
     <div class="parent-box">
@@ -506,7 +799,7 @@
             {% endif %}
             {% if counsellor_phone %}
             <p style="font-size: 9pt; color: #555; margin-top: 4px;">
-                📱 <a href="https://wa.me/{{ counsellor_phone }}" style="color: {{ brand.primary }}; text-decoration: none;">{{ counsellor_phone }}</a>
+                <a href="https://wa.me/{{ counsellor_phone }}" style="color: {{ brand.primary }}; text-decoration: none;">{{ counsellor_phone }}</a>
                 <span style="font-size: 8pt; color: #888;"> (Free follow-up query)</span>
             </p>
             {% endif %}

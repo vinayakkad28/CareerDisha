@@ -62,6 +62,61 @@ interface ReportData {
       conversation_starters?: string[];
     };
     personal_note?: string;
+    personality_portrait?: {
+      who_you_are?: string;
+      your_strengths?: string[];
+      what_energizes_you?: string;
+      natural_challenges?: string;
+      your_future_self?: string;
+    };
+    career_deep_dive?: {
+      career_name?: string;
+      day_in_the_life?: string;
+      why_this_fits_you_deeply?: string;
+      the_honest_truth?: string;
+      journey_map?: { stage: string; actions?: string[]; description?: string }[];
+      salary_by_company_tier?: {
+        tier1_mnc?: string;
+        tier2_it?: string;
+        startup?: string;
+        government?: string;
+      };
+    };
+    stream_comparison?: {
+      all_streams?: {
+        stream: string;
+        fit: string;
+        fit_reason?: string;
+        opens?: string[];
+        challenge_for_this_profile?: string;
+      }[];
+      decision_framework?: string;
+    };
+    hidden_gems?: {
+      career_name: string;
+      why_you_probably_never_considered_it?: string;
+      what_it_actually_is?: string;
+      why_it_fits_your_profile?: string;
+      salary_snapshot?: string;
+      first_step?: string;
+    }[];
+    financial_roadmap?: {
+      education_cost?: {
+        government_college?: string;
+        private_college_mid?: string;
+        private_college_top?: string;
+      };
+      earnings_timeline?: { period: string; ctc: string; note?: string }[];
+      roi_simple?: string;
+      top_scholarships?: { name: string; amount?: string; eligibility?: string; how_to_apply?: string }[];
+      education_loan_guidance?: string;
+    };
+    confidence_builder?: {
+      your_confidence_snapshot?: string;
+      gap_analysis?: string;
+      thirty_day_challenges?: { challenge: string; why: string }[];
+      your_evidence?: string;
+    };
   };
 }
 
@@ -157,6 +212,90 @@ export default function ReportPage() {
 
         <main className="p-10 space-y-16">
 
+          {/* PERSONALITY PORTRAIT */}
+          {r.personality_portrait && (
+            <section>
+              <h2 className="font-heading text-2xl font-bold text-primary inline-block border-b-4 border-secondary pb-1 mb-8">
+                Your Personality Portrait
+              </h2>
+              <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-line mb-8">
+                {r.personality_portrait.who_you_are}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div>
+                  <h3 className="font-heading text-lg font-bold text-primary mb-4">Your Natural Strengths</h3>
+                  <ul className="space-y-3">
+                    {r.personality_portrait.your_strengths?.map((s, i) => (
+                      <li key={i} className="flex items-start gap-3 text-sm text-slate-600">
+                        <span className="w-6 h-6 rounded-full bg-accent/10 text-accent flex items-center justify-center shrink-0 text-xs font-bold">{i + 1}</span>
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="space-y-4">
+                  <div className="bg-blue-50/50 p-5 rounded-xl">
+                    <h4 className="font-heading text-sm font-bold text-blue-900 mb-2">What Energizes You</h4>
+                    <p className="text-sm text-blue-800 leading-relaxed">{r.personality_portrait.what_energizes_you}</p>
+                  </div>
+                  <div className="bg-amber-50/50 p-5 rounded-xl">
+                    <h4 className="font-heading text-sm font-bold text-amber-900 mb-2">Areas to Develop</h4>
+                    <p className="text-sm text-amber-800 leading-relaxed">{r.personality_portrait.natural_challenges}</p>
+                  </div>
+                </div>
+              </div>
+              {r.personality_portrait.your_future_self && (
+                <div className="bg-brand-gradient text-white p-6 rounded-xl">
+                  <h3 className="font-heading text-lg font-bold text-secondary mb-3">Your Future Self</h3>
+                  <p className="text-sm leading-relaxed opacity-90">{r.personality_portrait.your_future_self}</p>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* CONFIDENCE BUILDER */}
+          {r.confidence_builder && (
+            <section>
+              <h2 className="font-heading text-2xl font-bold text-primary inline-block border-b-4 border-secondary pb-1 mb-8">
+                Building Your Confidence
+              </h2>
+              <p className="text-sm text-slate-600 leading-relaxed mb-6">{r.confidence_builder.your_confidence_snapshot}</p>
+
+              {r.confidence_builder.gap_analysis && (
+                <div className="bg-amber-50 border border-amber-200 p-5 rounded-xl mb-6">
+                  <h3 className="font-heading text-sm font-bold text-amber-900 mb-2">Interest vs Confidence: Your Gaps</h3>
+                  <p className="text-sm text-amber-800 leading-relaxed">{r.confidence_builder.gap_analysis}</p>
+                </div>
+              )}
+
+              {r.confidence_builder.thirty_day_challenges && r.confidence_builder.thirty_day_challenges.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="font-heading text-lg font-bold text-primary mb-4">Your 30-Day Confidence Challenges</h3>
+                  <div className="space-y-3">
+                    {r.confidence_builder.thirty_day_challenges.map((ch, i) => (
+                      <div key={i} className="flex items-start gap-4 p-4 border border-surface-container-high rounded-xl">
+                        <span className="w-8 h-8 rounded-full bg-brand-gradient text-white flex items-center justify-center font-bold text-sm shrink-0">
+                          {i + 1}
+                        </span>
+                        <div>
+                          <p className="text-sm font-semibold text-slate-800">{ch.challenge}</p>
+                          <p className="text-xs text-slate-500 mt-1">{ch.why}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {r.confidence_builder.your_evidence && (
+                <div className="bg-brand-gradient text-white p-6 rounded-xl">
+                  <h3 className="font-heading text-lg font-bold text-secondary mb-3">The Evidence For You</h3>
+                  <p className="text-sm leading-relaxed opacity-90">{r.confidence_builder.your_evidence}</p>
+                </div>
+              )}
+            </section>
+          )}
+
           {/* SECTION 2: INTEREST PROFILE */}
           <section>
             <h2 className="font-heading text-2xl font-bold text-primary inline-block border-b-4 border-secondary pb-1 mb-8">
@@ -200,6 +339,52 @@ export default function ReportPage() {
               </div>
             )}
           </section>
+
+          {/* STREAM COMPARISON MATRIX */}
+          {r.stream_comparison?.all_streams && r.stream_comparison.all_streams.length > 0 && (
+            <section>
+              <h2 className="font-heading text-2xl font-bold text-primary inline-block border-b-4 border-secondary pb-1 mb-8">
+                How Every Stream Fits Your Profile
+              </h2>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="bg-brand-gradient text-white">
+                      <th className="px-4 py-3 text-left font-heading font-bold">Stream</th>
+                      <th className="px-4 py-3 text-center font-heading font-bold">Fit</th>
+                      <th className="px-4 py-3 text-left font-heading font-bold">Why (Based on Your Scores)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {r.stream_comparison.all_streams.map((s, i) => (
+                      <tr key={i} className={i % 2 === 1 ? "bg-surface-container-high/30" : ""}>
+                        <td className="px-4 py-3 font-semibold text-primary">{s.stream}</td>
+                        <td className="px-4 py-3 text-center">
+                          <span className={`text-[10px] font-bold px-3 py-1 rounded-full ${
+                            s.fit === "Strong"
+                              ? "bg-green-100 text-green-700"
+                              : s.fit === "Moderate"
+                              ? "bg-amber-100 text-amber-700"
+                              : "bg-red-100 text-red-700"
+                          }`}>
+                            {s.fit}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-slate-600 text-xs">{s.fit_reason}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {r.stream_comparison.decision_framework && (
+                <div className="mt-6 bg-amber-50 border-l-4 border-secondary p-5 rounded-r-xl">
+                  <h4 className="font-heading text-sm font-bold text-slate-800 mb-2">How to Decide: 3 Questions</h4>
+                  <p className="text-sm text-slate-600 leading-relaxed">{r.stream_comparison.decision_framework}</p>
+                </div>
+              )}
+            </section>
+          )}
 
           {/* SECTION 3: STREAM RECOMMENDATION */}
           {r.stream_recommendation && (
@@ -255,6 +440,89 @@ export default function ReportPage() {
                   )}
                 </div>
               </div>
+            </section>
+          )}
+
+          {/* CAREER #1 DEEP DIVE */}
+          {r.career_deep_dive && (
+            <section>
+              <h2 className="font-heading text-2xl font-bold text-primary inline-block border-b-4 border-secondary pb-1 mb-2">
+                Deep Dive: {r.career_deep_dive.career_name}
+              </h2>
+              <p className="text-xs text-slate-400 mb-8">Your #1 career match — explored in full detail</p>
+
+              {/* Day in the Life */}
+              {r.career_deep_dive.day_in_the_life && (
+                <div className="bg-blue-50/50 border-l-4 border-primary p-6 rounded-r-xl mb-6">
+                  <h3 className="font-heading text-lg font-bold text-primary mb-3">A Day in the Life</h3>
+                  <p className="text-sm text-slate-700 leading-relaxed italic">{r.career_deep_dive.day_in_the_life}</p>
+                </div>
+              )}
+
+              {/* Why it fits */}
+              {r.career_deep_dive.why_this_fits_you_deeply && (
+                <div className="mb-6">
+                  <h3 className="font-heading text-lg font-bold text-primary mb-3">Why This Career Fits Your Profile Specifically</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">{r.career_deep_dive.why_this_fits_you_deeply}</p>
+                </div>
+              )}
+
+              {/* The Honest Truth */}
+              {r.career_deep_dive.the_honest_truth && (
+                <div className="bg-orange-50 border border-orange-200 p-5 rounded-xl mb-6">
+                  <h3 className="font-heading text-lg font-bold text-orange-700 mb-3">The Honest Truth</h3>
+                  <p className="text-sm text-orange-900 leading-relaxed">{r.career_deep_dive.the_honest_truth}</p>
+                </div>
+              )}
+
+              {/* Salary by company tier */}
+              {r.career_deep_dive.salary_by_company_tier && (
+                <div className="mb-6">
+                  <h3 className="font-heading text-lg font-bold text-primary mb-4">Salary Reality in India (2025)</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {[
+                      { label: "Tier 1 MNC (Google, Amazon, Microsoft)", value: r.career_deep_dive.salary_by_company_tier.tier1_mnc, color: "text-green-600" },
+                      { label: "Tier 2 IT (TCS, Infosys, Wipro)", value: r.career_deep_dive.salary_by_company_tier.tier2_it, color: "text-slate-700" },
+                      { label: "Funded Startup", value: r.career_deep_dive.salary_by_company_tier.startup, color: "text-slate-700" },
+                      { label: "Government / PSU", value: r.career_deep_dive.salary_by_company_tier.government, color: "text-slate-700" },
+                    ].map((tier, i) => tier.value && (
+                      <div key={i} className="flex justify-between items-center p-3 bg-surface-container-high rounded-lg">
+                        <span className="text-xs text-slate-500">{tier.label}</span>
+                        <span className={`text-sm font-bold ${tier.color}`}>{tier.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Journey Map */}
+              {r.career_deep_dive.journey_map && r.career_deep_dive.journey_map.length > 0 && (
+                <div>
+                  <h3 className="font-heading text-lg font-bold text-primary mb-4">
+                    Your Journey to Becoming a {r.career_deep_dive.career_name}
+                  </h3>
+                  <div className="space-y-4">
+                    {r.career_deep_dive.journey_map.map((stage, i) => (
+                      <div key={i} className="flex items-start gap-4">
+                        <div className="w-36 shrink-0 bg-brand-gradient text-white text-center py-2 px-3 rounded-lg text-xs font-bold">
+                          {stage.stage}
+                        </div>
+                        <div className="flex-1 border-l-2 border-secondary pl-4">
+                          {stage.actions ? (
+                            <ul className="text-sm text-slate-600 space-y-1">
+                              {stage.actions.map((a, j) => (
+                                <li key={j}>&#x2022; {a}</li>
+                              ))}
+                            </ul>
+                          ) : stage.description ? (
+                            <p className="text-sm text-slate-600">{stage.description}</p>
+                          ) : null}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </section>
           )}
 
@@ -348,6 +616,45 @@ export default function ReportPage() {
             </section>
           )}
 
+          {/* HIDDEN GEMS */}
+          {r.hidden_gems && r.hidden_gems.length > 0 && (
+            <section>
+              <h2 className="font-heading text-2xl font-bold text-primary inline-block border-b-4 border-secondary pb-1 mb-4">
+                Careers You&apos;ve Probably Never Considered
+              </h2>
+              <p className="text-sm text-slate-500 mb-8">
+                Most students with your profile think of a handful of obvious paths. These lesser-known careers match your interests just as strongly.
+              </p>
+              <div className="space-y-4">
+                {r.hidden_gems.map((gem, i) => (
+                  <div key={i} className="border-2 border-secondary/40 rounded-xl p-6 bg-amber-50/20">
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="w-8 h-8 rounded-full bg-secondary text-primary flex items-center justify-center font-bold text-sm">&#10022;</span>
+                      <h3 className="font-heading text-xl font-bold text-primary">{gem.career_name}</h3>
+                    </div>
+                    {gem.why_you_probably_never_considered_it && (
+                      <p className="text-xs text-slate-400 italic mb-3">{gem.why_you_probably_never_considered_it}</p>
+                    )}
+                    {gem.what_it_actually_is && (
+                      <p className="text-sm text-slate-600 mb-2"><span className="font-semibold">What it is:</span> {gem.what_it_actually_is}</p>
+                    )}
+                    {gem.why_it_fits_your_profile && (
+                      <p className="text-sm text-slate-600 mb-3"><span className="font-semibold">Why it fits you:</span> {gem.why_it_fits_your_profile}</p>
+                    )}
+                    <div className="flex flex-wrap gap-4 text-xs">
+                      {gem.salary_snapshot && (
+                        <span className="text-green-600 font-semibold">{gem.salary_snapshot}</span>
+                      )}
+                      {gem.first_step && (
+                        <span className="text-primary border-l border-slate-200 pl-4"><span className="font-semibold">Start here:</span> {gem.first_step}</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* SECTION 5: ACTION PLAN */}
           {r.action_plan && (
             <section>
@@ -433,6 +740,99 @@ export default function ReportPage() {
                       </div>
                     </div>
                   )}
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* FINANCIAL ROADMAP */}
+          {r.financial_roadmap && (
+            <section>
+              <h2 className="font-heading text-2xl font-bold text-primary inline-block border-b-4 border-secondary pb-1 mb-2">
+                Your Financial Roadmap
+              </h2>
+              <p className="text-xs text-slate-400 mb-8">Based on your top career match — specific to India, 2025 data</p>
+
+              {/* Education Cost */}
+              {r.financial_roadmap.education_cost && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  {r.financial_roadmap.education_cost.government_college && (
+                    <div className="bg-green-50 rounded-xl p-5 text-center">
+                      <p className="text-[10px] text-slate-500 uppercase font-bold mb-2">Government College</p>
+                      <p className="text-xl font-extrabold text-green-600">{r.financial_roadmap.education_cost.government_college}</p>
+                    </div>
+                  )}
+                  {r.financial_roadmap.education_cost.private_college_mid && (
+                    <div className="bg-amber-50 rounded-xl p-5 text-center">
+                      <p className="text-[10px] text-slate-500 uppercase font-bold mb-2">Mid-tier Private</p>
+                      <p className="text-xl font-extrabold text-amber-600">{r.financial_roadmap.education_cost.private_college_mid}</p>
+                    </div>
+                  )}
+                  {r.financial_roadmap.education_cost.private_college_top && (
+                    <div className="bg-red-50 rounded-xl p-5 text-center">
+                      <p className="text-[10px] text-slate-500 uppercase font-bold mb-2">Top Private</p>
+                      <p className="text-xl font-extrabold text-red-500">{r.financial_roadmap.education_cost.private_college_top}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ROI */}
+              {r.financial_roadmap.roi_simple && (
+                <div className="bg-brand-gradient text-white p-6 rounded-xl mb-6">
+                  <h3 className="font-heading text-lg font-bold text-secondary mb-3">Return on Investment</h3>
+                  <p className="text-sm leading-relaxed opacity-90">{r.financial_roadmap.roi_simple}</p>
+                </div>
+              )}
+
+              {/* Earnings Timeline */}
+              {r.financial_roadmap.earnings_timeline && r.financial_roadmap.earnings_timeline.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="font-heading text-lg font-bold text-primary mb-4">Your Earnings Trajectory</h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm border-collapse">
+                      <thead>
+                        <tr className="bg-brand-gradient text-white">
+                          <th className="px-4 py-3 text-left font-heading font-bold">Stage</th>
+                          <th className="px-4 py-3 text-left font-heading font-bold">Expected CTC</th>
+                          <th className="px-4 py-3 text-left font-heading font-bold">Context</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {r.financial_roadmap.earnings_timeline.map((row, i) => (
+                          <tr key={i} className={i % 2 === 1 ? "bg-surface-container-high/30" : ""}>
+                            <td className="px-4 py-3 font-semibold text-slate-700">{row.period}</td>
+                            <td className="px-4 py-3 font-bold text-green-600">{row.ctc}</td>
+                            <td className="px-4 py-3 text-xs text-slate-500">{row.note}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Scholarships */}
+              {r.financial_roadmap.top_scholarships && r.financial_roadmap.top_scholarships.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="font-heading text-lg font-bold text-primary mb-4">Scholarships to Apply For</h3>
+                  <div className="space-y-3">
+                    {r.financial_roadmap.top_scholarships.map((sch, i) => (
+                      <div key={i} className="border-l-4 border-green-500 bg-green-50/30 p-4 rounded-r-lg">
+                        <p className="font-semibold text-green-700 text-sm">{sch.name}{sch.amount && ` — ${sch.amount}`}</p>
+                        {sch.eligibility && <p className="text-xs text-slate-600 mt-1"><span className="font-semibold">Eligibility:</span> {sch.eligibility}</p>}
+                        {sch.how_to_apply && <p className="text-xs text-slate-600"><span className="font-semibold">Apply at:</span> {sch.how_to_apply}</p>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Education Loan */}
+              {r.financial_roadmap.education_loan_guidance && (
+                <div className="bg-surface-container-high p-5 rounded-xl">
+                  <h4 className="font-heading text-sm font-bold text-slate-800 mb-2">Education Loan Guidance</h4>
+                  <p className="text-sm text-slate-600 leading-relaxed">{r.financial_roadmap.education_loan_guidance}</p>
                 </div>
               )}
             </section>
