@@ -885,14 +885,26 @@ export default function AssessmentPage() {
                     key={score}
                     onClick={() => {
                       if (q) {
-                        setAnswers((prev) => ({
-                          ...prev,
-                          [String(q.id)]: score,
-                        }));
-                        // Auto-advance after short delay
+                        const newAnswers = { ...answers, [String(q.id)]: score };
+                        setAnswers(newAnswers);
+                        // Auto-advance to next unanswered question
                         setTimeout(() => {
-                          if (currentQ < totalQ - 1) {
-                            setCurrentQ((c) => c + 1);
+                          // Find the next unanswered question starting from current+1, then wrap to beginning
+                          let next = -1;
+                          for (let j = currentQ + 1; j < totalQ; j++) {
+                            if (!newAnswers[String(questions[j]?.id)]) { next = j; break; }
+                          }
+                          if (next === -1) {
+                            // Check from the start for any unanswered
+                            for (let j = 0; j < currentQ; j++) {
+                              if (!newAnswers[String(questions[j]?.id)]) { next = j; break; }
+                            }
+                          }
+                          if (next !== -1) {
+                            setCurrentQ(next);
+                          } else if (currentQ < totalQ - 1) {
+                            // All answered — move to last question for submit
+                            setCurrentQ(totalQ - 1);
                           }
                         }, 250);
                       }
@@ -922,7 +934,19 @@ export default function AssessmentPage() {
             </button>
             {currentQ < totalQ - 1 ? (
               <button
-                onClick={() => setCurrentQ((c) => c + 1)}
+                onClick={() => {
+                  // Go to next unanswered, or just next if all ahead are answered
+                  let next = -1;
+                  for (let j = currentQ + 1; j < totalQ; j++) {
+                    if (!answers[String(questions[j]?.id)]) { next = j; break; }
+                  }
+                  if (next === -1) {
+                    for (let j = 0; j < currentQ; j++) {
+                      if (!answers[String(questions[j]?.id)]) { next = j; break; }
+                    }
+                  }
+                  setCurrentQ(next !== -1 ? next : currentQ + 1);
+                }}
                 disabled={!q || !answers[String(q.id)]}
                 className="btn-ghost flex-1 py-3 disabled:opacity-30 disabled:cursor-not-allowed"
               >
