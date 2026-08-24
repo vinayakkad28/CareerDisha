@@ -131,7 +131,12 @@ app.include_router(outcomes.router, prefix="/api/outcomes", tags=["Outcomes"])
 app.include_router(outcomes.public_router, prefix="/api/outcomes", tags=["Outcomes"])
 app.include_router(reports_public.router, prefix="/api/reports", tags=["Reports Public"])
 
-# Serve generated PDFs
+# Serve generated PDFs.
+# StaticFiles validates the directory at construction, i.e. at import time, while
+# lifespan (which also creates it) does not run until startup. On a fresh
+# checkout the directory does not exist yet, so importing the app raised
+# RuntimeError before anything could create it.
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/output", StaticFiles(directory=str(OUTPUT_DIR)), name="output")
 
 
