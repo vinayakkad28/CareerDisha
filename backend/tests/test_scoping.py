@@ -78,6 +78,26 @@ def test_converted_routers_do_not_query_entities_directly(path):
     )
 
 
+def _iter_routes(router):
+    """Yield every route, descending into included sub-routers.
+
+    FastAPI <= 0.135 flattened included routers into app.routes; from 0.141 they
+    are kept as nested _IncludedRouter objects. Iterating app.routes alone finds
+    nothing on the newer version, which would make this test pass while checking
+    zero routes — the failure mode a scoping test can least afford.
+    """
+    for route in getattr(router, "routes", []):
+        if hasattr(route, "dependant"):
+            yield route
+        # 0.141 wraps an included router in _IncludedRouter.original_router;
+        # older versions and mounted sub-apps expose .router or .app.
+        for attr in ("original_router", "router", "app"):
+            inner = getattr(route, attr, None)
+            if inner is not None and inner is not route and hasattr(inner, "routes"):
+                yield from _iter_routes(inner)
+                break
+
+
 def test_student_and_session_routes_are_scoped():
     """Every /{student_id} and /{session_id} route resolves through access.py."""
     from access import get_scoped_session, get_scoped_student
@@ -89,23 +109,31 @@ def test_student_and_session_routes_are_scoped():
             yield from dependency_calls(sub)
 
     unscoped = []
-    for route in app.routes:
+    entity_routes = 0
+    for route in _iter_routes(app):
         dependant = getattr(route, "dependant", None)
         path = getattr(route, "path", "")
         if dependant is None or path in PUBLIC_PATHS:
             continue
-        # Only assert on routers already migrated; the rest are covered by the
-        # allowlist test above.
         module = getattr(getattr(route, "endpoint", None), "__module__", "")
         mod_file = f"{module.rsplit('.', 1)[-1]}.py"
         if mod_file in UNSCOPED_ROUTERS or mod_file in TOKEN_AUTHENTICATED_ROUTERS:
             continue
         calls = set(dependency_calls(dependant))
-        if "{student_id}" in path and get_scoped_student not in calls:
-            unscoped.append(f"{path} (student)")
-        if "{session_id}" in path and get_scoped_session not in calls:
-            unscoped.append(f"{path} (session)")
+        if "{student_id}" in path:
+            entity_routes += 1
+            if get_scoped_student not in calls:
+                unscoped.append(f"{path} (student)")
+        if "{session_id}" in path:
+            entity_routes += 1
+            if get_scoped_session not in calls:
+                unscoped.append(f"{path} (session)")
 
+    # Without this the test silently passes when route traversal breaks.
+    assert entity_routes > 10, (
+        f"only found {entity_routes} entity routes to check — traversal is broken, "
+        "so this test is not actually verifying anything"
+    )
     assert not unscoped, f"routes missing tenant scoping: {unscoped}"
 
 
