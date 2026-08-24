@@ -2,6 +2,7 @@ import io
 import csv
 import json
 from datetime import date, datetime
+from utils.time import utcnow
 from typing import Optional
 
 import logging
@@ -292,13 +293,13 @@ def generate_reports(
 
     # Idempotency: prevent duplicate generation
     if session.status == "generating" and session.generation_started_at:
-        elapsed = (datetime.now() - session.generation_started_at).total_seconds()
+        elapsed = (utcnow() - session.generation_started_at).total_seconds()
         if elapsed < 1800:  # 30 minutes
             raise HTTPException(status_code=409, detail="Report generation already in progress")
         # If > 30 min, assume crashed — allow retry
 
     session.status = "generating"
-    session.generation_started_at = datetime.now()
+    session.generation_started_at = utcnow()
     db.commit()
 
     from tasks.batch_processor import run_report_generation
@@ -477,7 +478,7 @@ def compliance_certificate(session_id: int, db: DBSession = Depends(get_db)):
         "assessment_tool": "RIASEC Career Interest Inventory (74 items)",
         "report_method": "AI-assisted analysis reviewed by qualified counsellor",
         "compliance_note": "This session was conducted in compliance with CBSE Affiliation Bye-Laws Clause 2.4.12 and NEP 2020 career guidance requirements.",
-        "generated_at": datetime.now().isoformat(),
+        "generated_at": utcnow().isoformat(),
     }
 
 

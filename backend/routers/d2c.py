@@ -1,6 +1,6 @@
 import uuid
 import logging
-from datetime import datetime, date
+from datetime import datetime, date, timezone
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from typing import Optional
@@ -385,7 +385,7 @@ def submit_assessment(request: Request, token: str, body: SubmitRequest):
             report_status="scored",
             consent_obtained=True,
             consent_method="digital",
-            consent_timestamp=datetime.utcnow(),
+            consent_timestamp=datetime.now(timezone.utc),
             d2c_assessment_id=assessment.id,
         )
         db.add(student)
@@ -594,7 +594,7 @@ def verify_payment(token: str, razorpay_order_id: str = "", razorpay_payment_id:
 
         assessment.payment_status = "paid"
         assessment.razorpay_payment_id = razorpay_payment_id or "mock"
-        assessment.paid_at = datetime.utcnow()
+        assessment.paid_at = datetime.now(timezone.utc)
         assessment.status = "paid"
         db.commit()
 
@@ -657,7 +657,7 @@ def _generate_d2c_report(assessment_id: int):
             student.report_status = "pdf_ready"
             assessment.pdf_url = str(pdf_path)
             assessment.status = "report_ready"
-            assessment.completed_at = datetime.utcnow()
+            assessment.completed_at = datetime.now(timezone.utc)
             db.commit()
             logger.info(f"D2C PDF generated: {pdf_path}")
         except Exception as e:

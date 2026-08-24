@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse
@@ -59,6 +59,6 @@ def update_delivery(student_id: int, update: DeliveryUpdate, db: Session = Depen
         raise HTTPException(status_code=404, detail="Student not found")
     student.delivery_status = update.delivery_status
     if update.delivery_status == "delivered":
-        student.delivery_timestamp = datetime.utcnow()
+        student.delivery_timestamp = datetime.now(timezone.utc)
     db.commit()
     return {"message": "Delivery status updated", "delivery_status": update.delivery_status}

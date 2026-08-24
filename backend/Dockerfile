@@ -29,4 +29,7 @@ ENV PORT=8000
 
 EXPOSE 8000
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Render (and most PaaS) inject $PORT and route traffic to it; a hardcoded
+# port means the platform health check never connects. exec so uvicorn is
+# PID 1 and receives SIGTERM for graceful shutdown.
+CMD ["sh", "-c", "exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]

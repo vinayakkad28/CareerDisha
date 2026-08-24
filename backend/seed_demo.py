@@ -6,6 +6,7 @@ Creates a demo school, session, and 5 sample students with pre-computed RIASEC s
 
 import json
 from datetime import date, datetime
+from utils.time import utcnow
 from database import SessionLocal, init_db
 from models import School, Session, Student
 
@@ -132,7 +133,7 @@ def seed():
                 riasec_raw_responses={f"Q{i}": "C" for i in range(1, 75)},  # Placeholder
                 report_status="scored",
                 consent_obtained=True,
-                consent_timestamp=datetime.utcnow(),
+                consent_timestamp=utcnow(),
                 consent_method="paper_form",
             )
             db.add(student)
