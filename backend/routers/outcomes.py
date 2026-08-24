@@ -8,16 +8,22 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, timezone, timedelta
 
-from access import student_from_report_token
+from access import (
+    AccessScope,
+    get_scoped_session,
+    get_scoped_student,
+    require_role,
+    resolve_scope,
+    scoped_students,
+    student_from_report_token,
+)
 from utils.time import utcnow
 from database import get_db
 from models import Student, StudentOutcome, Session as SessionModel, School
-from routers.auth import get_current_user
-from permissions import require_role
 from services.whatsapp import send_text_message
 
 logger = logging.getLogger(__name__)
-router = APIRouter(dependencies=[Depends(get_current_user)])
+router = APIRouter(dependencies=[Depends(resolve_scope)])
 
 # Separate public router — no auth (parents submit from WhatsApp link)
 public_router = APIRouter()
@@ -91,9 +97,20 @@ def _outcome_row(o: StudentOutcome, student_name: str = "") -> dict:
 # ── Record / update outcome ───────────────────────────────────────────────────
 
 @router.post("/record", status_code=201)
-def record_outcome(req: OutcomeRecord, db: Session = Depends(get_db), user: dict = Depends(require_role("admin", "counsellor"))):
-    """Record or update the actual outcome for a student (idempotent)."""
-    student = student_from_report_token(req.token, db)
+def record_outcome(
+    req: OutcomeRecord,
+    db: Session = Depends(get_db),
+    scope: AccessScope = Depends(require_role("admin", "counsellor")),
+):
+    """Record or update the actual outcome for a student (idempotent).
+
+    Staff-facing, so the student is addressed by id and resolved through the
+    caller's schools. The parent-facing counterpart is /public, which uses the
+    report token instead because parents have no login.
+    """
+    student = scoped_students(scope, db).filter(Student.id == req.student_id).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
 
     existing = db.query(StudentOutcome).filter(StudentOutcome.student_id == student.id).first()
     if existing:
@@ -104,11 +121,11 @@ def record_outcome(req: OutcomeRecord, db: Session = Depends(get_db), user: dict
         existing.collected_via = req.collected_via
         existing.updated_at = utcnow()
         db.commit()
-        logger.info(f"Outcome updated for student {req.student_id}")
+        logger.info(f"Outcome updated for student {student.id}")
         return _outcome_row(existing, student.name)
 
     o = StudentOutcome(
-        student_id=req.student_id,
+        student_id=student.id,
         actual_stream_chosen=req.actual_stream_chosen,
         actual_career_interest=req.actual_career_interest,
         recommendation_matched=req.recommendation_matched,
@@ -118,28 +135,29 @@ def record_outcome(req: OutcomeRecord, db: Session = Depends(get_db), user: dict
     db.add(o)
     db.commit()
     db.refresh(o)
-    logger.info(f"Outcome recorded for student {req.student_id}: stream={req.actual_stream_chosen}, matched={req.recommendation_matched}")
+    logger.info(f"Outcome recorded for student {student.id}: stream={req.actual_stream_chosen}, matched={req.recommendation_matched}")
     return _outcome_row(o, student.name)
 
 
 @router.get("/student/{student_id}")
-def get_outcome(student_id: int, db: Session = Depends(get_db)):
+def get_outcome(
+    db: Session = Depends(get_db),
+    student: Student = Depends(get_scoped_student),
+):
     """Get the recorded outcome for a student."""
-    student = db.query(Student).filter(Student.id == student_id).first()
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
-    outcome = db.query(StudentOutcome).filter(StudentOutcome.student_id == student_id).first()
+    outcome = db.query(StudentOutcome).filter(StudentOutcome.student_id == student.id).first()
     if not outcome:
         raise HTTPException(status_code=404, detail="No outcome recorded yet")
     return _outcome_row(outcome, student.name)
 
 
 @router.get("/session/{session_id}")
-def session_outcomes(session_id: int, db: Session = Depends(get_db)):
+def session_outcomes(
+    session_id: int,
+    db: Session = Depends(get_db),
+    session: SessionModel = Depends(get_scoped_session),
+):
     """All outcomes for a session with recommendation-match stats."""
-    session = db.query(SessionModel).filter(SessionModel.id == session_id).first()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
 
     students = db.query(Student).filter(Student.session_id == session_id).all()
     student_map = {s.id: s for s in students}
@@ -169,7 +187,12 @@ def session_outcomes(session_id: int, db: Session = Depends(get_db)):
 # ── WhatsApp follow-up ────────────────────────────────────────────────────────
 
 @router.post("/followup/{session_id}")
-async def send_followup(session_id: int, db: Session = Depends(get_db), user: dict = Depends(require_role("admin", "counsellor"))):
+async def send_followup(
+    session_id: int,
+    db: Session = Depends(get_db),
+    session: SessionModel = Depends(get_scoped_session),
+    _: object = Depends(require_role("admin", "counsellor")),
+):
     """Send 6-month WhatsApp follow-up asking which stream student chose."""
     cutoff = datetime.now(timezone.utc) - timedelta(days=180)
     base_url = os.getenv("APP_BASE_URL", "https://careerneeti.in")

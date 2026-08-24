@@ -2,18 +2,19 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
+from access import get_scoped_session, resolve_scope
 from database import get_db
 from models import Student, Session as SessionModel
-from routers.auth import get_current_user
 
-router = APIRouter(dependencies=[Depends(get_current_user)])
+router = APIRouter(dependencies=[Depends(resolve_scope)])
 
 
 @router.get("/sessions/{session_id}/qa-report")
-def get_qa_report(session_id: int, db: Session = Depends(get_db)):
-    session = db.query(SessionModel).filter(SessionModel.id == session_id).first()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
+def get_qa_report(
+    session_id: int,
+    db: Session = Depends(get_db),
+    session: SessionModel = Depends(get_scoped_session),
+):
 
     students = db.query(Student).filter(Student.session_id == session_id).all()
     passed = [s for s in students if s.report_status == "qa_passed"]
@@ -43,7 +44,12 @@ class QAApproval(BaseModel):
 
 
 @router.post("/sessions/{session_id}/qa-approve")
-def approve_flagged(session_id: int, approval: QAApproval, db: Session = Depends(get_db)):
+def approve_flagged(
+    session_id: int,
+    approval: QAApproval,
+    db: Session = Depends(get_db),
+    session: SessionModel = Depends(get_scoped_session),
+):
     updated = 0
     for sid in approval.student_ids:
         student = db.query(Student).filter(Student.id == sid, Student.session_id == session_id).first()
@@ -56,7 +62,11 @@ def approve_flagged(session_id: int, approval: QAApproval, db: Session = Depends
 
 
 @router.get("/sessions/{session_id}/delivery-checklist")
-def delivery_checklist(session_id: int, db: Session = Depends(get_db)):
+def delivery_checklist(
+    session_id: int,
+    db: Session = Depends(get_db),
+    session: SessionModel = Depends(get_scoped_session),
+):
     students = db.query(Student).filter(
         Student.session_id == session_id,
         Student.pdf_path != "",
@@ -70,7 +80,9 @@ def delivery_checklist(session_id: int, db: Session = Depends(get_db)):
             "class_level": s.class_level,
             "parent_name": s.parent_name,
             "parent_phone": s.parent_phone,
-            "pdf_path": s.pdf_path,
+            # Was s.pdf_path — an absolute server filesystem path. The client
+            # only ever tested it for truthiness.
+            "pdf_available": bool(s.pdf_path),
             "delivery_status": s.delivery_status,
             "delivery_timestamp": s.delivery_timestamp,
         })

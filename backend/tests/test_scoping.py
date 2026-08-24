@@ -12,6 +12,7 @@ then delete it from UNSCOPED_ROUTERS below. The list only shrinks.
 """
 
 import pathlib
+import re
 
 import pytest
 
@@ -19,11 +20,12 @@ ROUTERS_DIR = pathlib.Path(__file__).resolve().parents[1] / "routers"
 
 # Routers not yet migrated to access.py. Remove entries as they are converted;
 # never add one back without a deliberate decision.
-UNSCOPED_ROUTERS = {
-    "cards.py", "consent.py", "counsellors.py", "d2c.py", "dashboard.py",
-    "nps.py", "outcomes.py", "reports.py", "reports_public.py",
-    "school_portal.py", "whatsapp.py",
-}
+UNSCOPED_ROUTERS: set[str] = set()
+
+# Public flows where a token IS the credential, so there is no session to scope
+# against. d2c.py resolves an assessment by its own uuid4 token and derives the
+# student from it; reports_public.py resolves the report token directly.
+TOKEN_AUTHENTICATED_ROUTERS = {"d2c.py", "reports_public.py", "quiz.py"}
 
 # Endpoints that are public by design (parents follow a link, no login).
 PUBLIC_PATHS = {
@@ -32,15 +34,27 @@ PUBLIC_PATHS = {
     "/api/health",
 }
 
-# The dangerous pattern is resolving a row by its OWN id, which is what lets a
-# caller walk sequential ids into another school's data. Querying students by
-# `session_id` is fine once the session itself has been authorised by
-# get_scoped_session — the students of an authorised session are in scope by
-# definition.
-RAW_QUERY_MARKERS = (
-    "db.query(Student).filter(Student.id ==",
-    "db.query(Session).filter(Session.id ==",
-    "db.query(SessionModel).filter(SessionModel.id ==",
+# The dangerous pattern is resolving a row from a CLIENT-SUPPLIED id, which is
+# what lets a caller walk sequential ids into another school's data.
+#
+# Two shapes are deliberately allowed:
+#   * querying students by `session_id` once the session itself has been
+#     authorised — its students are in scope by definition;
+#   * deriving a row from an already-authenticated record, e.g.
+#     `Student.id == assessment.student_id` after the assessment was resolved by
+#     its own uuid4 token.
+#
+# So the check targets a lookup whose right-hand side is a bare local name (a
+# path param or `req.<field>`), not an attribute of an authorised object.
+#   * `Student.id == sid, Student.session_id == session_id` — the second clause
+#     confines the row to a session the caller already had authorised.
+RAW_QUERY_PATTERN = re.compile(
+    r"db\.query\((?:Student|Session|SessionModel)\)"
+    r"\.filter\((?:Student|Session|SessionModel)\.id\s*==\s*"
+    r"(?!\w+\.)"                       # not `obj.attr` — a derived lookup
+    r"[A-Za-z_]\w*\s*"                  # a bare name: student_id, sid
+    r"(?!,\s*Student\.session_id\s*==)"  # unless confined to a scoped session
+    r"[,)]"
 )
 
 
@@ -53,11 +67,14 @@ def test_converted_routers_do_not_query_entities_directly(path):
     """A converted router must go through access.py, not raw queries."""
     if path.name in UNSCOPED_ROUTERS:
         pytest.skip(f"{path.name} not yet migrated to access.py")
+    if path.name in TOKEN_AUTHENTICATED_ROUTERS:
+        pytest.skip(f"{path.name} is token-authenticated, not session-scoped")
     source = path.read_text()
-    offenders = [m for m in RAW_QUERY_MARKERS if m in source]
+    offenders = RAW_QUERY_PATTERN.findall(source)
     assert not offenders, (
-        f"{path.name} queries {offenders} directly. Use access.scoped_students / "
-        f"access.scoped_sessions / Depends(get_scoped_student) instead."
+        f"{path.name} resolves a client-supplied id without scoping: {offenders}. "
+        f"Use Depends(get_scoped_student) / Depends(get_scoped_session), or "
+        f"access.scoped_students(scope, db) when the id comes from a request body."
     )
 
 
@@ -80,7 +97,8 @@ def test_student_and_session_routes_are_scoped():
         # Only assert on routers already migrated; the rest are covered by the
         # allowlist test above.
         module = getattr(getattr(route, "endpoint", None), "__module__", "")
-        if f"{module.rsplit('.', 1)[-1]}.py" in UNSCOPED_ROUTERS:
+        mod_file = f"{module.rsplit('.', 1)[-1]}.py"
+        if mod_file in UNSCOPED_ROUTERS or mod_file in TOKEN_AUTHENTICATED_ROUTERS:
             continue
         calls = set(dependency_calls(dependant))
         if "{student_id}" in path and get_scoped_student not in calls:
