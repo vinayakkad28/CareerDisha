@@ -1206,7 +1206,7 @@ export default function AssessmentPage() {
                   </span>
                   <div>
                     <p className="text-base font-heading font-medium text-on-surface leading-relaxed">{tipiQ.text}</p>
-                    {tipiQ.text_hi && <p className="text-sm text-on-surface-variant/60 mt-1">{tipiQ.text_hi}</p>}
+                    {tipiQ.text_hi && <p lang="hi" className="text-sm text-on-surface-variant/60 mt-1">{tipiQ.text_hi}</p>}
                   </div>
                 </div>
                 <div className="mt-6 space-y-2">
@@ -1283,7 +1283,7 @@ export default function AssessmentPage() {
                   </span>
                   <div>
                     <p className="text-base font-heading font-medium text-on-surface leading-relaxed">{crQ.text}</p>
-                    {crQ.text_hi && <p className="text-sm text-on-surface-variant/60 mt-1">{crQ.text_hi}</p>}
+                    {crQ.text_hi && <p lang="hi" className="text-sm text-on-surface-variant/60 mt-1">{crQ.text_hi}</p>}
                   </div>
                 </div>
                 <div className="mt-6 space-y-2">
@@ -1374,7 +1374,7 @@ export default function AssessmentPage() {
                 </span>
                 <div>
                   <p className="text-base font-heading font-medium text-on-surface leading-relaxed">{aptQ.text}</p>
-                  {aptQ.text_hi && <p className="text-sm text-on-surface-variant/60 mt-1">{aptQ.text_hi}</p>}
+                  {aptQ.text_hi && <p lang="hi" className="text-sm text-on-surface-variant/60 mt-1">{aptQ.text_hi}</p>}
                   <span className="inline-block mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded">{aptQ.category}</span>
                 </div>
               </div>

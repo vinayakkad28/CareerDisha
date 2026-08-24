@@ -286,7 +286,7 @@ export default function QuizPage() {
                   {result.message}
                 </p>
                 {result.message_hi && (
-                  <p className="text-amber-800/70 text-sm leading-relaxed mb-6 italic">
+                  <p lang="hi" className="text-amber-800/70 text-sm leading-relaxed mb-6 italic">
                     {result.message_hi}
                   </p>
                 )}
@@ -558,6 +558,7 @@ export default function QuizPage() {
                       {q.text}
                     </h3>
                     <p
+                      lang="hi"
                       className={`text-lg text-on-surface-variant leading-snug ${
                         isAnswered || idx === answeredCount ? "opacity-80" : "opacity-60"
                       }`}
