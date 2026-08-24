@@ -11,6 +11,23 @@ router = APIRouter()
 
 _partners_cache = None
 
+def _public_partner(p: dict) -> dict:
+    """Strip commercial fields that are not yet real.
+
+    Every partner in the data file ships with referral_code="" because no
+    referral agreement has been signed. Returning an empty code invited the UI
+    to render a broken referral link and to imply a partnership that does not
+    exist, so the fields are omitted entirely until a code is present.
+    """
+    out = {k: v for k, v in p.items() if k not in ("referral_code", "referral_fee_inr")}
+    code = (p.get("referral_code") or "").strip()
+    out["has_referral"] = bool(code)
+    if code:
+        out["referral_code"] = code
+        out["referral_fee_inr"] = p.get("referral_fee_inr")
+    return out
+
+
 def _load_partners():
     global _partners_cache
     if _partners_cache is None:
@@ -27,7 +44,11 @@ def _load_partners():
 def list_partners():
     """List all coaching partners."""
     data = _load_partners()
-    return {"partners": data["partners"], "total": len(data["partners"])}
+    return {
+        "partners": [_public_partner(p) for p in data["partners"]],
+        "total": len(data["partners"]),
+        "exams": sorted(data["exam_to_partners"].keys()),
+    }
 
 
 @router.get("/recommend/{exam}")
@@ -52,7 +73,7 @@ def recommend_for_exam(exam: str, budget: str = ""):
 
     return {
         "exam": exam,
-        "partners": partners,
+        "partners": [_public_partner(p) for p in partners],
         "total": len(partners),
         "note": "Coaching is optional for many exams. Self-study with free resources (NPTEL, SWAYAM, YouTube) is a valid path."
     }

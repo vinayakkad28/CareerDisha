@@ -97,6 +97,29 @@ export const schools = {
 };
 
 // Sessions
+// Coaching partner comparison. These endpoints have existed with no UI; the
+// assessment already collects coaching-affordability data they consume.
+export const coaching = {
+  partners: () =>
+    request<{ partners: any[]; total: number; exams: string[] }>("/coaching/partners"),
+  recommend: (exam: string, budget = "") =>
+    request<{ partners: any[]; total: number; note: string }>(
+      `/coaching/recommend/${encodeURIComponent(exam)}${budget ? `?budget=${budget}` : ""}`
+    ),
+  compare: (exam: string) =>
+    request<any>(`/coaching/compare?exam=${encodeURIComponent(exam)}`),
+};
+
+// Counsellor assignments and commission tracking — nine endpoints, no UI.
+export const counsellors = {
+  list: () => request<any[]>("/counsellors/list"),
+  assignments: () => request<any[]>("/counsellors/assignments"),
+  myschools: () => request<any>("/counsellors/my-schools"),
+  commissions: () => request<any>("/counsellors/commissions"),
+  calculate: (sessionId: number) =>
+    request<any>(`/counsellors/commissions/${sessionId}/calculate`, { method: "POST" }),
+};
+
 export const sessions = {
   list: (params?: { school_id?: number; status?: string }) => {
     const query = new URLSearchParams();

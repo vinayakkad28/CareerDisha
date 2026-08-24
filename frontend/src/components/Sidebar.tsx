@@ -8,6 +8,8 @@ const adminNavItems = [
   { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
   { href: "/schools", label: "Schools", icon: "school" },
   { href: "/sessions", label: "Sessions", icon: "sessions" },
+  { href: "/counsellors", label: "Counsellors", icon: "school" },
+  { href: "/coaching", label: "Coaching", icon: "school" },
   { href: "/settings", label: "Settings", icon: "settings" },
 ];
 

@@ -21,6 +21,8 @@ const PROTECTED_ROUTES = [
   "/students",
   "/settings",
   "/school-portal",
+  "/counsellors",
+  "/coaching",
 ];
 
 function isProtectedRoute(pathname: string | null): boolean {
