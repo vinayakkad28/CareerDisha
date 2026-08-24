@@ -15,7 +15,6 @@ from database import get_db
 from models import Session, Student, School
 from routers.auth import get_current_user
 from rate_limit import limiter
-from permissions import scope_query_by_school
 
 router = APIRouter(dependencies=[Depends(get_current_user)])
 

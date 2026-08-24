@@ -20,12 +20,11 @@ def require_role(*allowed_roles):
     return check_role
 
 
-def scope_query_by_school(user: dict, query, model_class):
-    """Filter query by school_id for school_admin users.
-
-    Admin and counsellor see everything.
-    school_admin sees only their school's data.
-    """
-    if user.get("role") == "school_admin" and user.get("school_id"):
-        return query.filter(model_class.school_id == user["school_id"])
-    return query
+# scope_query_by_school() was removed. It filtered `model_class.school_id`, but
+# Student has no such column — ownership runs through Student.session_id ->
+# Session.school_id — so it would have raised AttributeError had anything called
+# it. It also returned the UNFILTERED query when the user had no school, i.e. it
+# failed open. Use access.scoped_students / access.scoped_sessions instead.
+#
+# require_role() below is kept for routers not yet migrated to access.py; it
+# checks role only, never ownership. access.require_role() is the replacement.

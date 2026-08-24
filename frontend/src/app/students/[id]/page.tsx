@@ -87,7 +87,7 @@ export default function StudentDetailPage() {
           >
             Regenerate Report
           </button>
-          {student.pdf_path && (
+          {student.pdf_available && (
             <a
               href={studentsApi.downloadPdfURL(student.id)}
               className="px-6 py-2.5 rounded bg-brand-gradient text-white font-bold shadow-md hover:shadow-lg transition-all active:scale-95 flex items-center gap-2"

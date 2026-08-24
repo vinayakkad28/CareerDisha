@@ -4,9 +4,7 @@ from fastapi import APIRouter, HTTPException, Depends, Header, Request
 from pydantic import BaseModel
 from typing import Optional
 import jwt
-import hashlib
-import json
-import base64
+import secrets
 
 from config import ADMIN_PASSWORD, JWT_SECRET, JWT_ALGORITHM, JWT_EXPIRY_HOURS, JWT_PRIVATE_KEY, JWT_PUBLIC_KEY
 from rate_limit import limiter
@@ -37,24 +35,14 @@ def create_token(data: dict) -> str:
     return jwt.encode(payload, key, algorithm=JWT_ALGORITHM)
 
 
-def _verify_legacy_token(token: str) -> dict:
-    """Verify old-format Base64+SHA256 tokens for backward compatibility."""
-    parts = token.split(".")
-    if len(parts) != 2:
-        raise ValueError("Not a legacy token")
-    payload_bytes = base64.urlsafe_b64decode(parts[0])
-    payload = json.loads(payload_bytes)
-    expected_sig = hashlib.sha256(f"{payload_bytes.decode()}{JWT_SECRET}".encode()).hexdigest()[:32]
-    if parts[1] != expected_sig:
-        raise ValueError("Invalid legacy signature")
-    if datetime.fromisoformat(payload["exp"]) < datetime.now(timezone.utc).replace(tzinfo=None):
-        raise ValueError("Legacy token expired")
-    return payload
-
-
 def verify_token(token: str) -> dict:
-    """Verify JWT token. Tries PyJWT first, falls back to legacy format."""
-    # Try PyJWT decode first
+    """Verify a JWT.
+
+    The previous implementation fell back to a "legacy" format authenticated by
+    sha256(payload + JWT_SECRET)[:32] — a truncated, non-HMAC construction that
+    accepted any payload an attacker could construct, including role="admin".
+    That path is deleted; only real JWT signatures are accepted.
+    """
     try:
         key = JWT_PUBLIC_KEY if JWT_ALGORITHM == "RS256" else JWT_SECRET
         algorithms = [JWT_ALGORITHM]
@@ -66,15 +54,7 @@ def verify_token(token: str) -> dict:
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
     except jwt.InvalidTokenError:
-        pass  # Fall through to legacy check
-
-    # Try legacy Base64+SHA256 format (backward compatibility)
-    try:
-        return _verify_legacy_token(token)
-    except Exception:
-        pass
-
-    raise HTTPException(status_code=401, detail="Invalid or expired token")
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
 
 
 def get_current_user(authorization: str = Header(default="")) -> dict:
@@ -88,34 +68,48 @@ def get_current_user(authorization: str = Header(default="")) -> dict:
 @router.post("/login", response_model=LoginResponse)
 @limiter.limit("5/minute")
 def login(request: Request, req: LoginRequest):
-    # Legacy password-only login (backward compatible)
-    if req.password == ADMIN_PASSWORD:
-        token = create_token({"role": "admin", "user_id": 0})
-        expires_at = (datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRY_HOURS)).isoformat()
-        logger.info("Admin login successful (legacy password)")
-        return LoginResponse(token=token, expires_at=expires_at, role="admin")
+    expires_at = (datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRY_HOURS)).isoformat()
 
-    # If email provided, try User-based login (added in Section 2 RBAC)
+    # Email login is checked FIRST and exclusively. Previously the shared-password
+    # branch ran first regardless of whether an email was supplied, so a
+    # school_admin whose password happened to equal ADMIN_PASSWORD was handed a
+    # full admin token.
     if req.email:
+        from database import SessionLocal
+        from models import User
+        import bcrypt as bcrypt_lib
+
+        db = SessionLocal()
         try:
-            from models import User
-            from database import SessionLocal
-            import bcrypt as bcrypt_lib
-            db = SessionLocal()
-            user = db.query(User).filter(User.email == req.email, User.is_active == True).first()
+            user = (
+                db.query(User)
+                .filter(User.email == req.email, User.is_active == True)  # noqa: E712
+                .first()
+            )
             if user and bcrypt_lib.checkpw(req.password.encode(), user.password_hash.encode()):
                 token = create_token({
                     "role": user.role,
                     "user_id": user.id,
                     "school_id": user.school_id,
                 })
-                expires_at = (datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRY_HOURS)).isoformat()
                 logger.info(f"User login: {user.email} (role={user.role})")
-                db.close()
                 return LoginResponse(token=token, expires_at=expires_at, role=user.role)
-            db.close()
+        except HTTPException:
+            raise
         except Exception:
-            pass  # User model may not exist yet — fall through
+            logger.exception("Email login failed")
+        finally:
+            # Previously only the success paths closed the session, so any
+            # exception leaked a pooled connection.
+            db.close()
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    # Shared-password bootstrap login. config.py refuses to start in production
+    # without ADMIN_PASSWORD, so there is no guessable default any more.
+    if ADMIN_PASSWORD and secrets.compare_digest(req.password, ADMIN_PASSWORD):
+        token = create_token({"role": "admin", "user_id": 0})
+        logger.info("Admin login successful (shared password)")
+        return LoginResponse(token=token, expires_at=expires_at, role="admin")
 
     raise HTTPException(status_code=401, detail="Invalid credentials")
 
