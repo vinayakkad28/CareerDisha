@@ -70,12 +70,27 @@ interface PreviewData {
 
 interface PaymentData {
   order_id: string;
-  amount: number;
+  // The backend returns both units explicitly. A single ambiguous `amount` in
+  // rupees was previously divided by 100 here, so a Rs 499 tier displayed — and
+  // would have charged — Rs 4.99.
+  amount_inr: number;
+  amount_paise: number;
   currency: string;
   razorpay_key?: string;
 }
 
 /* ── helpers ──────────────────────────────────────────────── */
+/** Error carrying the HTTP status, so callers can branch on it rather than
+ *  pattern-matching the message text. */
+class ApiError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
 function cls(...classes: (string | false | undefined | null)[]) {
   return classes.filter(Boolean).join(" ");
 }
@@ -245,6 +260,9 @@ export default function AssessmentPage() {
 
   // Step 10: Payment
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
+  // True when the backend reports online payments are switched off. Distinct
+  // from an error: nothing the user does will make a retry succeed.
+  const [paymentsUnavailable, setPaymentsUnavailable] = useState(false);
 
   // Step 11: Generating
   const [reportStatus, setReportStatus] = useState("");
@@ -259,8 +277,12 @@ export default function AssessmentPage() {
         body: body ? JSON.stringify(body) : undefined,
       });
       if (!res.ok) {
-        const text = await res.text().catch(() => "");
-        throw new Error(text || `Request failed (${res.status})`);
+        const body = await res.json().catch(() => null);
+        const err = new ApiError(
+          body?.detail || `Request failed (${res.status})`,
+          res.status
+        );
+        throw err;
       }
       return res.json();
     },
@@ -522,10 +544,19 @@ export default function AssessmentPage() {
     try {
       const data = await apiPost(`/api/d2c/create-order/${token}`, { tier });
       setPaymentData(data);
+      setPaymentsUnavailable(false);
       setStep(10);
       window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch {
-      setError("Could not create order. Please try again.");
+    } catch (e) {
+      // 503 means online payments are switched off server-side, which is a
+      // normal state — not an error the user can retry their way out of.
+      if (e instanceof ApiError && e.status === 503) {
+        setPaymentsUnavailable(true);
+        setStep(10);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        setError("Could not start payment. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -554,7 +585,7 @@ export default function AssessmentPage() {
       if (Razorpay) {
         const rzp = new Razorpay({
           key: paymentData.razorpay_key,
-          amount: paymentData.amount,
+          amount: paymentData.amount_paise,
           currency: paymentData.currency || "INR",
           order_id: paymentData.order_id,
           name: "CareerNeeti",
@@ -579,27 +610,12 @@ export default function AssessmentPage() {
       }
     }
 
-    // Mock mode
-    handleMockPayment();
+    // Razorpay script not ready yet; the button on step 10 lets the user retry.
   }, [paymentData, token, apiPost]);
 
-  const handleMockPayment = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      await apiPost(`/api/d2c/verify-payment/${token}`, {
-        razorpay_payment_id: "mock_pay_" + Date.now(),
-        razorpay_order_id: paymentData?.order_id || "mock_order",
-        razorpay_signature: "mock_signature",
-      });
-      setStep(11);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch {
-      setError("Payment simulation failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // The former handleMockPayment() posted a fabricated signature that the
+  // backend accepted, so anyone reaching this screen got a paid report for
+  // free. Mock payments no longer exist on either side.
 
   // Step 11 → poll status
   useEffect(() => {
@@ -1684,7 +1700,6 @@ export default function AssessmentPage() {
      STEP 10 — Payment
      ═══════════════════════════════════════════════════════════ */
   if (step === 10) {
-    const isMock = !paymentData?.razorpay_key;
 
     return (
       <div className="min-h-screen bg-surface font-body">
@@ -1692,12 +1707,14 @@ export default function AssessmentPage() {
         <div className="max-w-form-narrow mx-auto px-4 py-8 space-y-5">
           <div className="sa-card text-center">
             <h3 className="text-lg font-heading font-bold text-primary mb-2">
-              Complete Your Payment
+              {paymentsUnavailable ? "Almost done" : "Complete Your Payment"}
             </h3>
             <p className="text-on-surface-variant text-sm mb-4">
               {paymentData
-                ? `Amount: ₹${(paymentData.amount / 100).toLocaleString("en-IN")}`
-                : "Preparing payment..."}
+                ? `Amount: ₹${paymentData.amount_inr.toLocaleString("en-IN")}`
+                : paymentsUnavailable
+                  ? "Your assessment is complete."
+                  : "Preparing payment..."}
             </p>
 
             {/* Order summary */}
@@ -1706,32 +1723,39 @@ export default function AssessmentPage() {
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-on-surface-variant">Career Assessment Report</span>
                   <span className="font-heading font-bold text-on-surface">
-                    ₹{(paymentData.amount / 100).toLocaleString("en-IN")}
+                    ₹{paymentData.amount_inr.toLocaleString("en-IN")}
                   </span>
                 </div>
                 <div className="mt-2 pt-2 border-t border-surface-container-highest flex justify-between items-center text-sm">
                   <span className="font-heading font-semibold text-on-surface">Total</span>
                   <span className="font-heading font-bold text-primary text-lg">
-                    ₹{(paymentData.amount / 100).toLocaleString("en-IN")}
+                    ₹{paymentData.amount_inr.toLocaleString("en-IN")}
                   </span>
                 </div>
               </div>
             )}
 
-            {isMock ? (
-              <div className="space-y-3">
-                <div className="sa-card bg-secondary-50 text-secondary-600 text-xs text-center">
-                  Development Mode — Razorpay is not configured. Click below to
-                  simulate a successful payment.
+            {paymentsUnavailable ? (
+              <div className="space-y-3 text-left">
+                <div className="sa-card bg-surface-container-high text-sm">
+                  <p className="font-heading font-bold text-on-surface mb-1">
+                    Online payment is not open yet
+                  </p>
+                  <p className="text-on-surface-variant">
+                    Your answers are saved. We will contact you on the number you
+                    gave us to arrange the report and payment.
+                  </p>
                 </div>
-                <PrimaryBtn loading={loading} onClick={handleMockPayment}>
-                  Simulate Payment (Dev Mode)
-                </PrimaryBtn>
+                <p className="text-xs text-on-surface-variant text-center">
+                  Keep this link to return to your assessment:
+                  <br />
+                  <span className="font-mono break-all">{`${typeof window !== "undefined" ? window.location.origin : ""}/assessment?token=${token}`}</span>
+                </p>
               </div>
             ) : (
               <button
                 onClick={handlePayment}
-                disabled={loading}
+                disabled={loading || !paymentData}
                 className="btn-primary w-full py-3.5 font-heading font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {loading ? "Processing..." : "Pay with Razorpay"}

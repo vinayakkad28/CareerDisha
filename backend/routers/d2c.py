@@ -9,6 +9,8 @@ from database import get_db, SessionLocal
 from models import Lead, D2CAssessment, Student, School, Session
 from engines.scoring_engine import calculate_riasec_scores, determine_holland_code, match_careers, load_knowledge_base
 from rate_limit import limiter
+from config import ENABLE_PAYMENTS
+from utils.time import utcnow
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -92,6 +94,18 @@ class SubmitRequest(BaseModel):
 
 class CreateOrderRequest(BaseModel):
     tier: str = "basic"
+
+
+class VerifyPaymentRequest(BaseModel):
+    """Razorpay handler payload.
+
+    These were previously declared as bare `str` parameters on the route, which
+    FastAPI binds as QUERY parameters — so the JSON body the client actually
+    sent was ignored and the signature never reached verification.
+    """
+    razorpay_order_id: str = ""
+    razorpay_payment_id: str = ""
+    razorpay_signature: str = ""
 
 
 @router.post("/start")
@@ -518,6 +532,15 @@ def preview_results(token: str):
 @limiter.limit("10/minute")
 def create_payment_order(request: Request, token: str, body: CreateOrderRequest):
     """Create a Razorpay order for payment."""
+    if not ENABLE_PAYMENTS:
+        # No silent mock fallback. Previously an unconfigured Razorpay produced a
+        # "mock_order_..." id that verify-payment auto-approved, so every paid
+        # report was obtainable for zero rupees.
+        raise HTTPException(
+            status_code=503,
+            detail="Online payments are not available yet.",
+        )
+
     db = SessionLocal()
     try:
         assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
@@ -530,45 +553,50 @@ def create_payment_order(request: Request, token: str, body: CreateOrderRequest)
         if tier not in D2C_PRICING:
             raise HTTPException(status_code=400, detail=f"Invalid tier: {tier}. Options: {list(D2C_PRICING.keys())}")
 
-        amount = D2C_PRICING[tier]
+        amount_inr = D2C_PRICING[tier]
         assessment.tier = tier
-        assessment.amount_inr = amount
+        assessment.amount_inr = amount_inr
 
-        # Try Razorpay
         try:
-            from services.razorpay_service import create_razorpay_order
-            order = create_razorpay_order(amount * 100, f"d2c_{assessment.id}", {"token": token, "tier": tier})
-            assessment.razorpay_order_id = order["id"]
-            db.commit()
-            return {
-                "order_id": order["id"],
-                "amount": amount,
-                "currency": "INR",
-                "tier": tier,
-                "key_id": order.get("key_id", ""),
-            }
+            from services.razorpay_service import PaymentsNotConfigured, create_razorpay_order
+            order = create_razorpay_order(
+                amount_inr * 100, f"d2c_{assessment.id}", {"token": token, "tier": tier}
+            )
+        except PaymentsNotConfigured as e:
+            logger.error(f"Payments enabled but Razorpay unusable: {e}")
+            raise HTTPException(status_code=503, detail="Online payments are not available yet.")
         except Exception as e:
-            logger.warning(f"Razorpay not configured, using mock payment: {e}")
-            # Mock payment for development
-            mock_order_id = f"mock_order_{uuid.uuid4().hex[:12]}"
-            assessment.razorpay_order_id = mock_order_id
-            db.commit()
-            return {
-                "order_id": mock_order_id,
-                "amount": amount,
-                "currency": "INR",
-                "tier": tier,
-                "mock": True,
-                "message": "Razorpay not configured. Use POST /verify-payment with mock=true to simulate payment.",
-            }
+            # A transient Razorpay failure must surface as an error, never as a
+            # free order.
+            logger.exception(f"Razorpay order creation failed for {token}: {e}")
+            raise HTTPException(status_code=502, detail="Could not reach the payment provider. Please try again.")
+
+        assessment.razorpay_order_id = order["id"]
+        db.commit()
+        return {
+            "order_id": order["id"],
+            # Both units are returned explicitly. The old response sent a single
+            # ambiguous "amount" in rupees which the client divided by 100,
+            # displaying (and charging) Rs 4.99 for a Rs 499 tier.
+            "amount_inr": amount_inr,
+            "amount_paise": amount_inr * 100,
+            "currency": "INR",
+            "tier": tier,
+            # Field name must match what the client checks to open the real
+            # checkout; it read `razorpay_key` while this returned `key_id`, so
+            # every customer fell through to the mock screen.
+            "razorpay_key": order.get("key_id", ""),
+        }
     finally:
         db.close()
 
 
 @router.post("/verify-payment/{token}")
-def verify_payment(token: str, razorpay_order_id: str = "", razorpay_payment_id: str = "", razorpay_signature: str = "", mock: bool = False):
-    """Verify payment and trigger report generation."""
-    from fastapi import BackgroundTasks
+@limiter.limit("10/minute")
+def verify_payment(request: Request, token: str, body: VerifyPaymentRequest):
+    """Verify a Razorpay payment signature and trigger report generation."""
+    if not ENABLE_PAYMENTS:
+        raise HTTPException(status_code=503, detail="Online payments are not available yet.")
 
     db = SessionLocal()
     try:
@@ -578,33 +606,33 @@ def verify_payment(token: str, razorpay_order_id: str = "", razorpay_payment_id:
         if assessment.payment_status == "paid":
             return {"status": "already_paid", "token": token}
 
-        # Verify payment
-        if mock or assessment.razorpay_order_id.startswith("mock_"):
-            # Mock payment for development
-            verified = True
-        else:
-            try:
-                from services.razorpay_service import verify_razorpay_payment
-                verified = verify_razorpay_payment(razorpay_order_id, razorpay_payment_id, razorpay_signature)
-            except Exception:
-                verified = False
+        # The signature must belong to THIS assessment's order, otherwise a valid
+        # signature from any other (possibly cheaper) order could be replayed here.
+        if not assessment.razorpay_order_id or body.razorpay_order_id != assessment.razorpay_order_id:
+            raise HTTPException(status_code=400, detail="Payment verification failed")
+
+        try:
+            from services.razorpay_service import PaymentsNotConfigured, verify_razorpay_payment
+            verified = verify_razorpay_payment(
+                body.razorpay_order_id, body.razorpay_payment_id, body.razorpay_signature
+            )
+        except PaymentsNotConfigured as e:
+            logger.error(f"Cannot verify payment, Razorpay unusable: {e}")
+            raise HTTPException(status_code=503, detail="Online payments are not available yet.")
 
         if not verified:
             raise HTTPException(status_code=400, detail="Payment verification failed")
 
         assessment.payment_status = "paid"
-        assessment.razorpay_payment_id = razorpay_payment_id or "mock"
-        assessment.paid_at = datetime.now(timezone.utc)
+        assessment.razorpay_payment_id = body.razorpay_payment_id
+        assessment.paid_at = utcnow()
         assessment.status = "paid"
         db.commit()
 
-        logger.info(f"D2C payment verified: {token} (tier={assessment.tier}, amount=₹{assessment.amount_inr})")
+        logger.info(f"D2C payment verified: {token} (tier={assessment.tier}, amount=Rs{assessment.amount_inr})")
 
-        # Trigger report generation in background
-        # We can't use FastAPI BackgroundTasks here since we're not in a route handler with it injected
-        # Instead, generate synchronously or use a thread
         import threading
-        thread = threading.Thread(target=_generate_d2c_report, args=(assessment.id,))
+        thread = threading.Thread(target=_generate_d2c_report, args=(assessment.id,), daemon=True)
         thread.start()
 
         return {"status": "paid", "token": token, "report_generating": True}
