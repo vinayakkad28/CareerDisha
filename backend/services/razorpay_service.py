@@ -1,19 +1,38 @@
 """Razorpay payment service for D2C assessments."""
 import logging
-import hashlib
-import hmac
-from config import RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RAZORPAY_WEBHOOK_SECRET
+
+from config import RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET
 
 logger = logging.getLogger(__name__)
 
 
-def create_razorpay_order(amount_paise: int, receipt: str, notes: dict = None) -> dict:
-    """Create a Razorpay order."""
-    if not RAZORPAY_KEY_ID or not RAZORPAY_KEY_SECRET:
-        raise ValueError("Razorpay not configured. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET.")
+class PaymentsNotConfigured(RuntimeError):
+    """Razorpay credentials or SDK are unavailable.
 
-    import razorpay
-    client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+    Distinct from every other failure so callers can narrow their handling.
+    The router used to catch bare `Exception` here and substitute a free "mock"
+    order, which meant a network blip or an expired key silently downgraded a
+    real payment into a free report.
+    """
+
+
+def _client():
+    if not RAZORPAY_KEY_ID or not RAZORPAY_KEY_SECRET:
+        raise PaymentsNotConfigured(
+            "Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to accept payments."
+        )
+    try:
+        import razorpay
+    except ModuleNotFoundError as e:  # pragma: no cover - depends on install
+        raise PaymentsNotConfigured(
+            "The 'razorpay' package is not installed; add it to requirements.txt."
+        ) from e
+    return razorpay, razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+
+
+def create_razorpay_order(amount_paise: int, receipt: str, notes: dict = None) -> dict:
+    """Create a Razorpay order. Raises PaymentsNotConfigured or the SDK's own errors."""
+    _razorpay, client = _client()
     order = client.order.create({
         "amount": amount_paise,
         "currency": "INR",
@@ -25,12 +44,10 @@ def create_razorpay_order(amount_paise: int, receipt: str, notes: dict = None) -
 
 
 def verify_razorpay_payment(order_id: str, payment_id: str, signature: str) -> bool:
-    """Verify Razorpay payment signature."""
-    if not RAZORPAY_KEY_SECRET:
-        raise ValueError("Razorpay not configured.")
-
-    import razorpay
-    client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+    """Verify a Razorpay payment signature (HMAC, performed by the SDK)."""
+    razorpay, client = _client()
+    if not (order_id and payment_id and signature):
+        return False
     try:
         client.utility.verify_payment_signature({
             "razorpay_order_id": order_id,

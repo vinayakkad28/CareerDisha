@@ -2,19 +2,34 @@
 import logging
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from access import AccessScope, require_role, resolve_scope
 from database import get_db
-from models import School, Session as SessionModel, Student, Feedback
-from routers.auth import get_current_user
-from permissions import require_role
+from models import School, Session as SessionModel, Student, Feedback, User
 
 logger = logging.getLogger(__name__)
-router = APIRouter(dependencies=[Depends(get_current_user)])
+router = APIRouter(dependencies=[Depends(resolve_scope)])
+
+
+def _linked_school_id(scope: AccessScope, db: Session) -> int | None:
+    """The single school this portal view is about.
+
+    Resolved per request from the caller's scope rather than from a `school_id`
+    claim in the JWT, which goes stale the moment an assignment changes and is
+    absent entirely on the shared-password admin token. An admin has no implicit
+    school, so their own User row is consulted.
+    """
+    if scope.school_ids:
+        return next(iter(scope.school_ids))
+    if scope.is_superuser and scope.user_id:
+        user = db.get(User, scope.user_id)
+        return user.school_id if user else None
+    return None
 
 
 @router.get("/my-school")
-def get_my_school(db: Session = Depends(get_db), user: dict = Depends(require_role("school_admin", "admin", "counsellor"))):
+def get_my_school(db: Session = Depends(get_db), scope: AccessScope = Depends(require_role("school_admin", "admin", "counsellor"))):
     """Get the school linked to the current user."""
-    school_id = user.get("school_id")
+    school_id = _linked_school_id(scope, db)
     if not school_id:
         raise HTTPException(status_code=403, detail="No school linked to your account")
     school = db.query(School).filter(School.id == school_id).first()
@@ -49,9 +64,9 @@ def get_my_school(db: Session = Depends(get_db), user: dict = Depends(require_ro
 
 
 @router.get("/analytics")
-def get_school_analytics(db: Session = Depends(get_db), user: dict = Depends(require_role("school_admin", "admin"))):
+def get_school_analytics(db: Session = Depends(get_db), scope: AccessScope = Depends(require_role("school_admin", "admin"))):
     """Get analytics for the school — RIASEC distribution, stream recommendations, top careers."""
-    school_id = user.get("school_id")
+    school_id = _linked_school_id(scope, db)
     if not school_id:
         raise HTTPException(status_code=403, detail="No school linked to your account")
 

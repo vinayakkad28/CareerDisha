@@ -104,10 +104,35 @@ def update_school(school_id: int, updates: SchoolUpdate, db: Session = Depends(g
 
 
 @router.delete("/{school_id}")
-def delete_school(school_id: int, db: Session = Depends(get_db), user: dict = Depends(require_role("admin"))):
+def delete_school(
+    school_id: int,
+    db: Session = Depends(get_db),
+    user: dict = Depends(require_role("admin")),
+):
+    """Deactivate a school.
+
+    This used to be a hard db.delete(), which cascaded through
+    Session -> Student (both "all, delete-orphan") and permanently destroyed
+    every student record, score, report and consent entry for the school — from
+    one API call, with no confirmation and no audit entry, on a DPDPA-regulated
+    dataset. It is now a soft delete, and it is recorded.
+    """
     school = db.query(School).filter(School.id == school_id).first()
     if not school:
         raise HTTPException(status_code=404, detail="School not found")
-    db.delete(school)
+    if not school.is_active:
+        return {"detail": "School already deactivated"}
+
+    from routers.audit import log_audit
+
+    log_audit(
+        db,
+        action="school.deactivate",
+        entity_type="school",
+        entity_id=school.id,
+        detail=f"Deactivated {school.name} ({school.code})",
+        user_id=user.get("user_id") if isinstance(user, dict) else getattr(user, "user_id", None),
+    )
+    school.is_active = False
     db.commit()
-    return {"detail": "School deleted"}
+    return {"detail": "School deactivated"}

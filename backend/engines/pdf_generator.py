@@ -159,6 +159,9 @@ def render_report_html(
         "primary_archetype": RIASEC_ARCHETYPES.get(primary_type, ""),
         "primary_color": RIASEC_COLORS.get(primary_type, BRAND_COLORS["primary"]),
         "today": date.today().strftime("%d %B %Y"),
+        # The template hardcoded "2025" in three places, so reports generated in
+        # 2026 told the customer their data was a year stale.
+        "report_year": date.today().year,
         "font_url": font_url,
         "counsellor_name": counsellor_name,
         "counsellor_certification": counsellor_certification,

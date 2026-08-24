@@ -4,36 +4,44 @@ import logging
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
+from access import get_scoped_session, resolve_scope, student_from_report_token
 from database import get_db
 from models import Student, Session as SessionModel, School
-from routers.auth import get_current_user
+from utils.time import utcnow
 
 logger = logging.getLogger(__name__)
-router = APIRouter(dependencies=[Depends(get_current_user)])
+
+# Staff-facing aggregates.
+router = APIRouter(dependencies=[Depends(resolve_scope)])
+
+# Parents submit from a WhatsApp link and have no login. The submit endpoint
+# previously sat behind get_current_user, so the audience it was written for
+# ("Record an NPS response from a parent") could never reach it — and no
+# frontend called it either. It now follows the same pattern as feedback.py and
+# outcomes.py: a separate public router authenticated by the report token.
+public_router = APIRouter()
 
 
 class NPSResponse(BaseModel):
-    student_id: int
-    score: int  # 0-10 NPS scale
-    feedback: str = ""
-    parent_phone: str = ""
+    # Identified by the per-student report token, not a guessable id.
+    token: str
+    score: int = Field(ge=0, le=10)
+    feedback: str = Field(default="", max_length=500)
+    parent_phone: str = Field(default="", max_length=15)
 
 
-@router.post("/submit")
+@public_router.post("/submit")
 def submit_nps(response: NPSResponse, db: Session = Depends(get_db)):
     """Record an NPS response from a parent."""
-    student = db.query(Student).filter(Student.id == response.student_id).first()
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
+    student = student_from_report_token(response.token, db)
 
-    # Store NPS in a simple JSON field on the student
     nps_data = {
-        "score": max(0, min(10, response.score)),
-        "feedback": response.feedback[:500],  # Cap feedback length
-        "submitted_at": datetime.now(timezone.utc).isoformat(),
+        "score": response.score,
+        "feedback": response.feedback,
+        "submitted_at": utcnow().isoformat(),
         "parent_phone": response.parent_phone or student.parent_phone,
     }
 
@@ -48,7 +56,11 @@ def submit_nps(response: NPSResponse, db: Session = Depends(get_db)):
 
 
 @router.get("/session/{session_id}")
-def session_nps_summary(session_id: int, db: Session = Depends(get_db)):
+def session_nps_summary(
+    session_id: int,
+    db: Session = Depends(get_db),
+    session: SessionModel = Depends(get_scoped_session),
+):
     """Get NPS summary for a session."""
     students = db.query(Student).filter(Student.session_id == session_id).all()
 

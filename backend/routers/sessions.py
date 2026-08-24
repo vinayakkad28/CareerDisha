@@ -2,6 +2,7 @@ import io
 import csv
 import json
 from datetime import date, datetime
+from utils.time import utcnow
 from typing import Optional
 
 import logging
@@ -10,13 +11,15 @@ from fastapi.responses import StreamingResponse, FileResponse
 from sqlalchemy.orm import Session as DBSession
 from pydantic import BaseModel
 
+from access import AccessScope, get_scoped_session, resolve_scope, scoped_sessions
 from database import get_db
 from models import Session, Student, School
-from routers.auth import get_current_user
 from rate_limit import limiter
-from permissions import scope_query_by_school
+from schemas.students import StudentSummary
+from utils.self_efficacy import CANONICAL_DOMAINS, normalize_self_efficacy
 
-router = APIRouter(dependencies=[Depends(get_current_user)])
+# resolve_scope authenticates AND rejects unscopable tokens before any handler runs.
+router = APIRouter(dependencies=[Depends(resolve_scope)])
 
 
 def _parse_academic_marks(row: dict):
@@ -37,15 +40,12 @@ def _parse_academic_marks(row: dict):
 
 def _parse_self_efficacy(row: dict):
     """Parse optional self-efficacy columns (1-5 scale per domain)."""
-    se = {}
-    for domain in ("maths", "science", "english", "arts", "business", "social"):
+    raw = {}
+    for domain in CANONICAL_DOMAINS:
         val = row.get(f"se_{domain}", "").strip()
         if val:
-            try:
-                se[domain] = int(val)
-            except ValueError:
-                pass
-    return se if se else None
+            raw[domain] = val
+    return normalize_self_efficacy(raw)
 
 
 class SessionCreate(BaseModel):
@@ -65,16 +65,24 @@ def list_sessions(
     skip: int = 0,
     limit: int = 50,
     db: DBSession = Depends(get_db),
+    scope: AccessScope = Depends(resolve_scope),
 ):
-    query = db.query(Session).order_by(Session.session_date.desc())
+    query = scoped_sessions(scope, db).order_by(Session.session_date.desc())
     if school_id:
         query = query.filter(Session.school_id == school_id)
     if status:
         query = query.filter(Session.status == status)
     sessions = query.offset(skip).limit(limit).all()
+
+    # One query for all schools instead of one per session (was N+1).
+    school_ids = {s.school_id for s in sessions}
+    schools = {
+        sc.id: sc for sc in db.query(School).filter(School.id.in_(school_ids))
+    } if school_ids else {}
+
     result = []
     for s in sessions:
-        school = db.query(School).filter(School.id == s.school_id).first()
+        school = schools.get(s.school_id)
         result.append({
             **{c.name: getattr(s, c.name) for c in s.__table__.columns},
             "school_name": school.name if school else "",
@@ -84,7 +92,13 @@ def list_sessions(
 
 
 @router.post("", status_code=201)
-def create_session(session: SessionCreate, db: DBSession = Depends(get_db)):
+def create_session(
+    session: SessionCreate,
+    db: DBSession = Depends(get_db),
+    scope: AccessScope = Depends(resolve_scope),
+):
+    # Without this a counsellor could attach a session to any school by id.
+    scope.assert_school(session.school_id)
     school = db.query(School).filter(School.id == session.school_id).first()
     if not school:
         raise HTTPException(status_code=404, detail="School not found")
@@ -96,19 +110,13 @@ def create_session(session: SessionCreate, db: DBSession = Depends(get_db)):
 
 
 @router.get("/{session_id}")
-def get_session(session_id: int, db: DBSession = Depends(get_db)):
-    session = db.query(Session).filter(Session.id == session_id).first()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
+def get_session(session_id: int, db: DBSession = Depends(get_db), session: Session = Depends(get_scoped_session)):
     school = db.query(School).filter(School.id == session.school_id).first()
     students = db.query(Student).filter(Student.session_id == session_id).all()
-    student_list = []
-    for st in students:
-        student_list.append({
-            c.name: getattr(st, c.name)
-            for c in st.__table__.columns
-            if c.name != "report_content"  # Exclude large field from list view
-        })
+    # Previously this returned every column except report_content — RIASEC raw
+    # responses, aptitude and Big Five scores, family income, parental education
+    # and consent records for every student in the session, in one response.
+    student_list = [StudentSummary.model_validate(st) for st in students]
     return {
         **{c.name: getattr(session, c.name) for c in session.__table__.columns},
         "school_name": school.name if school else "",
@@ -135,10 +143,8 @@ async def upload_csvs(
     zipgrade_csv: UploadFile = File(...),
     student_info_csv: UploadFile = File(...),
     db: DBSession = Depends(get_db),
+    session: Session = Depends(get_scoped_session),
 ):
-    session = db.query(Session).filter(Session.id == session_id).first()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
 
     logger = logging.getLogger(__name__)
 
@@ -268,10 +274,7 @@ async def upload_csvs(
 
 
 @router.post("/{session_id}/score")
-def score_session(session_id: int, background_tasks: BackgroundTasks, db: DBSession = Depends(get_db)):
-    session = db.query(Session).filter(Session.id == session_id).first()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
+def score_session(session_id: int, background_tasks: BackgroundTasks, db: DBSession = Depends(get_db), session: Session = Depends(get_scoped_session)):
 
     from engines.scoring_engine import score_all_students
     score_all_students(session_id)
@@ -285,20 +288,18 @@ def generate_reports(
     session_id: int,
     background_tasks: BackgroundTasks,
     db: DBSession = Depends(get_db),
+    session: Session = Depends(get_scoped_session),
 ):
-    session = db.query(Session).filter(Session.id == session_id).first()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
 
     # Idempotency: prevent duplicate generation
     if session.status == "generating" and session.generation_started_at:
-        elapsed = (datetime.now() - session.generation_started_at).total_seconds()
+        elapsed = (utcnow() - session.generation_started_at).total_seconds()
         if elapsed < 1800:  # 30 minutes
             raise HTTPException(status_code=409, detail="Report generation already in progress")
         # If > 30 min, assume crashed — allow retry
 
     session.status = "generating"
-    session.generation_started_at = datetime.now()
+    session.generation_started_at = utcnow()
     db.commit()
 
     from tasks.batch_processor import run_report_generation
@@ -307,10 +308,7 @@ def generate_reports(
 
 
 @router.post("/{session_id}/qa")
-def run_qa(session_id: int, db: DBSession = Depends(get_db)):
-    session = db.query(Session).filter(Session.id == session_id).first()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
+def run_qa(session_id: int, db: DBSession = Depends(get_db), session: Session = Depends(get_scoped_session)):
 
     from engines.qa_checker import run_qa_checks
     result = run_qa_checks(session_id)
@@ -320,10 +318,7 @@ def run_qa(session_id: int, db: DBSession = Depends(get_db)):
 
 
 @router.post("/{session_id}/pdf")
-def generate_pdfs(session_id: int, background_tasks: BackgroundTasks, db: DBSession = Depends(get_db)):
-    session = db.query(Session).filter(Session.id == session_id).first()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
+def generate_pdfs(session_id: int, background_tasks: BackgroundTasks, db: DBSession = Depends(get_db), session: Session = Depends(get_scoped_session)):
 
     from tasks.batch_processor import run_pdf_generation
     background_tasks.add_task(run_pdf_generation, session_id)
@@ -331,13 +326,10 @@ def generate_pdfs(session_id: int, background_tasks: BackgroundTasks, db: DBSess
 
 
 @router.get("/{session_id}/download")
-def download_all_pdfs(session_id: int, db: DBSession = Depends(get_db)):
+def download_all_pdfs(session_id: int, db: DBSession = Depends(get_db), session: Session = Depends(get_scoped_session)):
     import zipfile
     from pathlib import Path
 
-    session = db.query(Session).filter(Session.id == session_id).first()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
 
     students = db.query(Student).filter(
         Student.session_id == session_id,
@@ -366,11 +358,8 @@ def download_all_pdfs(session_id: int, db: DBSession = Depends(get_db)):
 
 
 @router.get("/{session_id}/school-summary")
-def school_summary(session_id: int, db: DBSession = Depends(get_db)):
+def school_summary(session_id: int, db: DBSession = Depends(get_db), session: Session = Depends(get_scoped_session)):
     """Generate school summary report — aggregate data for the principal."""
-    session = db.query(Session).filter(Session.id == session_id).first()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
 
     school = db.query(School).filter(School.id == session.school_id).first()
     students = db.query(Student).filter(Student.session_id == session_id).all()
@@ -447,11 +436,8 @@ def school_summary(session_id: int, db: DBSession = Depends(get_db)):
 
 
 @router.get("/{session_id}/compliance-certificate")
-def compliance_certificate(session_id: int, db: DBSession = Depends(get_db)):
+def compliance_certificate(session_id: int, db: DBSession = Depends(get_db), session: Session = Depends(get_scoped_session)):
     """Generate data for a CBSE compliance certificate."""
-    session = db.query(Session).filter(Session.id == session_id).first()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
 
     school = db.query(School).filter(School.id == session.school_id).first()
     student_count = db.query(Student).filter(Student.session_id == session_id).count()
@@ -477,16 +463,13 @@ def compliance_certificate(session_id: int, db: DBSession = Depends(get_db)):
         "assessment_tool": "RIASEC Career Interest Inventory (74 items)",
         "report_method": "AI-assisted analysis reviewed by qualified counsellor",
         "compliance_note": "This session was conducted in compliance with CBSE Affiliation Bye-Laws Clause 2.4.12 and NEP 2020 career guidance requirements.",
-        "generated_at": datetime.now().isoformat(),
+        "generated_at": utcnow().isoformat(),
     }
 
 
 @router.get("/{session_id}/compliance-certificate/pdf")
-def compliance_certificate_pdf(session_id: int, db: DBSession = Depends(get_db)):
+def compliance_certificate_pdf(session_id: int, db: DBSession = Depends(get_db), session: Session = Depends(get_scoped_session)):
     """Generate and download CBSE compliance certificate as PDF."""
-    session = db.query(Session).filter(Session.id == session_id).first()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
 
     school = db.query(School).filter(School.id == session.school_id).first()
     student_count = db.query(Student).filter(Student.session_id == session_id).count()
@@ -530,15 +513,12 @@ def compliance_certificate_pdf(session_id: int, db: DBSession = Depends(get_db))
 
 
 @router.get("/{session_id}/parent-circular/pdf")
-def parent_circular_pdf(session_id: int, fee: int = 500, db: DBSession = Depends(get_db)):
+def parent_circular_pdf(session_id: int, fee: int = 500, db: DBSession = Depends(get_db), session: Session = Depends(get_scoped_session)):
     """Generate parent circular PDF for a session."""
     from jinja2 import Environment, FileSystemLoader
     from weasyprint import HTML
     from config import TEMPLATES_DIR, OUTPUT_DIR
 
-    session = db.query(Session).filter(Session.id == session_id).first()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
 
     school = db.query(School).filter(School.id == session.school_id).first()
     session_date_str = session.session_date.strftime("%d %B %Y") if session.session_date else ""

@@ -13,6 +13,23 @@ jobs:
       run:
         working-directory: backend
 
+    # Migrations are verified against real Postgres, not SQLite. The schema drift
+    # that broke this project (6 of 11 tables absent from the migration chain,
+    # 12 columns missing from every deployed database) was invisible locally
+    # because startup called create_all(), which bypasses Alembic entirely.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: careerneeti_ci
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
 
@@ -26,6 +43,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest
+
+      - name: Migrations build the schema from empty
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/careerneeti_ci
+        run: alembic upgrade head
+
+      - name: Migrations match models.py (no drift)
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/careerneeti_ci
+        run: alembic check
 
       - name: Run tests
         run: python -m pytest tests/ -v --tb=short

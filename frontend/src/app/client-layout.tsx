@@ -6,12 +6,28 @@ import { AuthProvider, useAuth } from "@/lib/auth";
 import { ToastProvider } from "@/components/Toast";
 import Sidebar from "@/components/Sidebar";
 
-// Routes that do NOT require authentication
-const PUBLIC_ROUTES = ["/", "/login", "/quiz", "/assessment", "/reports", "/feedback", "/outcome"];
+// Staff areas that require a login. Listed explicitly rather than treating
+// "anything not public" as protected: under that rule a mistyped URL matched no
+// public route, so a parent following a stale link was redirected to the
+// internal counsellor login instead of seeing the 404 page — which was
+// therefore unreachable. Unknown paths now fall through to not-found.
+//
+// This gate is convenience only. The real control is server-side: every staff
+// endpoint resolves the caller's scope in the backend (see backend/access.py).
+const PROTECTED_ROUTES = [
+  "/dashboard",
+  "/schools",
+  "/sessions",
+  "/students",
+  "/settings",
+  "/school-portal",
+  "/counsellors",
+  "/coaching",
+];
 
-function isPublicRoute(pathname: string | null): boolean {
+function isProtectedRoute(pathname: string | null): boolean {
   if (!pathname) return false;
-  return PUBLIC_ROUTES.some(
+  return PROTECTED_ROUTES.some(
     (r) => pathname === r || pathname.startsWith(r + "/")
   );
 }
@@ -22,7 +38,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !isAuthenticated && !isPublicRoute(pathname)) {
+    if (!loading && !isAuthenticated && isProtectedRoute(pathname)) {
       router.replace("/login");
     }
   }, [loading, isAuthenticated, pathname, router]);
@@ -35,8 +51,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // Public pages render without sidebar
-  if (isPublicRoute(pathname)) {
+  // Public pages, and unknown paths that resolve to the 404, render bare —
+  // no staff sidebar.
+  if (!isProtectedRoute(pathname)) {
     return <>{children}</>;
   }
 

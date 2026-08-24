@@ -5,18 +5,27 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
 
+from access import get_scoped_session, resolve_scope, student_from_report_token
 from database import get_db
-from models import Feedback, Student
+from models import Feedback, Session as SessionModel, Student
 
 logger = logging.getLogger(__name__)
 
-# Public router — no auth required (parents submit via WhatsApp link)
+# Public router — parents submit from a WhatsApp link, authenticated by the
+# per-student report token rather than a login.
 router = APIRouter()
+
+# Staff-facing aggregates. Previously these sat on the public router, so anyone
+# could read any session's feedback summary.
+summary_router = APIRouter(dependencies=[Depends(resolve_scope)])
 
 
 class FeedbackSubmit(BaseModel):
-    student_id: int
-    token: str              # student's delivery token — prevents spam
+    # The student is identified BY the token, not by a separate id. Previously
+    # both were sent, only student_id was used, and the frontend passed the
+    # student's own sequential id as the "token" — so anyone could post
+    # unlimited fake ratings for any student.
+    token: str
     rating: Optional[int] = None            # 1-5
     recommendation_match: Optional[bool] = None
     most_useful: str = ""
@@ -27,16 +36,14 @@ class FeedbackSubmit(BaseModel):
 @router.post("/submit", status_code=201)
 def submit_feedback(req: FeedbackSubmit, db: Session = Depends(get_db)):
     """Accept a parent survey response. Linked from the post-delivery WhatsApp message."""
-    student = db.query(Student).filter(Student.id == req.student_id).first()
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
+    student = student_from_report_token(req.token, db)
 
     # Validate rating range
     if req.rating is not None and req.rating not in range(1, 6):
         raise HTTPException(status_code=400, detail="Rating must be 1-5")
 
     entry = Feedback(
-        student_id=req.student_id,
+        student_id=student.id,
         rating=req.rating,
         recommendation_match=req.recommendation_match,
         most_useful=req.most_useful,
@@ -45,12 +52,16 @@ def submit_feedback(req: FeedbackSubmit, db: Session = Depends(get_db)):
     )
     db.add(entry)
     db.commit()
-    logger.info(f"Feedback received for student {req.student_id} (rating={req.rating})")
+    logger.info(f"Feedback received for student {student.id} (rating={req.rating})")
     return {"message": "Thank you for your feedback!"}
 
 
-@router.get("/session/{session_id}/summary")
-def session_feedback_summary(session_id: int, db: Session = Depends(get_db)):
+@summary_router.get("/session/{session_id}/summary")
+def session_feedback_summary(
+    session_id: int,
+    db: Session = Depends(get_db),
+    session: SessionModel = Depends(get_scoped_session),
+):
     """Aggregate NPS and rating summary for a session (counsellor-facing)."""
     students = db.query(Student).filter(Student.session_id == session_id).all()
     student_ids = [s.id for s in students]

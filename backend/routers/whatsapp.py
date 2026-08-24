@@ -6,13 +6,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone, timedelta
 
+from access import get_scoped_session, get_scoped_student, resolve_scope
 from database import get_db
 from models import Student, Session as SessionModel, School
-from routers.auth import get_current_user
 from services.whatsapp import send_pdf, send_bulk, send_survey_message, send_helpline_message, is_whatsapp_configured
 
 logger = logging.getLogger(__name__)
-router = APIRouter(dependencies=[Depends(get_current_user)])
+router = APIRouter(dependencies=[Depends(resolve_scope)])
 
 
 @router.get("/status")
@@ -22,11 +22,11 @@ def whatsapp_status():
 
 
 @router.post("/send/{student_id}")
-async def send_to_student(student_id: int, db: Session = Depends(get_db)):
+async def send_to_student(
+    db: Session = Depends(get_db),
+    student: Student = Depends(get_scoped_student),
+):
     """Send PDF report to a single student's parent via WhatsApp."""
-    student = db.query(Student).filter(Student.id == student_id).first()
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
     if not student.pdf_path:
         raise HTTPException(status_code=400, detail="PDF not generated yet")
     if not student.parent_phone:
@@ -52,11 +52,12 @@ async def send_to_student(student_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/send-bulk/{session_id}")
-async def send_bulk_session(session_id: int, db: Session = Depends(get_db)):
+async def send_bulk_session(
+    session_id: int,
+    db: Session = Depends(get_db),
+    session: SessionModel = Depends(get_scoped_session),
+):
     """Send PDF reports to all students in a session via WhatsApp."""
-    session = db.query(SessionModel).filter(SessionModel.id == session_id).first()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
 
     school = db.query(School).filter(School.id == session.school_id).first()
     school_name = school.name if school else "School"
@@ -91,7 +92,11 @@ async def send_bulk_session(session_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/survey/{session_id}")
-async def send_survey(session_id: int, db: Session = Depends(get_db)):
+async def send_survey(
+    session_id: int,
+    db: Session = Depends(get_db),
+    session: SessionModel = Depends(get_scoped_session),
+):
     """Send post-delivery satisfaction survey to parents delivered 48+ hours ago."""
     from datetime import timedelta
     import os
@@ -111,7 +116,10 @@ async def send_survey(session_id: int, db: Session = Depends(get_db)):
     sent = 0
     failed = 0
     for student in students:
-        feedback_url = f"{base_url}/feedback?sid={student.id}"
+        # The link carries the per-student report token, which the endpoint
+        # actually validates. It previously passed the sequential student id,
+        # which the endpoint accepted as its own "anti-spam token".
+        feedback_url = f"{base_url}/feedback?t={student.report_token or ''}"
         result = await send_survey_message(student.parent_phone, student.name, feedback_url)
         if result["success"]:
             sent += 1
@@ -123,7 +131,11 @@ async def send_survey(session_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/helpline/{session_id}")
-async def send_helpline(session_id: int, db: Session = Depends(get_db)):
+async def send_helpline(
+    session_id: int,
+    db: Session = Depends(get_db),
+    session: SessionModel = Depends(get_scoped_session),
+):
     """Send helpline booking WhatsApp to parents of delivered students (7+ days ago)."""
     calendly_url = os.getenv("CALENDLY_URL", "https://calendly.com/careerneeti/15min")
     cutoff = datetime.now(timezone.utc) - timedelta(days=7)
@@ -152,12 +164,12 @@ async def send_helpline(session_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/helpline-confirm/{student_id}")
-def confirm_helpline_booking(student_id: int, db: Session = Depends(get_db)):
+def confirm_helpline_booking(
+    db: Session = Depends(get_db),
+    student: Student = Depends(get_scoped_student),
+):
     """Mark a parent as having booked a helpline call (Calendly webhook or manual)."""
-    student = db.query(Student).filter(Student.id == student_id).first()
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
     student.helpline_booked_at = datetime.now(timezone.utc)
     db.commit()
-    logger.info(f"Helpline booking confirmed for student {student_id} ({student.name})")
-    return {"message": "Booking confirmed", "student_id": student_id, "booked_at": student.helpline_booked_at.isoformat()}
+    logger.info(f"Helpline booking confirmed for student {student.id} ({student.name})")
+    return {"message": "Booking confirmed", "student_id": student.id, "booked_at": student.helpline_booked_at.isoformat()}

@@ -9,7 +9,8 @@ const STAR_LABELS = ["", "Poor", "Below average", "Average", "Good", "Excellent"
 
 function FeedbackForm() {
   const searchParams = useSearchParams();
-  const studentId = searchParams.get("sid");
+  // `t` is the per-student report token issued with the report.
+  const linkToken = searchParams.get("t");
 
   const [rating, setRating] = useState<number | null>(null);
   const [recommendationMatch, setRecommendationMatch] = useState<boolean | null>(null);
@@ -21,11 +22,11 @@ function FeedbackForm() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!studentId) setError("Invalid feedback link. Please use the link from your WhatsApp message.");
-  }, [studentId]);
+    if (!linkToken) setError("Invalid feedback link. Please use the link from your WhatsApp message.");
+  }, [linkToken]);
 
   const handleSubmit = async () => {
-    if (!studentId) return;
+    if (!linkToken) return;
     setSubmitting(true);
     setError("");
     try {
@@ -33,8 +34,7 @@ function FeedbackForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          student_id: parseInt(studentId),
-          token: studentId,
+          token: linkToken,
           rating,
           recommendation_match: recommendationMatch,
           most_useful: mostUseful,
@@ -54,7 +54,7 @@ function FeedbackForm() {
     }
   };
 
-  if (error && !studentId) {
+  if (error && !linkToken) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface px-4">
         <div className="text-center max-w-sm">

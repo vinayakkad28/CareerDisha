@@ -64,6 +64,47 @@ def _make_valid_report():
             "conversation_starters": ["Starter 1", "Starter 2", "Starter 3"],
         },
         "personal_note": "A" * 210,
+        # Sections 10-15 of the report schema. The fixture predated them, so the
+        # checker reported 7 warnings on a report the test called "valid" — the
+        # fixture was stale, not the checker. All six are requested by the
+        # generator's prompt, so real reports do contain them.
+        "personality_portrait": {"who_you_are": "P" * 320},
+        "career_deep_dive": {
+            "day_in_the_life": "A typical day starts with...",
+            "journey_map": [
+                {"stage": "Class 11-12", "detail": "Build fundamentals"},
+                {"stage": "Entrance prep", "detail": "JEE preparation"},
+                {"stage": "Undergraduate", "detail": "B.Tech"},
+                {"stage": "First role", "detail": "Graduate engineer"},
+                {"stage": "Years 5-10", "detail": "Specialisation"},
+            ],
+        },
+        "stream_comparison": {
+            "all_streams": [
+                {"stream": "Science (PCM)", "fit": "High"},
+                {"stream": "Science (PCB)", "fit": "Moderate"},
+                {"stream": "Commerce with Maths", "fit": "Moderate"},
+                {"stream": "Commerce without Maths", "fit": "Low"},
+                {"stream": "Arts/Humanities", "fit": "Low"},
+            ]
+        },
+        "hidden_gems": [
+            {"career": "Instrumentation Engineer", "why": "Matches R+I profile"},
+            {"career": "Geospatial Analyst", "why": "Growing field in India"},
+        ],
+        "financial_roadmap": {
+            "top_scholarships": [
+                {"name": "NSP Central Sector Scheme", "amount": "Rs 12,000/year"},
+                {"name": "INSPIRE Scholarship", "amount": "Rs 80,000/year"},
+            ]
+        },
+        "confidence_builder": {
+            "thirty_day_challenges": [
+                "Shadow a working engineer for a day",
+                "Build one small electronics project",
+                "Interview a college student in this field",
+            ]
+        },
     }
 
 

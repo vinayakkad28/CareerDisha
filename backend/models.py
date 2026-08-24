@@ -1,10 +1,11 @@
-from datetime import datetime, date, timezone
+from datetime import date
 from sqlalchemy import (
     Boolean, Column, Integer, String, Text, Float, Date, DateTime,
     ForeignKey, JSON,
 )
 from sqlalchemy.orm import relationship
 from database import Base
+from utils.time import utcnow
 
 
 class User(Base):
@@ -17,7 +18,7 @@ class User(Base):
     role = Column(String(20), nullable=False, default="counsellor")  # admin, counsellor, school_admin
     school_id = Column(Integer, ForeignKey("schools.id"), nullable=True)
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=utcnow)
 
 
 class School(Base):
@@ -30,7 +31,12 @@ class School(Base):
     board = Column(String(20), default="CBSE")  # CBSE / ICSE / State
     contact_person = Column(String(255), default="")
     contact_phone = Column(String(15), default="")
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    # Soft delete. A hard DELETE cascades through Session -> Student and
+    # permanently destroys every report, score and consent record for the
+    # school, which is not something one API call should be able to do to a
+    # DPDPA-regulated dataset.
+    is_active = Column(Boolean, default=True, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=utcnow)
 
     sessions = relationship("Session", back_populates="school", cascade="all, delete-orphan")
 
@@ -49,10 +55,10 @@ class Session(Base):
     status = Column(String(20), default="draft")
     llm_provider = Column(String(20), default="anthropic")
     total_cost = Column(Float, default=0.0)
-    generation_started_at = Column(DateTime, nullable=True)
+    generation_started_at = Column(DateTime(timezone=True), nullable=True)
     created_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     notes = Column(Text, default="")
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=utcnow)
 
     school = relationship("School", back_populates="sessions")
     students = relationship("Student", back_populates="session", cascade="all, delete-orphan")
@@ -124,21 +130,31 @@ class Student(Base):
 
     # Delivery
     delivery_status = Column(String(20), default="pending")
-    delivery_timestamp = Column(DateTime, nullable=True)
-    helpline_booked_at = Column(DateTime, nullable=True)   # Calendly booking confirmed
+    delivery_timestamp = Column(DateTime(timezone=True), nullable=True)
+    helpline_booked_at = Column(DateTime(timezone=True), nullable=True)   # Calendly booking confirmed
 
     # DPDPA consent tracking
     consent_obtained = Column(Boolean, default=False)
-    consent_timestamp = Column(DateTime, nullable=True)
-    consent_parent_name = Column(String, default="")
-    consent_method = Column(String, default="")  # "paper_form", "verbal", "digital"
+    consent_timestamp = Column(DateTime(timezone=True), nullable=True)
+    consent_parent_name = Column(String(255), default="")
+    consent_method = Column(String(20), default="")  # "paper_form", "verbal", "digital"
 
     # Cost tracking
     llm_cost = Column(Float, default=0.0)
 
-    d2c_assessment_id = Column(Integer, ForeignKey("d2c_assessments.id"), nullable=True)
+    # students.d2c_assessment_id and d2c_assessments.student_id reference each
+    # other, so the two tables form a foreign-key cycle. use_alter tells
+    # SQLAlchemy/Alembic to add THIS side with a separate ALTER TABLE after both
+    # tables exist. Without it, topological sorting is impossible and the
+    # generated migration emits CREATE TABLE in an order Postgres rejects with
+    # 'relation "students" does not exist'.
+    d2c_assessment_id = Column(
+        Integer,
+        ForeignKey("d2c_assessments.id", use_alter=True),
+        nullable=True,
+    )
 
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=utcnow)
 
     session = relationship("Session", back_populates="students")
 
@@ -146,6 +162,10 @@ class Student(Base):
 class Lead(Base):
     __tablename__ = "leads"
     id = Column(Integer, primary_key=True, index=True)
+    # Opaque handle returned to the browser instead of the sequential id, which
+    # leaked the cumulative lead count and made rows enumerable. Also the key the
+    # post-result contact form uses to attach a phone number to its own lead.
+    token = Column(String(32), unique=True, nullable=True, index=True)
     name = Column(String(255), default="")
     phone = Column(String(15), default="")
     email = Column(String(255), default="")
@@ -158,7 +178,7 @@ class Lead(Base):
     utm_medium = Column(String(100), default="")
     utm_campaign = Column(String(100), default="")
     converted = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=utcnow)
 
 
 class Feedback(Base):
@@ -172,7 +192,7 @@ class Feedback(Base):
     most_useful = Column(Text, default="")                       # Free text
     missing = Column(Text, default="")                          # Free text
     would_recommend = Column(Boolean, nullable=True)            # NPS proxy
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=utcnow)
 
 
 class AuditLog(Base):
@@ -186,7 +206,7 @@ class AuditLog(Base):
     entity_id = Column(Integer, nullable=True)
     detail = Column(Text, default="")                  # free-form context
     ip_address = Column(String(45), default="")
-    timestamp = Column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)
+    timestamp = Column(DateTime(timezone=True), default=utcnow, index=True)
 
 
 class D2CAssessment(Base):
@@ -204,7 +224,7 @@ class D2CAssessment(Base):
     razorpay_order_id = Column(String(100), default="")
     razorpay_payment_id = Column(String(100), default="")
     payment_status = Column(String(20), default="pending")
-    paid_at = Column(DateTime, nullable=True)
+    paid_at = Column(DateTime(timezone=True), nullable=True)
     status = Column(String(30), default="created")
     raw_responses = Column(JSON, default=dict)
     self_efficacy = Column(JSON, nullable=True)
@@ -226,11 +246,18 @@ class D2CAssessment(Base):
     career_readiness_responses = Column(JSON, nullable=True)
     career_readiness_score = Column(Integer, nullable=True)
     career_readiness_level = Column(String(20), default="")
+
+    # Full multi-dimensional recommendation as computed at submit time. Persisted
+    # so /preview and the paid report cannot disagree: /preview previously used a
+    # separate single-letter Holland lookup that could name a stream the real
+    # engine did not even rank first.
+    stream_recommendation = Column(JSON, nullable=True)
+
     report_email_sent = Column(Boolean, default=False)
     report_whatsapp_sent = Column(Boolean, default=False)
     pdf_url = Column(String(500), default="")
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    completed_at = Column(DateTime, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=utcnow)
+    completed_at = Column(DateTime(timezone=True), nullable=True)
 
 
 class StudentOutcome(Base):
@@ -244,8 +271,8 @@ class StudentOutcome(Base):
     recommendation_matched = Column(Boolean, nullable=True)   # did prediction match?
     notes = Column(Text, default="")
     collected_via = Column(String(20), default="whatsapp")    # "whatsapp", "manual", "form"
-    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=utcnow)
+    created_at = Column(DateTime(timezone=True), default=utcnow)
 
 
 class SchoolAssignment(Base):
@@ -258,7 +285,7 @@ class SchoolAssignment(Base):
     commission_rate = Column(Float, default=0.40)   # fraction — 0.40 = 40%
     is_active = Column(Boolean, default=True)
     notes = Column(Text, default="")
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=utcnow)
 
 
 class CounsellorCommission(Base):
@@ -272,6 +299,6 @@ class CounsellorCommission(Base):
     rate_per_student = Column(Integer, default=200)   # INR — 40% of ₹500
     amount_inr = Column(Integer, default=0)           # students_count × rate_per_student
     status = Column(String(20), default="pending")    # pending, paid
-    paid_at = Column(DateTime, nullable=True)
+    paid_at = Column(DateTime(timezone=True), nullable=True)
     notes = Column(Text, default="")
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), default=utcnow)

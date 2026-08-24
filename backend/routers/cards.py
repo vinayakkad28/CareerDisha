@@ -4,19 +4,20 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import Response
 from sqlalchemy.orm import Session
 
+from access import get_scoped_student, resolve_scope
 from database import get_db
 from models import Student
-from routers.auth import get_current_user
 
-router = APIRouter(dependencies=[Depends(get_current_user)])
+router = APIRouter(dependencies=[Depends(resolve_scope)])
 
 
 @router.get("/{student_id}/share-card")
-def get_share_card(student_id: int, db: Session = Depends(get_db)):
-    """Generate and return a shareable PNG card for a student."""
-    student = db.query(Student).filter(Student.id == student_id).first()
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
+def get_share_card(student: Student = Depends(get_scoped_student)):
+    """Generate and return a shareable PNG card for a student.
+
+    The card renders the student's name and Holland profile, so it is scoped
+    like any other student record — a counsellor from another school gets 404.
+    """
     if not student.riasec_scores:
         raise HTTPException(status_code=400, detail="Student not yet scored")
 

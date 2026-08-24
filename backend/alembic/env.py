@@ -19,8 +19,18 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from database import Base
-from models import School, Session, Student, User  # noqa: F401
+import models  # noqa: F401  — imports every model so autogenerate sees all tables
+from config import DATABASE_URL
+
 target_metadata = Base.metadata
+
+# alembic.ini hardcodes a local SQLite URL. Without this override, running
+# `alembic upgrade head` on Render would silently migrate a throwaway file
+# inside the container instead of the real Postgres database. config.DATABASE_URL
+# already normalises the `postgres://` scheme that some hosts hand out.
+# `%` is escaped because set_main_option values go through configparser
+# interpolation, and managed-Postgres passwords routinely contain one.
+config.set_main_option("sqlalchemy.url", DATABASE_URL.replace("%", "%%"))
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -67,7 +77,12 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata,
+            # Catch column-type drift (e.g. DateTime -> DateTime(timezone=True)),
+            # which is invisible to autogenerate by default.
+            compare_type=True,
+            compare_server_default=True,
         )
 
         with context.begin_transaction():

@@ -2,26 +2,49 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 
+from access import AccessScope, require_role, resolve_scope, scoped_sessions, scoped_students
 from database import get_db
 from models import School, Session as SessionModel, Student, StudentOutcome, Feedback
-from routers.auth import get_current_user
 
-router = APIRouter(dependencies=[Depends(get_current_user)])
+router = APIRouter(dependencies=[Depends(resolve_scope)])
 
 
 @router.get("/stats")
-def get_stats(db: Session = Depends(get_db)):
-    total_schools = db.query(School).count()
-    total_sessions = db.query(SessionModel).count()
-    total_students = db.query(Student).count()
-    reports_generated = db.query(Student).filter(
+def get_stats(
+    db: Session = Depends(get_db),
+    scope: AccessScope = Depends(resolve_scope),
+):
+    """Headline counts for the caller's own schools.
+
+    These were platform-wide totals for every authenticated user, so a
+    school_admin saw the count of every student in the system rather than their
+    own. Admin still sees everything, because their scope is unrestricted.
+    """
+    sessions_q = scoped_sessions(scope, db)
+    students_q = scoped_students(scope, db)
+
+    session_ids = [row.id for row in sessions_q.with_entities(SessionModel.id).all()]
+    school_ids = (
+        {row.school_id for row in sessions_q.with_entities(SessionModel.school_id).all()}
+        if not scope.is_superuser
+        else None
+    )
+
+    total_schools = (
+        db.query(School).count() if scope.is_superuser else len(school_ids or set())
+    )
+    total_sessions = len(session_ids)
+    total_students = students_q.count()
+    reports_generated = students_q.filter(
         Student.report_status.in_(["report_generated", "qa_passed", "qa_flagged", "pdf_ready", "delivered"])
     ).count()
-    pdfs_ready = db.query(Student).filter(
+    pdfs_ready = students_q.filter(
         Student.report_status.in_(["pdf_ready", "delivered"])
     ).count()
-    delivered = db.query(Student).filter(Student.delivery_status == "delivered").count()
-    total_cost = db.query(func.sum(Student.llm_cost)).scalar() or 0.0
+    delivered = students_q.filter(Student.delivery_status == "delivered").count()
+    total_cost = (
+        students_q.with_entities(func.coalesce(func.sum(Student.llm_cost), 0.0)).scalar() or 0.0
+    )
 
     return {
         "total_schools": total_schools,
@@ -35,19 +58,36 @@ def get_stats(db: Session = Depends(get_db)):
 
 
 @router.get("/recent")
-def get_recent_sessions(limit: int = 10, db: Session = Depends(get_db)):
+def get_recent_sessions(
+    limit: int = 10,
+    db: Session = Depends(get_db),
+    scope: AccessScope = Depends(resolve_scope),
+):
     if limit > 100:
         limit = 100
     sessions = (
-        db.query(SessionModel)
+        scoped_sessions(scope, db)
         .order_by(SessionModel.created_at.desc())
         .limit(limit)
         .all()
     )
+
+    # One query each for schools and counts, not two per row.
+    school_ids = {se.school_id for se in sessions}
+    schools_by_id = {
+        sc.id: sc for sc in db.query(School).filter(School.id.in_(school_ids))
+    } if school_ids else {}
+    counts = dict(
+        db.query(Student.session_id, func.count(Student.id))
+        .filter(Student.session_id.in_([se.id for se in sessions] or [0]))
+        .group_by(Student.session_id)
+        .all()
+    )
+
     result = []
     for s in sessions:
-        school = db.query(School).filter(School.id == s.school_id).first()
-        student_count = db.query(Student).filter(Student.session_id == s.id).count()
+        school = schools_by_id.get(s.school_id)
+        student_count = counts.get(s.id, 0)
         result.append({
             "id": s.id,
             "school_name": school.name if school else "",
@@ -63,7 +103,10 @@ def get_recent_sessions(limit: int = 10, db: Session = Depends(get_db)):
 
 
 @router.get("/aggregate")
-def get_aggregate(db: Session = Depends(get_db)):
+def get_aggregate(
+    db: Session = Depends(get_db),
+    _: AccessScope = Depends(require_role("admin")),
+):
     """Aggregate stats for the founder's sales pitch deck.
 
     Returns live numbers: total students, recommendation accuracy, avg NPS,
@@ -95,10 +138,23 @@ def get_aggregate(db: Session = Depends(get_db)):
     # Top 5 careers by city (all schools, real data)
     city_career: dict[str, dict[str, int]] = {}
     students_with_careers = db.query(Student).filter(Student.matched_careers != None).all()  # noqa: E711
+
+    # Resolve session -> school -> city in two queries instead of two per
+    # student. This loop previously issued 400-1000 round trips for a few
+    # hundred students, on an endpoint whose own docstring calls it the
+    # founder's pitch-deck source.
+    session_ids = {st.session_id for st in students_with_careers}
+    sessions_by_id = {
+        se.id: se for se in db.query(SessionModel).filter(SessionModel.id.in_(session_ids))
+    } if session_ids else {}
+    school_ids = {se.school_id for se in sessions_by_id.values()}
+    cities_by_school = {
+        sc.id: sc.city for sc in db.query(School).filter(School.id.in_(school_ids))
+    } if school_ids else {}
+
     for student in students_with_careers:
-        session = db.query(SessionModel).filter(SessionModel.id == student.session_id).first()
-        school = db.query(School).filter(School.id == session.school_id).first() if session else None
-        city = school.city if school else "Unknown"
+        session = sessions_by_id.get(student.session_id)
+        city = cities_by_school.get(session.school_id, "Unknown") if session else "Unknown"
         for mc in (student.matched_careers or [])[:2]:
             name = mc.get("career_name", "")
             if name:
@@ -129,12 +185,28 @@ def get_aggregate(db: Session = Depends(get_db)):
 
 
 @router.get("/cost-summary")
-def get_cost_summary(db: Session = Depends(get_db)):
-    sessions = db.query(SessionModel).order_by(SessionModel.session_date.desc()).all()
+def get_cost_summary(
+    db: Session = Depends(get_db),
+    scope: AccessScope = Depends(resolve_scope),
+):
+    sessions = scoped_sessions(scope, db).order_by(SessionModel.session_date.desc()).all()
+
+    # One query each for schools and per-session counts, rather than two per row.
+    school_ids = {se.school_id for se in sessions}
+    schools_by_id = {
+        sc.id: sc for sc in db.query(School).filter(School.id.in_(school_ids))
+    } if school_ids else {}
+    counts = dict(
+        db.query(Student.session_id, func.count(Student.id))
+        .filter(Student.session_id.in_([se.id for se in sessions] or [0]))
+        .group_by(Student.session_id)
+        .all()
+    )
+
     summary = []
     for s in sessions:
-        school = db.query(School).filter(School.id == s.school_id).first()
-        student_count = db.query(Student).filter(Student.session_id == s.id).count()
+        school = schools_by_id.get(s.school_id)
+        student_count = counts.get(s.id, 0)
         summary.append({
             "session_id": s.id,
             "school_name": school.name if school else "",

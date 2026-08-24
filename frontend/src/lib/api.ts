@@ -97,6 +97,29 @@ export const schools = {
 };
 
 // Sessions
+// Coaching partner comparison. These endpoints have existed with no UI; the
+// assessment already collects coaching-affordability data they consume.
+export const coaching = {
+  partners: () =>
+    request<{ partners: any[]; total: number; exams: string[] }>("/coaching/partners"),
+  recommend: (exam: string, budget = "") =>
+    request<{ partners: any[]; total: number; note: string }>(
+      `/coaching/recommend/${encodeURIComponent(exam)}${budget ? `?budget=${budget}` : ""}`
+    ),
+  compare: (exam: string) =>
+    request<any>(`/coaching/compare?exam=${encodeURIComponent(exam)}`),
+};
+
+// Counsellor assignments and commission tracking — nine endpoints, no UI.
+export const counsellors = {
+  list: () => request<any[]>("/counsellors/list"),
+  assignments: () => request<any[]>("/counsellors/assignments"),
+  myschools: () => request<any>("/counsellors/my-schools"),
+  commissions: () => request<any>("/counsellors/commissions"),
+  calculate: (sessionId: number) =>
+    request<any>(`/counsellors/commissions/${sessionId}/calculate`, { method: "POST" }),
+};
+
 export const sessions = {
   list: (params?: { school_id?: number; status?: string }) => {
     const query = new URLSearchParams();
@@ -136,6 +159,17 @@ export const sessions = {
   generatePDFs: (id: number) =>
     request<any>(`/sessions/${id}/pdf`, { method: "POST" }),
   downloadURL: (id: number) => `${BASE_URL}/sessions/${id}/download`,
+
+  // CBSE compliance artefacts. These endpoints have existed and worked since
+  // March with no UI reaching them. The certificate is what a principal shows
+  // to evidence Clause 2.4.12 compliance; the parent circular is the one-pager
+  // they show a parent who queries the fee.
+  complianceCertificate: (id: number) =>
+    request<Record<string, unknown>>(`/sessions/${id}/compliance-certificate`),
+  complianceCertificateURL: (id: number) =>
+    `${BASE_URL}/sessions/${id}/compliance-certificate/pdf`,
+  parentCircularURL: (id: number, fee = 500) =>
+    `${BASE_URL}/sessions/${id}/parent-circular/pdf?fee=${fee}`,
 };
 
 // Students

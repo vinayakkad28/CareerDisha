@@ -70,12 +70,101 @@ interface PreviewData {
 
 interface PaymentData {
   order_id: string;
-  amount: number;
+  // The backend returns both units explicitly. A single ambiguous `amount` in
+  // rupees was previously divided by 100 here, so a Rs 499 tier displayed — and
+  // would have charged — Rs 4.99.
+  amount_inr: number;
+  amount_paise: number;
   currency: string;
   razorpay_key?: string;
 }
 
+/* ── progress persistence ─────────────────────────────────── */
+/* The paid flow is 12 screens and 74+ questions, roughly 20 minutes, aimed at
+   parents and students on phones — and every answer lived only in React memory.
+   A refresh, a back-swipe, an incoming call, or iOS discarding a backgrounded
+   tab sent the user back to screen one with nothing saved. */
+
+const PROGRESS_KEY = "cn_assessment_progress_v1";
+
+/** Fields worth restoring. Fetched question lists and server-derived payment or
+ *  preview data are deliberately excluded — those are re-fetched. */
+interface PersistedProgress {
+  token: string;
+  step: number;
+  studentName: string;
+  email: string;
+  parentPhone: string;
+  classLevel: string;
+  gender: string;
+  income: string;
+  location: string;
+  parentEdu: string;
+  firstGen: boolean;
+  mathMarks: string;
+  scienceMarks: string;
+  englishMarks: string;
+  socialStudiesMarks: string;
+  strongestSubject: string;
+  coachingAfford: string;
+  mobility: string;
+  parentConcern: string;
+  roleModel: string;
+  selfEfficacy: Record<string, number>;
+  tipiAnswers: Record<string, number>;
+  tipiCurrentQ: number;
+  crAnswers: Record<string, number>;
+  crCurrentQ: number;
+  aptAnswers: Record<string, string>;
+  aptCurrentQ: number;
+  answers: Record<string, number>;
+  currentQ: number;
+}
+
+function loadProgress(): Partial<PersistedProgress> | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(PROGRESS_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    // A saved state without a token cannot be resumed against the server.
+    return parsed && typeof parsed === "object" && parsed.token ? parsed : null;
+  } catch {
+    // Private mode, cleared site data, or a browser blocking storage.
+    return null;
+  }
+}
+
+function saveProgress(state: PersistedProgress) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(PROGRESS_KEY, JSON.stringify(state));
+  } catch {
+    // Quota or blocked storage — losing persistence must never break the flow.
+  }
+}
+
+function clearProgress() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(PROGRESS_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 /* ── helpers ──────────────────────────────────────────────── */
+/** Error carrying the HTTP status, so callers can branch on it rather than
+ *  pattern-matching the message text. */
+class ApiError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
 function cls(...classes: (string | false | undefined | null)[]) {
   return classes.filter(Boolean).join(" ");
 }
@@ -111,13 +200,20 @@ function OptionButtons({ options, value, onChange }: { options: string[]; value:
   );
 }
 
+// The flow runs to step 12 (1-8 questions, 9 preview, 10 payment, 11 generating,
+// 12 report). The header claimed "Step N of 8" and hid the bar entirely from
+// step 8 on, so a student reached "Step 7 of 8" expecting one screen to go and
+// was then handed 74 more questions plus preview, payment and generation.
+const TOTAL_STEPS = 12;
+const LAST_PROGRESS_STEP = 11; // step 12 is the finished report, not progress
+
 function Header({ step, progressPct, subtitle }: { step: number; progressPct: number; subtitle?: string }) {
   return (
     <header className="bg-brand-gradient text-white py-5 sticky top-0 z-20">
       <div className="max-w-form-narrow mx-auto px-4 text-center">
         <Logo />
         {subtitle && <p className="text-white/60 font-body text-sm mt-1">{subtitle}</p>}
-        {step >= 1 && step <= 7 && (
+        {step >= 1 && step <= LAST_PROGRESS_STEP && (
           <>
             <div className="mt-3 bg-surface-container-high/20 rounded-full h-2 overflow-hidden">
               <div
@@ -125,7 +221,7 @@ function Header({ step, progressPct, subtitle }: { step: number; progressPct: nu
                 style={{ width: `${progressPct}%`, background: `linear-gradient(90deg, ${GOLD}, #2ecc71)` }}
               />
             </div>
-            <p className="text-white/40 text-xs mt-1 font-body">Step {step} of 8</p>
+            <p className="text-white/40 text-xs mt-1 font-body">Step {step} of {TOTAL_STEPS}</p>
           </>
         )}
       </div>
@@ -245,10 +341,80 @@ export default function AssessmentPage() {
 
   // Step 10: Payment
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
+  // True when the backend reports online payments are switched off. Distinct
+  // from an error: nothing the user does will make a retry succeed.
+  const [paymentsUnavailable, setPaymentsUnavailable] = useState(false);
 
   // Step 11: Generating
   const [reportStatus, setReportStatus] = useState("");
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  /* ── restore in-progress work ────────────────────────────── */
+  // Runs once, before anything is fetched, so a refresh mid-assessment resumes
+  // where the user left off instead of dropping them back on screen one.
+  const restoredRef = useRef(false);
+  useEffect(() => {
+    if (restoredRef.current) return;
+    restoredRef.current = true;
+    const saved = loadProgress();
+    if (!saved?.token) return;
+    setToken(saved.token);
+    if (saved.step) setStep(saved.step);
+    if (saved.studentName) setStudentName(saved.studentName);
+    if (saved.email) setEmail(saved.email);
+    if (saved.parentPhone) setParentPhone(saved.parentPhone);
+    if (saved.classLevel) setClassLevel(saved.classLevel);
+    if (saved.gender) setGender(saved.gender);
+    if (saved.income) setIncome(saved.income);
+    if (saved.location) setLocation(saved.location);
+    if (saved.parentEdu) setParentEdu(saved.parentEdu);
+    if (saved.firstGen !== undefined) setFirstGen(saved.firstGen);
+    if (saved.mathMarks) setMathMarks(saved.mathMarks);
+    if (saved.scienceMarks) setScienceMarks(saved.scienceMarks);
+    if (saved.englishMarks) setEnglishMarks(saved.englishMarks);
+    if (saved.socialStudiesMarks) setSocialStudiesMarks(saved.socialStudiesMarks);
+    if (saved.strongestSubject) setStrongestSubject(saved.strongestSubject);
+    if (saved.coachingAfford) setCoachingAfford(saved.coachingAfford);
+    if (saved.mobility) setMobility(saved.mobility);
+    if (saved.parentConcern) setParentConcern(saved.parentConcern);
+    if (saved.roleModel) setRoleModel(saved.roleModel);
+    if (saved.selfEfficacy) setSelfEfficacy(saved.selfEfficacy);
+    if (saved.tipiAnswers) setTipiAnswers(saved.tipiAnswers);
+    if (saved.tipiCurrentQ !== undefined) setTipiCurrentQ(saved.tipiCurrentQ);
+    if (saved.crAnswers) setCrAnswers(saved.crAnswers);
+    if (saved.crCurrentQ !== undefined) setCrCurrentQ(saved.crCurrentQ);
+    if (saved.aptAnswers) setAptAnswers(saved.aptAnswers);
+    if (saved.aptCurrentQ !== undefined) setAptCurrentQ(saved.aptCurrentQ);
+    if (saved.answers) setAnswers(saved.answers);
+    if (saved.currentQ !== undefined) setCurrentQ(saved.currentQ);
+  }, []);
+
+  /* ── save in-progress work ───────────────────────────────── */
+  useEffect(() => {
+    // Nothing to resume before the server has issued a token.
+    if (!token) return;
+    // Step 12 means the report is delivered; keeping the draft would resume a
+    // finished assessment on the next visit.
+    if (step >= 12) {
+      clearProgress();
+      return;
+    }
+    saveProgress({
+      token, step, studentName, email, parentPhone, classLevel,
+      gender, income, location, parentEdu, firstGen,
+      mathMarks, scienceMarks, englishMarks, socialStudiesMarks, strongestSubject,
+      coachingAfford, mobility, parentConcern, roleModel,
+      selfEfficacy, tipiAnswers, tipiCurrentQ, crAnswers, crCurrentQ,
+      aptAnswers, aptCurrentQ, answers, currentQ,
+    });
+  }, [
+    token, step, studentName, email, parentPhone, classLevel,
+    gender, income, location, parentEdu, firstGen,
+    mathMarks, scienceMarks, englishMarks, socialStudiesMarks, strongestSubject,
+    coachingAfford, mobility, parentConcern, roleModel,
+    selfEfficacy, tipiAnswers, tipiCurrentQ, crAnswers, crCurrentQ,
+    aptAnswers, aptCurrentQ, answers, currentQ,
+  ]);
 
   /* ── API helpers ─────────────────────────────────────────── */
   const apiPost = useCallback(
@@ -259,8 +425,12 @@ export default function AssessmentPage() {
         body: body ? JSON.stringify(body) : undefined,
       });
       if (!res.ok) {
-        const text = await res.text().catch(() => "");
-        throw new Error(text || `Request failed (${res.status})`);
+        const body = await res.json().catch(() => null);
+        const err = new ApiError(
+          body?.detail || `Request failed (${res.status})`,
+          res.status
+        );
+        throw err;
       }
       return res.json();
     },
@@ -522,10 +692,19 @@ export default function AssessmentPage() {
     try {
       const data = await apiPost(`/api/d2c/create-order/${token}`, { tier });
       setPaymentData(data);
+      setPaymentsUnavailable(false);
       setStep(10);
       window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch {
-      setError("Could not create order. Please try again.");
+    } catch (e) {
+      // 503 means online payments are switched off server-side, which is a
+      // normal state — not an error the user can retry their way out of.
+      if (e instanceof ApiError && e.status === 503) {
+        setPaymentsUnavailable(true);
+        setStep(10);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        setError("Could not start payment. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -554,7 +733,7 @@ export default function AssessmentPage() {
       if (Razorpay) {
         const rzp = new Razorpay({
           key: paymentData.razorpay_key,
-          amount: paymentData.amount,
+          amount: paymentData.amount_paise,
           currency: paymentData.currency || "INR",
           order_id: paymentData.order_id,
           name: "CareerNeeti",
@@ -579,27 +758,12 @@ export default function AssessmentPage() {
       }
     }
 
-    // Mock mode
-    handleMockPayment();
+    // Razorpay script not ready yet; the button on step 10 lets the user retry.
   }, [paymentData, token, apiPost]);
 
-  const handleMockPayment = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      await apiPost(`/api/d2c/verify-payment/${token}`, {
-        razorpay_payment_id: "mock_pay_" + Date.now(),
-        razorpay_order_id: paymentData?.order_id || "mock_order",
-        razorpay_signature: "mock_signature",
-      });
-      setStep(11);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch {
-      setError("Payment simulation failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  // The former handleMockPayment() posted a fabricated signature that the
+  // backend accepted, so anyone reaching this screen got a paid report for
+  // free. Mock payments no longer exist on either side.
 
   // Step 11 → poll status
   useEffect(() => {
@@ -1042,7 +1206,7 @@ export default function AssessmentPage() {
                   </span>
                   <div>
                     <p className="text-base font-heading font-medium text-on-surface leading-relaxed">{tipiQ.text}</p>
-                    {tipiQ.text_hi && <p className="text-sm text-on-surface-variant/60 mt-1">{tipiQ.text_hi}</p>}
+                    {tipiQ.text_hi && <p lang="hi" className="text-sm text-on-surface-variant/60 mt-1">{tipiQ.text_hi}</p>}
                   </div>
                 </div>
                 <div className="mt-6 space-y-2">
@@ -1119,7 +1283,7 @@ export default function AssessmentPage() {
                   </span>
                   <div>
                     <p className="text-base font-heading font-medium text-on-surface leading-relaxed">{crQ.text}</p>
-                    {crQ.text_hi && <p className="text-sm text-on-surface-variant/60 mt-1">{crQ.text_hi}</p>}
+                    {crQ.text_hi && <p lang="hi" className="text-sm text-on-surface-variant/60 mt-1">{crQ.text_hi}</p>}
                   </div>
                 </div>
                 <div className="mt-6 space-y-2">
@@ -1210,7 +1374,7 @@ export default function AssessmentPage() {
                 </span>
                 <div>
                   <p className="text-base font-heading font-medium text-on-surface leading-relaxed">{aptQ.text}</p>
-                  {aptQ.text_hi && <p className="text-sm text-on-surface-variant/60 mt-1">{aptQ.text_hi}</p>}
+                  {aptQ.text_hi && <p lang="hi" className="text-sm text-on-surface-variant/60 mt-1">{aptQ.text_hi}</p>}
                   <span className="inline-block mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-100 px-2 py-0.5 rounded">{aptQ.category}</span>
                 </div>
               </div>
@@ -1684,7 +1848,6 @@ export default function AssessmentPage() {
      STEP 10 — Payment
      ═══════════════════════════════════════════════════════════ */
   if (step === 10) {
-    const isMock = !paymentData?.razorpay_key;
 
     return (
       <div className="min-h-screen bg-surface font-body">
@@ -1692,12 +1855,14 @@ export default function AssessmentPage() {
         <div className="max-w-form-narrow mx-auto px-4 py-8 space-y-5">
           <div className="sa-card text-center">
             <h3 className="text-lg font-heading font-bold text-primary mb-2">
-              Complete Your Payment
+              {paymentsUnavailable ? "Almost done" : "Complete Your Payment"}
             </h3>
             <p className="text-on-surface-variant text-sm mb-4">
               {paymentData
-                ? `Amount: ₹${(paymentData.amount / 100).toLocaleString("en-IN")}`
-                : "Preparing payment..."}
+                ? `Amount: ₹${paymentData.amount_inr.toLocaleString("en-IN")}`
+                : paymentsUnavailable
+                  ? "Your assessment is complete."
+                  : "Preparing payment..."}
             </p>
 
             {/* Order summary */}
@@ -1706,32 +1871,39 @@ export default function AssessmentPage() {
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-on-surface-variant">Career Assessment Report</span>
                   <span className="font-heading font-bold text-on-surface">
-                    ₹{(paymentData.amount / 100).toLocaleString("en-IN")}
+                    ₹{paymentData.amount_inr.toLocaleString("en-IN")}
                   </span>
                 </div>
                 <div className="mt-2 pt-2 border-t border-surface-container-highest flex justify-between items-center text-sm">
                   <span className="font-heading font-semibold text-on-surface">Total</span>
                   <span className="font-heading font-bold text-primary text-lg">
-                    ₹{(paymentData.amount / 100).toLocaleString("en-IN")}
+                    ₹{paymentData.amount_inr.toLocaleString("en-IN")}
                   </span>
                 </div>
               </div>
             )}
 
-            {isMock ? (
-              <div className="space-y-3">
-                <div className="sa-card bg-secondary-50 text-secondary-600 text-xs text-center">
-                  Development Mode — Razorpay is not configured. Click below to
-                  simulate a successful payment.
+            {paymentsUnavailable ? (
+              <div className="space-y-3 text-left">
+                <div className="sa-card bg-surface-container-high text-sm">
+                  <p className="font-heading font-bold text-on-surface mb-1">
+                    Online payment is not open yet
+                  </p>
+                  <p className="text-on-surface-variant">
+                    Your answers are saved. We will contact you on the number you
+                    gave us to arrange the report and payment.
+                  </p>
                 </div>
-                <PrimaryBtn loading={loading} onClick={handleMockPayment}>
-                  Simulate Payment (Dev Mode)
-                </PrimaryBtn>
+                <p className="text-xs text-on-surface-variant text-center">
+                  Keep this link to return to your assessment:
+                  <br />
+                  <span className="font-mono break-all">{`${typeof window !== "undefined" ? window.location.origin : ""}/assessment?token=${token}`}</span>
+                </p>
               </div>
             ) : (
               <button
                 onClick={handlePayment}
-                disabled={loading}
+                disabled={loading || !paymentData}
                 className="btn-primary w-full py-3.5 font-heading font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {loading ? "Processing..." : "Pay with Razorpay"}

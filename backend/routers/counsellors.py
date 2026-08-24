@@ -9,11 +9,10 @@ from datetime import datetime, timezone
 
 from database import get_db
 from models import SchoolAssignment, CounsellorCommission, User, School, Session as SessionModel, Student
-from routers.auth import get_current_user
-from permissions import require_role
+from access import AccessScope, get_scoped_session, require_role, resolve_scope
 
 logger = logging.getLogger(__name__)
-router = APIRouter(dependencies=[Depends(get_current_user)])
+router = APIRouter(dependencies=[Depends(resolve_scope)])
 
 PRICE_PER_STUDENT_INR = 500   # school session rate
 DEFAULT_COMMISSION_RATE = 0.40  # 40%
@@ -78,7 +77,7 @@ def _commission_row(c: CounsellorCommission, db: Session) -> dict:
 # ── Counsellor list ───────────────────────────────────────────────────────────
 
 @router.get("/list")
-def list_counsellors(db: Session = Depends(get_db), user: dict = Depends(require_role("admin"))):
+def list_counsellors(db: Session = Depends(get_db), scope: AccessScope = Depends(require_role("admin"))):
     """List all counsellor accounts."""
     counsellors = db.query(User).filter(User.role == "counsellor").order_by(User.id).all()
     return [_counsellor_row(c) for c in counsellors]
@@ -87,14 +86,14 @@ def list_counsellors(db: Session = Depends(get_db), user: dict = Depends(require
 # ── School assignments ────────────────────────────────────────────────────────
 
 @router.get("/assignments")
-def list_assignments(db: Session = Depends(get_db), user: dict = Depends(require_role("admin"))):
+def list_assignments(db: Session = Depends(get_db), scope: AccessScope = Depends(require_role("admin"))):
     """List all counsellor ↔ school assignments."""
     assignments = db.query(SchoolAssignment).order_by(SchoolAssignment.id).all()
     return [_assignment_row(a, db) for a in assignments]
 
 
 @router.post("/assignments", status_code=201)
-def create_assignment(req: AssignRequest, db: Session = Depends(get_db), user: dict = Depends(require_role("admin"))):
+def create_assignment(req: AssignRequest, db: Session = Depends(get_db), scope: AccessScope = Depends(require_role("admin"))):
     """Assign a counsellor to a school."""
     if not (0 < req.commission_rate <= 1):
         raise HTTPException(status_code=400, detail="commission_rate must be between 0 and 1")
@@ -132,7 +131,7 @@ def create_assignment(req: AssignRequest, db: Session = Depends(get_db), user: d
 
 
 @router.delete("/assignments/{assignment_id}")
-def remove_assignment(assignment_id: int, db: Session = Depends(get_db), user: dict = Depends(require_role("admin"))):
+def remove_assignment(assignment_id: int, db: Session = Depends(get_db), scope: AccessScope = Depends(require_role("admin"))):
     """Deactivate a counsellor-school assignment."""
     a = db.query(SchoolAssignment).filter(SchoolAssignment.id == assignment_id).first()
     if not a:
@@ -143,9 +142,9 @@ def remove_assignment(assignment_id: int, db: Session = Depends(get_db), user: d
 
 
 @router.get("/my-schools")
-def my_schools(db: Session = Depends(get_db), user: dict = Depends(require_role("counsellor", "admin"))):
+def my_schools(db: Session = Depends(get_db), scope: AccessScope = Depends(require_role("counsellor", "admin"))):
     """Schools assigned to the current counsellor."""
-    counsellor_id = user.get("user_id")
+    counsellor_id = scope.user_id
     assignments = db.query(SchoolAssignment).filter(
         SchoolAssignment.counsellor_id == counsellor_id,
         SchoolAssignment.is_active == True,
@@ -167,13 +166,15 @@ def my_schools(db: Session = Depends(get_db), user: dict = Depends(require_role(
 # ── Commission tracking ───────────────────────────────────────────────────────
 
 @router.post("/commissions/{session_id}/calculate", status_code=201)
-def calculate_commission(session_id: int, db: Session = Depends(get_db), user: dict = Depends(require_role("admin"))):
+def calculate_commission(
+    session_id: int,
+    db: Session = Depends(get_db),
+    session: SessionModel = Depends(get_scoped_session),
+    scope: AccessScope = Depends(require_role("admin")),
+):
     """Calculate and record commission for a completed session.
     Looks up the assigned counsellor via school_assignments.
     """
-    session = db.query(SessionModel).filter(SessionModel.id == session_id).first()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
 
     # Find active assignment for this school
     assignment = db.query(SchoolAssignment).filter(
@@ -226,7 +227,7 @@ def calculate_commission(session_id: int, db: Session = Depends(get_db), user: d
 def list_commissions(
     status: Optional[str] = None,
     db: Session = Depends(get_db),
-    user: dict = Depends(require_role("admin")),
+    scope: AccessScope = Depends(require_role("admin")),
 ):
     """List all commissions (admin). Filter by status=pending|paid."""
     q = db.query(CounsellorCommission)
@@ -237,9 +238,9 @@ def list_commissions(
 
 
 @router.get("/my-commissions")
-def my_commissions(db: Session = Depends(get_db), user: dict = Depends(require_role("counsellor", "admin"))):
+def my_commissions(db: Session = Depends(get_db), scope: AccessScope = Depends(require_role("counsellor", "admin"))):
     """Commission summary for the current counsellor."""
-    counsellor_id = user.get("user_id")
+    counsellor_id = scope.user_id
     commissions = db.query(CounsellorCommission).filter(
         CounsellorCommission.counsellor_id == counsellor_id,
     ).order_by(CounsellorCommission.id.desc()).all()
@@ -260,7 +261,7 @@ def mark_commission_paid(
     commission_id: int,
     req: CommissionMarkPaid,
     db: Session = Depends(get_db),
-    user: dict = Depends(require_role("admin")),
+    scope: AccessScope = Depends(require_role("admin")),
 ):
     """Mark a commission as paid."""
     c = db.query(CounsellorCommission).filter(CounsellorCommission.id == commission_id).first()

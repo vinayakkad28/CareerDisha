@@ -6,6 +6,7 @@ using class-adaptive prompts. Supports Claude Haiku, GPT-4o-mini, and Gemini Fla
 
 import json
 import asyncio
+import logging
 import time
 from typing import Optional
 
@@ -18,9 +19,35 @@ from config import (
     CLASS_INSTRUCTIONS,
     RIASEC_TYPE_NAMES,
     MAX_CONCURRENT_REQUESTS,
+    LLM_TIMEOUT_SECONDS,
 )
 from database import SessionLocal
 from models import Student
+
+logger = logging.getLogger(__name__)
+
+# Failures that will recur identically on every attempt, so retrying is waste.
+# Referenced by name to avoid importing every provider SDK at module import time.
+_PERMANENT_LLM_ERROR_NAMES = {
+    "AuthenticationError",      # bad or missing API key
+    "PermissionDeniedError",
+    "BadRequestError",          # malformed request / unsupported model
+    "NotFoundError",            # unknown model id
+    "UnprocessableEntityError",
+    "ValueError",               # our own "Unknown provider"
+}
+
+
+class _PermanentErrorMatcher(type):
+    def __instancecheck__(cls, instance) -> bool:
+        return type(instance).__name__ in _PERMANENT_LLM_ERROR_NAMES
+
+
+class _PermanentLLMError(Exception, metaclass=_PermanentErrorMatcher):
+    """Virtual base class matching permanent provider errors by class name."""
+
+
+_PERMANENT_LLM_ERRORS = (_PermanentLLMError,)
 
 
 SYSTEM_PROMPT = """You are an expert Indian career counsellor with 20 years of experience guiding students in the Indian education system. You are creating a personalized career report for a school student.
@@ -390,10 +417,16 @@ class LLMClient:
                     return self._call_groq(system_prompt, user_prompt)
                 else:
                     raise ValueError(f"Unknown provider: {self.provider}")
+            except _PERMANENT_LLM_ERRORS as e:
+                # A bad key or a malformed request will fail identically on every
+                # attempt; retrying just burns ~6s per report before the same
+                # failure surfaces.
+                logger.error(f"LLM call failed permanently ({type(e).__name__}): {e}")
+                raise
             except Exception as e:
                 if attempt < max_retries - 1:
                     wait = 2 ** (attempt + 1)
-                    print(f"  Retry {attempt + 1}/{max_retries} after {wait}s: {e}")
+                    logger.warning(f"LLM retry {attempt + 1}/{max_retries} after {wait}s: {e}")
                     time.sleep(wait)
                 else:
                     raise
@@ -401,7 +434,7 @@ class LLMClient:
     def _call_anthropic_single(self, system_prompt: str, user_prompt: str) -> tuple[dict, float]:
         """Single Anthropic API call. Returns (parsed_json, cost_usd)."""
         import anthropic
-        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY, timeout=LLM_TIMEOUT_SECONDS, max_retries=0)
         response = client.messages.create(
             model=LLM_MODELS["anthropic"],
             max_tokens=8192,
@@ -452,7 +485,11 @@ class LLMClient:
 
     def _call_openai(self, system_prompt: str, user_prompt: str) -> tuple[dict, float]:
         import openai
-        client = openai.OpenAI(api_key=OPENAI_API_KEY)
+        client = openai.OpenAI(
+            api_key=OPENAI_API_KEY,
+            timeout=LLM_TIMEOUT_SECONDS,
+            max_retries=0,
+        )
         response = client.chat.completions.create(
             model=LLM_MODELS["openai"],
             messages=[
@@ -493,6 +530,8 @@ class LLMClient:
     def _call_groq(self, system_prompt: str, user_prompt: str) -> tuple[dict, float]:
         import openai
         client = openai.OpenAI(
+            timeout=LLM_TIMEOUT_SECONDS,
+            max_retries=0,
             api_key=GROQ_API_KEY,
             base_url="https://api.groq.com/openai/v1",
         )

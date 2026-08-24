@@ -1,4 +1,4 @@
-import random
+import secrets
 import string
 import logging
 import time
@@ -6,22 +6,48 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from datetime import datetime, timezone
+from access import (
+    AccessScope,
+    get_scoped_session,
+    get_scoped_student,
+    require_role,
+    resolve_scope,
+    scoped_students,
+)
 from database import get_db
-from models import Student
-from routers.auth import get_current_user
-from permissions import require_role
+from utils.time import utcnow
+from models import Student, Session as SessionModel
 
 logger = logging.getLogger(__name__)
-router = APIRouter(dependencies=[Depends(get_current_user)])
+router = APIRouter(dependencies=[Depends(resolve_scope)])
 
 # In-memory OTP store: phone -> {"otp": str, "student_id": int, "expires_at": float}
-# OTPs expire after 10 minutes. Ephemeral by design — no DB persistence needed.
+#
+# IMPORTANT: this is process-local, so the API must run with a SINGLE worker.
+# With more than one, an OTP issued by one worker is invisible to the others and
+# verification fails for a fraction of parents at random. The Dockerfile does not
+# pass --workers, so uvicorn's default of 1 holds; if that ever changes, move
+# this to the database or Redis first.
 _otp_store: dict = {}
 _OTP_TTL = 600  # seconds
 
 
 def _generate_otp() -> str:
-    return "".join(random.choices(string.digits, k=6))
+    # secrets, not random: random is a predictable Mersenne Twister, and this is
+    # the code standing between a caller and a parental consent record.
+    return "".join(secrets.choice(string.digits) for _ in range(6))
+
+
+def _purge_expired_otps() -> None:
+    """Drop timed-out entries.
+
+    Entries used to be removed only on successful verification, so every OTP
+    that was requested and never confirmed stayed in memory for the lifetime of
+    the process — an unbounded leak on a long-running server.
+    """
+    now = time.time()
+    for phone in [p for p, e in _otp_store.items() if e.get("expires_at", 0) < now]:
+        _otp_store.pop(phone, None)
 
 
 # ── Pydantic models ────────────────────────────────────────────────────────────
@@ -47,7 +73,12 @@ class OTPVerify(BaseModel):
 # ── Endpoints ─────────────────────────────────────────────────────────────────
 
 @router.post("/sessions/{session_id}/record-consent")
-def record_consent(session_id: int, data: ConsentUpdate, db: Session = Depends(get_db)):
+def record_consent(
+    session_id: int,
+    data: ConsentUpdate,
+    db: Session = Depends(get_db),
+    session: SessionModel = Depends(get_scoped_session),
+):
     """Record parental consent for students in a session."""
     updated = 0
     for sid in data.student_ids:
@@ -63,13 +94,17 @@ def record_consent(session_id: int, data: ConsentUpdate, db: Session = Depends(g
 
 
 @router.post("/sessions/{session_id}/bulk-consent")
-def bulk_consent(session_id: int, db: Session = Depends(get_db),
-                 _user: dict = Depends(require_role("admin", "counsellor"))):
+def bulk_consent(
+    session_id: int,
+    db: Session = Depends(get_db),
+    session: SessionModel = Depends(get_scoped_session),
+    _: object = Depends(require_role("admin", "counsellor")),
+):
     """Mark all students in session as having paper-form consent (common for school sessions)."""
     students = db.query(Student).filter(Student.session_id == session_id).all()
     for s in students:
         s.consent_obtained = True
-        s.consent_timestamp = datetime.now(timezone.utc)
+        s.consent_timestamp = utcnow()
         s.consent_method = "paper_form"
         if not s.consent_parent_name:
             s.consent_parent_name = s.parent_name
@@ -78,17 +113,20 @@ def bulk_consent(session_id: int, db: Session = Depends(get_db),
 
 
 @router.post("/send-otp")
-async def send_consent_otp(req: OTPRequest, db: Session = Depends(get_db)):
+async def send_consent_otp(req: OTPRequest, db: Session = Depends(get_db),
+    scope: AccessScope = Depends(resolve_scope),
+):
     """Send a 6-digit OTP via WhatsApp to the parent's phone for digital consent.
 
     The OTP expires in 10 minutes. Call /verify-otp to complete consent.
     """
-    student = db.query(Student).filter(Student.id == req.student_id).first()
+    student = scoped_students(scope, db).filter(Student.id == req.student_id).first()
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
 
     otp = _generate_otp()
     expires_at = time.time() + _OTP_TTL
+    _purge_expired_otps()
     _otp_store[req.parent_phone] = {"otp": otp, "student_id": req.student_id, "expires_at": expires_at}
 
     # Send via WhatsApp (falls back gracefully if not configured)
@@ -133,8 +171,11 @@ async def send_consent_otp(req: OTPRequest, db: Session = Depends(get_db)):
 
 
 @router.post("/verify-otp")
-def verify_consent_otp(req: OTPVerify, db: Session = Depends(get_db)):
+def verify_consent_otp(req: OTPVerify, db: Session = Depends(get_db),
+    scope: AccessScope = Depends(resolve_scope),
+):
     """Verify OTP and mark student consent as 'digital' (DPDPA-compliant)."""
+    _purge_expired_otps()
     entry = _otp_store.get(req.parent_phone)
     if not entry:
         raise HTTPException(status_code=400, detail="No OTP found for this phone. Please request a new OTP.")
@@ -147,7 +188,7 @@ def verify_consent_otp(req: OTPVerify, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Invalid OTP.")
 
     # OTP verified — record digital consent
-    student = db.query(Student).filter(Student.id == req.student_id).first()
+    student = scoped_students(scope, db).filter(Student.id == req.student_id).first()
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
 
@@ -163,11 +204,12 @@ def verify_consent_otp(req: OTPVerify, db: Session = Depends(get_db)):
 
 
 @router.delete("/students/{student_id}/data")
-def delete_student_data(student_id: int, db: Session = Depends(get_db)):
+def delete_student_data(
+    db: Session = Depends(get_db),
+    student: Student = Depends(get_scoped_student),
+    _: object = Depends(require_role("admin")),
+):
     """Right to erasure: anonymise all personal data for a student (DPDPA Section 12)."""
-    student = db.query(Student).filter(Student.id == student_id).first()
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
     student.name = f"[REDACTED-{student.id}]"
     student.parent_name = ""
     student.parent_phone = ""
@@ -181,7 +223,11 @@ def delete_student_data(student_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/sessions/{session_id}/consent-status")
-def consent_status(session_id: int, db: Session = Depends(get_db)):
+def consent_status(
+    session_id: int,
+    db: Session = Depends(get_db),
+    session: SessionModel = Depends(get_scoped_session),
+):
     """Get consent status for all students in a session."""
     students = db.query(Student).filter(Student.session_id == session_id).all()
     return {

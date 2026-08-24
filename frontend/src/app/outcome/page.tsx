@@ -16,7 +16,8 @@ const STREAM_OPTIONS = [
 
 function OutcomeForm() {
   const searchParams = useSearchParams();
-  const studentId = searchParams.get("sid");
+  // `t` is the per-student report token issued with the report.
+  const linkToken = searchParams.get("t");
 
   const [stream, setStream] = useState("");
   const [careerInterest, setCareerInterest] = useState("");
@@ -25,11 +26,11 @@ function OutcomeForm() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!studentId) setError("Invalid link. Please use the link from your WhatsApp message.");
-  }, [studentId]);
+    if (!linkToken) setError("Invalid link. Please use the link from your WhatsApp message.");
+  }, [linkToken]);
 
   const handleSubmit = async () => {
-    if (!studentId || !stream) return;
+    if (!linkToken || !stream) return;
     setSubmitting(true);
     setError("");
     try {
@@ -37,7 +38,7 @@ function OutcomeForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          student_id: parseInt(studentId),
+          token: linkToken,
           actual_stream_chosen: stream,
           actual_career_interest: careerInterest,
         }),
@@ -54,7 +55,7 @@ function OutcomeForm() {
     }
   };
 
-  if (error && !studentId) {
+  if (error && !linkToken) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface px-4">
         <div className="text-center max-w-sm">

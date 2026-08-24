@@ -129,7 +129,7 @@ export default function DeliveryPage() {
                   <td className="px-6 py-4 text-on-surface-variant">{item.parent_name}</td>
                   <td className="px-6 py-4 font-mono text-xs">{item.parent_phone}</td>
                   <td className="px-6 py-4">
-                    {item.pdf_path && (
+                    {item.pdf_available && (
                       <a
                         href={studentsApi.downloadPdfURL(item.student_id)}
                         className="text-primary font-bold hover:underline flex items-center gap-1"
@@ -174,9 +174,9 @@ export default function DeliveryPage() {
                           toast(err.message, "error");
                         }
                       }}
-                      disabled={!waConfigured || !item.pdf_path}
+                      disabled={!waConfigured || !item.pdf_available}
                       className="p-2 text-green-600 hover:bg-green-100 rounded-full transition-colors disabled:opacity-40"
-                      title={!waConfigured ? "WhatsApp not configured" : !item.pdf_path ? "PDF not ready" : "Send via WhatsApp"}
+                      title={!waConfigured ? "WhatsApp not configured" : !item.pdf_available ? "PDF not ready" : "Send via WhatsApp"}
                     >
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />

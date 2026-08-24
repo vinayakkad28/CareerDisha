@@ -8,21 +8,32 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, timezone, timedelta
 
+from access import (
+    AccessScope,
+    get_scoped_session,
+    get_scoped_student,
+    require_role,
+    resolve_scope,
+    scoped_students,
+    student_from_report_token,
+)
+from utils.time import utcnow
 from database import get_db
 from models import Student, StudentOutcome, Session as SessionModel, School
-from routers.auth import get_current_user
-from permissions import require_role
 from services.whatsapp import send_text_message
 
 logger = logging.getLogger(__name__)
-router = APIRouter(dependencies=[Depends(get_current_user)])
+router = APIRouter(dependencies=[Depends(resolve_scope)])
 
 # Separate public router — no auth (parents submit from WhatsApp link)
 public_router = APIRouter()
 
 
 class PublicOutcomeRecord(BaseModel):
-    student_id: int
+    # Identified by the per-student report token. Previously this required only
+    # student_id with no token at all, so anyone could overwrite any student's
+    # outcome — and outcomes feed recommendation_accuracy_pct on the dashboard.
+    token: str
     actual_stream_chosen: str = ""
     actual_career_interest: str = ""
     notes: str = ""
@@ -31,21 +42,19 @@ class PublicOutcomeRecord(BaseModel):
 @public_router.post("/public", status_code=201)
 def public_record_outcome(req: PublicOutcomeRecord, db: Session = Depends(get_db)):
     """Accept a 6-month follow-up response from a parent (no auth required)."""
-    student = db.query(Student).filter(Student.id == req.student_id).first()
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
+    student = student_from_report_token(req.token, db)
 
-    existing = db.query(StudentOutcome).filter(StudentOutcome.student_id == req.student_id).first()
+    existing = db.query(StudentOutcome).filter(StudentOutcome.student_id == student.id).first()
     if existing:
         existing.actual_stream_chosen = req.actual_stream_chosen
         existing.actual_career_interest = req.actual_career_interest
         existing.notes = req.notes
         existing.collected_via = "whatsapp"
-        existing.updated_at = datetime.now(timezone.utc)
+        existing.updated_at = utcnow()
         db.commit()
     else:
         o = StudentOutcome(
-            student_id=req.student_id,
+            student_id=student.id,
             actual_stream_chosen=req.actual_stream_chosen,
             actual_career_interest=req.actual_career_interest,
             notes=req.notes,
@@ -54,7 +63,7 @@ def public_record_outcome(req: PublicOutcomeRecord, db: Session = Depends(get_db
         db.add(o)
         db.commit()
 
-    logger.info(f"Public outcome recorded for student {req.student_id}: stream={req.actual_stream_chosen}")
+    logger.info(f"Public outcome recorded for student {student.id}: stream={req.actual_stream_chosen}")
     return {"message": "Thank you! Your response has been recorded."}
 
 
@@ -88,26 +97,35 @@ def _outcome_row(o: StudentOutcome, student_name: str = "") -> dict:
 # ── Record / update outcome ───────────────────────────────────────────────────
 
 @router.post("/record", status_code=201)
-def record_outcome(req: OutcomeRecord, db: Session = Depends(get_db), user: dict = Depends(require_role("admin", "counsellor"))):
-    """Record or update the actual outcome for a student (idempotent)."""
-    student = db.query(Student).filter(Student.id == req.student_id).first()
+def record_outcome(
+    req: OutcomeRecord,
+    db: Session = Depends(get_db),
+    scope: AccessScope = Depends(require_role("admin", "counsellor")),
+):
+    """Record or update the actual outcome for a student (idempotent).
+
+    Staff-facing, so the student is addressed by id and resolved through the
+    caller's schools. The parent-facing counterpart is /public, which uses the
+    report token instead because parents have no login.
+    """
+    student = scoped_students(scope, db).filter(Student.id == req.student_id).first()
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
 
-    existing = db.query(StudentOutcome).filter(StudentOutcome.student_id == req.student_id).first()
+    existing = db.query(StudentOutcome).filter(StudentOutcome.student_id == student.id).first()
     if existing:
         existing.actual_stream_chosen = req.actual_stream_chosen
         existing.actual_career_interest = req.actual_career_interest
         existing.recommendation_matched = req.recommendation_matched
         existing.notes = req.notes
         existing.collected_via = req.collected_via
-        existing.updated_at = datetime.now(timezone.utc)
+        existing.updated_at = utcnow()
         db.commit()
-        logger.info(f"Outcome updated for student {req.student_id}")
+        logger.info(f"Outcome updated for student {student.id}")
         return _outcome_row(existing, student.name)
 
     o = StudentOutcome(
-        student_id=req.student_id,
+        student_id=student.id,
         actual_stream_chosen=req.actual_stream_chosen,
         actual_career_interest=req.actual_career_interest,
         recommendation_matched=req.recommendation_matched,
@@ -117,28 +135,29 @@ def record_outcome(req: OutcomeRecord, db: Session = Depends(get_db), user: dict
     db.add(o)
     db.commit()
     db.refresh(o)
-    logger.info(f"Outcome recorded for student {req.student_id}: stream={req.actual_stream_chosen}, matched={req.recommendation_matched}")
+    logger.info(f"Outcome recorded for student {student.id}: stream={req.actual_stream_chosen}, matched={req.recommendation_matched}")
     return _outcome_row(o, student.name)
 
 
 @router.get("/student/{student_id}")
-def get_outcome(student_id: int, db: Session = Depends(get_db)):
+def get_outcome(
+    db: Session = Depends(get_db),
+    student: Student = Depends(get_scoped_student),
+):
     """Get the recorded outcome for a student."""
-    student = db.query(Student).filter(Student.id == student_id).first()
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
-    outcome = db.query(StudentOutcome).filter(StudentOutcome.student_id == student_id).first()
+    outcome = db.query(StudentOutcome).filter(StudentOutcome.student_id == student.id).first()
     if not outcome:
         raise HTTPException(status_code=404, detail="No outcome recorded yet")
     return _outcome_row(outcome, student.name)
 
 
 @router.get("/session/{session_id}")
-def session_outcomes(session_id: int, db: Session = Depends(get_db)):
+def session_outcomes(
+    session_id: int,
+    db: Session = Depends(get_db),
+    session: SessionModel = Depends(get_scoped_session),
+):
     """All outcomes for a session with recommendation-match stats."""
-    session = db.query(SessionModel).filter(SessionModel.id == session_id).first()
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
 
     students = db.query(Student).filter(Student.session_id == session_id).all()
     student_map = {s.id: s for s in students}
@@ -168,7 +187,12 @@ def session_outcomes(session_id: int, db: Session = Depends(get_db)):
 # ── WhatsApp follow-up ────────────────────────────────────────────────────────
 
 @router.post("/followup/{session_id}")
-async def send_followup(session_id: int, db: Session = Depends(get_db), user: dict = Depends(require_role("admin", "counsellor"))):
+async def send_followup(
+    session_id: int,
+    db: Session = Depends(get_db),
+    session: SessionModel = Depends(get_scoped_session),
+    _: object = Depends(require_role("admin", "counsellor")),
+):
     """Send 6-month WhatsApp follow-up asking which stream student chose."""
     cutoff = datetime.now(timezone.utc) - timedelta(days=180)
     base_url = os.getenv("APP_BASE_URL", "https://careerneeti.in")
@@ -193,7 +217,7 @@ async def send_followup(session_id: int, db: Session = Depends(get_db), user: di
 
     sent, failed = 0, 0
     for student in eligible:
-        outcome_url = f"{base_url}/outcome?sid={student.id}"
+        outcome_url = f"{base_url}/outcome?t={student.report_token or ''}"
         text = (
             f"Namaste! 🙏\n\n"
             f"It's been 6 months since {student.name} received their CareerNeeti report.\n\n"

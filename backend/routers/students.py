@@ -1,35 +1,43 @@
-from datetime import datetime
-from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import FileResponse
-from sqlalchemy.orm import Session
-from pydantic import BaseModel
 from pathlib import Path
 
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import FileResponse
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+from access import AccessScope, get_scoped_student, require_role, resolve_scope
 from database import get_db
 from models import Student
-from routers.auth import get_current_user
+from schemas.students import StudentDetail
+from utils.time import utcnow
 
-router = APIRouter(dependencies=[Depends(get_current_user)])
+# resolve_scope replaces get_current_user at the router level: it authenticates
+# AND rejects tokens that cannot be scoped, before any handler body runs.
+router = APIRouter(dependencies=[Depends(resolve_scope)])
 
 
 class DeliveryUpdate(BaseModel):
     delivery_status: str  # pending, sent, delivered, failed
 
 
-@router.get("/{student_id}")
-def get_student(student_id: int, db: Session = Depends(get_db)):
-    student = db.query(Student).filter(Student.id == student_id).first()
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
-    return {c.name: getattr(student, c.name) for c in student.__table__.columns}
+def _detail(student: Student) -> StudentDetail:
+    data = StudentDetail.model_validate(student)
+    data.pdf_available = bool(student.pdf_path and Path(student.pdf_path).exists())
+    return data
+
+
+@router.get("/{student_id}", response_model=StudentDetail)
+def get_student(student: Student = Depends(get_scoped_student)):
+    """Return one student, limited to the fields the UI actually uses.
+
+    get_scoped_student resolves the row through the caller's schools, so a
+    counsellor for another school gets 404 rather than another school's PII.
+    """
+    return _detail(student)
 
 
 @router.get("/{student_id}/pdf")
-def download_pdf(student_id: int, db: Session = Depends(get_db)):
-    student = db.query(Student).filter(Student.id == student_id).first()
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
+def download_pdf(student: Student = Depends(get_scoped_student)):
     if not student.pdf_path or not Path(student.pdf_path).exists():
         raise HTTPException(status_code=404, detail="PDF not generated yet")
     return FileResponse(
@@ -40,25 +48,27 @@ def download_pdf(student_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/{student_id}/regenerate")
-def regenerate_report(student_id: int, db: Session = Depends(get_db)):
-    student = db.query(Student).filter(Student.id == student_id).first()
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
-
+def regenerate_report(
+    student: Student = Depends(get_scoped_student),
+    _: AccessScope = Depends(require_role("admin", "counsellor")),
+):
+    """Regenerate a report. Costs an LLM call, so it is not open to every role."""
     from engines.report_generator import generate_single_report
     from engines.scoring_engine import load_knowledge_base
+
     kb = load_knowledge_base()
-    result = generate_single_report(student, kb)
-    return {"message": "Report regenerated", "student_id": student_id}
+    generate_single_report(student, kb)
+    return {"message": "Report regenerated", "student_id": student.id}
 
 
 @router.put("/{student_id}/delivery")
-def update_delivery(student_id: int, update: DeliveryUpdate, db: Session = Depends(get_db)):
-    student = db.query(Student).filter(Student.id == student_id).first()
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
+def update_delivery(
+    update: DeliveryUpdate,
+    student: Student = Depends(get_scoped_student),
+    db: Session = Depends(get_db),
+):
     student.delivery_status = update.delivery_status
     if update.delivery_status == "delivered":
-        student.delivery_timestamp = datetime.utcnow()
+        student.delivery_timestamp = utcnow()
     db.commit()
     return {"message": "Delivery status updated", "delivery_status": update.delivery_status}

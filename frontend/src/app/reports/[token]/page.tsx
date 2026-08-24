@@ -120,6 +120,38 @@ interface ReportData {
   };
 }
 
+function FaqItem({ faq }: { faq: { question_en: string; answer_en?: string; question_hi?: string; answer_hi?: string } }) {
+  const [open, setOpen] = useState(false);
+  const hasAnswer = Boolean(faq.answer_en || faq.answer_hi);
+  return (
+    <div className="bg-white/50 rounded-lg">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        disabled={!hasAnswer}
+        className="w-full p-4 flex justify-between items-center text-left disabled:cursor-default"
+      >
+        <span className="text-sm font-bold text-slate-700">{faq.question_en}</span>
+        {hasAnswer && (
+          <svg
+            className={`w-5 h-5 text-slate-400 shrink-0 ml-2 transition-transform ${open ? "rotate-180" : ""}`}
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        )}
+      </button>
+      {open && hasAnswer && (
+        <div className="px-4 pb-4 -mt-1 space-y-2">
+          {faq.answer_en && <p className="text-sm text-slate-600">{faq.answer_en}</p>}
+          {faq.answer_hi && <p className="text-sm text-slate-500">{faq.answer_hi}</p>}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ReportPage() {
   const params = useParams();
   const token = params.token as string;
@@ -180,10 +212,13 @@ export default function ReportPage() {
   const r = data.report;
   const holland = data.holland_code || "";
 
-  /* Sort RIASEC scores descending for bar display */
-  const sortedScores = Object.entries(data.riasec_scores)
-    .sort(([, a], [, b]) => b - a);
-  const maxScore = Math.max(...Object.values(data.riasec_scores), 1);
+  /* Sort RIASEC scores descending for bar display.
+     data.riasec_scores was read unguarded, so any record missing it threw
+     inside render and a parent opening their link saw a blank white page. */
+  const riasecScores: Record<string, number> =
+    data.riasec_scores && typeof data.riasec_scores === "object" ? data.riasec_scores : {};
+  const sortedScores = Object.entries(riasecScores).sort(([, a], [, b]) => b - a);
+  const maxScore = Math.max(...Object.values(riasecScores), 1);
 
   return (
     <div className="bg-surface font-body text-on-surface antialiased min-h-screen">
@@ -893,12 +928,7 @@ export default function ReportPage() {
               {r.parent_section.faqs && r.parent_section.faqs.length > 0 && (
                 <div className="mt-8 space-y-2">
                   {r.parent_section.faqs.map((faq, i) => (
-                    <div key={i} className="bg-white/50 p-4 rounded-lg flex justify-between items-center">
-                      <span className="text-sm font-bold text-slate-700">{faq.question_en}</span>
-                      <svg className="w-5 h-5 text-slate-400 shrink-0 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
+                    <FaqItem key={i} faq={faq} />
                   ))}
                 </div>
               )}

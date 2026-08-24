@@ -1,8 +1,31 @@
+import logging
 import os
+import secrets
 from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
+
+# Environment — controls whether insecure development fallbacks are permitted.
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development").strip().lower()
+IS_PRODUCTION = ENVIRONMENT in ("production", "prod", "live")
+
+
+def _env_flag(name: str, default: bool = False) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in ("1", "true", "yes", "on")
+
+
+# Create tables directly from the models at startup instead of requiring Alembic.
+# Convenient for tests and a throwaway local database; NEVER for a real one:
+# create_all() creates missing TABLES but cannot ALTER existing ones, so once a
+# database exists it silently stops applying model changes — which is exactly how
+# 12 columns went missing from every deployed database.
+AUTO_CREATE_SCHEMA = _env_flag("AUTO_CREATE_SCHEMA", default=False)
 
 # Paths
 BASE_DIR = Path(__file__).resolve().parent
@@ -16,16 +39,58 @@ OUTPUT_DIR = Path(os.getenv("OUTPUT_DIR", str(BASE_DIR / "output")))
 _raw_db_url = os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR / 'careerneeti.db'}")
 DATABASE_URL = _raw_db_url.replace("postgres://", "postgresql://", 1) if _raw_db_url.startswith("postgres://") else _raw_db_url
 
-# CORS — allow local dev + Railway frontend if deployed separately
+# CORS — explicit allow-list plus a tightly anchored regex.
 CORS_ORIGINS = [
     origin.strip()
     for origin in os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
     if origin.strip()
 ]
 
+# The previous regex was r"https://.*\.vercel\.app|https://.*careerneeti\.in".
+# Starlette matches it with re.fullmatch, so `.*` made it far wider than intended:
+# ANY Vercel-hosted site matched the first branch, and `evilcareerneeti.in`
+# matched the second — both with allow_credentials=True. These patterns are
+# anchored to real subdomains of careerneeti.in only. Vercel preview deploys are
+# opt-in via CORS_ORIGIN_REGEX (e.g. r"https://frontend-[a-z0-9-]+\.vercel\.app").
+CORS_ORIGIN_REGEX = os.getenv(
+    "CORS_ORIGIN_REGEX",
+    r"https://([a-z0-9-]+\.)?careerneeti\.in",
+)
+
 # Auth
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "changeme")
-JWT_SECRET = os.getenv("JWT_SECRET", "careerneeti-secret-change-in-production")
+#
+# There are deliberately NO hardcoded production defaults here. The previous
+# fallbacks ("changeme" / "careerneeti-secret-change-in-production") were
+# published in this file, so anyone could forge an admin JWT against any
+# deployment that forgot to set the env vars. In production we refuse to boot;
+# in development we generate an ephemeral secret so local work still runs.
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "")
+JWT_SECRET = os.getenv("JWT_SECRET", "")
+
+_missing_secrets = [
+    name
+    for name, value in (("ADMIN_PASSWORD", ADMIN_PASSWORD), ("JWT_SECRET", JWT_SECRET))
+    if not value.strip()
+]
+if _missing_secrets:
+    if IS_PRODUCTION:
+        raise RuntimeError(
+            "Refusing to start: "
+            + ", ".join(_missing_secrets)
+            + " must be set when ENVIRONMENT=production. "
+            "Set them in the host's environment (Render generates JWT_SECRET for you)."
+        )
+    # Development: ephemeral per-process secret. Tokens do not survive a restart,
+    # which is the intended behaviour — it keeps a weak secret from being reused.
+    if not JWT_SECRET.strip():
+        JWT_SECRET = secrets.token_urlsafe(48)
+    if not ADMIN_PASSWORD.strip():
+        ADMIN_PASSWORD = secrets.token_urlsafe(12)
+    logger.warning(
+        "Development mode: generated ephemeral %s. Set them in .env for stable local logins.",
+        " and ".join(_missing_secrets),
+    )
+
 JWT_EXPIRY_HOURS = 24
 
 # JWT RS256 keys (optional — fallback to HS256 with JWT_SECRET if not set)
@@ -55,6 +120,24 @@ RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "")
 RAZORPAY_WEBHOOK_SECRET = os.getenv("RAZORPAY_WEBHOOK_SECRET", "")
 
+# Master switch for the paid D2C funnel. Defaults to OFF so the flow can never
+# be half-enabled: with no Razorpay credentials the old code silently fell back
+# to a mock order that verify-payment then auto-approved, handing out free
+# reports. Payments require BOTH this flag and real credentials.
+ENABLE_PAYMENTS = _env_flag("ENABLE_PAYMENTS", default=False)
+RAZORPAY_CONFIGURED = bool(RAZORPAY_KEY_ID.strip() and RAZORPAY_KEY_SECRET.strip())
+
+if ENABLE_PAYMENTS and not RAZORPAY_CONFIGURED:
+    if IS_PRODUCTION:
+        raise RuntimeError(
+            "Refusing to start: ENABLE_PAYMENTS is true but RAZORPAY_KEY_ID / "
+            "RAZORPAY_KEY_SECRET are not set. Payments would be uncollectable."
+        )
+    logger.warning(
+        "ENABLE_PAYMENTS is true but Razorpay credentials are missing — "
+        "payment endpoints will reject requests instead of falling back to mock."
+    )
+
 # D2C Pricing (INR)
 D2C_PRICING = {
     "basic": 499,
@@ -83,6 +166,26 @@ LLM_MODELS = {
     "google": "gemini-2.0-flash",
     "groq": "llama-3.3-70b-versatile",
 }
+
+# Provider → key, so callers can check configuration without a chain of ifs.
+LLM_API_KEYS = {
+    "anthropic": ANTHROPIC_API_KEY,
+    "openai": OPENAI_API_KEY,
+    "google": GOOGLE_API_KEY,
+    "groq": GROQ_API_KEY,
+}
+
+# Report generation is dead on arrival without the default provider's key, and
+# the failure only used to surface on the first real report. Warn at boot.
+if not LLM_API_KEYS.get(DEFAULT_LLM_PROVIDER, "").strip():
+    logger.warning(
+        "DEFAULT_LLM_PROVIDER=%s but its API key is not set — report generation will fail.",
+        DEFAULT_LLM_PROVIDER,
+    )
+
+# Request timeout for LLM calls. The SDKs default to 600s with their own internal
+# retries nested inside our retry loop, which can hang a report thread for hours.
+LLM_TIMEOUT_SECONDS = int(os.getenv("LLM_TIMEOUT_SECONDS", "90"))
 
 # RIASEC Configuration
 RIASEC_TYPES = ["R", "I", "A", "S", "E", "C"]
