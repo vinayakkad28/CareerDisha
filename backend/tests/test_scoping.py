@@ -22,7 +22,7 @@ ROUTERS_DIR = pathlib.Path(__file__).resolve().parents[1] / "routers"
 UNSCOPED_ROUTERS = {
     "cards.py", "consent.py", "counsellors.py", "d2c.py", "dashboard.py",
     "feedback.py", "nps.py", "outcomes.py", "reports.py", "reports_public.py",
-    "school_portal.py", "schools.py", "sessions.py", "whatsapp.py",
+    "school_portal.py", "schools.py", "whatsapp.py",
 }
 
 # Endpoints that are public by design (parents follow a link, no login).
@@ -32,7 +32,16 @@ PUBLIC_PATHS = {
     "/api/health",
 }
 
-RAW_QUERY_MARKERS = ("db.query(Student", "db.query(SessionModel")
+# The dangerous pattern is resolving a row by its OWN id, which is what lets a
+# caller walk sequential ids into another school's data. Querying students by
+# `session_id` is fine once the session itself has been authorised by
+# get_scoped_session — the students of an authorised session are in scope by
+# definition.
+RAW_QUERY_MARKERS = (
+    "db.query(Student).filter(Student.id ==",
+    "db.query(Session).filter(Session.id ==",
+    "db.query(SessionModel).filter(SessionModel.id ==",
+)
 
 
 def _router_files():
