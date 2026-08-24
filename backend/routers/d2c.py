@@ -10,6 +10,7 @@ from models import Lead, D2CAssessment, Student, School, Session
 from engines.scoring_engine import calculate_riasec_scores, determine_holland_code, match_careers, load_knowledge_base
 from rate_limit import limiter
 from config import ENABLE_PAYMENTS
+from utils.self_efficacy import normalize_self_efficacy
 from utils.time import utcnow
 
 logger = logging.getLogger(__name__)
@@ -220,7 +221,8 @@ def save_self_efficacy(token: str, body: SelfEfficacyRequest):
         assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
         if not assessment:
             raise HTTPException(status_code=404, detail="Assessment not found")
-        assessment.self_efficacy = body.scores
+        # Normalise at the boundary so consumers can do a plain lookup.
+        assessment.self_efficacy = normalize_self_efficacy(body.scores)
         db.commit()
         return {"status": "saved"}
     finally:
@@ -350,6 +352,7 @@ def submit_assessment(request: Request, token: str, body: SubmitRequest):
             body.parental_education = assessment.parental_education
         if body.self_efficacy is None and assessment.self_efficacy:
             body.self_efficacy = assessment.self_efficacy
+        body.self_efficacy = normalize_self_efficacy(body.self_efficacy)
         if body.academic_marks is None and assessment.academic_marks:
             body.academic_marks = assessment.academic_marks
 
@@ -412,7 +415,7 @@ def submit_assessment(request: Request, token: str, body: SubmitRequest):
         assessment.parent_phone = body.parent_phone
         assessment.class_level = body.class_level
         assessment.raw_responses = normalized
-        assessment.self_efficacy = body.self_efficacy
+        assessment.self_efficacy = normalize_self_efficacy(body.self_efficacy)
         assessment.gender = body.gender
         assessment.family_income = body.family_income
         assessment.location_type = body.location_type
@@ -465,6 +468,10 @@ def submit_assessment(request: Request, token: str, body: SubmitRequest):
         if n_warning:
             rec["warnings"].append(n_warning)
 
+        # Persist so /preview shows the same answer as the paid report.
+        assessment.stream_recommendation = rec
+        db.commit()
+
         career_teasers = [{"name": m.get("career_name", ""), "match_type": m.get("match_type", "")} for m in matched[:3]]
 
         logger.info(f"D2C assessment {token}: scored for {body.student_name} (Class {body.class_level}, Holland: {holland_code}, confidence: {rec['confidence']})")
@@ -507,10 +514,14 @@ def preview_results(token: str):
         matched = student.matched_careers or []
         career_teasers = [{"name": m.get("career_name", ""), "match_type": m.get("match_type", "")} for m in matched[:3]]
 
-        # Determine stream recommendation from Holland code
-        primary = student.holland_code[0] if student.holland_code else ""
-        stream_map = {"R": "Science (PCM)", "I": "Science (PCM)", "A": "Arts/Humanities", "S": "Science (PCB)", "E": "Commerce", "C": "Commerce"}
-        stream = stream_map.get(primary, "Explore all options")
+        # Read the stored engine result. This previously used a separate
+        # single-letter Holland lookup that ignored academic, aptitude,
+        # personality and feasibility data, so the pre-payment teaser could
+        # confidently name a stream the paid report then contradicted — or name
+        # one where the engine had returned "Insufficient".
+        rec = assessment.stream_recommendation or {}
+        stream = rec.get("recommended_stream")
+        confidence = rec.get("confidence", "")
 
         return {
             "token": token,
@@ -519,6 +530,8 @@ def preview_results(token: str):
             "holland_code": student.holland_code,
             "riasec_scores": student.riasec_scores,
             "recommended_stream": stream,
+            "confidence": confidence,
+            "explanation": rec.get("explanation", ""),
             "top_careers_preview": career_teasers,
             "total_careers_matched": len(matched),
             "report_locked": assessment.payment_status != "paid",
@@ -673,7 +686,24 @@ def _generate_d2c_report(assessment_id: int):
             db.commit()
             return
 
-        # Skip QA for D2C (auto-pass) and generate PDF
+        # Run the same 17 validation checks the school pipeline runs. This used
+        # to be "Skip QA for D2C (auto-pass)", so a malformed LLM response — the
+        # report template gates every section on `{% if report.X %}` and Jinja's
+        # default Undefined is silent — rendered a PDF with blank sections and
+        # shipped it to a paying customer with nothing flagged anywhere.
+        from engines.qa_checker import validate_report
+
+        flags = validate_report(student)
+        student.qa_flags = flags
+        if flags:
+            student.report_status = "qa_flagged"
+            assessment.status = "qa_flagged"
+            db.commit()
+            logger.error(
+                f"D2C report FAILED QA for {assessment.token}: {flags}. "
+                "Holding for review instead of delivering."
+            )
+            return
         student.report_status = "qa_passed"
         db.commit()
 

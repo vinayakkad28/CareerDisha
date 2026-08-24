@@ -258,7 +258,9 @@ def _detect_mismatches(
         riasec_to_domain = {"I": "science", "R": "maths", "A": "arts", "E": "business", "S": "social"}
         for rtype, domain in riasec_to_domain.items():
             interest = riasec_scores.get(rtype, 0)
-            confidence = self_efficacy.get(domain, self_efficacy.get(domain.title(), 3))
+            # Keys are normalised at ingestion (utils.self_efficacy), so a plain
+            # lookup is correct. The old .title() fallback matched only 'Science'.
+            confidence = self_efficacy.get(domain, 3)
             if interest > 70 and isinstance(confidence, (int, float)) and confidence <= 2:
                 warnings.append(
                     f"You have high {rtype} interest ({interest}%) but low confidence in "

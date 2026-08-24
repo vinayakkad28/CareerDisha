@@ -402,7 +402,7 @@
 
     <!-- Salary by tier -->
     {% if report.career_deep_dive.salary_by_company_tier %}
-    <h2 style="margin-top: 12px;">Salary Reality in India (2025)</h2>
+    <h2 style="margin-top: 12px;">Salary Reality in India ({{ report_year }})</h2>
     <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
         <tr style="background: #1a5276; color: white;">
             <th style="padding: 6px 10px; text-align: left;">Company Type</th>
@@ -654,7 +654,7 @@
 <div class="page-break">
     {% if report.financial_roadmap %}
     <h1>Your Financial Roadmap</h1>
-    <p style="font-size: 9pt; color: #888; margin-bottom: 14px;">Based on your top career match — specific to India, 2025 data</p>
+    <p style="font-size: 9pt; color: #888; margin-bottom: 14px;">Based on your top career match — specific to India, {{ report_year }} data</p>
 
     <!-- Education cost -->
     {% if report.financial_roadmap.education_cost %}
@@ -817,7 +817,7 @@
 
     <p style="color: #999; margin-top: 1.5cm; font-size: 8.5pt; max-width: 80%; margin-left: auto; margin-right: auto;">
         This report was generated using AI-assisted analysis of your RIASEC career interest assessment.
-        Career recommendations are based on India-specific data including NIRF 2025 rankings,
+        Career recommendations are based on India-specific data including NIRF {{ report_year }} rankings,
         entrance exam requirements, and current salary data from AmbitionBox.<br><br>
         <strong>This is an interest-based guidance tool, not a definitive career prescription.</strong>
         Interests evolve, and this report should be revisited periodically. For follow-up

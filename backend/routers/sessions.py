@@ -16,6 +16,7 @@ from database import get_db
 from models import Session, Student, School
 from rate_limit import limiter
 from schemas.students import StudentSummary
+from utils.self_efficacy import CANONICAL_DOMAINS, normalize_self_efficacy
 
 # resolve_scope authenticates AND rejects unscopable tokens before any handler runs.
 router = APIRouter(dependencies=[Depends(resolve_scope)])
@@ -39,15 +40,12 @@ def _parse_academic_marks(row: dict):
 
 def _parse_self_efficacy(row: dict):
     """Parse optional self-efficacy columns (1-5 scale per domain)."""
-    se = {}
-    for domain in ("maths", "science", "english", "arts", "business", "social"):
+    raw = {}
+    for domain in CANONICAL_DOMAINS:
         val = row.get(f"se_{domain}", "").strip()
         if val:
-            try:
-                se[domain] = int(val)
-            except ValueError:
-                pass
-    return se if se else None
+            raw[domain] = val
+    return normalize_self_efficacy(raw)
 
 
 class SessionCreate(BaseModel):

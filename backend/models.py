@@ -242,6 +242,13 @@ class D2CAssessment(Base):
     career_readiness_responses = Column(JSON, nullable=True)
     career_readiness_score = Column(Integer, nullable=True)
     career_readiness_level = Column(String(20), default="")
+
+    # Full multi-dimensional recommendation as computed at submit time. Persisted
+    # so /preview and the paid report cannot disagree: /preview previously used a
+    # separate single-letter Holland lookup that could name a stream the real
+    # engine did not even rank first.
+    stream_recommendation = Column(JSON, nullable=True)
+
     report_email_sent = Column(Boolean, default=False)
     report_whatsapp_sent = Column(Boolean, default=False)
     pdf_url = Column(String(500), default="")
