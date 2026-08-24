@@ -59,15 +59,32 @@ class TestRecommendStreamMultiDimensional:
         assert rec["dimension_count"] == 2
         assert rec["data_completeness"]["academic"] is True
 
-    def test_all_four_dimensions(self):
+    def test_all_four_dimensions_agreeing_gives_high_confidence(self):
+        # "High" requires EVERY dimension to pick the same stream. The previous
+        # fixture set feasibility to favour Commerce/Arts, so only 3 of 4 agreed
+        # and the engine correctly returned "Moderate" — the expectation, not the
+        # engine, was wrong. Feasibility now also favours PCM.
+        scores = {"R": 80, "I": 85, "A": 30, "S": 35, "E": 25, "C": 20}
+        academic = {"Science (PCM)": 90, "Science (PCB)": 60, "Commerce": 50, "Arts/Humanities": 40}
+        aptitude = {"Science (PCM)": 85, "Science (PCB)": 55, "Commerce": 45, "Arts/Humanities": 35}
+        feasibility = {"Science (PCM)": 85, "Science (PCB)": 70, "Commerce": 60, "Arts/Humanities": 55}
+        rec = recommend_stream(scores, academic, aptitude, feasibility)
+        assert rec["dimension_count"] == 4
+        assert rec["dimension_agreement"] == 4
+        assert rec["recommended_stream"] == "Science (PCM)"
+        assert rec["confidence"] == "High"
+
+    def test_one_dissenting_dimension_downgrades_to_moderate(self):
+        # The branch the old fixture actually exercised, now asserted explicitly:
+        # 3 of 4 dimensions agreeing is "Moderate", however wide the score gap.
         scores = {"R": 80, "I": 85, "A": 30, "S": 35, "E": 25, "C": 20}
         academic = {"Science (PCM)": 90, "Science (PCB)": 60, "Commerce": 50, "Arts/Humanities": 40}
         aptitude = {"Science (PCM)": 85, "Science (PCB)": 55, "Commerce": 45, "Arts/Humanities": 35}
         feasibility = {"Science (PCM)": 70, "Science (PCB)": 70, "Commerce": 80, "Arts/Humanities": 80}
         rec = recommend_stream(scores, academic, aptitude, feasibility)
-        assert rec["dimension_count"] == 4
+        assert rec["dimension_agreement"] == 3
         assert rec["recommended_stream"] == "Science (PCM)"
-        assert rec["confidence"] == "High"
+        assert rec["confidence"] == "Moderate"
 
     def test_disagreement_lowers_confidence(self):
         scores = {"R": 20, "I": 25, "A": 80, "S": 75, "E": 30, "C": 20}  # Arts interest
@@ -132,17 +149,37 @@ class TestAptitudeScorer:
         assert score_aptitude({}) is None
 
     def test_perfect_score(self):
-        # All correct answers
+        # Build the answer sheet FROM the question bank rather than hardcoding it.
+        # The previous version hardcoded answers that were correct for an earlier
+        # revision of the bank; 8 of 15 no longer matched, so "all correct"
+        # scored 60% and the test failed while the scorer was working fine.
+        from engines.aptitude_scorer import load_aptitude_questions
+
+        bank = load_aptitude_questions()
         responses = {
-            "APT_N1": "B", "APT_N2": "C", "APT_N3": "B", "APT_N4": "C", "APT_N5": "B",
-            "APT_V1": "B", "APT_V2": "C", "APT_V3": "C", "APT_V4": "B", "APT_V5": "B",
-            "APT_S1": "A", "APT_S2": "B", "APT_S3": "D", "APT_S4": "B", "APT_S5": "A",
+            q["id"]: q["correct"]
+            for questions in bank["categories"].values()
+            for q in questions
         }
         result = score_aptitude(responses)
         assert result is not None
         assert result["numerical"] == 100.0
         assert result["verbal"] == 100.0
         assert result["spatial"] == 100.0
+        assert result["total"] == 100.0
+
+    def test_all_wrong_scores_zero(self):
+        """Guards the other end: a sheet of deliberately wrong answers scores 0."""
+        from engines.aptitude_scorer import load_aptitude_questions
+
+        bank = load_aptitude_questions()
+        responses = {}
+        for questions in bank["categories"].values():
+            for q in questions:
+                wrong = next(o for o in q["options"] if o != q["correct"])
+                responses[q["id"]] = wrong
+        result = score_aptitude(responses)
+        assert result["total"] == 0.0
 
     def test_zero_score(self):
         # All wrong answers
