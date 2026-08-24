@@ -79,6 +79,80 @@ interface PaymentData {
   razorpay_key?: string;
 }
 
+/* ── progress persistence ─────────────────────────────────── */
+/* The paid flow is 12 screens and 74+ questions, roughly 20 minutes, aimed at
+   parents and students on phones — and every answer lived only in React memory.
+   A refresh, a back-swipe, an incoming call, or iOS discarding a backgrounded
+   tab sent the user back to screen one with nothing saved. */
+
+const PROGRESS_KEY = "cn_assessment_progress_v1";
+
+/** Fields worth restoring. Fetched question lists and server-derived payment or
+ *  preview data are deliberately excluded — those are re-fetched. */
+interface PersistedProgress {
+  token: string;
+  step: number;
+  studentName: string;
+  email: string;
+  parentPhone: string;
+  classLevel: string;
+  gender: string;
+  income: string;
+  location: string;
+  parentEdu: string;
+  firstGen: boolean;
+  mathMarks: string;
+  scienceMarks: string;
+  englishMarks: string;
+  socialStudiesMarks: string;
+  strongestSubject: string;
+  coachingAfford: string;
+  mobility: string;
+  parentConcern: string;
+  roleModel: string;
+  selfEfficacy: Record<string, number>;
+  tipiAnswers: Record<string, number>;
+  tipiCurrentQ: number;
+  crAnswers: Record<string, number>;
+  crCurrentQ: number;
+  aptAnswers: Record<string, string>;
+  aptCurrentQ: number;
+  answers: Record<string, number>;
+  currentQ: number;
+}
+
+function loadProgress(): Partial<PersistedProgress> | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(PROGRESS_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    // A saved state without a token cannot be resumed against the server.
+    return parsed && typeof parsed === "object" && parsed.token ? parsed : null;
+  } catch {
+    // Private mode, cleared site data, or a browser blocking storage.
+    return null;
+  }
+}
+
+function saveProgress(state: PersistedProgress) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(PROGRESS_KEY, JSON.stringify(state));
+  } catch {
+    // Quota or blocked storage — losing persistence must never break the flow.
+  }
+}
+
+function clearProgress() {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(PROGRESS_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 /* ── helpers ──────────────────────────────────────────────── */
 /** Error carrying the HTTP status, so callers can branch on it rather than
  *  pattern-matching the message text. */
@@ -126,13 +200,20 @@ function OptionButtons({ options, value, onChange }: { options: string[]; value:
   );
 }
 
+// The flow runs to step 12 (1-8 questions, 9 preview, 10 payment, 11 generating,
+// 12 report). The header claimed "Step N of 8" and hid the bar entirely from
+// step 8 on, so a student reached "Step 7 of 8" expecting one screen to go and
+// was then handed 74 more questions plus preview, payment and generation.
+const TOTAL_STEPS = 12;
+const LAST_PROGRESS_STEP = 11; // step 12 is the finished report, not progress
+
 function Header({ step, progressPct, subtitle }: { step: number; progressPct: number; subtitle?: string }) {
   return (
     <header className="bg-brand-gradient text-white py-5 sticky top-0 z-20">
       <div className="max-w-form-narrow mx-auto px-4 text-center">
         <Logo />
         {subtitle && <p className="text-white/60 font-body text-sm mt-1">{subtitle}</p>}
-        {step >= 1 && step <= 7 && (
+        {step >= 1 && step <= LAST_PROGRESS_STEP && (
           <>
             <div className="mt-3 bg-surface-container-high/20 rounded-full h-2 overflow-hidden">
               <div
@@ -140,7 +221,7 @@ function Header({ step, progressPct, subtitle }: { step: number; progressPct: nu
                 style={{ width: `${progressPct}%`, background: `linear-gradient(90deg, ${GOLD}, #2ecc71)` }}
               />
             </div>
-            <p className="text-white/40 text-xs mt-1 font-body">Step {step} of 8</p>
+            <p className="text-white/40 text-xs mt-1 font-body">Step {step} of {TOTAL_STEPS}</p>
           </>
         )}
       </div>
@@ -267,6 +348,73 @@ export default function AssessmentPage() {
   // Step 11: Generating
   const [reportStatus, setReportStatus] = useState("");
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  /* ── restore in-progress work ────────────────────────────── */
+  // Runs once, before anything is fetched, so a refresh mid-assessment resumes
+  // where the user left off instead of dropping them back on screen one.
+  const restoredRef = useRef(false);
+  useEffect(() => {
+    if (restoredRef.current) return;
+    restoredRef.current = true;
+    const saved = loadProgress();
+    if (!saved?.token) return;
+    setToken(saved.token);
+    if (saved.step) setStep(saved.step);
+    if (saved.studentName) setStudentName(saved.studentName);
+    if (saved.email) setEmail(saved.email);
+    if (saved.parentPhone) setParentPhone(saved.parentPhone);
+    if (saved.classLevel) setClassLevel(saved.classLevel);
+    if (saved.gender) setGender(saved.gender);
+    if (saved.income) setIncome(saved.income);
+    if (saved.location) setLocation(saved.location);
+    if (saved.parentEdu) setParentEdu(saved.parentEdu);
+    if (saved.firstGen !== undefined) setFirstGen(saved.firstGen);
+    if (saved.mathMarks) setMathMarks(saved.mathMarks);
+    if (saved.scienceMarks) setScienceMarks(saved.scienceMarks);
+    if (saved.englishMarks) setEnglishMarks(saved.englishMarks);
+    if (saved.socialStudiesMarks) setSocialStudiesMarks(saved.socialStudiesMarks);
+    if (saved.strongestSubject) setStrongestSubject(saved.strongestSubject);
+    if (saved.coachingAfford) setCoachingAfford(saved.coachingAfford);
+    if (saved.mobility) setMobility(saved.mobility);
+    if (saved.parentConcern) setParentConcern(saved.parentConcern);
+    if (saved.roleModel) setRoleModel(saved.roleModel);
+    if (saved.selfEfficacy) setSelfEfficacy(saved.selfEfficacy);
+    if (saved.tipiAnswers) setTipiAnswers(saved.tipiAnswers);
+    if (saved.tipiCurrentQ !== undefined) setTipiCurrentQ(saved.tipiCurrentQ);
+    if (saved.crAnswers) setCrAnswers(saved.crAnswers);
+    if (saved.crCurrentQ !== undefined) setCrCurrentQ(saved.crCurrentQ);
+    if (saved.aptAnswers) setAptAnswers(saved.aptAnswers);
+    if (saved.aptCurrentQ !== undefined) setAptCurrentQ(saved.aptCurrentQ);
+    if (saved.answers) setAnswers(saved.answers);
+    if (saved.currentQ !== undefined) setCurrentQ(saved.currentQ);
+  }, []);
+
+  /* ── save in-progress work ───────────────────────────────── */
+  useEffect(() => {
+    // Nothing to resume before the server has issued a token.
+    if (!token) return;
+    // Step 12 means the report is delivered; keeping the draft would resume a
+    // finished assessment on the next visit.
+    if (step >= 12) {
+      clearProgress();
+      return;
+    }
+    saveProgress({
+      token, step, studentName, email, parentPhone, classLevel,
+      gender, income, location, parentEdu, firstGen,
+      mathMarks, scienceMarks, englishMarks, socialStudiesMarks, strongestSubject,
+      coachingAfford, mobility, parentConcern, roleModel,
+      selfEfficacy, tipiAnswers, tipiCurrentQ, crAnswers, crCurrentQ,
+      aptAnswers, aptCurrentQ, answers, currentQ,
+    });
+  }, [
+    token, step, studentName, email, parentPhone, classLevel,
+    gender, income, location, parentEdu, firstGen,
+    mathMarks, scienceMarks, englishMarks, socialStudiesMarks, strongestSubject,
+    coachingAfford, mobility, parentConcern, roleModel,
+    selfEfficacy, tipiAnswers, tipiCurrentQ, crAnswers, crCurrentQ,
+    aptAnswers, aptCurrentQ, answers, currentQ,
+  ]);
 
   /* ── API helpers ─────────────────────────────────────────── */
   const apiPost = useCallback(
