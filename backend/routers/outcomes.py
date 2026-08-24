@@ -8,6 +8,8 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, timezone, timedelta
 
+from access import student_from_report_token
+from utils.time import utcnow
 from database import get_db
 from models import Student, StudentOutcome, Session as SessionModel, School
 from routers.auth import get_current_user
@@ -22,7 +24,10 @@ public_router = APIRouter()
 
 
 class PublicOutcomeRecord(BaseModel):
-    student_id: int
+    # Identified by the per-student report token. Previously this required only
+    # student_id with no token at all, so anyone could overwrite any student's
+    # outcome — and outcomes feed recommendation_accuracy_pct on the dashboard.
+    token: str
     actual_stream_chosen: str = ""
     actual_career_interest: str = ""
     notes: str = ""
@@ -31,21 +36,19 @@ class PublicOutcomeRecord(BaseModel):
 @public_router.post("/public", status_code=201)
 def public_record_outcome(req: PublicOutcomeRecord, db: Session = Depends(get_db)):
     """Accept a 6-month follow-up response from a parent (no auth required)."""
-    student = db.query(Student).filter(Student.id == req.student_id).first()
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
+    student = student_from_report_token(req.token, db)
 
-    existing = db.query(StudentOutcome).filter(StudentOutcome.student_id == req.student_id).first()
+    existing = db.query(StudentOutcome).filter(StudentOutcome.student_id == student.id).first()
     if existing:
         existing.actual_stream_chosen = req.actual_stream_chosen
         existing.actual_career_interest = req.actual_career_interest
         existing.notes = req.notes
         existing.collected_via = "whatsapp"
-        existing.updated_at = datetime.now(timezone.utc)
+        existing.updated_at = utcnow()
         db.commit()
     else:
         o = StudentOutcome(
-            student_id=req.student_id,
+            student_id=student.id,
             actual_stream_chosen=req.actual_stream_chosen,
             actual_career_interest=req.actual_career_interest,
             notes=req.notes,
@@ -54,7 +57,7 @@ def public_record_outcome(req: PublicOutcomeRecord, db: Session = Depends(get_db
         db.add(o)
         db.commit()
 
-    logger.info(f"Public outcome recorded for student {req.student_id}: stream={req.actual_stream_chosen}")
+    logger.info(f"Public outcome recorded for student {student.id}: stream={req.actual_stream_chosen}")
     return {"message": "Thank you! Your response has been recorded."}
 
 
@@ -90,18 +93,16 @@ def _outcome_row(o: StudentOutcome, student_name: str = "") -> dict:
 @router.post("/record", status_code=201)
 def record_outcome(req: OutcomeRecord, db: Session = Depends(get_db), user: dict = Depends(require_role("admin", "counsellor"))):
     """Record or update the actual outcome for a student (idempotent)."""
-    student = db.query(Student).filter(Student.id == req.student_id).first()
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
+    student = student_from_report_token(req.token, db)
 
-    existing = db.query(StudentOutcome).filter(StudentOutcome.student_id == req.student_id).first()
+    existing = db.query(StudentOutcome).filter(StudentOutcome.student_id == student.id).first()
     if existing:
         existing.actual_stream_chosen = req.actual_stream_chosen
         existing.actual_career_interest = req.actual_career_interest
         existing.recommendation_matched = req.recommendation_matched
         existing.notes = req.notes
         existing.collected_via = req.collected_via
-        existing.updated_at = datetime.now(timezone.utc)
+        existing.updated_at = utcnow()
         db.commit()
         logger.info(f"Outcome updated for student {req.student_id}")
         return _outcome_row(existing, student.name)
@@ -193,7 +194,7 @@ async def send_followup(session_id: int, db: Session = Depends(get_db), user: di
 
     sent, failed = 0, 0
     for student in eligible:
-        outcome_url = f"{base_url}/outcome?sid={student.id}"
+        outcome_url = f"{base_url}/outcome?t={student.report_token or ''}"
         text = (
             f"Namaste! 🙏\n\n"
             f"It's been 6 months since {student.name} received their CareerNeeti report.\n\n"

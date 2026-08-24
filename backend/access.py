@@ -149,3 +149,23 @@ def get_scoped_session(
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
     return session
+
+
+def student_from_report_token(token: str, db: DBSession) -> Student:
+    """Resolve a Student from the per-student report token, for public endpoints.
+
+    Parents reach the feedback and outcome forms from a WhatsApp link with no
+    login. The token is the only thing standing between those endpoints and
+    anyone writing to any student's record by guessing a sequential id, so it
+    must actually be checked — the feedback endpoint previously declared a
+    `token` field, commented it as spam prevention, and never read it.
+
+    report_token is a 32-char uuid4 hex assigned during report generation
+    (tasks/batch_processor.py), so it exists by the time either survey is sent.
+    """
+    if not token or len(token) < 16:
+        raise HTTPException(status_code=403, detail="Invalid or missing link token")
+    student = db.query(Student).filter(Student.report_token == token).first()
+    if student is None:
+        raise HTTPException(status_code=403, detail="Invalid or missing link token")
+    return student

@@ -1,4 +1,4 @@
-import random
+import secrets
 import string
 import logging
 import time
@@ -15,13 +15,32 @@ logger = logging.getLogger(__name__)
 router = APIRouter(dependencies=[Depends(get_current_user)])
 
 # In-memory OTP store: phone -> {"otp": str, "student_id": int, "expires_at": float}
-# OTPs expire after 10 minutes. Ephemeral by design — no DB persistence needed.
+#
+# IMPORTANT: this is process-local, so the API must run with a SINGLE worker.
+# With more than one, an OTP issued by one worker is invisible to the others and
+# verification fails for a fraction of parents at random. The Dockerfile does not
+# pass --workers, so uvicorn's default of 1 holds; if that ever changes, move
+# this to the database or Redis first.
 _otp_store: dict = {}
 _OTP_TTL = 600  # seconds
 
 
 def _generate_otp() -> str:
-    return "".join(random.choices(string.digits, k=6))
+    # secrets, not random: random is a predictable Mersenne Twister, and this is
+    # the code standing between a caller and a parental consent record.
+    return "".join(secrets.choice(string.digits) for _ in range(6))
+
+
+def _purge_expired_otps() -> None:
+    """Drop timed-out entries.
+
+    Entries used to be removed only on successful verification, so every OTP
+    that was requested and never confirmed stayed in memory for the lifetime of
+    the process — an unbounded leak on a long-running server.
+    """
+    now = time.time()
+    for phone in [p for p, e in _otp_store.items() if e.get("expires_at", 0) < now]:
+        _otp_store.pop(phone, None)
 
 
 # ── Pydantic models ────────────────────────────────────────────────────────────
@@ -89,6 +108,7 @@ async def send_consent_otp(req: OTPRequest, db: Session = Depends(get_db)):
 
     otp = _generate_otp()
     expires_at = time.time() + _OTP_TTL
+    _purge_expired_otps()
     _otp_store[req.parent_phone] = {"otp": otp, "student_id": req.student_id, "expires_at": expires_at}
 
     # Send via WhatsApp (falls back gracefully if not configured)
@@ -135,6 +155,7 @@ async def send_consent_otp(req: OTPRequest, db: Session = Depends(get_db)):
 @router.post("/verify-otp")
 def verify_consent_otp(req: OTPVerify, db: Session = Depends(get_db)):
     """Verify OTP and mark student consent as 'digital' (DPDPA-compliant)."""
+    _purge_expired_otps()
     entry = _otp_store.get(req.parent_phone)
     if not entry:
         raise HTTPException(status_code=400, detail="No OTP found for this phone. Please request a new OTP.")

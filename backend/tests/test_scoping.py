@@ -21,8 +21,8 @@ ROUTERS_DIR = pathlib.Path(__file__).resolve().parents[1] / "routers"
 # never add one back without a deliberate decision.
 UNSCOPED_ROUTERS = {
     "cards.py", "consent.py", "counsellors.py", "d2c.py", "dashboard.py",
-    "feedback.py", "nps.py", "outcomes.py", "reports.py", "reports_public.py",
-    "school_portal.py", "schools.py", "whatsapp.py",
+    "nps.py", "outcomes.py", "reports.py", "reports_public.py",
+    "school_portal.py", "whatsapp.py",
 }
 
 # Endpoints that are public by design (parents follow a link, no login).

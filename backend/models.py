@@ -31,6 +31,11 @@ class School(Base):
     board = Column(String(20), default="CBSE")  # CBSE / ICSE / State
     contact_person = Column(String(255), default="")
     contact_phone = Column(String(15), default="")
+    # Soft delete. A hard DELETE cascades through Session -> Student and
+    # permanently destroys every report, score and consent record for the
+    # school, which is not something one API call should be able to do to a
+    # DPDPA-regulated dataset.
+    is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime(timezone=True), default=utcnow)
 
     sessions = relationship("Session", back_populates="school", cascade="all, delete-orphan")

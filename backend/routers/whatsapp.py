@@ -111,7 +111,10 @@ async def send_survey(session_id: int, db: Session = Depends(get_db)):
     sent = 0
     failed = 0
     for student in students:
-        feedback_url = f"{base_url}/feedback?sid={student.id}"
+        # The link carries the per-student report token, which the endpoint
+        # actually validates. It previously passed the sequential student id,
+        # which the endpoint accepted as its own "anti-spam token".
+        feedback_url = f"{base_url}/feedback?t={student.report_token or ''}"
         result = await send_survey_message(student.parent_phone, student.name, feedback_url)
         if result["success"]:
             sent += 1
