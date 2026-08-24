@@ -162,6 +162,10 @@ class Student(Base):
 class Lead(Base):
     __tablename__ = "leads"
     id = Column(Integer, primary_key=True, index=True)
+    # Opaque handle returned to the browser instead of the sequential id, which
+    # leaked the cumulative lead count and made rows enumerable. Also the key the
+    # post-result contact form uses to attach a phone number to its own lead.
+    token = Column(String(32), unique=True, nullable=True, index=True)
     name = Column(String(255), default="")
     phone = Column(String(15), default="")
     email = Column(String(255), default="")

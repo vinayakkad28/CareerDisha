@@ -1,11 +1,15 @@
 """Free stream predictor quiz — public, no auth required."""
 
 import logging
-from fastapi import APIRouter
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException, Request
+from pydantic import BaseModel, Field, field_validator
+
+import re
+import uuid
 
 from database import SessionLocal
 from models import Lead
+from rate_limit import limiter
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -29,15 +33,66 @@ QUIZ_QUESTIONS = [
     {"id": 15, "text": "I enjoy caring for others and making them feel comfortable", "text_hi": "मुझे दूसरों की देखभाल करना पसंद है", "type": "S"},
 ]
 
+INDIAN_MOBILE_RE = r"^[6-9]\d{9}$"
+
+
 class QuizSubmission(BaseModel):
-    answers: dict[str, int]  # {"1": 4, "2": 2, ...} question_id: score (1-5)
-    student_name: str = ""
-    parent_phone: str = ""
-    class_level: int = 10
-    email: str = ""
-    utm_source: str = ""
-    utm_medium: str = ""
-    utm_campaign: str = ""
+    """Free-quiz payload.
+
+    Every field here was previously unvalidated: Likert answers accepted 0, -1
+    and 999 (silently clamped during scoring, so no 422 was ever returned),
+    parent_phone accepted "not-a-phone-!!!" even though report delivery keys off
+    it, and class_level accepted negatives.
+    """
+
+    answers: dict[str, int]
+    student_name: str = Field(default="", max_length=120)
+    # Optional, but must be a real Indian mobile if supplied.
+    parent_phone: str = Field(default="", max_length=15)
+    class_level: int = Field(default=10, ge=8, le=12)
+    email: str = Field(default="", max_length=254)
+    utm_source: str = Field(default="", max_length=100)
+    utm_medium: str = Field(default="", max_length=100)
+    utm_campaign: str = Field(default="", max_length=100)
+
+    @field_validator("answers")
+    @classmethod
+    def _check_answers(cls, v: dict[str, int]) -> dict[str, int]:
+        for qid, score in v.items():
+            if not isinstance(score, int) or not 1 <= score <= 5:
+                raise ValueError(f"answer {qid} must be an integer from 1 to 5")
+        return v
+
+    @field_validator("parent_phone")
+    @classmethod
+    def _check_phone(cls, v: str) -> str:
+        v = v.strip()
+        if v and not re.match(INDIAN_MOBILE_RE, v):
+            raise ValueError("parent_phone must be a 10-digit Indian mobile number")
+        return v
+
+    @field_validator("student_name")
+    @classmethod
+    def _strip_markup(cls, v: str) -> str:
+        # The value flows into PDFs and CSV exports, where React's escaping does
+        # not apply. Stored markup was accepted verbatim before.
+        return re.sub(r"[<>]", "", v).strip()
+
+
+class QuizContactRequest(BaseModel):
+    """Contact details captured on the results screen, after scoring."""
+
+    lead_token: str
+    parent_phone: str = Field(default="", max_length=15)
+    email: str = Field(default="", max_length=254)
+
+    @field_validator("parent_phone")
+    @classmethod
+    def _check_phone(cls, v: str) -> str:
+        v = v.strip()
+        if v and not re.match(INDIAN_MOBILE_RE, v):
+            raise ValueError("Enter a 10-digit Indian mobile number")
+        return v
 
 
 # ── Scoring helpers (shared with d2c.py) ──────────────────────
@@ -140,6 +195,35 @@ def calculate_recommendation(riasec_pct: dict, answers: dict[str, int]) -> dict:
 
 # ── Endpoints ──────────────────────────────────────────────────
 
+@router.post("/contact")
+@limiter.limit("10/minute")
+def save_quiz_contact(request: Request, body: QuizContactRequest):
+    """Attach contact details to an existing quiz lead.
+
+    The results screen collects a WhatsApp number and email after scoring. The
+    button that submits them previously only set a local flag and displayed
+    "We will reach out to you on WhatsApp shortly" — nothing was ever sent, so
+    every warm lead who volunteered a number was discarded.
+    """
+    if not body.parent_phone and not body.email:
+        raise HTTPException(status_code=400, detail="Enter a phone number or an email address")
+
+    db = SessionLocal()
+    try:
+        lead = db.query(Lead).filter(Lead.token == body.lead_token).first()
+        if not lead:
+            raise HTTPException(status_code=404, detail="Quiz result not found")
+        if body.parent_phone:
+            lead.phone = body.parent_phone
+        if body.email:
+            lead.email = body.email
+        db.commit()
+        logger.info(f"Quiz lead {lead.id} contact details saved")
+        return {"message": "Saved"}
+    finally:
+        db.close()
+
+
 @router.get("/questions")
 def get_quiz_questions():
     """Return the 15 quiz questions (public, no auth)."""
@@ -147,7 +231,8 @@ def get_quiz_questions():
 
 
 @router.post("/submit")
-def submit_quiz(submission: QuizSubmission):
+@limiter.limit("20/minute")
+def submit_quiz(request: Request, submission: QuizSubmission):
     """Process quiz answers and return stream recommendation (public, no auth)."""
     # Calculate RIASEC scores from 15 questions
     type_scores = {"R": 0, "I": 0, "A": 0, "S": 0, "E": 0, "C": 0}
@@ -177,7 +262,8 @@ def submit_quiz(submission: QuizSubmission):
     rec = calculate_recommendation(riasec_pct, submission.answers)
 
     # Save Lead record
-    lead_id = None
+    lead_token = None
+    db = None
     try:
         db = SessionLocal()
         lead = Lead(
@@ -193,13 +279,18 @@ def submit_quiz(submission: QuizSubmission):
             utm_medium=submission.utm_medium,
             utm_campaign=submission.utm_campaign,
         )
+        lead.token = uuid.uuid4().hex
         db.add(lead)
         db.commit()
         db.refresh(lead)
-        lead_id = lead.id
-        db.close()
+        lead_token = lead.token
     except Exception as e:
         logger.warning(f"Failed to save quiz lead: {e}")
+    finally:
+        # Previously only the success path closed the session, so a failed insert
+        # leaked a pooled connection from the highest-traffic public endpoint.
+        if db is not None:
+            db.close()
 
     return {
         "holland_code": holland_code,
@@ -207,7 +298,8 @@ def submit_quiz(submission: QuizSubmission):
         "recommended_stream": rec["stream"],
         "confidence": rec["confidence"],
         "primary_type": sorted_types[0][0] if sorted_types else "",
-        "lead_id": lead_id,
+        # An opaque token, not the sequential id, which leaked the total lead count.
+        "lead_token": lead_token,
         "message": rec["message"],
         "message_hi": rec.get("message_hi", ""),
         "is_flat": rec["is_flat"],

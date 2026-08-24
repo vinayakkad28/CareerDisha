@@ -49,7 +49,7 @@ interface QuizResult {
   is_flat?: boolean;
   cta: string;
   cta_url: string;
-  lead_id?: string;
+  lead_token?: string;
 }
 
 export default function QuizPage() {
@@ -64,14 +64,22 @@ export default function QuizPage() {
   const [parentPhone, setParentPhone] = useState("");
   const [showPhoneCapture, setShowPhoneCapture] = useState(false);
   const [phoneSaved, setPhoneSaved] = useState(false);
+  const [savingContact, setSavingContact] = useState(false);
+  const [contactError, setContactError] = useState("");
 
   useEffect(() => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 20000);
     fetch(`${API_BASE}/api/quiz/questions`, { signal: controller.signal })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
         clearTimeout(timeoutId);
+        if (!Array.isArray(data?.questions) || data.questions.length === 0) {
+          throw new Error("Malformed response");
+        }
         setQuestions(data.questions);
         setLoading(false);
       })
@@ -332,7 +340,7 @@ export default function QuizPage() {
                       <p className="text-xs font-bold text-outline mb-1 uppercase">Limited Offer</p>
                       <p className="text-3xl font-extrabold text-primary mb-4 font-heading">{"\u20B9"}499</p>
                       <a
-                        href={result.lead_id ? `/assessment?lead=${result.lead_id}` : "/assessment"}
+                        href={result.lead_token ? `/assessment?lead=${result.lead_token}` : "/assessment"}
                         className="block w-full py-4 px-6 rounded-lg bg-gold-gradient text-primary font-bold text-sm shadow-lg hover:translate-y-[-2px] transition-transform active:scale-95 text-center"
                       >
                         Get Your Full Career Report
@@ -378,22 +386,54 @@ export default function QuizPage() {
                     className="sa-input flex-1"
                   />
                   <button
-                    onClick={() => {
-                      if (parentPhone.trim().length >= 10) {
+                    onClick={async () => {
+                      // This used to only flip a local flag, so every number
+                      // typed here was silently discarded while the UI claimed
+                      // "We will reach out to you on WhatsApp shortly."
+                      setContactError("");
+                      if (!/^[6-9]\d{9}$/.test(parentPhone.trim())) {
+                        setContactError("Enter a 10-digit mobile number starting 6-9.");
+                        return;
+                      }
+                      if (!result?.lead_token) {
+                        setContactError("Please retake the quiz and try again.");
+                        return;
+                      }
+                      setSavingContact(true);
+                      try {
+                        const res = await fetch(`${API_BASE}/api/quiz/contact`, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            lead_token: result.lead_token,
+                            parent_phone: parentPhone.trim(),
+                            email: email.trim(),
+                          }),
+                        });
+                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
                         setPhoneSaved(true);
+                      } catch {
+                        setContactError("Could not save your details. Please try again.");
+                      } finally {
+                        setSavingContact(false);
                       }
                     }}
-                    className="btn-gold py-2.5 px-5 text-sm font-bold"
+                    disabled={savingContact}
+                    className="btn-gold py-2.5 px-5 text-sm font-bold disabled:opacity-50"
                   >
-                    Send Details
+                    {savingContact ? "Saving..." : "Send Details"}
                   </button>
                 </div>
               </div>
             )}
 
+            {contactError && (
+              <p className="text-center text-error text-sm mt-2">{contactError}</p>
+            )}
+
             {phoneSaved && (
               <p className="text-center text-on-surface-variant text-sm">
-                We will reach out to you on WhatsApp shortly.
+                Saved — we will reach out to you on WhatsApp shortly.
               </p>
             )}
 
