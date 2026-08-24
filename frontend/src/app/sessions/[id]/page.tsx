@@ -315,6 +315,63 @@ export default function SessionDetailPage() {
         </Link>
       </div>
 
+      {/* CBSE compliance artefacts.
+          The backend has generated these since March with nothing in the UI
+          reaching them. The certificate evidences Clause 2.4.12 compliance for
+          the principal; the parent circular is what they hand a parent who
+          queries the fee, which matters under the UP fee-regulation rules. */}
+      <section className="bg-white rounded-lg p-6 space-y-4">
+        <div>
+          <h3 className="font-extrabold text-primary font-heading">School paperwork</h3>
+          <p className="text-sm text-slate-500 mt-1">
+            Documents the school can file or show to parents for this session.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={async () => {
+              try {
+                const { downloadFile } = await import("@/lib/api");
+                await downloadFile(
+                  sessionsApi.complianceCertificateURL(Number(params.id)),
+                  `compliance_certificate_session_${params.id}.pdf`
+                );
+                toast("Compliance certificate downloaded", "success");
+              } catch (err: any) {
+                toast(err.message || "Could not generate the certificate", "error");
+              }
+            }}
+            className="px-6 py-2.5 border-2 border-primary text-primary font-bold rounded hover:bg-primary-50 transition-colors inline-flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            CBSE Compliance Certificate
+          </button>
+
+          <button
+            onClick={async () => {
+              try {
+                const { downloadFile } = await import("@/lib/api");
+                await downloadFile(
+                  sessionsApi.parentCircularURL(Number(params.id)),
+                  `parent_circular_session_${params.id}.pdf`
+                );
+                toast("Parent circular downloaded", "success");
+              } catch (err: any) {
+                toast(err.message || "Could not generate the circular", "error");
+              }
+            }}
+            className="px-6 py-2.5 border-2 border-slate-200 text-slate-600 font-bold rounded hover:bg-slate-50 transition-colors inline-flex items-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+            Parent Circular
+          </button>
+        </div>
+        <p className="text-xs text-slate-400">
+          The certificate records students assessed, parental consent obtained and
+          reports delivered, against CBSE Affiliation Bye-Laws Clause 2.4.12.
+        </p>
+      </section>
+
       {/* Student Progress Detail Table */}
       <section className="bg-white rounded-lg overflow-hidden">
         <div className="px-8 py-5 flex justify-between items-center border-b border-surface-container-high">

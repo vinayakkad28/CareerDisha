@@ -136,6 +136,17 @@ export const sessions = {
   generatePDFs: (id: number) =>
     request<any>(`/sessions/${id}/pdf`, { method: "POST" }),
   downloadURL: (id: number) => `${BASE_URL}/sessions/${id}/download`,
+
+  // CBSE compliance artefacts. These endpoints have existed and worked since
+  // March with no UI reaching them. The certificate is what a principal shows
+  // to evidence Clause 2.4.12 compliance; the parent circular is the one-pager
+  // they show a parent who queries the fee.
+  complianceCertificate: (id: number) =>
+    request<Record<string, unknown>>(`/sessions/${id}/compliance-certificate`),
+  complianceCertificateURL: (id: number) =>
+    `${BASE_URL}/sessions/${id}/compliance-certificate/pdf`,
+  parentCircularURL: (id: number, fee = 500) =>
+    `${BASE_URL}/sessions/${id}/parent-circular/pdf?fee=${fee}`,
 };
 
 // Students
