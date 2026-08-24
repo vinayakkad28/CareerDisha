@@ -67,9 +67,15 @@ export default function QuizPage() {
   const [savingContact, setSavingContact] = useState(false);
   const [contactError, setContactError] = useState("");
 
+  // Bumping this re-runs the fetch, so "Try again" does not require a full
+  // page reload (which would also lose any answers already given).
+  const [reloadKey, setReloadKey] = useState(0);
+
   useEffect(() => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 20000);
+    setError("");
+    setLoading(true);
     fetch(`${API_BASE}/api/quiz/questions`, { signal: controller.signal })
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -87,13 +93,13 @@ export default function QuizPage() {
         clearTimeout(timeoutId);
         setError(
           e?.name === "AbortError"
-            ? "Loading timed out. Please check your connection and refresh."
-            : "Failed to load quiz questions. Please refresh the page."
+            ? "That took too long. Check your connection and try again."
+            : "We could not reach the server. Check your connection and try again."
         );
         setLoading(false);
       });
     return () => { clearTimeout(timeoutId); controller.abort(); };
-  }, []);
+  }, [reloadKey]);
 
   const answeredCount = Object.keys(answers).length;
   const totalQuestions = questions?.length || 0;
@@ -160,14 +166,36 @@ export default function QuizPage() {
     );
   }
 
-  // Guard: questions not loaded yet
+  // Guard: the questions failed to load. Terminal state — no spinner.
+  if (error && (!questions || questions.length === 0)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-brand-gradient px-4">
+        <div className="text-center max-w-sm">
+          <svg className="w-10 h-10 mx-auto mb-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0 3.75h.008M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p className="text-white font-heading font-bold mb-1">
+            We could not load the quiz
+          </p>
+          <p className="text-white/60 font-body text-sm mb-5">{error}</p>
+          <button
+            onClick={() => setReloadKey((k) => k + 1)}
+            className="btn-gold py-2.5 px-6 text-sm font-bold"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Guard: questions still loading.
   if (!questions || questions.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-brand-gradient">
         <div className="text-center">
           <div className="w-10 h-10 border-3 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
           <p className="text-white/70 font-body text-sm">Loading questions...</p>
-          {error && <p className="text-red-300 font-body text-sm mt-2">{error}</p>}
         </div>
       </div>
     );
