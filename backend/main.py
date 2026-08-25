@@ -4,7 +4,6 @@ from datetime import datetime, timezone
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -131,13 +130,18 @@ app.include_router(outcomes.router, prefix="/api/outcomes", tags=["Outcomes"])
 app.include_router(outcomes.public_router, prefix="/api/outcomes", tags=["Outcomes"])
 app.include_router(reports_public.router, prefix="/api/reports", tags=["Reports Public"])
 
-# Serve generated PDFs.
-# StaticFiles validates the directory at construction, i.e. at import time, while
-# lifespan (which also creates it) does not run until startup. On a fresh
-# checkout the directory does not exist yet, so importing the app raised
-# RuntimeError before anything could create it.
+# NOTE: generated report PDFs are deliberately NOT served as static files.
+#
+# There was a `app.mount("/output", StaticFiles(...))` here, which published
+# every generated report to the open internet with no authentication. Filenames
+# are "{StudentName}_career_report.pdf", so guessing a child's name returned
+# their full psychometric profile, school, and parent contact details. Nothing
+# in the frontend or backend referenced these URLs — it was pure exposure.
+#
+# PDFs are served by authenticated, tenant-scoped routes instead:
+#   GET /api/students/{student_id}/pdf   (staff, scoped to their schools)
+#   GET /api/d2c/pdf/{token}             (customer, gated on payment)
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-app.mount("/output", StaticFiles(directory=str(OUTPUT_DIR)), name="output")
 
 
 @app.get("/api/health")
