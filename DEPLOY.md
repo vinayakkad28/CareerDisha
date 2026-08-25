@@ -32,13 +32,12 @@ web service plus a PostgreSQL database.
    database automatically. Do **not** set `ENABLE_PAYMENTS` to true until you
    have live Razorpay credentials — see section 4.
 
-3. **Migrations.** `render.yaml` uses `preDeployCommand: alembic upgrade head`,
-   which runs once per deploy before any instance takes traffic, so a failed
-   migration aborts the deploy and the previous version keeps serving.
-
-   > `preDeployCommand` requires a paid instance type. On the free tier, delete
-   > that line and change the Dockerfile's last line to:
-   > `CMD ["sh", "-c", "alembic upgrade head && exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]`
+3. **Migrations** run from the Dockerfile's `CMD`, before uvicorn starts. This is
+   deliberate: Render's `preDeployCommand` requires a paid instance type, and
+   `plan: free` is set on the web service so the Blueprint deploys without a card.
+   A failed migration exits non-zero, so the container never serves a half-migrated
+   database — it crash-loops instead, and the startup schema check names the reason
+   in the logs.
 
 4. Deploy, then confirm:
 

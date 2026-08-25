@@ -10,13 +10,16 @@ services:
     rootDir: backend
     dockerfilePath: ./Dockerfile
     healthCheckPath: /api/health
+    # Without an explicit plan, Render defaults to a PAID instance type and the
+    # Blueprint asks for a card before it will deploy.
+    plan: free
 
-    # Schema migrations run once per deploy, before any new instance takes
-    # traffic. If a migration fails the deploy aborts and the previous version
-    # keeps serving. Note: preDeployCommand requires a paid instance type — on
-    # the free tier, delete this line and prepend `alembic upgrade head &&` to
-    # the Dockerfile CMD instead.
-    preDeployCommand: alembic upgrade head
+    # NOTE: migrations deliberately do NOT use preDeployCommand, which requires a
+    # paid instance. The Dockerfile's CMD runs `alembic upgrade head` before
+    # uvicorn instead, so the free plan works unchanged. The tradeoff is that a
+    # failed migration crash-loops the container rather than aborting the deploy
+    # cleanly — acceptable here, and the startup schema check makes the reason
+    # obvious in the logs.
 
     envVars:
       # --- Required ---
