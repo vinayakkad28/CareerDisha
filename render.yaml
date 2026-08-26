@@ -1,8 +1,15 @@
 # Render Blueprint.
 #
-# This file MUST live at the repository root — Render only reads `render.yaml`
-# from the root of the repo, so the previous copy at backend/render.yaml was
-# never applied. `rootDir` below is what points Render at the backend/ folder.
+# NOTE: deploying this via New -> Blueprint requires a payment method on file,
+# even though every service here is on the free plan ("Your Blueprint services
+# require payment information on file"). To deploy free, create the web service
+# manually in the dashboard instead and set the env vars below by hand — see
+# DEPLOY.md section 2. This file is kept as the authoritative record of the
+# intended configuration, and works as-is once you are on a paid plan.
+#
+# It must live at the repository root — Render only reads `render.yaml` from
+# there, so the previous copy at backend/render.yaml was never applied.
+# `rootDir` below is what points Render at the backend/ folder.
 services:
   - type: web
     name: careerneeti-api
