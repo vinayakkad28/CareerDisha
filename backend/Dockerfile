@@ -29,7 +29,11 @@ ENV PORT=8000
 
 EXPOSE 8000
 
-# Render (and most PaaS) inject $PORT and route traffic to it; a hardcoded
-# port means the platform health check never connects. exec so uvicorn is
-# PID 1 and receives SIGTERM for graceful shutdown.
-CMD ["sh", "-c", "exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Migrations run here rather than in a Render preDeployCommand, which requires a
+# paid instance type. The app refuses to start against an unmigrated database, so
+# these two must stay together.
+#
+# $PORT is injected by the platform and must be honoured — a hardcoded port means
+# the health check never connects. exec keeps uvicorn as PID 1 so it receives
+# SIGTERM and shuts down gracefully.
+CMD ["sh", "-c", "alembic upgrade head && exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]

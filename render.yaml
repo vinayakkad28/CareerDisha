@@ -1,31 +1,51 @@
 # Render Blueprint.
 #
-# This file MUST live at the repository root — Render only reads `render.yaml`
-# from the root of the repo, so the previous copy at backend/render.yaml was
-# never applied. `rootDir` below is what points Render at the backend/ folder.
+# NOTE: deploying this via New -> Blueprint requires a payment method on file,
+# even though every service here is on the free plan ("Your Blueprint services
+# require payment information on file"). To deploy free, create the web service
+# manually in the dashboard instead and set the env vars below by hand — see
+# DEPLOY.md section 2. This file is kept as the authoritative record of the
+# intended configuration, and works as-is once you are on a paid plan.
+#
+# It must live at the repository root — Render only reads `render.yaml` from
+# there, so the previous copy at backend/render.yaml was never applied.
+# `rootDir` below is what points Render at the backend/ folder.
 services:
   - type: web
     name: careerneeti-api
     runtime: docker
     rootDir: backend
-    dockerfilePath: ./Dockerfile
+    # Resolved from the REPOSITORY ROOT, not from rootDir — the two are
+    # independent. './Dockerfile' fails with 'no such file or directory'.
+    dockerfilePath: ./backend/Dockerfile
     healthCheckPath: /api/health
+    # Without an explicit plan, Render defaults to a PAID instance type and the
+    # Blueprint asks for a card before it will deploy.
+    plan: free
 
-    # Schema migrations run once per deploy, before any new instance takes
-    # traffic. If a migration fails the deploy aborts and the previous version
-    # keeps serving. Note: preDeployCommand requires a paid instance type — on
-    # the free tier, delete this line and prepend `alembic upgrade head &&` to
-    # the Dockerfile CMD instead.
-    preDeployCommand: alembic upgrade head
+    # NOTE: migrations deliberately do NOT use preDeployCommand, which requires a
+    # paid instance. The Dockerfile's CMD runs `alembic upgrade head` before
+    # uvicorn instead, so the free plan works unchanged. The tradeoff is that a
+    # failed migration crash-loops the container rather than aborting the deploy
+    # cleanly — acceptable here, and the startup schema check makes the reason
+    # obvious in the logs.
 
     envVars:
       # --- Required ---
       - key: ENVIRONMENT
         value: production          # makes the app refuse to boot without secrets
+      # Set manually to an external Postgres connection string.
+      #
+      # NOT wired to a Render database on purpose: Render's free Postgres is
+      # DELETED 30 days after creation, and this project has already lost its
+      # database once. Neon's free tier does not delete data — it scales the
+      # compute to zero after 5 minutes idle and wakes on the next connection,
+      # which is transparent to the app.
+      #
+      # Use the POOLED connection string and keep sslmode=require, e.g.
+      #   postgresql://user:pass@ep-xxx-pooler.region.aws.neon.tech/neondb?sslmode=require
       - key: DATABASE_URL
-        fromDatabase:
-          name: careerneeti-db
-          property: connectionString
+        sync: false
       - key: JWT_SECRET
         generateValue: true
       - key: ADMIN_PASSWORD
@@ -74,9 +94,8 @@ services:
       - key: OUTPUT_DIR
         value: /tmp/output
 
-databases:
-  - name: careerneeti-db
-    # WARNING: Render deletes free-tier Postgres instances after 30 days.
-    # Move to a paid plan before storing real student data.
-    plan: free
-    databaseName: careerneeti
+# No `databases:` block. Render's free Postgres is deleted after 30 days, which
+# is a data-loss event, not a downgrade. The database lives on Neon's free tier
+# instead and is supplied through DATABASE_URL above. If you later move to a
+# paid Render database, add the block back and switch DATABASE_URL to
+# `fromDatabase`.
