@@ -19,6 +19,8 @@ from schemas.students import StudentSummary
 from utils.self_efficacy import CANONICAL_DOMAINS, normalize_self_efficacy
 
 # resolve_scope authenticates AND rejects unscopable tokens before any handler runs.
+logger = logging.getLogger(__name__)
+
 router = APIRouter(dependencies=[Depends(resolve_scope)])
 
 
@@ -311,9 +313,20 @@ def generate_reports(
 def run_qa(session_id: int, db: DBSession = Depends(get_db), session: Session = Depends(get_scoped_session)):
 
     from engines.qa_checker import run_qa_checks
+
     result = run_qa_checks(session_id)
-    session.status = "qa_review"
-    db.commit()
+    # Only advance when QA actually examined something. run_qa_checks looks at
+    # students with report_status == "report_generated"; if none exist it returns
+    # total=0 and the session used to move to "qa_review" regardless, so the UI
+    # showed the QA stage reached with 0 reports ever generated.
+    if result.get("total"):
+        session.status = "qa_review"
+        db.commit()
+    else:
+        logger.warning(
+            f"Session {session_id}: QA found no generated reports to check. "
+            "Generate reports first. Session status left unchanged."
+        )
     return result
 
 
