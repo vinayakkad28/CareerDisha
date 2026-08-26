@@ -160,11 +160,15 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 DEFAULT_LLM_PROVIDER = os.getenv("DEFAULT_LLM_PROVIDER", "groq")
 MAX_CONCURRENT_REQUESTS = int(os.getenv("MAX_CONCURRENT_REQUESTS", "5"))
 
+# Model IDs are env-overridable. Providers retire models and gate others behind
+# account tiers, and when that happens the API returns 404 "does not exist or you
+# do not have access to it" — which previously required a code change and redeploy
+# to fix. Override the one you need (e.g. GROQ_MODEL) in the host's environment.
 LLM_MODELS = {
-    "anthropic": "claude-3-5-haiku-20241022",
-    "openai": "gpt-4o-mini",
-    "google": "gemini-2.0-flash",
-    "groq": "llama-3.3-70b-versatile",
+    "anthropic": os.getenv("ANTHROPIC_MODEL", "claude-3-5-haiku-20241022"),
+    "openai": os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+    "google": os.getenv("GOOGLE_MODEL", "gemini-2.0-flash"),
+    "groq": os.getenv("GROQ_MODEL", "llama-3.1-8b-instant"),
 }
 
 # Provider → key, so callers can check configuration without a chain of ifs.

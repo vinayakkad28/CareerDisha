@@ -38,16 +38,21 @@ _PERMANENT_LLM_ERROR_NAMES = {
 }
 
 
-class _PermanentErrorMatcher(type):
-    def __instancecheck__(cls, instance) -> bool:
-        return type(instance).__name__ in _PERMANENT_LLM_ERROR_NAMES
+def _is_permanent_llm_error(exc: BaseException) -> bool:
+    """True for provider errors that will fail identically on every retry.
 
-
-class _PermanentLLMError(Exception, metaclass=_PermanentErrorMatcher):
-    """Virtual base class matching permanent provider errors by class name."""
-
-
-_PERMANENT_LLM_ERRORS = (_PermanentLLMError,)
+    Checked with an explicit call rather than an `except` clause: CPython matches
+    exceptions with PyErr_GivenExceptionMatches, which does NOT consult a custom
+    __instancecheck__. An earlier attempt used a virtual base class here, so
+    isinstance() reported True while the except clause silently fell through to
+    the retry branch — a permanent 404 ("model does not exist or you do not have
+    access to it") burned all nine attempts before surfacing.
+    """
+    if type(exc).__name__ in _PERMANENT_LLM_ERROR_NAMES:
+        return True
+    # Providers also signal these as plain HTTP status codes.
+    status = getattr(exc, "status_code", None)
+    return status in (400, 401, 403, 404, 422)
 
 
 SYSTEM_PROMPT = """You are an expert Indian career counsellor with 20 years of experience guiding students in the Indian education system. You are creating a personalized career report for a school student.
@@ -417,13 +422,12 @@ class LLMClient:
                     return self._call_groq(system_prompt, user_prompt)
                 else:
                     raise ValueError(f"Unknown provider: {self.provider}")
-            except _PERMANENT_LLM_ERRORS as e:
-                # A bad key or a malformed request will fail identically on every
-                # attempt; retrying just burns ~6s per report before the same
-                # failure surfaces.
-                logger.error(f"LLM call failed permanently ({type(e).__name__}): {e}")
-                raise
             except Exception as e:
+                if _is_permanent_llm_error(e):
+                    # A bad key, a retired model or a malformed request fails
+                    # identically every time; retrying only delays the error.
+                    logger.error(f"LLM call failed permanently ({type(e).__name__}): {e}")
+                    raise
                 if attempt < max_retries - 1:
                     wait = 2 ** (attempt + 1)
                     logger.warning(f"LLM retry {attempt + 1}/{max_retries} after {wait}s: {e}")

@@ -185,3 +185,63 @@ class TestClassInstructions:
         instr = CLASS_INSTRUCTIONS[12]
         assert "ACTION" in instr
         assert "deadline" in instr.lower() or "dates" in instr.lower() or "calendar" in instr.lower()
+
+
+class TestPermanentErrorHandling:
+    """A permanent provider error must not be retried.
+
+    This regressed silently once: the check was implemented as a virtual base
+    class with a custom __instancecheck__, used in an `except` clause. CPython
+    matches exceptions with PyErr_GivenExceptionMatches, which does not consult
+    __instancecheck__, so isinstance() said True while the except clause fell
+    through to the retry branch. A 404 for a retired model burned nine attempts.
+    """
+
+    def test_retired_model_is_permanent(self):
+        from engines.report_generator import _is_permanent_llm_error
+
+        class NotFoundError(Exception):
+            pass
+
+        assert _is_permanent_llm_error(NotFoundError("model does not exist"))
+
+    def test_http_4xx_status_is_permanent(self):
+        from engines.report_generator import _is_permanent_llm_error
+
+        class ProviderError(Exception):
+            status_code = 404
+
+        assert _is_permanent_llm_error(ProviderError())
+
+    def test_transient_errors_are_retried(self):
+        from engines.report_generator import _is_permanent_llm_error
+
+        class RateLimitError(Exception):
+            pass
+
+        class APIConnectionError(Exception):
+            pass
+
+        assert not _is_permanent_llm_error(RateLimitError("slow down"))
+        assert not _is_permanent_llm_error(APIConnectionError("network"))
+
+    def test_permanent_error_raises_without_retrying(self, monkeypatch):
+        """The retry loop must surface a permanent error on the first attempt."""
+        from engines.report_generator import LLMClient
+
+        class NotFoundError(Exception):
+            pass
+
+        attempts = {"n": 0}
+
+        def boom(self, system_prompt, user_prompt):
+            attempts["n"] += 1
+            raise NotFoundError("The model does not exist or you do not have access to it")
+
+        monkeypatch.setattr(LLMClient, "_call_groq", boom)
+        client = LLMClient(provider="groq")
+        try:
+            client.generate("sys", "user")
+        except NotFoundError:
+            pass
+        assert attempts["n"] == 1, f"retried a permanent error {attempts['n']} times"

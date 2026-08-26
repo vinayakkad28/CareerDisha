@@ -90,10 +90,18 @@ and for later use on a paid plan, but the steps below do not rely on it.
    | `APP_BASE_URL` | `https://careerneeti.in` |
    | `OUTPUT_DIR` | `/tmp/output` |
    | `LLM_TIMEOUT_SECONDS` | `90` |
+   | `GROQ_MODEL` | only if the default is unavailable to your account — see below |
 
    The first four are required; the app refuses to start in production without
    `ADMIN_PASSWORD` and `JWT_SECRET`, and report generation fails without
    `GROQ_API_KEY`.
+
+   > **If report generation fails with 404 "The model `X` does not exist or you
+   > do not have access to it"**, your key cannot reach that model — providers
+   > gate larger models by account tier and retire others. Check
+   > https://console.groq.com/docs/models for what your account can use and set
+   > `GROQ_MODEL` accordingly. No code change or redeploy of the image is needed;
+   > the model id is read from the environment.
 
 6. **Create Web Service**. The first build takes several minutes — it compiles
    the WeasyPrint system libraries into the image.
