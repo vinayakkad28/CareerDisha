@@ -105,7 +105,18 @@ def run_report_generation(session_id: int, provider: str = "anthropic"):
                     logger.info(f"  Report generated for student ID {sid} (cost: ${cost:.4f})")
 
         session.total_cost = total_cost
-        session.status = "generated"
+        # Same reasoning as the PDF stage: do not advance the session unless a
+        # report was actually produced. Otherwise a run where every student
+        # failed (a bad LLM key, say) or was skipped for missing consent still
+        # reported "generated", and the UI showed the stage complete with 0/N.
+        if completed:
+            session.status = "generated"
+        else:
+            logger.error(
+                f"Session {session_id}: produced no reports "
+                f"({failed} failed, {skipped_no_consent} skipped for missing consent). "
+                "Session status left unchanged so it can be retried."
+            )
         db.commit()
         logger.info(
             f"Session {session_id}: report generation complete. "
@@ -173,8 +184,24 @@ def run_pdf_generation(session_id: int):
                 logger.error(f"  Error generating PDF for {student.name} (ID {student.id}): {e}", exc_info=True)
                 continue
 
-        session.status = "pdf_ready"
-        db.commit()
+        # Only advance the session when something was actually produced.
+        # This used to be unconditional, so clicking "Generate PDFs" before any
+        # report existed marked the session "pdf_ready" with zero PDFs — the
+        # stepper and status badge both claimed success while the counters read
+        # 0/N and Download ZIP stayed (correctly) disabled.
+        if completed:
+            session.status = "pdf_ready"
+            db.commit()
+        elif not students:
+            logger.warning(
+                f"Session {session_id}: no QA-passed students, so no PDFs to generate. "
+                "Generate reports and run QA first. Session status left unchanged."
+            )
+        else:
+            logger.error(
+                f"Session {session_id}: all {failed} PDF generation(s) failed. "
+                "Session status left unchanged."
+            )
         logger.info(f"Session {session_id}: PDF generation complete. {completed} succeeded, {failed} failed.")
     except Exception as e:
         logger.error(f"Session {session_id}: PDF generation batch failed: {e}", exc_info=True)
