@@ -51,20 +51,21 @@ and for later use on a paid plan, but the steps below do not rely on it.
    |---|---|
    | Name | `careerneeti-api` |
    | Language / Runtime | **Docker** |
-   | Root Directory | `backend` |
+   | Root Directory | **leave blank** |
    | Dockerfile Path | `./backend/Dockerfile` |
    | Instance Type | **Free** |
 
-   > **Dockerfile Path is relative to the REPOSITORY ROOT, not to Root
-   > Directory.** The two fields are resolved independently: Root Directory sets
-   > the build context (so `COPY requirements.txt .` finds
-   > `backend/requirements.txt`), while Dockerfile Path is still resolved from
-   > the top of the repo. Setting it to `./Dockerfile` fails the build with
-   > `failed to read dockerfile: open Dockerfile: no such file or directory`
-   > and a telltale `transferring dockerfile: 2B`.
+   > **Leave Root Directory empty.** Render builds with the repository root as
+   > the Docker context and setting Root Directory does not change that, so the
+   > Dockerfile's `COPY` paths are written with a `backend/` prefix to match.
+   > Two failure modes if you get this wrong:
+   > `open Dockerfile: no such file or directory` (Dockerfile Path is resolved
+   > from the repo root, so `./Dockerfile` is wrong), and
+   > `"/requirements.txt": not found` (the context is the repo root, so an
+   > unprefixed COPY cannot find files inside backend/).
    >
-   > If it still fails, clear the Dockerfile Path field entirely — with Root
-   > Directory set to `backend`, Render auto-detects the Dockerfile inside it.
+   > The `.dockerignore` at the repository root is the one Docker actually reads;
+   > `backend/.dockerignore` is ignored, and its rules are restated there.
 
 4. Expand **Advanced** and set **Health Check Path** to `/api/health`.
 

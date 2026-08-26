@@ -1,0 +1,26 @@
+# Docker build context is the repository root (see backend/Dockerfile), so this
+# is the .dockerignore Docker actually reads — backend/.dockerignore is NOT used
+# and its rules are restated below.
+
+# The frontend is deployed separately on Vercel and must not bloat the image.
+frontend/
+
+.git/
+.github/
+
+# Python
+**/.venv/
+**/__pycache__/
+**/*.pyc
+
+# Local databases — never bake a developer's data into an image
+**/*.db
+**/*.sqlite3
+
+# Generated PDFs and secrets
+backend/output/
+**/.env
+
+# Large data files not needed at runtime
+backend/career_kb_part1.json
+backend/career_kb_part2.json

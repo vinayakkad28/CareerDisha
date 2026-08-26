@@ -14,9 +14,10 @@ services:
   - type: web
     name: careerneeti-api
     runtime: docker
-    rootDir: backend
-    # Resolved from the REPOSITORY ROOT, not from rootDir — the two are
-    # independent. './Dockerfile' fails with 'no such file or directory'.
+    # No rootDir: the Docker build context is the repository root, and the
+    # Dockerfile's COPY paths are written with a backend/ prefix to match.
+    # Setting rootDir does NOT change the build context when a dockerfilePath is
+    # given, which is what made `COPY requirements.txt .` fail.
     dockerfilePath: ./backend/Dockerfile
     healthCheckPath: /api/health
     # Without an explicit plan, Render defaults to a PAID instance type and the

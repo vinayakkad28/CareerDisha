@@ -14,12 +14,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
+# NOTE: paths below are relative to the REPOSITORY ROOT, not to backend/.
+# Render builds with the repo root as the Docker context (its "Root Directory"
+# setting does not change the context when a Dockerfile Path is given), so
+# `COPY requirements.txt .` fails with "/requirements.txt": not found.
+# Keep the backend/ prefix and leave Root Directory blank in the dashboard.
+
 # Install Python dependencies
-COPY requirements.txt .
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY . .
+COPY backend/ .
 
 # Create output directory
 RUN mkdir -p /tmp/output
