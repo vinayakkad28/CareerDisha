@@ -52,8 +52,19 @@ and for later use on a paid plan, but the steps below do not rely on it.
    | Name | `careerneeti-api` |
    | Language / Runtime | **Docker** |
    | Root Directory | `backend` |
-   | Dockerfile Path | `./Dockerfile` (relative to root directory) |
+   | Dockerfile Path | `./backend/Dockerfile` |
    | Instance Type | **Free** |
+
+   > **Dockerfile Path is relative to the REPOSITORY ROOT, not to Root
+   > Directory.** The two fields are resolved independently: Root Directory sets
+   > the build context (so `COPY requirements.txt .` finds
+   > `backend/requirements.txt`), while Dockerfile Path is still resolved from
+   > the top of the repo. Setting it to `./Dockerfile` fails the build with
+   > `failed to read dockerfile: open Dockerfile: no such file or directory`
+   > and a telltale `transferring dockerfile: 2B`.
+   >
+   > If it still fails, clear the Dockerfile Path field entirely — with Root
+   > Directory set to `backend`, Render auto-detects the Dockerfile inside it.
 
 4. Expand **Advanced** and set **Health Check Path** to `/api/health`.
 

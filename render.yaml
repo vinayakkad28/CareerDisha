@@ -15,7 +15,9 @@ services:
     name: careerneeti-api
     runtime: docker
     rootDir: backend
-    dockerfilePath: ./Dockerfile
+    # Resolved from the REPOSITORY ROOT, not from rootDir — the two are
+    # independent. './Dockerfile' fails with 'no such file or directory'.
+    dockerfilePath: ./backend/Dockerfile
     healthCheckPath: /api/health
     # Without an explicit plan, Render defaults to a PAID instance type and the
     # Blueprint asks for a card before it will deploy.
