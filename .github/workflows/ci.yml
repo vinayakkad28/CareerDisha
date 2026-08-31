@@ -74,8 +74,13 @@ jobs:
         with:
           node-version: "20"
 
+      # Pinned deliberately. `npm install -g pnpm` installed whatever was latest,
+      # and a newer pnpm turned ERR_PNPM_IGNORED_BUILDS from a warning into a
+      # hard failure — breaking CI on a commit that touched no frontend deps.
       - name: Install pnpm
-        run: npm install -g pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.0
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
