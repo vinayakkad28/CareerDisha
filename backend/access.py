@@ -58,12 +58,13 @@ def resolve_scope(
     role = user.get("role") or ""
     user_id = user.get("user_id") or 0
 
-    if role == SUPERUSER_ROLE:
-        # Covers both the shared-password bootstrap token (user_id=0, no school)
-        # and a real admin User row.
-        return AccessScope(role, user_id, True, frozenset())
+    # The shared-password bootstrap token is the ONLY identity that may claim
+    # admin without a users row: it exists to create the first account against an
+    # empty database. Every other token is re-checked below.
+    if role == SUPERUSER_ROLE and not user_id:
+        return AccessScope(role, 0, True, frozenset())
 
-    if role not in ("counsellor", "school_admin"):
+    if role not in (SUPERUSER_ROLE, "counsellor", "school_admin"):
         raise HTTPException(status_code=403, detail="Unknown role")
     if not user_id:
         # A non-admin token with no user_id cannot be scoped. Deny rather than
@@ -73,6 +74,13 @@ def resolve_scope(
     row = db.get(User, user_id)
     if row is None or not row.is_active:
         raise HTTPException(status_code=401, detail="User is no longer active")
+
+    # An admin backed by a real users row is resolved from the database like
+    # anyone else. Returning early on the token's role claim — as this did — meant
+    # a demoted admin kept full access for the life of a 24-hour token, which is
+    # precisely the flaw that made permissions.require_role unsafe.
+    if row.role == SUPERUSER_ROLE:
+        return AccessScope(row.role, user_id, True, frozenset())
 
     school_ids = {row.school_id} if row.school_id else set()
     if row.role == "counsellor":
