@@ -20,7 +20,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session as DBSession
 
 from database import get_db
-from models import SchoolAssignment, Session as SessionModel, Student, User
+from models import School, SchoolAssignment, Session as SessionModel, Student, User
 from routers.auth import get_current_user
 
 SUPERUSER_ROLE = "admin"
@@ -58,12 +58,13 @@ def resolve_scope(
     role = user.get("role") or ""
     user_id = user.get("user_id") or 0
 
-    if role == SUPERUSER_ROLE:
-        # Covers both the shared-password bootstrap token (user_id=0, no school)
-        # and a real admin User row.
-        return AccessScope(role, user_id, True, frozenset())
+    # The shared-password bootstrap token is the ONLY identity that may claim
+    # admin without a users row: it exists to create the first account against an
+    # empty database. Every other token is re-checked below.
+    if role == SUPERUSER_ROLE and not user_id:
+        return AccessScope(role, 0, True, frozenset())
 
-    if role not in ("counsellor", "school_admin"):
+    if role not in (SUPERUSER_ROLE, "counsellor", "school_admin"):
         raise HTTPException(status_code=403, detail="Unknown role")
     if not user_id:
         # A non-admin token with no user_id cannot be scoped. Deny rather than
@@ -73,6 +74,13 @@ def resolve_scope(
     row = db.get(User, user_id)
     if row is None or not row.is_active:
         raise HTTPException(status_code=401, detail="User is no longer active")
+
+    # An admin backed by a real users row is resolved from the database like
+    # anyone else. Returning early on the token's role claim — as this did — meant
+    # a demoted admin kept full access for the life of a 24-hour token, which is
+    # precisely the flaw that made permissions.require_role unsafe.
+    if row.role == SUPERUSER_ROLE:
+        return AccessScope(row.role, user_id, True, frozenset())
 
     school_ids = {row.school_id} if row.school_id else set()
     if row.role == "counsellor":
@@ -105,8 +113,15 @@ def require_role(*allowed_roles: str):
 
 
 def scoped_sessions(scope: AccessScope, db: DBSession):
-    """Query over the Sessions this scope may see."""
-    q = db.query(SessionModel)
+    """Query over the Sessions this scope may see.
+
+    Joins School so that deactivating a school also hides its sessions. Without
+    that, a soft delete hid only the School row while every session — and through
+    them every student, report and PII endpoint — stayed fully readable.
+    """
+    q = db.query(SessionModel).join(School, SessionModel.school_id == School.id).filter(
+        School.is_active.is_(True)
+    )
     if scope.is_superuser:
         return q
     if not scope.school_ids:
@@ -115,15 +130,41 @@ def scoped_sessions(scope: AccessScope, db: DBSession):
     return q.filter(SessionModel.school_id.in_(scope.school_ids))
 
 
-def scoped_students(scope: AccessScope, db: DBSession):
-    """Query over the Students this scope may see, joined via their Session."""
-    q = db.query(Student)
+def scoped_schools(scope: AccessScope, db: DBSession, include_inactive: bool = False):
+    """Query over the Schools this scope may see.
+
+    include_inactive is for the deactivate path, which must still find an
+    already-soft-deleted school in order to report that it is already gone.
+    """
+    q = db.query(School)
+    if not include_inactive:
+        q = q.filter(School.is_active.is_(True))
     if scope.is_superuser:
         return q
     if not scope.school_ids:
         return q.filter(sa.false())
-    return q.join(SessionModel, Student.session_id == SessionModel.id).filter(
-        SessionModel.school_id.in_(scope.school_ids)
+    return q.filter(School.id.in_(scope.school_ids))
+
+
+def scoped_students(scope: AccessScope, db: DBSession):
+    """Query over the Students this scope may see, joined via their Session.
+
+    Also excludes students belonging to a deactivated school — see scoped_sessions.
+    """
+    q = db.query(Student)
+    if scope.is_superuser:
+        return (
+            q.join(SessionModel, Student.session_id == SessionModel.id)
+            .join(School, SessionModel.school_id == School.id)
+            .filter(School.is_active.is_(True))
+        )
+    if not scope.school_ids:
+        return q.filter(sa.false())
+    return (
+        q.join(SessionModel, Student.session_id == SessionModel.id)
+        .join(School, SessionModel.school_id == School.id)
+        .filter(School.is_active.is_(True))
+        .filter(SessionModel.school_id.in_(scope.school_ids))
     )
 
 

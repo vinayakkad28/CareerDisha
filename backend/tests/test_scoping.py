@@ -11,6 +11,7 @@ To convert a router: replace its raw queries with the helpers in `access.py`,
 then delete it from UNSCOPED_ROUTERS below. The list only shrinks.
 """
 
+import inspect
 import pathlib
 import re
 
@@ -48,11 +49,14 @@ PUBLIC_PATHS = {
 # path param or `req.<field>`), not an attribute of an authorised object.
 #   * `Student.id == sid, Student.session_id == session_id` — the second clause
 #     confines the row to a session the caller already had authorised.
+#   * `School` is included deliberately. It was missing, and that blind spot let
+#     schools.py stay completely unscoped while this file reported 18 passing
+#     tests — a guard that passes against broken code is worse than no guard.
 RAW_QUERY_PATTERN = re.compile(
-    r"db\.query\((?:Student|Session|SessionModel)\)"
-    r"\.filter\((?:Student|Session|SessionModel)\.id\s*==\s*"
+    r"db\.query\((?:Student|Session|SessionModel|School)\)"
+    r"\.filter\((?:Student|Session|SessionModel|School)\.id\s*==\s*"
     r"(?!\w+\.)"                       # not `obj.attr` — a derived lookup
-    r"[A-Za-z_]\w*\s*"                  # a bare name: student_id, sid
+    r"[A-Za-z_]\w*\s*"                  # a bare name: student_id, sid, school_id
     r"(?!,\s*Student\.session_id\s*==)"  # unless confined to a scoped session
     r"[,)]"
 )
@@ -128,6 +132,20 @@ def test_student_and_session_routes_are_scoped():
             entity_routes += 1
             if get_scoped_session not in calls:
                 unscoped.append(f"{path} (session)")
+        if "{school_id}" in path:
+            # NOT a check for resolve_scope: schools.py declares it at ROUTER
+            # level, so it is present on every route whether or not the handler
+            # scopes anything — an assertion that can never fail, which is the
+            # exact failure this file exists to prevent.
+            #
+            # Schools have no resource-resolving dependency (ownership is checked
+            # inside the handler), so inspect the handler's source instead and
+            # require it to resolve the school through the scoped helper or
+            # assert ownership explicitly.
+            entity_routes += 1
+            src = inspect.getsource(route.endpoint) if route.endpoint else ""
+            if "scoped_schools(" not in src and "assert_school(" not in src:
+                unscoped.append(f"{path} (school)")
 
     # Without this the test silently passes when route traversal breaks.
     assert entity_routes > 10, (

@@ -19,6 +19,26 @@ const schoolAdminNavItems = [
   { href: "/settings", label: "Settings", icon: "settings" },
 ];
 
+// Counsellors previously fell through to adminNavItems, so they saw Schools and
+// Counsellors — both of which call admin-only endpoints and 403 for them. While
+// schools.py was unscoped, that Schools link was a one-click route to every
+// school's contact details rather than a dead end.
+//
+// Coaching is kept deliberately: routers/coaching.py serves static, non-PII
+// partner data with no auth requirement, so it works for every role.
+const counsellorNavItems = [
+  { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
+  { href: "/sessions", label: "My Sessions", icon: "sessions" },
+  { href: "/coaching", label: "Coaching", icon: "school" },
+  { href: "/settings", label: "Settings", icon: "settings" },
+];
+
+const NAV_BY_ROLE: Record<string, typeof adminNavItems> = {
+  admin: adminNavItems,
+  school_admin: schoolAdminNavItems,
+  counsellor: counsellorNavItems,
+};
+
 const NAV_ICONS: Record<string, React.ReactNode> = {
   dashboard: (
     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
@@ -70,12 +90,18 @@ function RoleBadge({ role }: { role: string }) {
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { logout, user } = useAuth();
+  const { logout, user, loading } = useAuth();
 
-  const role = user?.role || "admin";
-  const navItems = role === "school_admin" ? schoolAdminNavItems : adminNavItems;
-  const portalLabel =
-    role === "school_admin" ? "School Portal" : "Admin Portal";
+  // `user` is null until /auth/me resolves. Picking a default role here made
+  // every admin render the counsellor nav on first paint and then jump to the
+  // admin one — so wait rather than guess.
+  const role = user?.role;
+  const navItems = role ? (NAV_BY_ROLE[role] ?? counsellorNavItems) : [];
+  const portalLabel = !role
+    ? ""
+    : role === "school_admin" ? "School Portal"
+      : role === "counsellor" ? "Counsellor Portal"
+        : "Admin Portal";
 
   return (
     <aside className="w-sidebar min-h-screen flex flex-col text-white shrink-0 bg-sidebar-gradient py-8">
@@ -90,9 +116,16 @@ export default function Sidebar() {
         </p>
       </div>
 
-      {/* Navigation */}
+      {/* Navigation.
+          While auth is resolving we render placeholders rather than a guessed
+          menu: defaulting the role made every admin flash the counsellor nav on
+          first paint, and an empty nav is its own kind of flicker. */}
       <nav className="flex-1 space-y-1">
-        {navItems.map((item) => {
+        {loading &&
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="mx-4 my-2 h-9 rounded bg-white/10 animate-pulse" />
+          ))}
+        {!loading && navItems.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(item.href + "/");
           return (

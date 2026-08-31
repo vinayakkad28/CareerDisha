@@ -54,7 +54,13 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/careerneeti_ci
         run: alembic check
 
+      # DATABASE_URL is set here so the integration suite runs against the
+      # Postgres service rather than a temp SQLite file. Without it conftest
+      # falls back to SQLite and Postgres-only behaviour — negative LIMIT,
+      # TIMESTAMPTZ, stricter FK ordering — goes unverified.
       - name: Run tests
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/careerneeti_ci
         run: python -m pytest tests/ -v --tb=short
 
       - name: Verify app imports
@@ -74,8 +80,13 @@ jobs:
         with:
           node-version: "20"
 
+      # Pinned deliberately. `npm install -g pnpm` installed whatever was latest,
+      # and a newer pnpm turned ERR_PNPM_IGNORED_BUILDS from a warning into a
+      # hard failure — breaking CI on a commit that touched no frontend deps.
       - name: Install pnpm
-        run: npm install -g pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.0
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
