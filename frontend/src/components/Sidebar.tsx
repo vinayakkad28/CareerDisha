@@ -116,9 +116,16 @@ export default function Sidebar() {
         </p>
       </div>
 
-      {/* Navigation */}
+      {/* Navigation.
+          While auth is resolving we render placeholders rather than a guessed
+          menu: defaulting the role made every admin flash the counsellor nav on
+          first paint, and an empty nav is its own kind of flicker. */}
       <nav className="flex-1 space-y-1">
-        {navItems.map((item) => {
+        {loading &&
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="mx-4 my-2 h-9 rounded bg-white/10 animate-pulse" />
+          ))}
+        {!loading && navItems.map((item) => {
           const isActive =
             pathname === item.href || pathname.startsWith(item.href + "/");
           return (
