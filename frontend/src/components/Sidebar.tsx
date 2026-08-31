@@ -19,10 +19,13 @@ const schoolAdminNavItems = [
   { href: "/settings", label: "Settings", icon: "settings" },
 ];
 
-// Counsellors previously fell through to adminNavItems, so they saw Schools,
-// Counsellors and Coaching. Those pages call admin-only endpoints, so every one
-// of them 403s — and while schools.py was unscoped, that Schools link was a
-// one-click route to every school's contact details rather than a dead end.
+// Counsellors previously fell through to adminNavItems, so they saw Schools and
+// Counsellors — both of which call admin-only endpoints and 403 for them. While
+// schools.py was unscoped, that Schools link was a one-click route to every
+// school's contact details rather than a dead end.
+//
+// Coaching is kept deliberately: routers/coaching.py serves static, non-PII
+// partner data with no auth requirement, so it works for every role.
 const counsellorNavItems = [
   { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
   { href: "/sessions", label: "My Sessions", icon: "sessions" },
@@ -87,13 +90,16 @@ function RoleBadge({ role }: { role: string }) {
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { logout, user } = useAuth();
+  const { logout, user, loading } = useAuth();
 
-  const role = user?.role || "counsellor";
-  // Default to the least-privileged nav for an unknown role rather than the most.
-  const navItems = NAV_BY_ROLE[role] ?? counsellorNavItems;
-  const portalLabel =
-    role === "school_admin" ? "School Portal"
+  // `user` is null until /auth/me resolves. Picking a default role here made
+  // every admin render the counsellor nav on first paint and then jump to the
+  // admin one — so wait rather than guess.
+  const role = user?.role;
+  const navItems = role ? (NAV_BY_ROLE[role] ?? counsellorNavItems) : [];
+  const portalLabel = !role
+    ? ""
+    : role === "school_admin" ? "School Portal"
       : role === "counsellor" ? "Counsellor Portal"
         : "Admin Portal";
 

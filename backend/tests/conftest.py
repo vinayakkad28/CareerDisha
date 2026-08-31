@@ -29,7 +29,7 @@ os.environ.setdefault("JWT_SECRET", TEST_JWT_SECRET)
 os.environ.setdefault("ADMIN_PASSWORD", "test-admin-password")
 os.environ.setdefault("ENVIRONMENT", "development")
 os.environ.setdefault("GROQ_API_KEY", "test-key-not-used")
-os.environ.pop("AUTO_CREATE_SCHEMA", None)  # force the migrated path
+os.environ["AUTO_CREATE_SCHEMA"] = "0"  # set, not popped: load_dotenv would refill a popped key
 
 BACKEND_DIR = Path(__file__).resolve().parents[1]
 
@@ -41,8 +41,11 @@ def database_url():
     Honours DATABASE_URL when set (CI points it at Postgres); otherwise uses a
     temporary SQLite file so local runs stay fast.
     """
-    external = os.environ.get("TEST_DATABASE_URL")
-    if external:
+    external = os.environ.get("DATABASE_URL")
+    if external and not external.startswith("sqlite"):
+        # CI points this at the Postgres service. Honour it rather than
+        # overwriting with a temp SQLite file, which is what made the whole
+        # integration suite silently run on SQLite.
         url = external
         tmp = None
     else:
@@ -66,7 +69,7 @@ def database_url():
 
 
 @pytest.fixture()
-def db(database_url):
+def db(database_url, _clean_tables):
     """A database session. Rows created here are visible to the API under test."""
     from database import SessionLocal
 
@@ -77,14 +80,8 @@ def db(database_url):
         session.close()
 
 
-@pytest.fixture(autouse=True)
-def _clean_tables(database_url):
-    """Truncate between tests so ordering never matters.
-
-    Deleted child-first to respect foreign keys, including the students <->
-    d2c_assessments cycle.
-    """
-    yield
+def _truncate_all():
+    """Delete every row, child-first, breaking the students <-> d2c_assessments cycle."""
     from database import SessionLocal
     import models
 
@@ -108,7 +105,23 @@ def _clean_tables(database_url):
 
 
 @pytest.fixture()
-def client(database_url):
+def _clean_tables(database_url):
+    """Truncate around each test that touches the database.
+
+    Not autouse: the pure unit suites (scoring, QA, report generation) touch no
+    database, and forcing them through alembic plus ~11 DELETEs each made them
+    depend on infrastructure they do not use.
+
+    Cleans before as well as after — teardown never runs if a previous run was
+    interrupted, so without the leading sweep the first test can start dirty.
+    """
+    _truncate_all()
+    yield
+    _truncate_all()
+
+
+@pytest.fixture()
+def client(database_url, _clean_tables):
     """TestClient with the app's real lifespan, including the schema assertion."""
     from fastapi.testclient import TestClient
 

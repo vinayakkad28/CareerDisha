@@ -3,6 +3,7 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from access import AccessScope, require_role, resolve_scope, scoped_schools
+from schemas.schools import SchoolSummary
 from database import get_db
 from models import School, Session as SessionModel, Student, Feedback, User
 
@@ -37,7 +38,9 @@ def get_my_school(db: Session = Depends(get_db), scope: AccessScope = Depends(re
         raise HTTPException(status_code=404, detail="School not found")
 
     sessions = db.query(SessionModel).filter(SessionModel.school_id == school_id).order_by(SessionModel.session_date.desc()).all()
-    total_students = sum(s.total_students for s in sessions)
+    # total_students is nullable with a Python-side default only, so a row
+    # written by raw SQL or a data migration can hold NULL.
+    total_students = sum(s.total_students or 0 for s in sessions)
     session_ids = [s.id for s in sessions]
     total_delivered = db.query(Student).filter(
         Student.session_id.in_(session_ids),
@@ -45,7 +48,7 @@ def get_my_school(db: Session = Depends(get_db), scope: AccessScope = Depends(re
     ).count() if session_ids else 0
 
     return {
-        **{c.name: getattr(school, c.name) for c in school.__table__.columns},
+        **SchoolSummary.model_validate(school).model_dump(exclude={"total_sessions", "total_students"}),
         "total_sessions": len(sessions),
         "total_students": total_students,
         "total_delivered": total_delivered,

@@ -143,3 +143,37 @@ class TestSchoolTenancy:
         assert client.delete(f"/api/schools/{sid}", headers=admin_headers).status_code == 200
         assert client.get(f"/api/schools/{sid}", headers=admin_headers).status_code == 404
         assert [s["name"] for s in client.get("/api/schools", headers=admin_headers).json()] == ["School A"]
+
+    def test_deactivating_a_school_also_hides_its_students_and_sessions(
+        self, client, two_schools, admin_headers
+    ):
+        """Soft delete must not leave the PII behind.
+
+        Hiding only the School row left every session — and through them every
+        student, report and delivery endpoint — fully readable.
+        """
+        assert client.delete(f"/api/schools/{two_schools['school_b'].id}",
+                             headers=admin_headers).status_code == 200
+
+        sid = two_schools["session_b"].id
+        stid = two_schools["student_b"].id
+        assert client.get(f"/api/sessions/{sid}", headers=admin_headers).status_code == 404
+        assert client.get(f"/api/students/{stid}", headers=admin_headers).status_code == 404
+        listed = client.get("/api/sessions", headers=admin_headers).json()
+        assert all(row["school_name"] != "School B" for row in listed)
+
+    def test_deactivated_code_can_be_reactivated(self, client, two_schools, admin_headers):
+        """A soft-deleted code must not be burned forever.
+
+        create_school checked uniqueness without regard to is_active, so the code
+        stayed taken while detail and update both 404'd on it — unreachable and
+        unusable, with nothing that could set is_active back to True.
+        """
+        assert client.delete(f"/api/schools/{two_schools['school_b'].id}",
+                             headers=admin_headers).status_code == 200
+        r = client.post("/api/schools",
+                        json={"name": "School B Reborn", "code": "SB", "city": "Delhi"},
+                        headers=admin_headers)
+        assert r.status_code == 201, r.text
+        assert r.json()["name"] == "School B Reborn"
+        assert client.get(f"/api/schools/{r.json()['id']}", headers=admin_headers).status_code == 200

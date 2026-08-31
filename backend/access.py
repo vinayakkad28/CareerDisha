@@ -105,8 +105,15 @@ def require_role(*allowed_roles: str):
 
 
 def scoped_sessions(scope: AccessScope, db: DBSession):
-    """Query over the Sessions this scope may see."""
-    q = db.query(SessionModel)
+    """Query over the Sessions this scope may see.
+
+    Joins School so that deactivating a school also hides its sessions. Without
+    that, a soft delete hid only the School row while every session — and through
+    them every student, report and PII endpoint — stayed fully readable.
+    """
+    q = db.query(SessionModel).join(School, SessionModel.school_id == School.id).filter(
+        School.is_active.is_(True)
+    )
     if scope.is_superuser:
         return q
     if not scope.school_ids:
@@ -132,14 +139,24 @@ def scoped_schools(scope: AccessScope, db: DBSession, include_inactive: bool = F
 
 
 def scoped_students(scope: AccessScope, db: DBSession):
-    """Query over the Students this scope may see, joined via their Session."""
+    """Query over the Students this scope may see, joined via their Session.
+
+    Also excludes students belonging to a deactivated school — see scoped_sessions.
+    """
     q = db.query(Student)
     if scope.is_superuser:
-        return q
+        return (
+            q.join(SessionModel, Student.session_id == SessionModel.id)
+            .join(School, SessionModel.school_id == School.id)
+            .filter(School.is_active.is_(True))
+        )
     if not scope.school_ids:
         return q.filter(sa.false())
-    return q.join(SessionModel, Student.session_id == SessionModel.id).filter(
-        SessionModel.school_id.in_(scope.school_ids)
+    return (
+        q.join(SessionModel, Student.session_id == SessionModel.id)
+        .join(School, SessionModel.school_id == School.id)
+        .filter(School.is_active.is_(True))
+        .filter(SessionModel.school_id.in_(scope.school_ids))
     )
 
 

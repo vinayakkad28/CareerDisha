@@ -54,7 +54,13 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/careerneeti_ci
         run: alembic check
 
+      # DATABASE_URL is set here so the integration suite runs against the
+      # Postgres service rather than a temp SQLite file. Without it conftest
+      # falls back to SQLite and Postgres-only behaviour — negative LIMIT,
+      # TIMESTAMPTZ, stricter FK ordering — goes unverified.
       - name: Run tests
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/careerneeti_ci
         run: python -m pytest tests/ -v --tb=short
 
       - name: Verify app imports

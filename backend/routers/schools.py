@@ -1,7 +1,7 @@
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -38,10 +38,59 @@ class SchoolUpdate(BaseModel):
     contact_phone: Optional[str] = Field(default=None, max_length=15)
 
 
+def _audit(db: Session, action: str, school: School, detail: str, scope: AccessScope) -> None:
+    """Stage an audit row for the current change.
+
+    Deliberately does NOT commit: routers.audit.log_audit commits, which made the
+    trail durable before the mutation it describes, so a failed second commit left
+    the log asserting an update that never happened. The caller commits once,
+    covering both.
+
+    user_id 0 is the shared-password bootstrap admin and has no users row, so it
+    cannot be stored as an FK — but "unattributed" is the wrong record on a
+    DPDPA-regulated dataset, so the actor is named in the detail text instead.
+    """
+    from models import AuditLog
+
+    actor = scope.user_id or None
+    if actor is None:
+        detail = f"[shared-password admin] {detail}"
+    db.add(AuditLog(
+        user_id=actor,
+        action=action,
+        entity_type="school",
+        entity_id=school.id,
+        detail=detail,
+    ))
+
+
+def _detail(school: School, sessions: list | None = None) -> SchoolDetail:
+    """Build a SchoolDetail without touching School.sessions.
+
+    SchoolDetail has a field named `sessions`, so model_validate(school) with
+    from_attributes would lazy-load the relationship — duplicating the query in
+    get_school and silently attaching every session to the create and update
+    responses, which never returned them before.
+    """
+    data = {
+        "id": school.id,
+        "name": school.name,
+        "code": school.code,
+        "city": school.city,
+        "board": school.board,
+        "contact_person": school.contact_person,
+        "contact_phone": school.contact_phone,
+        "is_active": school.is_active,
+        "created_at": school.created_at,
+        "sessions": [SchoolSessionSummary.model_validate(s) for s in (sessions or [])],
+    }
+    return SchoolDetail.model_validate(data)
+
+
 @router.get("", response_model=list[SchoolSummary])
 def list_schools(
-    skip: int = 0,
-    limit: int = 50,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
     db: Session = Depends(get_db),
     scope: AccessScope = Depends(resolve_scope),
 ):
@@ -49,7 +98,7 @@ def list_schools(
         scoped_schools(scope, db)
         .order_by(School.created_at.desc())
         .offset(skip)
-        .limit(min(limit, 200))
+        .limit(limit)
         .all()
     )
 
@@ -81,17 +130,27 @@ def list_schools(
 def create_school(
     school: SchoolCreate,
     db: Session = Depends(get_db),
-    _: AccessScope = Depends(require_role("admin")),
+    scope: AccessScope = Depends(require_role("admin")),
 ):
     """Create a school. Admin only — this previously had no role check at all."""
     existing = db.query(School).filter(School.code == school.code).first()
-    if existing:
+    if existing and existing.is_active:
         raise HTTPException(status_code=400, detail=f"School with code '{school.code}' already exists")
-    db_school = School(**school.model_dump())
-    db.add(db_school)
+    if existing:
+        # Reactivate rather than reject. Soft delete retains the row, so without
+        # this the code is permanently unusable: detail and update both 404 on an
+        # inactive school and nothing else sets is_active back to True.
+        for field, value in school.model_dump().items():
+            setattr(existing, field, value)
+        existing.is_active = True
+        db_school = existing
+        _audit(db, "school.reactivate", db_school, f"Reactivated {db_school.code}", scope)
+    else:
+        db_school = School(**school.model_dump())
+        db.add(db_school)
     db.commit()
     db.refresh(db_school)
-    return SchoolDetail.model_validate(db_school)
+    return _detail(db_school)
 
 
 @router.get("/{school_id}", response_model=SchoolDetail)
@@ -112,9 +171,7 @@ def get_school(
         .order_by(SessionModel.session_date.desc())
         .all()
     )
-    detail = SchoolDetail.model_validate(school)
-    detail.sessions = [SchoolSessionSummary.model_validate(s) for s in sessions]
-    return detail
+    return _detail(school, sessions)
 
 
 @router.put("/{school_id}", response_model=SchoolDetail)
@@ -135,21 +192,13 @@ def update_school(
 
     changes = updates.model_dump(exclude_unset=True)
     if changes:
-        from routers.audit import log_audit
-
-        log_audit(
-            db,
-            action="school.update",
-            entity_type="school",
-            entity_id=school.id,
-            detail=f"Updated {school.code}: {', '.join(sorted(changes))}",
-            user_id=scope.user_id or None,
-        )
         for field, value in changes.items():
             setattr(school, field, value)
+        _audit(db, "school.update", school,
+               f"Updated {school.code}: {', '.join(sorted(changes))}", scope)
         db.commit()
         db.refresh(school)
-    return SchoolDetail.model_validate(school)
+    return _detail(school)
 
 
 @router.delete("/{school_id}")
@@ -176,16 +225,8 @@ def delete_school(
     if not school.is_active:
         return {"detail": "School already deactivated"}
 
-    from routers.audit import log_audit
-
-    log_audit(
-        db,
-        action="school.deactivate",
-        entity_type="school",
-        entity_id=school.id,
-        detail=f"Deactivated {school.name} ({school.code})",
-        user_id=scope.user_id or None,
-    )
     school.is_active = False
+    _audit(db, "school.deactivate", school,
+           f"Deactivated {school.name} ({school.code})", scope)
     db.commit()
     return {"detail": "School deactivated"}

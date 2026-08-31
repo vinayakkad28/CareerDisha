@@ -11,6 +11,7 @@ To convert a router: replace its raw queries with the helpers in `access.py`,
 then delete it from UNSCOPED_ROUTERS below. The list only shrinks.
 """
 
+import inspect
 import pathlib
 import re
 
@@ -103,7 +104,7 @@ def _iter_routes(router):
 
 def test_student_and_session_routes_are_scoped():
     """Every /{student_id} and /{session_id} route resolves through access.py."""
-    from access import get_scoped_session, get_scoped_student, resolve_scope
+    from access import get_scoped_session, get_scoped_student
     from main import app
 
     def dependency_calls(dependant):
@@ -132,12 +133,18 @@ def test_student_and_session_routes_are_scoped():
             if get_scoped_session not in calls:
                 unscoped.append(f"{path} (session)")
         if "{school_id}" in path:
-            # Schools have no resource-resolving dependency: ownership is checked
-            # inside the handler via scope.assert_school or _visible_schools.
-            # Assert the route at least resolves an AccessScope, which the old
-            # get_current_user dependency did not.
+            # NOT a check for resolve_scope: schools.py declares it at ROUTER
+            # level, so it is present on every route whether or not the handler
+            # scopes anything — an assertion that can never fail, which is the
+            # exact failure this file exists to prevent.
+            #
+            # Schools have no resource-resolving dependency (ownership is checked
+            # inside the handler), so inspect the handler's source instead and
+            # require it to resolve the school through the scoped helper or
+            # assert ownership explicitly.
             entity_routes += 1
-            if resolve_scope not in calls:
+            src = inspect.getsource(route.endpoint) if route.endpoint else ""
+            if "scoped_schools(" not in src and "assert_school(" not in src:
                 unscoped.append(f"{path} (school)")
 
     # Without this the test silently passes when route traversal breaks.
