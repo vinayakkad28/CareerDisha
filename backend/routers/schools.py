@@ -1,71 +1,89 @@
 import logging
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
 
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field
+from sqlalchemy import func
+from sqlalchemy.orm import Session
+
+from access import AccessScope, require_role, resolve_scope, scoped_schools
 from database import get_db
 from models import School, Session as SessionModel
-from routers.auth import get_current_user
-from permissions import require_role
+from schemas.schools import SchoolDetail, SchoolSessionSummary, SchoolSummary
 
 logger = logging.getLogger(__name__)
-router = APIRouter(dependencies=[Depends(get_current_user)])
+
+# resolve_scope, not get_current_user. This router was the last one authenticated
+# by a raw JWT decode with no ownership check, so any authenticated role —
+# including a counsellor assigned to a single school — could list every school,
+# read another school's full record together with all of its sessions, rewrite
+# another school's contact details with no audit entry, and create schools.
+router = APIRouter(dependencies=[Depends(resolve_scope)])
 
 
 class SchoolCreate(BaseModel):
-    name: str
-    code: str
-    city: str
-    board: str = "CBSE"
-    contact_person: str = ""
-    contact_phone: str = ""
+    name: str = Field(min_length=1, max_length=255)
+    code: str = Field(min_length=1, max_length=50)
+    city: str = Field(min_length=1, max_length=100)
+    board: str = Field(default="CBSE", max_length=20)
+    contact_person: str = Field(default="", max_length=255)
+    contact_phone: str = Field(default="", max_length=15)
 
 
 class SchoolUpdate(BaseModel):
-    name: Optional[str] = None
-    city: Optional[str] = None
-    board: Optional[str] = None
-    contact_person: Optional[str] = None
-    contact_phone: Optional[str] = None
+    name: Optional[str] = Field(default=None, max_length=255)
+    city: Optional[str] = Field(default=None, max_length=100)
+    board: Optional[str] = Field(default=None, max_length=20)
+    contact_person: Optional[str] = Field(default=None, max_length=255)
+    contact_phone: Optional[str] = Field(default=None, max_length=15)
 
 
-class SchoolResponse(BaseModel):
-    id: int
-    name: str
-    code: str
-    city: str
-    board: str
-    contact_person: str
-    contact_phone: str
-    total_sessions: int = 0
-    total_students: int = 0
-    created_at: datetime
+@router.get("", response_model=list[SchoolSummary])
+def list_schools(
+    skip: int = 0,
+    limit: int = 50,
+    db: Session = Depends(get_db),
+    scope: AccessScope = Depends(resolve_scope),
+):
+    schools = (
+        scoped_schools(scope, db)
+        .order_by(School.created_at.desc())
+        .offset(skip)
+        .limit(min(limit, 200))
+        .all()
+    )
 
-    class Config:
-        from_attributes = True
-
-
-@router.get("")
-def list_schools(skip: int = 0, limit: int = 50, db: Session = Depends(get_db)):
-    schools = db.query(School).order_by(School.created_at.desc()).offset(skip).limit(limit).all()
-    result = []
-    for s in schools:
-        session_count = db.query(SessionModel).filter(SessionModel.school_id == s.id).count()
-        total_students = sum(
-            sess.total_students for sess in db.query(SessionModel).filter(SessionModel.school_id == s.id).all()
+    # One grouped query for counts instead of two per school.
+    school_ids = [s.id for s in schools] or [-1]
+    agg = dict(
+        (row[0], (row[1], row[2] or 0))
+        for row in db.query(
+            SessionModel.school_id,
+            func.count(SessionModel.id),
+            func.coalesce(func.sum(SessionModel.total_students), 0),
         )
-        result.append({
-            **{c.name: getattr(s, c.name) for c in s.__table__.columns},
-            "total_sessions": session_count,
-            "total_students": total_students,
-        })
-    return result
+        .filter(SessionModel.school_id.in_(school_ids))
+        .group_by(SessionModel.school_id)
+        .all()
+    )
+
+    out = []
+    for s in schools:
+        sessions_count, students_count = agg.get(s.id, (0, 0))
+        row = SchoolSummary.model_validate(s)
+        row.total_sessions = sessions_count
+        row.total_students = int(students_count)
+        out.append(row)
+    return out
 
 
-@router.post("", status_code=201)
-def create_school(school: SchoolCreate, db: Session = Depends(get_db)):
+@router.post("", status_code=201, response_model=SchoolDetail)
+def create_school(
+    school: SchoolCreate,
+    db: Session = Depends(get_db),
+    _: AccessScope = Depends(require_role("admin")),
+):
+    """Create a school. Admin only — this previously had no role check at all."""
     existing = db.query(School).filter(School.code == school.code).first()
     if existing:
         raise HTTPException(status_code=400, detail=f"School with code '{school.code}' already exists")
@@ -73,41 +91,72 @@ def create_school(school: SchoolCreate, db: Session = Depends(get_db)):
     db.add(db_school)
     db.commit()
     db.refresh(db_school)
-    return {c.name: getattr(db_school, c.name) for c in db_school.__table__.columns}
+    return SchoolDetail.model_validate(db_school)
 
 
-@router.get("/{school_id}")
-def get_school(school_id: int, db: Session = Depends(get_db)):
-    school = db.query(School).filter(School.id == school_id).first()
+@router.get("/{school_id}", response_model=SchoolDetail)
+def get_school(
+    school_id: int,
+    db: Session = Depends(get_db),
+    scope: AccessScope = Depends(resolve_scope),
+):
+    school = scoped_schools(scope, db).filter(School.id == school_id).first()
+    if not school:
+        # 404 rather than 403, matching the rest of the API: ids stay
+        # non-enumerable and the client does not log the user out.
+        raise HTTPException(status_code=404, detail="School not found")
+
+    sessions = (
+        db.query(SessionModel)
+        .filter(SessionModel.school_id == school_id)
+        .order_by(SessionModel.session_date.desc())
+        .all()
+    )
+    detail = SchoolDetail.model_validate(school)
+    detail.sessions = [SchoolSessionSummary.model_validate(s) for s in sessions]
+    return detail
+
+
+@router.put("/{school_id}", response_model=SchoolDetail)
+def update_school(
+    school_id: int,
+    updates: SchoolUpdate,
+    db: Session = Depends(get_db),
+    scope: AccessScope = Depends(require_role("admin")),
+):
+    """Update a school. Admin only, scoped, and recorded.
+
+    Previously any authenticated role could rewrite any school's identity and
+    contact details, with no audit entry.
+    """
+    school = scoped_schools(scope, db).filter(School.id == school_id).first()
     if not school:
         raise HTTPException(status_code=404, detail="School not found")
-    sessions = db.query(SessionModel).filter(SessionModel.school_id == school_id).order_by(SessionModel.session_date.desc()).all()
-    return {
-        **{c.name: getattr(school, c.name) for c in school.__table__.columns},
-        "sessions": [
-            {c.name: getattr(s, c.name) for c in s.__table__.columns}
-            for s in sessions
-        ],
-    }
 
+    changes = updates.model_dump(exclude_unset=True)
+    if changes:
+        from routers.audit import log_audit
 
-@router.put("/{school_id}")
-def update_school(school_id: int, updates: SchoolUpdate, db: Session = Depends(get_db)):
-    school = db.query(School).filter(School.id == school_id).first()
-    if not school:
-        raise HTTPException(status_code=404, detail="School not found")
-    for field, value in updates.model_dump(exclude_unset=True).items():
-        setattr(school, field, value)
-    db.commit()
-    db.refresh(school)
-    return {c.name: getattr(school, c.name) for c in school.__table__.columns}
+        log_audit(
+            db,
+            action="school.update",
+            entity_type="school",
+            entity_id=school.id,
+            detail=f"Updated {school.code}: {', '.join(sorted(changes))}",
+            user_id=scope.user_id or None,
+        )
+        for field, value in changes.items():
+            setattr(school, field, value)
+        db.commit()
+        db.refresh(school)
+    return SchoolDetail.model_validate(school)
 
 
 @router.delete("/{school_id}")
 def delete_school(
     school_id: int,
     db: Session = Depends(get_db),
-    user: dict = Depends(require_role("admin")),
+    scope: AccessScope = Depends(require_role("admin")),
 ):
     """Deactivate a school.
 
@@ -117,7 +166,11 @@ def delete_school(
     one API call, with no confirmation and no audit entry, on a DPDPA-regulated
     dataset. It is now a soft delete, and it is recorded.
     """
-    school = db.query(School).filter(School.id == school_id).first()
+    school = (
+        scoped_schools(scope, db, include_inactive=True)
+        .filter(School.id == school_id)
+        .first()
+    )
     if not school:
         raise HTTPException(status_code=404, detail="School not found")
     if not school.is_active:
@@ -131,7 +184,7 @@ def delete_school(
         entity_type="school",
         entity_id=school.id,
         detail=f"Deactivated {school.name} ({school.code})",
-        user_id=user.get("user_id") if isinstance(user, dict) else getattr(user, "user_id", None),
+        user_id=scope.user_id or None,
     )
     school.is_active = False
     db.commit()

@@ -2,7 +2,7 @@
 import logging
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from access import AccessScope, require_role, resolve_scope
+from access import AccessScope, require_role, resolve_scope, scoped_schools
 from database import get_db
 from models import School, Session as SessionModel, Student, Feedback, User
 
@@ -32,7 +32,7 @@ def get_my_school(db: Session = Depends(get_db), scope: AccessScope = Depends(re
     school_id = _linked_school_id(scope, db)
     if not school_id:
         raise HTTPException(status_code=403, detail="No school linked to your account")
-    school = db.query(School).filter(School.id == school_id).first()
+    school = scoped_schools(scope, db).filter(School.id == school_id).first()
     if not school:
         raise HTTPException(status_code=404, detail="School not found")
 

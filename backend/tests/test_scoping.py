@@ -48,11 +48,14 @@ PUBLIC_PATHS = {
 # path param or `req.<field>`), not an attribute of an authorised object.
 #   * `Student.id == sid, Student.session_id == session_id` — the second clause
 #     confines the row to a session the caller already had authorised.
+#   * `School` is included deliberately. It was missing, and that blind spot let
+#     schools.py stay completely unscoped while this file reported 18 passing
+#     tests — a guard that passes against broken code is worse than no guard.
 RAW_QUERY_PATTERN = re.compile(
-    r"db\.query\((?:Student|Session|SessionModel)\)"
-    r"\.filter\((?:Student|Session|SessionModel)\.id\s*==\s*"
+    r"db\.query\((?:Student|Session|SessionModel|School)\)"
+    r"\.filter\((?:Student|Session|SessionModel|School)\.id\s*==\s*"
     r"(?!\w+\.)"                       # not `obj.attr` — a derived lookup
-    r"[A-Za-z_]\w*\s*"                  # a bare name: student_id, sid
+    r"[A-Za-z_]\w*\s*"                  # a bare name: student_id, sid, school_id
     r"(?!,\s*Student\.session_id\s*==)"  # unless confined to a scoped session
     r"[,)]"
 )
@@ -100,7 +103,7 @@ def _iter_routes(router):
 
 def test_student_and_session_routes_are_scoped():
     """Every /{student_id} and /{session_id} route resolves through access.py."""
-    from access import get_scoped_session, get_scoped_student
+    from access import get_scoped_session, get_scoped_student, resolve_scope
     from main import app
 
     def dependency_calls(dependant):
@@ -128,6 +131,14 @@ def test_student_and_session_routes_are_scoped():
             entity_routes += 1
             if get_scoped_session not in calls:
                 unscoped.append(f"{path} (session)")
+        if "{school_id}" in path:
+            # Schools have no resource-resolving dependency: ownership is checked
+            # inside the handler via scope.assert_school or _visible_schools.
+            # Assert the route at least resolves an AccessScope, which the old
+            # get_current_user dependency did not.
+            entity_routes += 1
+            if resolve_scope not in calls:
+                unscoped.append(f"{path} (school)")
 
     # Without this the test silently passes when route traversal breaks.
     assert entity_routes > 10, (

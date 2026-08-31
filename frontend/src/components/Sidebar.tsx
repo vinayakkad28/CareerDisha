@@ -19,6 +19,23 @@ const schoolAdminNavItems = [
   { href: "/settings", label: "Settings", icon: "settings" },
 ];
 
+// Counsellors previously fell through to adminNavItems, so they saw Schools,
+// Counsellors and Coaching. Those pages call admin-only endpoints, so every one
+// of them 403s — and while schools.py was unscoped, that Schools link was a
+// one-click route to every school's contact details rather than a dead end.
+const counsellorNavItems = [
+  { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
+  { href: "/sessions", label: "My Sessions", icon: "sessions" },
+  { href: "/coaching", label: "Coaching", icon: "school" },
+  { href: "/settings", label: "Settings", icon: "settings" },
+];
+
+const NAV_BY_ROLE: Record<string, typeof adminNavItems> = {
+  admin: adminNavItems,
+  school_admin: schoolAdminNavItems,
+  counsellor: counsellorNavItems,
+};
+
 const NAV_ICONS: Record<string, React.ReactNode> = {
   dashboard: (
     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
@@ -72,10 +89,13 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { logout, user } = useAuth();
 
-  const role = user?.role || "admin";
-  const navItems = role === "school_admin" ? schoolAdminNavItems : adminNavItems;
+  const role = user?.role || "counsellor";
+  // Default to the least-privileged nav for an unknown role rather than the most.
+  const navItems = NAV_BY_ROLE[role] ?? counsellorNavItems;
   const portalLabel =
-    role === "school_admin" ? "School Portal" : "Admin Portal";
+    role === "school_admin" ? "School Portal"
+      : role === "counsellor" ? "Counsellor Portal"
+        : "Admin Portal";
 
   return (
     <aside className="w-sidebar min-h-screen flex flex-col text-white shrink-0 bg-sidebar-gradient py-8">

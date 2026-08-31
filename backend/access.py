@@ -20,7 +20,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session as DBSession
 
 from database import get_db
-from models import SchoolAssignment, Session as SessionModel, Student, User
+from models import School, SchoolAssignment, Session as SessionModel, Student, User
 from routers.auth import get_current_user
 
 SUPERUSER_ROLE = "admin"
@@ -113,6 +113,22 @@ def scoped_sessions(scope: AccessScope, db: DBSession):
         # No schools means no rows. The old helper returned everything here.
         return q.filter(sa.false())
     return q.filter(SessionModel.school_id.in_(scope.school_ids))
+
+
+def scoped_schools(scope: AccessScope, db: DBSession, include_inactive: bool = False):
+    """Query over the Schools this scope may see.
+
+    include_inactive is for the deactivate path, which must still find an
+    already-soft-deleted school in order to report that it is already gone.
+    """
+    q = db.query(School)
+    if not include_inactive:
+        q = q.filter(School.is_active.is_(True))
+    if scope.is_superuser:
+        return q
+    if not scope.school_ids:
+        return q.filter(sa.false())
+    return q.filter(School.id.in_(scope.school_ids))
 
 
 def scoped_students(scope: AccessScope, db: DBSession):
