@@ -1,4 +1,5 @@
 import logging
+import time
 from datetime import datetime, timezone
 
 from fastapi import FastAPI
@@ -151,18 +152,31 @@ def health_check():
     Returns 503 when the database is unreachable so that platform health
     checks and uptime monitors get a truthful signal.
     """
-    db_status = "connected"
-    try:
-        db = SessionLocal()
+    # Neon's free tier suspends the compute after 5 minutes idle and wakes it on
+    # the next connection, so the first probe after a quiet period legitimately
+    # times out while the database is starting. A single-shot probe reports that
+    # as "error" and, because this path is Render's healthCheckPath, a healthy
+    # service gets restarted for doing nothing but idling. Retry once before
+    # concluding the database is down.
+    db_status = "error"
+    last_error = None
+    for attempt in range(2):
         try:
-            db.execute(text("SELECT 1"))
-        finally:
-            # Must close even when execute() raises, or every health-check
-            # poll leaks a pooled connection until the pool is exhausted.
-            db.close()
-    except Exception as e:
-        logger.warning(f"Health check DB probe failed: {e}")
-        db_status = "error"
+            db = SessionLocal()
+            try:
+                db.execute(text("SELECT 1"))
+                db_status = "connected"
+                break
+            finally:
+                # Must close even when execute() raises, or every health-check
+                # poll leaks a pooled connection until the pool is exhausted.
+                db.close()
+        except Exception as e:
+            last_error = e
+            if attempt == 0:
+                time.sleep(2)
+    if db_status != "connected":
+        logger.warning(f"Health check DB probe failed after 2 attempts: {last_error}")
 
     llm_key_present = bool(LLM_API_KEYS.get(DEFAULT_LLM_PROVIDER, ""))
     healthy = db_status == "connected"

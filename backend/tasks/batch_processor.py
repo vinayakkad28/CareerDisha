@@ -4,7 +4,7 @@ import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from config import OUTPUT_DIR, MAX_CONCURRENT_REQUESTS
+from config import OUTPUT_DIR, MAX_CONCURRENT_REQUESTS, DEFAULT_LLM_PROVIDER
 from database import SessionLocal
 from models import Session, Student
 
@@ -51,7 +51,7 @@ def _generate_one(student_id: int, kb: dict, provider: str) -> tuple[float, str 
         db.close()
 
 
-def run_report_generation(session_id: int, provider: str = "anthropic"):
+def run_report_generation(session_id: int, provider: str = ""):
     """Background task: generate LLM reports for all scored students in a session.
 
     Processes up to MAX_CONCURRENT_REQUESTS students in parallel using a thread pool.
@@ -59,6 +59,12 @@ def run_report_generation(session_id: int, provider: str = "anthropic"):
     skipped automatically, so restarting the task is safe and idempotent.
     """
     from engines.scoring_engine import load_knowledge_base
+
+    # Same reason as generate_single_report: a vendor literal here silently
+    # overrides a deployment configured for another provider. The only caller
+    # passes session.llm_provider explicitly, so this default is a latent trap
+    # rather than an active bug — but it is the same trap.
+    provider = provider or DEFAULT_LLM_PROVIDER
 
     db = SessionLocal()
     try:
