@@ -46,3 +46,26 @@ def test_regenerate_passes_no_provider_so_the_fallback_governs():
     src = inspect.getsource(regenerate_report)
     assert "generate_single_report(student, kb)" in src
     assert "anthropic" not in src.lower()
+
+
+def test_batch_generation_default_is_not_a_hardcoded_vendor():
+    """The batch entry point had the same "anthropic" literal as the other two.
+
+    Its only caller passes session.llm_provider explicitly, so this never fired
+    in production — which is exactly why it survived. Guard it anyway.
+    """
+    default = inspect.signature(
+        __import__("tasks.batch_processor", fromlist=["run_report_generation"])
+        .run_report_generation
+    ).parameters["provider"].default
+    assert default != "anthropic"
+    assert default == ""
+
+
+def test_google_model_default_is_not_a_retired_model():
+    """gemini-2.0-flash and gemini-2.5-flash both 404 with "no longer available".
+
+    A retired default breaks any fresh deploy that does not set GOOGLE_MODEL,
+    and the failure surfaces as a generation error long after startup.
+    """
+    assert config.LLM_MODELS["google"] not in ("gemini-2.0-flash", "gemini-2.5-flash")

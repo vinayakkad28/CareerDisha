@@ -167,7 +167,10 @@ MAX_CONCURRENT_REQUESTS = int(os.getenv("MAX_CONCURRENT_REQUESTS", "5"))
 LLM_MODELS = {
     "anthropic": os.getenv("ANTHROPIC_MODEL", "claude-3-5-haiku-20241022"),
     "openai": os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
-    "google": os.getenv("GOOGLE_MODEL", "gemini-2.0-flash"),
+    # gemini-2.0-flash and gemini-2.5-flash are both retired — the API answers
+    # 404 "no longer available" and names a successor. Verified 2026-09-01:
+    # gemini-3.5-flash returns the full report schema in about 30s.
+    "google": os.getenv("GOOGLE_MODEL", "gemini-3.5-flash"),
     "groq": os.getenv("GROQ_MODEL", "llama-3.1-8b-instant"),
 }
 
