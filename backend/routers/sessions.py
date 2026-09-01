@@ -11,6 +11,7 @@ from fastapi.responses import StreamingResponse, FileResponse
 from sqlalchemy.orm import Session as DBSession
 from pydantic import BaseModel
 
+from config import DEFAULT_LLM_PROVIDER
 from access import AccessScope, get_scoped_session, resolve_scope, scoped_sessions
 from database import get_db
 from models import Session, Student, School
@@ -56,7 +57,7 @@ class SessionCreate(BaseModel):
     classes_assessed: list[int] = []
     counsellor_name: str = ""
     counsellor_certification: str = ""
-    llm_provider: str = "anthropic"
+    llm_provider: str = DEFAULT_LLM_PROVIDER
     notes: str = ""
 
 

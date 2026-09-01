@@ -20,6 +20,7 @@ from config import (
     RIASEC_TYPE_NAMES,
     MAX_CONCURRENT_REQUESTS,
     LLM_TIMEOUT_SECONDS,
+    DEFAULT_LLM_PROVIDER,
 )
 from database import SessionLocal
 from models import Student
@@ -566,10 +567,18 @@ def get_career_details_for_student(student: Student, knowledge_base: list) -> li
 def generate_single_report(
     student: Student,
     knowledge_base: list,
-    provider: str = "anthropic",
+    provider: str = "",
     db=None,
 ) -> float:
-    """Generate a report for a single student. Returns LLM cost."""
+    """Generate a report for a single student. Returns LLM cost.
+
+    ``provider`` defaults to DEFAULT_LLM_PROVIDER rather than a hardcoded
+    "anthropic". The old default silently billed Anthropic (~$0.01-0.03 a
+    report) even on a deployment configured end to end for Groq's free tier,
+    and /students/{id}/regenerate — which passes no provider — could not be
+    pointed anywhere else at all.
+    """
+    provider = provider or DEFAULT_LLM_PROVIDER
     close_db = False
     if db is None:
         db = SessionLocal()
