@@ -59,10 +59,17 @@ def _dec(b):
 
 
 print("Live authenticated test pass. Warming the instance (may take ~60s)…")
+PROVIDER = ""
 for _ in range(8):
     s, p = call("GET", "/api/health", note="warm")
     R.pop()
     if s == 200 and isinstance(p, dict) and p.get("db") == "connected":
+        # Pin the session to whatever the deployment is actually configured for.
+        # This was hardcoded to "groq" and silently sent every report to a dead
+        # key after the deployment moved to Google. SessionCreate on main still
+        # defaults to "anthropic", so omitting the field is not safe either.
+        PROVIDER = p.get("llm_provider") or "google"
+        print(f"  deployment reports llm_provider={PROVIDER!r}")
         break
 else:
     print("Could not reach a healthy backend. Aborting."); sys.exit(1)
@@ -100,10 +107,11 @@ if s != 201:
     print("Could not create test school; aborting section C."); sys.exit(1)
 SA = sch["id"]
 
-s, ses = call("POST", "/api/sessions", token=T, expect=201, note="session (llm_provider=groq)",
+s, ses = call("POST", "/api/sessions", token=T, expect=201,
+              note=f"session (llm_provider={PROVIDER})",
               body={"school_id": SA, "session_date": "2026-09-01",
                     "classes_assessed": [9, 10], "counsellor_name": "ZZTEST",
-                    "llm_provider": "groq", "notes": "ZZTEST automated pass"})
+                    "llm_provider": PROVIDER, "notes": "ZZTEST automated pass"})
 SID = ses.get("id") if isinstance(ses, dict) else None
 
 # honest-status check BEFORE anything has been produced
@@ -144,10 +152,23 @@ if isinstance(cur, dict):
         print(f"    student row: {len(studs[0])} fields; PII leaked: {leaky or 'NONE'}")
 
 print("\n  -- report generation (rate limited 2 per 5 min) --")
-call("POST", f"/api/sessions/{SID}/generate", token=T, expect=200, note="generate (groq)")
-print("    waiting 75s for the background job…")
-time.sleep(75)
-s, cur = call("GET", f"/api/sessions/{SID}", token=T, expect=200, note="")
+call("POST", f"/api/sessions/{SID}/generate", token=T, expect=200,
+     note=f"generate ({PROVIDER})")
+# ~30s per student at MAX_CONCURRENT_REQUESTS=2, so poll instead of guessing.
+print("    polling for the background job (up to 8 min)…")
+for _ in range(32):
+    time.sleep(15)
+    s, cur = call("GET", f"/api/sessions/{SID}", token=T, note="poll")
+    R.pop()
+    st = cur.get("stats", {}) if isinstance(cur, dict) else {}
+    done = st.get("reports_generated", 0)
+    total = st.get("total_students", 0) or st.get("students_scored", 0)
+    print(f"      reports_generated={done}"
+          + (f"/{total}" if total else ""))
+    if done and total and done >= total:
+        break
+    if done and not total:
+        break
 if isinstance(cur, dict):
     print("    stats:", json.dumps(cur.get("stats", {})), " status:", cur.get("status"))
     if cur.get("stats", {}).get("reports_generated", 0) == 0:
