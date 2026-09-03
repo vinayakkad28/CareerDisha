@@ -43,18 +43,25 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     }
   }, [loading, isAuthenticated, pathname, router]);
 
+  // Public pages, and unknown paths that resolve to the 404, render bare —
+  // no staff sidebar.
+  //
+  // This check MUST come before the `loading` gate below. AuthProvider starts
+  // with loading=true and only resolves in a client effect, so gating public
+  // routes on it made every public page — the landing page included — server
+  // render as nothing but a spinner: an 8.4KB body with no headline, no copy
+  // and no crawlable content, plus a visible flash for real users. Public
+  // routes do not depend on auth state, so they must never wait for it.
+  if (!isProtectedRoute(pathname)) {
+    return <>{children}</>;
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface">
         <div className="w-8 h-8 border-3 border-primary/30 border-t-primary rounded-full animate-spin" />
       </div>
     );
-  }
-
-  // Public pages, and unknown paths that resolve to the 404, render bare —
-  // no staff sidebar.
-  if (!isProtectedRoute(pathname)) {
-    return <>{children}</>;
   }
 
   // Protected but not yet redirected — show spinner while redirect fires
