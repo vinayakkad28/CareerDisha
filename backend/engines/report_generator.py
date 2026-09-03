@@ -20,6 +20,7 @@ from config import (
     RIASEC_TYPE_NAMES,
     MAX_CONCURRENT_REQUESTS,
     LLM_TIMEOUT_SECONDS,
+    LLM_MAX_OUTPUT_TOKENS,
     DEFAULT_LLM_PROVIDER,
 )
 from database import SessionLocal
@@ -443,6 +444,8 @@ class LLMClient:
         response = client.messages.create(
             model=LLM_MODELS["anthropic"],
             max_tokens=8192,
+            # Deterministic: identical answers must yield an identical report.
+            temperature=0,
             system=system_prompt,
             messages=[{"role": "user", "content": user_prompt}],
         )
@@ -501,8 +504,10 @@ class LLMClient:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            max_tokens=12000,
+            max_tokens=LLM_MAX_OUTPUT_TOKENS,
             response_format={"type": "json_object"},
+            # Deterministic: identical answers must yield an identical report.
+            temperature=0,
         )
         text = response.choices[0].message.content
         parsed = json.loads(text)
@@ -524,8 +529,20 @@ class LLMClient:
             user_prompt,
             generation_config=genai.types.GenerationConfig(
                 response_mime_type="application/json",
-                max_output_tokens=12000,
+                max_output_tokens=LLM_MAX_OUTPUT_TOKENS,
+                # Same answers should produce the same report. Every provider
+                # was running at its SDK default (1.0), so a student who
+                # retook the assessment identically got a materially different
+                # document — and two people comparing reports saw inconsistency
+                # where the underlying scores were the same.
+                temperature=0,
             ),
+            # This path alone set no timeout, unlike the other three providers.
+            # A slow or hung call therefore blocked its worker thread
+            # indefinitely; an observed run took 284s against a nominal 90s
+            # budget. Generation is long, so allow generous headroom over the
+            # per-call default rather than the bare LLM_TIMEOUT_SECONDS.
+            request_options={"timeout": LLM_TIMEOUT_SECONDS * 4},
         )
         parsed = json.loads(response.text)
         # Gemini Flash is free tier / very cheap
@@ -546,8 +563,10 @@ class LLMClient:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            max_tokens=12000,
+            max_tokens=LLM_MAX_OUTPUT_TOKENS,
             response_format={"type": "json_object"},
+            # Deterministic: identical answers must yield an identical report.
+            temperature=0,
         )
         text = response.choices[0].message.content
         parsed = json.loads(text)
