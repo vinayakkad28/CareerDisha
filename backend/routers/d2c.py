@@ -9,12 +9,53 @@ from database import get_db, SessionLocal
 from models import Lead, D2CAssessment, Student, School, Session
 from engines.scoring_engine import calculate_riasec_scores, determine_holland_code, match_careers, load_knowledge_base
 from rate_limit import limiter
-from config import ENABLE_PAYMENTS
+from config import ENABLE_PAYMENTS, FREE_REPORTS, DEFAULT_LLM_PROVIDER
 from utils.self_efficacy import normalize_self_efficacy
 from utils.time import utcnow
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+
+
+def report_is_unlocked(assessment: D2CAssessment) -> bool:
+    """Whether this assessment's report may be generated and handed over.
+
+    Every gate on the report — preview, JSON, PDF, and the public web report —
+    routes through here so they cannot drift apart. There are exactly two ways
+    to be unlocked: the beta gives reports away, or the report was paid for.
+
+    Note the asymmetry: FREE_REPORTS does not mark anything "paid". Payment
+    status stays an honest record of whether money was received, which is what
+    keeps the switch back to a paid funnel clean.
+    """
+    return FREE_REPORTS or assessment.payment_status == "paid"
+
+
+# Statuses in which a report has cleared review and may be handed over.
+DELIVERABLE_REPORT_STATUSES = ("qa_passed", "pdf_ready", "delivered")
+
+
+def assert_report_is_deliverable(assessment: D2CAssessment, student: Student) -> None:
+    """Raise unless this report may be handed to the customer.
+
+    Two independent conditions, and both must hold. Unlocking (paid, or given
+    away in the beta) is about entitlement. This is about the report being fit
+    to send: a QA hold means the pipeline found a structural defect, and a held
+    report must not leak out of a side door.
+
+    That side door was real — on-demand PDF regeneration rebuilds from
+    `report_content`, which exists as soon as the model returns, so a flagged
+    report was downloadable while its status still said it was being held.
+    """
+    if not report_is_unlocked(assessment):
+        raise HTTPException(status_code=402, detail="Payment required")
+    if student is not None and student.report_status not in DELIVERABLE_REPORT_STATUSES:
+        if student.report_status == "qa_flagged":
+            raise HTTPException(
+                status_code=409,
+                detail="This report is held for a quality check and is not ready yet.",
+            )
+        raise HTTPException(status_code=404, detail="Report not ready yet")
 
 D2C_PRICING = {
     "basic": 499,
@@ -46,7 +87,7 @@ def get_or_create_d2c_session(db):
             classes_assessed=[9, 10, 11, 12],
             counsellor_name="CareerNeeti AI",
             status="scored",
-            llm_provider="groq",
+            llm_provider=DEFAULT_LLM_PROVIDER,
         )
         db.add(session)
         db.flush()
@@ -54,11 +95,26 @@ def get_or_create_d2c_session(db):
 
 
 class StartRequest(BaseModel):
+    # The free quiz hands off with `lead.token` — a 32-char uuid4 hex, not an id.
+    # This field was `lead_id: Optional[int]`, so pydantic rejected every one of
+    # those with `int_parsing` and /start returned 422 for the single
+    # highest-intent cohort in the funnel: people who finished the free quiz and
+    # clicked through for the full report. It is also why `Lead.converted` was
+    # never able to become True.
+    lead_token: Optional[str] = None
+    # Accepted for older clients that still post an integer id directly.
     lead_id: Optional[int] = None
     student_name: str = ""
+    # The frontend historically posted `email`; the mismatch meant pydantic's
+    # extra="ignore" silently dropped it, so any lead abandoning before /submit
+    # had no email on file. Accept both spellings.
     student_email: str = ""
+    email: Optional[str] = None
     parent_phone: str = ""
     class_level: int = 10
+
+    def resolved_email(self) -> str:
+        return (self.student_email or self.email or "").strip()
 
 class ContextRequest(BaseModel):
     gender: str = ""
@@ -116,11 +172,20 @@ def start_assessment(request: Request, body: StartRequest = StartRequest()):
     token = uuid.uuid4().hex
     db = SessionLocal()
     try:
+        # Resolve the quiz hand-off token to the Lead it belongs to. An unknown
+        # or absent token is not an error: starting the assessment cold, without
+        # taking the free quiz first, is a legitimate entry point.
+        lead_id = body.lead_id
+        if lead_id is None and body.lead_token:
+            lead = db.query(Lead).filter(Lead.token == body.lead_token).first()
+            if lead:
+                lead_id = lead.id
+
         assessment = D2CAssessment(
             token=token,
-            lead_id=body.lead_id,
+            lead_id=lead_id,
             student_name=body.student_name,
-            student_email=body.student_email,
+            student_email=body.resolved_email(),
             parent_phone=body.parent_phone,
             class_level=body.class_level,
         )
@@ -475,9 +540,18 @@ def submit_assessment(request: Request, token: str, body: SubmitRequest):
         career_teasers = [{"name": m.get("career_name", ""), "match_type": m.get("match_type", "")} for m in matched[:3]]
 
         logger.info(f"D2C assessment {token}: scored for {body.student_name} (Class {body.class_level}, Holland: {holland_code}, confidence: {rec['confidence']})")
+
+        # In the free beta there is no purchase decision to wait for, so the
+        # report starts building the moment the assessment is scored. Without
+        # this, generation is unreachable: the only other caller is
+        # verify_payment, which returns 503 while payments are off — which is
+        # why no report was ever produced through the online funnel.
+        if FREE_REPORTS:
+            _start_report_generation(assessment.id)
+
         return {
             "token": token,
-            "status": "assessment_complete",
+            "status": "report_generating" if FREE_REPORTS else "assessment_complete",
             "holland_code": holland_code,
             "riasec_scores": riasec_scores,
             "recommended_stream": rec["recommended_stream"],
@@ -534,7 +608,7 @@ def preview_results(token: str):
             "explanation": rec.get("explanation", ""),
             "top_careers_preview": career_teasers,
             "total_careers_matched": len(matched),
-            "report_locked": assessment.payment_status != "paid",
+            "report_locked": not report_is_unlocked(assessment),
             "pricing": D2C_PRICING,
         }
     finally:
@@ -644,13 +718,28 @@ def verify_payment(request: Request, token: str, body: VerifyPaymentRequest):
 
         logger.info(f"D2C payment verified: {token} (tier={assessment.tier}, amount=Rs{assessment.amount_inr})")
 
-        import threading
-        thread = threading.Thread(target=_generate_d2c_report, args=(assessment.id,), daemon=True)
-        thread.start()
+        _start_report_generation(assessment.id)
 
         return {"status": "paid", "token": token, "report_generating": True}
     finally:
         db.close()
+
+
+def _start_report_generation(assessment_id: int) -> None:
+    """Kick off report generation for an assessment, off the request thread.
+
+    Single entry point so the free-beta path and the paid path start work the
+    same way. Note the known weakness this inherits: a bare daemon thread has no
+    watchdog, so a container recycle mid-generation strands the row at
+    "report_generating" with nothing to re-drive it. The startup sweep in
+    main.py's lifespan is what recovers those.
+    """
+    import threading
+
+    thread = threading.Thread(
+        target=_generate_d2c_report, args=(assessment_id,), daemon=True
+    )
+    thread.start()
 
 
 def _generate_d2c_report(assessment_id: int):
@@ -676,7 +765,13 @@ def _generate_d2c_report(assessment_id: int):
         # Generate LLM report
         kb = load_knowledge_base()
         try:
-            cost = generate_single_report(student, kb, "groq", db)
+            # This was a vendor literal, which pinned every online report to
+            # llama-3.1-8b-instant no matter what the deployment was configured
+            # for — while /api/health cheerfully reported the real provider. The
+            # repo's own fix_groq.py rates 8B models 0, "too small for this
+            # schema": they truncate the ~20-section report JSON, which then
+            # fails QA and strands the customer. Honour the configured provider.
+            cost = generate_single_report(student, kb, DEFAULT_LLM_PROVIDER, db)
             student.report_status = "report_generated"
             db.commit()
             logger.info(f"D2C report generated for assessment {assessment.token} (cost: ${cost:.4f})")
@@ -695,15 +790,27 @@ def _generate_d2c_report(assessment_id: int):
 
         flags = validate_report(student)
         student.qa_flags = flags
-        if flags:
+        # Block on real structural defects only. `[WARNING]` flags are advisory
+        # — a personal_note under 200 characters, fewer than three recommended
+        # books — and holding a finished report for those left the customer
+        # polling a spinner forever with no route out and no notification. The
+        # school pipeline already draws this line (qa_checker.run_qa_checks);
+        # D2C was the outlier. Warnings are still recorded on the row.
+        hard_flags = [f for f in flags if not f.startswith("[WARNING]")]
+        if hard_flags:
             student.report_status = "qa_flagged"
             assessment.status = "qa_flagged"
             db.commit()
             logger.error(
-                f"D2C report FAILED QA for {assessment.token}: {flags}. "
+                f"D2C report FAILED QA for {assessment.token}: {hard_flags}. "
                 "Holding for review instead of delivering."
             )
             return
+        if flags:
+            logger.warning(
+                f"D2C report for {assessment.token} delivered with advisory "
+                f"flags: {flags}"
+            )
         student.report_status = "qa_passed"
         db.commit()
 
@@ -778,7 +885,9 @@ def check_status(token: str):
             "status": assessment.status,
             "payment_status": assessment.payment_status,
             "report_ready": assessment.status == "report_ready",
-            "pdf_available": bool(assessment.pdf_url),
+            # Regeneration (see download_pdf) means a report with content is
+            # still deliverable even when the rendered file is gone.
+            "pdf_available": bool(assessment.pdf_url) or bool(assessment.student_id),
         }
     finally:
         db.close()
@@ -792,12 +901,11 @@ def get_report(token: str):
         assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
         if not assessment:
             raise HTTPException(status_code=404, detail="Assessment not found")
-        if assessment.payment_status != "paid":
-            raise HTTPException(status_code=402, detail="Payment required")
         if not assessment.student_id:
             raise HTTPException(status_code=400, detail="Report not yet generated")
 
         student = db.query(Student).filter(Student.id == assessment.student_id).first()
+        assert_report_is_deliverable(assessment, student)
         if not student or not student.report_content:
             raise HTTPException(status_code=404, detail="Report not ready yet")
 
@@ -824,13 +932,54 @@ def download_pdf(token: str):
         assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
         if not assessment:
             raise HTTPException(status_code=404, detail="Assessment not found")
-        if assessment.payment_status != "paid":
-            raise HTTPException(status_code=402, detail="Payment required")
-        if not assessment.pdf_url or not Path(assessment.pdf_url).exists():
-            raise HTTPException(status_code=404, detail="PDF not ready yet")
+        pdf_student = (
+            db.query(Student).filter(Student.id == assessment.student_id).first()
+            if assessment.student_id
+            else None
+        )
+        assert_report_is_deliverable(assessment, pdf_student)
+
+        pdf_path = Path(assessment.pdf_url) if assessment.pdf_url else None
+
+        # The stored path routinely outlives the file. OUTPUT_DIR is /tmp/output
+        # on the hosted free plan, which is wiped on every deploy and idle
+        # recycle, so a customer returning to their link the next day used to get
+        # a permanent "PDF not ready yet" for a report that exists perfectly well
+        # in the database. Re-render it instead of 404ing: every input
+        # generate_student_pdf needs is a persisted column, so this costs a
+        # couple of seconds of CPU and no LLM call.
+        if pdf_path is None or not pdf_path.exists():
+            student = pdf_student
+            if not student or not student.report_content:
+                raise HTTPException(status_code=404, detail="Report not ready yet")
+
+            # Imported here, not at module scope: matplotlib and WeasyPrint cost
+            # real resident memory, and this process runs in 512MB.
+            from engines.pdf_generator import generate_student_pdf
+            from config import OUTPUT_DIR
+
+            try:
+                output_dir = OUTPUT_DIR / "d2c"
+                output_dir.mkdir(parents=True, exist_ok=True)
+                pdf_path = generate_student_pdf(
+                    student, output_dir, counsellor_name="CareerNeeti AI"
+                )
+            except Exception as e:
+                logger.error(
+                    f"PDF regeneration failed for {token}: {e}", exc_info=True
+                )
+                raise HTTPException(
+                    status_code=503,
+                    detail="Could not rebuild the report right now. Please try again.",
+                )
+
+            student.pdf_path = str(pdf_path)
+            assessment.pdf_url = str(pdf_path)
+            db.commit()
+            logger.info(f"Regenerated missing PDF for {token}")
 
         return FileResponse(
-            assessment.pdf_url,
+            str(pdf_path),
             media_type="application/pdf",
             filename=f"CareerNeeti_Report_{assessment.student_name.replace(' ', '_')}.pdf",
         )

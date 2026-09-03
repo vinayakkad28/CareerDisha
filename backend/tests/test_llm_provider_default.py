@@ -69,3 +69,58 @@ def test_google_model_default_is_not_a_retired_model():
     and the failure surfaces as a generation error long after startup.
     """
     assert config.LLM_MODELS["google"] not in ("gemini-2.0-flash", "gemini-2.5-flash")
+
+
+def test_d2c_report_generation_does_not_hardcode_a_vendor():
+    """The online funnel pinned itself to Groq regardless of configuration.
+
+    `_generate_d2c_report` called generate_single_report(student, kb, "groq", db)
+    with the vendor as a literal, so every report bought or given away through
+    the website was written by llama-3.1-8b-instant even though /api/health
+    truthfully reported the deployment's real provider. The two disagreed and
+    nothing surfaced it.
+    """
+    from routers.d2c import _generate_d2c_report
+
+    src = inspect.getsource(_generate_d2c_report)
+    assert '"groq"' not in src, "D2C generation is pinned to a vendor literal again"
+    assert "DEFAULT_LLM_PROVIDER" in src
+
+
+def test_d2c_session_llm_provider_is_not_hardcoded():
+    from routers.d2c import get_or_create_d2c_session
+
+    src = inspect.getsource(get_or_create_d2c_session)
+    assert 'llm_provider="groq"' not in src
+    assert "llm_provider=DEFAULT_LLM_PROVIDER" in src
+
+
+def test_shipped_default_model_is_large_enough_for_the_report_schema():
+    """8B models truncate this app's ~20-section report JSON.
+
+    The repo's own diagnostic (fix_groq.py) scores any "8b" model 0 — "too small
+    for this schema" — and warns they produce QA failures rather than clean
+    errors. Measured: gemini-3.5-flash returns a complete 13-section, ~45k
+    character report in about 60s.
+
+    Asserted against the *shipped* default rather than the resolved one, because
+    the resolved value depends on whatever .env the machine happens to have. The
+    regression this guards is a fresh deploy — one that sets no
+    DEFAULT_LLM_PROVIDER — silently getting a model that cannot hold the schema.
+    """
+    import inspect as _inspect
+    import re
+
+    src = _inspect.getsource(config)
+    match = re.search(
+        r'DEFAULT_LLM_PROVIDER\s*=\s*os\.getenv\(\s*"DEFAULT_LLM_PROVIDER"\s*,\s*"([^"]+)"',
+        src,
+    )
+    assert match, "could not find the shipped DEFAULT_LLM_PROVIDER default"
+    shipped = match.group(1)
+
+    model = config.LLM_MODELS[shipped]
+    assert "8b" not in model.lower(), (
+        f"the shipped default provider {shipped!r} resolves to {model}, "
+        "which is too small to emit the full report schema."
+    )

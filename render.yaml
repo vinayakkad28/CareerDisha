@@ -52,9 +52,15 @@ services:
       - key: ADMIN_PASSWORD
         sync: false                # set in the Render dashboard
 
-      # --- LLM. GROQ is the default provider; report generation is dead without it. ---
+      # --- LLM. Google is the default provider; report generation is dead
+      # without its key. This file used to pin `groq`, which had drifted from
+      # what the deployment actually runs: /api/health reported `google` while a
+      # blueprint re-apply would silently have reset it to groq's
+      # llama-3.1-8b-instant — the model fix_groq.py rates 0, "too small for
+      # this schema". Measured on gemini-3.5-flash: a full 13-section, ~45k
+      # character report in about 60s. ---
       - key: DEFAULT_LLM_PROVIDER
-        value: groq
+        value: google
       - key: GROQ_API_KEY
         sync: false
       - key: ANTHROPIC_API_KEY
@@ -73,6 +79,11 @@ services:
       # --- Payments: off until Razorpay credentials exist. ---
       - key: ENABLE_PAYMENTS
         value: "false"
+      # Beta posture: the report is given away. Mutually exclusive with
+      # ENABLE_PAYMENTS — config.py refuses to boot if both are true, so the
+      # report can never be free while a checkout is live.
+      - key: FREE_REPORTS
+        value: "true"
       - key: RAZORPAY_KEY_ID
         sync: false
       - key: RAZORPAY_KEY_SECRET

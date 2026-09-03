@@ -122,13 +122,28 @@ def _clean_tables(database_url):
 
 @pytest.fixture()
 def client(database_url, _clean_tables):
-    """TestClient with the app's real lifespan, including the schema assertion."""
+    """TestClient with the app's real lifespan, including the schema assertion.
+
+    The rate limiter is reset around each test. slowapi keys on the client
+    address and holds its counters in process memory, so the whole suite shares
+    one bucket: between them the D2C tests make far more than 30 POSTs to
+    /api/d2c/start a minute, and tests started failing with 429s that had nothing
+    to do with what they were asserting.
+
+    Reset rather than disable, so a test that wants to assert throttling still
+    can. test_api_auth does the same thing for the login limit.
+    """
     from fastapi.testclient import TestClient
 
     import main
+    from rate_limit import limiter
 
-    with TestClient(main.app) as c:
-        yield c
+    limiter.reset()
+    try:
+        with TestClient(main.app) as c:
+            yield c
+    finally:
+        limiter.reset()
 
 
 # ── identities ────────────────────────────────────────────────────────────────

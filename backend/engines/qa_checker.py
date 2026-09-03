@@ -199,7 +199,18 @@ def validate_report(student: Student) -> list[str]:
                         for wl in whitelist
                     )
                     if not fuzzy_match:
-                        flags.append(f"College '{college}' not in whitelist (may be hallucinated)")
+                        # Advisory, not blocking. The whitelist is a hand-curated
+                        # 541 entries and cannot cover every legitimate Indian
+                        # institution — a live run held a perfectly good report
+                        # because "Sir J.J. College of Architecture, Mumbai" is
+                        # real but unlisted. Blocking on that fails far more
+                        # honest reports than it catches invented ones, and the
+                        # terms page already states that names and figures must
+                        # be verified. Keep flagging so the list can be grown.
+                        flags.append(
+                            f"[WARNING] College '{college}' not in whitelist "
+                            "(verify, or add it to colleges_whitelist.json)"
+                        )
 
     return flags
 
