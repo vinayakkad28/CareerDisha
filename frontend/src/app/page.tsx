@@ -19,11 +19,8 @@ export default function Home() {
           <a href="#how-it-works" className="text-white/90 hover:text-white transition-colors hover:bg-white/10 rounded-full px-3 py-1">
             RIASEC Test
           </a>
-          <a href="#testimonials" className="text-white/90 hover:text-white transition-colors hover:bg-white/10 rounded-full px-3 py-1">
+          <a href="#for-schools" className="text-white/90 hover:text-white transition-colors hover:bg-white/10 rounded-full px-3 py-1">
             For Schools
-          </a>
-          <a href="#testimonials" className="text-white/90 hover:text-white transition-colors hover:bg-white/10 rounded-full px-3 py-1">
-            Success Stories
           </a>
           <a href="#pricing" className="text-white/90 hover:text-white transition-colors hover:bg-white/10 rounded-full px-3 py-1">
             Pricing
@@ -68,7 +65,7 @@ export default function Home() {
                   href="/assessment"
                   className="btn-primary px-8 py-4 rounded-lg font-bold shadow-xl hover:brightness-110 transition-all"
                 >
-                  Get Full Report — ₹499
+                  Get Full Report — Free
                 </Link>
               </div>
             </div>
@@ -98,10 +95,10 @@ export default function Home() {
           <div className="flex flex-wrap items-center justify-center gap-3 mt-20">
             {[
               { icon: "RIASEC", label: "RIASEC Psychometric Test" },
-              { icon: "74", label: "74 Questions" },
+              { icon: "5", label: "Interests, Aptitude & Personality" },
               { icon: "PDF", label: "Personalised PDF Report" },
-              { icon: "WA", label: "WhatsApp Delivery" },
-              { icon: "DPDPA", label: "DPDPA Compliant" },
+              { icon: "हिं", label: "English & हिन्दी" },
+              { icon: "₹0", label: "Free while in beta" },
             ].map((pill) => (
               <div
                 key={pill.label}
@@ -126,9 +123,9 @@ export default function Home() {
               {[
                 {
                   step: "01",
-                  title: "Take 20-min Assessment",
+                  title: "Take the Assessment",
                   description:
-                    "Our comprehensive RIASEC questionnaire captures your natural inclinations and professional interests.",
+                    "Interests, work values, aptitude and personality — about 40 minutes, and you can skip the optional sections.",
                 },
                 {
                   step: "02",
@@ -140,7 +137,7 @@ export default function Home() {
                   step: "03",
                   title: "Get Career Roadmap PDF",
                   description:
-                    "Receive a detailed 15-page PDF report with stream recommendations and action steps for Class 11.",
+                    "Receive a detailed personalised PDF report with stream recommendations and action steps for Class 11.",
                 },
               ].map((item) => (
                 <div
@@ -181,51 +178,30 @@ export default function Home() {
         </section>
 
         {/* ── Social Proof ───────────────────────────────────── */}
-        <section id="testimonials" className="py-24 max-w-7xl mx-auto px-8">
-          <div className="flex flex-col items-center mb-16">
+        <section id="for-schools" className="py-24 max-w-7xl mx-auto px-8">
+          <div className="flex flex-col items-center mb-12">
             <h2 className="font-heading text-3xl font-bold text-primary mb-2 text-center">
-              Trusted by 50+ Schools Across India
+              For Schools
             </h2>
             <div className="w-24 h-1 bg-secondary rounded-full" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                quote:
-                  "The AI-driven insights were eye-opening for our students. It moved the career conversation from guesswork to scientific assessment.",
-                school: "St. Xavier's Academy",
-                location: "Mumbai, Maharashtra",
-              },
-              {
-                quote:
-                  "The PDF reports are so detailed that even parents found them helpful. The WhatsApp delivery makes it incredibly accessible.",
-                school: "The Heritage School",
-                location: "Gurugram, Haryana",
-              },
-              {
-                quote:
-                  "CareerNeeti has streamlined our counseling department's workflow significantly. Professional and highly reliable.",
-                school: "Bishop Cotton School",
-                location: "Shimla, Himachal Pradesh",
-              },
-            ].map((t) => (
-              <div key={t.school} className="p-8 bg-surface-container-high rounded-xl">
-                <div className="flex text-secondary mb-4">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <svg key={star} className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                    </svg>
-                  ))}
-                </div>
-                <p className="text-on-surface-variant italic mb-6 leading-relaxed">
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-                <div>
-                  <p className="font-bold text-primary">{t.school}</p>
-                  <p className="text-sm text-slate-500">{t.location}</p>
-                </div>
-              </div>
-            ))}
+          <div className="max-w-3xl mx-auto text-center">
+            <p className="text-on-surface-variant leading-relaxed mb-6">
+              CBSE now requires affiliated schools to appoint a career counsellor, distinct from the
+              wellness counsellor, at a ratio of one per 500 students for Classes 9&ndash;12. Schools
+              are permitted to share resources under a hub-and-spoke model.
+            </p>
+            <p className="text-on-surface-variant leading-relaxed mb-8">
+              CareerNeeti runs structured assessment sessions on site and returns a personalised
+              report for every student, along with an aggregate profile of the cohort for your
+              counselling records.
+            </p>
+            <a
+              href="mailto:hello@careerneeti.in?subject=CareerNeeti%20for%20our%20school"
+              className="inline-block px-8 py-3 bg-primary text-white rounded-full font-semibold hover:bg-primary/90 transition-colors"
+            >
+              Talk to us about your school
+            </a>
           </div>
         </section>
 
@@ -270,12 +246,15 @@ export default function Home() {
                 </div>
                 <h3 className="text-2xl font-bold text-primary mb-2">Full Report</h3>
                 <div className="mb-6">
-                  <span className="text-4xl font-extrabold text-primary">₹499</span>
+                  <span className="text-4xl font-extrabold text-primary">₹0</span>
+                  <span className="ml-2 text-sm font-semibold text-on-surface-variant">
+                    free while in beta
+                  </span>
                 </div>
                 <ul className="space-y-4 mb-10 flex-grow">
                   {[
-                    "74 comprehensive RIASEC questions",
-                    "15-page Personalized PDF Report",
+                    "Full assessment: interests, work values, aptitude & personality",
+                    "Personalised PDF Report",
                     "Career Roadmap & Action Plan",
                     "Parent Insight Section",
                     "Life-time access to dashboard",
@@ -290,7 +269,7 @@ export default function Home() {
                   href="/assessment"
                   className="btn-gold w-full py-4 rounded-lg text-center font-bold shadow-lg hover:brightness-110 transition-all"
                 >
-                  Get Premium Report
+                  Get Your Full Report
                 </Link>
               </div>
             </div>
@@ -310,18 +289,15 @@ export default function Home() {
             </p>
           </div>
           <div className="flex gap-8">
-            <a className="text-slate-400 hover:text-yellow-500 transition-colors text-sm font-body" href="#">
+            <Link className="text-slate-400 hover:text-yellow-500 transition-colors text-sm font-body" href="/privacy">
               Privacy Policy
-            </a>
-            <a className="text-slate-400 hover:text-yellow-500 transition-colors text-sm font-body" href="#">
+            </Link>
+            <Link className="text-slate-400 hover:text-yellow-500 transition-colors text-sm font-body" href="/terms">
               Terms of Service
-            </a>
-            <a className="text-slate-400 hover:text-yellow-500 transition-colors text-sm font-body" href="#">
+            </Link>
+            <Link className="text-slate-400 hover:text-yellow-500 transition-colors text-sm font-body" href="/contact">
               Contact Us
-            </a>
-            <a className="text-slate-400 hover:text-yellow-500 transition-colors text-sm font-body" href="#">
-              Affiliate Program
-            </a>
+            </Link>
           </div>
         </div>
       </footer>

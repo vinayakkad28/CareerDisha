@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { RiasecBarChart } from "@/components/RiasecRadarChart";
 
@@ -53,6 +55,7 @@ interface QuizResult {
 }
 
 export default function QuizPage() {
+  const router = useRouter();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [result, setResult] = useState<QuizResult | null>(null);
@@ -152,6 +155,45 @@ export default function QuizPage() {
     setShowPhoneCapture(false);
     setPhoneSaved(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  /** Persist the lead's contact details. Returns false only on a real failure.
+   *
+   * Shared by the results CTA and the secondary capture form. The CTA's own
+   * email/phone inputs used to be bound to state and then thrown away, because
+   * the button beside them was a plain anchor with no handler — so the most
+   * prominent capture point on the highest-intent screen recorded nothing.
+   */
+  const saveContact = async (): Promise<boolean> => {
+    setContactError("");
+    const phone = parentPhone.trim();
+    // Contact is optional here; only validate what was actually typed.
+    if (!phone && !email.trim()) return true;
+    if (phone && !/^[6-9]\d{9}$/.test(phone)) {
+      setContactError("Enter a 10-digit mobile number starting 6-9.");
+      return false;
+    }
+    if (!result?.lead_token) return true;
+    setSavingContact(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/quiz/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lead_token: result.lead_token,
+          parent_phone: phone,
+          email: email.trim(),
+        }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setPhoneSaved(true);
+      return true;
+    } catch {
+      setContactError("Could not save your details. Please try again.");
+      return false;
+    } finally {
+      setSavingContact(false);
+    }
   };
 
   // Loading state
@@ -344,7 +386,7 @@ export default function QuizPage() {
                   <div className="flex-1 space-y-4 text-center md:text-left">
                     <h2 className="text-2xl font-bold text-white font-heading">Want a detailed career roadmap?</h2>
                     <p className="text-slate-200 text-sm">
-                      Get a 25-page comprehensive report covering sub-stream choices, college recommendations, and a 5-year skill roadmap.
+                      Get your full personalised report covering sub-stream choices, college recommendations, and a 5-year skill roadmap.
                     </p>
                     <div className="flex flex-col gap-3">
                       <input
@@ -365,17 +407,25 @@ export default function QuizPage() {
                   </div>
                   <div className="flex flex-col items-center gap-4">
                     <div className="bg-white p-6 rounded text-center w-full md:w-64 border-t-4 border-secondary">
-                      <p className="text-xs font-bold text-outline mb-1 uppercase">Limited Offer</p>
-                      <p className="text-3xl font-extrabold text-primary mb-4 font-heading">{"\u20B9"}499</p>
-                      <a
-                        href={result.lead_token ? `/assessment?lead=${result.lead_token}` : "/assessment"}
-                        className="block w-full py-4 px-6 rounded-lg bg-gold-gradient text-primary font-bold text-sm shadow-lg hover:translate-y-[-2px] transition-transform active:scale-95 text-center"
+                      <p className="text-xs font-bold text-outline mb-1 uppercase">Free while in beta</p>
+                      <p className="text-3xl font-extrabold text-primary mb-4 font-heading">{"\u20B9"}0</p>
+                      <button
+                        onClick={async () => {
+                          if (!(await saveContact())) return;
+                          router.push(
+                            result.lead_token
+                              ? `/assessment?lead=${result.lead_token}`
+                              : "/assessment"
+                          );
+                        }}
+                        disabled={savingContact}
+                        className="block w-full py-4 px-6 rounded-lg bg-gold-gradient text-primary font-bold text-sm shadow-lg hover:translate-y-[-2px] transition-transform active:scale-95 text-center disabled:opacity-50"
                       >
-                        Get Your Full Career Report
-                      </a>
+                        {savingContact ? "Saving\u2026" : "Get Your Full Career Report"}
+                      </button>
                       <p className="text-[10px] text-outline mt-3 flex items-center justify-center gap-1">
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-                        Secure Payment
+                        No payment required
                       </p>
                     </div>
                   </div>
@@ -415,36 +465,11 @@ export default function QuizPage() {
                   />
                   <button
                     onClick={async () => {
-                      // This used to only flip a local flag, so every number
-                      // typed here was silently discarded while the UI claimed
-                      // "We will reach out to you on WhatsApp shortly."
-                      setContactError("");
-                      if (!/^[6-9]\d{9}$/.test(parentPhone.trim())) {
+                      if (!parentPhone.trim()) {
                         setContactError("Enter a 10-digit mobile number starting 6-9.");
                         return;
                       }
-                      if (!result?.lead_token) {
-                        setContactError("Please retake the quiz and try again.");
-                        return;
-                      }
-                      setSavingContact(true);
-                      try {
-                        const res = await fetch(`${API_BASE}/api/quiz/contact`, {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({
-                            lead_token: result.lead_token,
-                            parent_phone: parentPhone.trim(),
-                            email: email.trim(),
-                          }),
-                        });
-                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                        setPhoneSaved(true);
-                      } catch {
-                        setContactError("Could not save your details. Please try again.");
-                      } finally {
-                        setSavingContact(false);
-                      }
+                      await saveContact();
                     }}
                     disabled={savingContact}
                     className="btn-gold py-2.5 px-5 text-sm font-bold disabled:opacity-50"
@@ -691,11 +716,11 @@ export default function QuizPage() {
         <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-public mx-auto w-full gap-4">
           <span className="text-lg font-bold text-primary font-heading">CareerNeeti</span>
           <div className="flex gap-6">
-            <a className="text-xs text-slate-500 hover:text-secondary transition-colors duration-200" href="#">Contact Us</a>
-            <a className="text-xs text-slate-500 hover:text-secondary transition-colors duration-200" href="#">Privacy Policy</a>
-            <a className="text-xs text-slate-500 hover:text-secondary transition-colors duration-200" href="#">Terms of Service</a>
+            <Link className="text-xs text-slate-500 hover:text-secondary transition-colors duration-200" href="/contact">Contact Us</Link>
+            <Link className="text-xs text-slate-500 hover:text-secondary transition-colors duration-200" href="/privacy">Privacy Policy</Link>
+            <Link className="text-xs text-slate-500 hover:text-secondary transition-colors duration-200" href="/terms">Terms of Service</Link>
           </div>
-          <p className="text-xs text-primary">&copy; {new Date().getFullYear()} CareerNeeti. All rights reserved. DPDPA Compliant.</p>
+          <p className="text-xs text-primary">&copy; {new Date().getFullYear()} CareerNeeti. All rights reserved.</p>
         </div>
       </footer>
     </div>

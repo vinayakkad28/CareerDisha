@@ -127,6 +127,23 @@ RAZORPAY_WEBHOOK_SECRET = os.getenv("RAZORPAY_WEBHOOK_SECRET", "")
 ENABLE_PAYMENTS = _env_flag("ENABLE_PAYMENTS", default=False)
 RAZORPAY_CONFIGURED = bool(RAZORPAY_KEY_ID.strip() and RAZORPAY_KEY_SECRET.strip())
 
+# Give the report away instead of selling it. This is the beta posture: the
+# assessment runs end to end, the report generates and is delivered, and no money
+# changes hands.
+#
+# Deliberately a SEPARATE flag rather than a bypass inside verify_payment. The
+# original production hole was exactly that shape — a "mock" order id the
+# verifier auto-approved — and re-opening the payment path to unlock reports
+# would recreate it the day payments are switched on. The two are mutually
+# exclusive and asserted so below.
+FREE_REPORTS = _env_flag("FREE_REPORTS", default=False)
+
+if FREE_REPORTS and ENABLE_PAYMENTS:
+    raise RuntimeError(
+        "Refusing to start: FREE_REPORTS and ENABLE_PAYMENTS are both true. "
+        "Reports would be given away while the checkout is live. Pick one."
+    )
+
 if ENABLE_PAYMENTS and not RAZORPAY_CONFIGURED:
     if IS_PRODUCTION:
         raise RuntimeError(
@@ -157,7 +174,11 @@ ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-DEFAULT_LLM_PROVIDER = os.getenv("DEFAULT_LLM_PROVIDER", "groq")
+# Default to Google. The previous default resolved to llama-3.1-8b-instant,
+# which the repo's own fix_groq.py scores 0 — "too small for this schema" — and
+# which truncates the ~20-section report into a QA failure. Measured on
+# gemini-3.5-flash: a complete 13-section, ~45k character report in about 60s.
+DEFAULT_LLM_PROVIDER = os.getenv("DEFAULT_LLM_PROVIDER", "google")
 MAX_CONCURRENT_REQUESTS = int(os.getenv("MAX_CONCURRENT_REQUESTS", "5"))
 
 # Model IDs are env-overridable. Providers retire models and gate others behind
@@ -193,6 +214,19 @@ if not LLM_API_KEYS.get(DEFAULT_LLM_PROVIDER, "").strip():
 # Request timeout for LLM calls. The SDKs default to 600s with their own internal
 # retries nested inside our retry loop, which can hang a report thread for hours.
 LLM_TIMEOUT_SECONDS = int(os.getenv("LLM_TIMEOUT_SECONDS", "90"))
+
+# Output ceiling for report generation.
+#
+# This was 12,000, and a complete report measures ~45,000 characters — roughly
+# 11-12k tokens. Sitting on the ceiling meant Gemini truncated mid-string often
+# enough to matter, and the only thing that caught it was json.loads raising
+# "Unterminated string": a parse error that happens to be retried, by accident
+# rather than design. When the retries truncated too, the customer got nothing
+# and the row rolled back to "assessment_complete" with no explanation.
+#
+# Headroom is nearly free — output is billed per token emitted, not per token
+# allowed — so give the model room to finish the schema it was asked for.
+LLM_MAX_OUTPUT_TOKENS = int(os.getenv("LLM_MAX_OUTPUT_TOKENS", "32000"))
 
 # RIASEC Configuration
 RIASEC_TYPES = ["R", "I", "A", "S", "E", "C"]

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/components/Toast";
 import { RiasecBarChart } from "@/components/RiasecRadarChart";
@@ -273,9 +273,12 @@ function PrimaryBtn({
 }
 
 /* ── component ────────────────────────────────────────────── */
-export default function AssessmentPage() {
+function AssessmentFlow() {
   const searchParams = useSearchParams();
-  const leadId = searchParams.get("lead");
+  // The quiz links here as /assessment?lead=<lead.token>, a 32-char uuid hex.
+  // It was being posted as `lead_id`, which the API typed as an int — so every
+  // hand-off from the free quiz 422'd. It is a token, so name it one.
+  const leadToken = searchParams.get("lead");
 
   /* state */
   const { toast } = useToast();
@@ -457,10 +460,10 @@ export default function AssessmentPage() {
     try {
       const data = await apiPost("/api/d2c/start", {
         student_name: studentName.trim(),
-        email: email.trim() || undefined,
+        student_email: email.trim() || undefined,
         parent_phone: parentPhone.trim() || undefined,
         class_level: classLevel || undefined,
-        lead_id: leadId || undefined,
+        lead_token: leadToken || undefined,
       });
       setToken(data.token);
       setStep(2);
@@ -676,7 +679,14 @@ export default function AssessmentPage() {
         } : undefined,
       });
       setPreviewData(data);
-      setStep(9);
+      // The server decides whether there is anything to pay for. In the free
+      // beta it starts generating as soon as the assessment is scored and says
+      // so here, and we go straight to the progress screen — showing a paywall
+      // for a report that is already being built would be nonsense. When
+      // payments are switched back on, the status is "assessment_complete" and
+      // the preview/paywall step runs exactly as before.
+      const generating = data?.status === "report_generating";
+      setStep(generating ? 11 : 9);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setError("Submission failed. Please try again.");
@@ -776,6 +786,17 @@ export default function AssessmentPage() {
           if (pollRef.current) clearInterval(pollRef.current);
           setStep(12);
           window.scrollTo({ top: 0, behavior: "smooth" });
+          return;
+        }
+        // Terminal failure states. Without this the loop span forever showing
+        // "Status: qa flagged" — a permanent, silent hang with no way out and
+        // nothing telling the user their report was held back.
+        if (data.status === "qa_flagged" || data.status === "generation_failed") {
+          if (pollRef.current) clearInterval(pollRef.current);
+          setError(
+            "Your report needs a quick manual check before we release it. " +
+              "We have kept your answers — please contact us and we will finish it."
+          );
         }
       } catch {
         // keep polling
@@ -2087,4 +2108,18 @@ export default function AssessmentPage() {
 
   /* fallback */
   return null;
+}
+
+export default function AssessmentPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-surface">
+          <div className="w-8 h-8 border-3 border-primary/30 border-t-primary rounded-full animate-spin" />
+        </div>
+      }
+    >
+      <AssessmentFlow />
+    </Suspense>
+  );
 }

@@ -21,11 +21,16 @@ def get_report_by_token(token: str):
         # Try D2C token first
         assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
         if assessment:
-            if assessment.payment_status != "paid":
-                raise HTTPException(status_code=402, detail="Payment required")
+            # Same gate as the D2C router's own report routes — imported rather
+            # than repeated so the two cannot disagree about what "unlocked"
+            # means. The school branch below has no payment gate at all: the
+            # school pays, not the student.
+            from routers.d2c import assert_report_is_deliverable
+
             if not assessment.student_id:
                 raise HTTPException(status_code=400, detail="Report not yet generated")
             student = db.query(Student).filter(Student.id == assessment.student_id).first()
+            assert_report_is_deliverable(assessment, student)
             if not student or not student.report_content:
                 raise HTTPException(status_code=404, detail="Report not ready yet")
             return _student_report_response(token, student)
