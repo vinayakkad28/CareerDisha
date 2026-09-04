@@ -226,7 +226,31 @@ LLM_TIMEOUT_SECONDS = int(os.getenv("LLM_TIMEOUT_SECONDS", "90"))
 #
 # Headroom is nearly free — output is billed per token emitted, not per token
 # allowed — so give the model room to finish the schema it was asked for.
+#
+# But the ceiling is PER PROVIDER, because a value above a model's own cap is a
+# hard 400, not a clamp. This was briefly a single 32,000 applied to all four:
+# gpt-4o-mini caps completion at 16,384, so every OpenAI call would have failed —
+# and _is_permanent_llm_error classifies 400 as permanent, so LLMClient.generate
+# re-raises with NO retry. An entire 300-student batch would have died in seconds
+# with nothing surfacing the reason in the UI.
 LLM_MAX_OUTPUT_TOKENS = int(os.getenv("LLM_MAX_OUTPUT_TOKENS", "32000"))
+
+# Per-provider output caps. A provider absent here falls back to the value above.
+# groq's entry is deliberately conservative: fix_groq.py exists because models on
+# that endpoint reject large max_tokens outright, and its own APP_MAX_TOKENS must
+# be kept in step with whatever is set here.
+LLM_PROVIDER_MAX_OUTPUT_TOKENS = {
+    "google": LLM_MAX_OUTPUT_TOKENS,
+    "openai": int(os.getenv("OPENAI_MAX_OUTPUT_TOKENS", "16000")),   # gpt-4o-mini caps at 16,384
+    "groq": int(os.getenv("GROQ_MAX_OUTPUT_TOKENS", "12000")),       # must match fix_groq.py
+    # anthropic is not listed: _call_anthropic deliberately uses a fixed 8192 and
+    # splits generation into two passes to stay under it.
+}
+
+
+def max_output_tokens_for(provider: str) -> int:
+    """Output ceiling this provider will actually accept."""
+    return LLM_PROVIDER_MAX_OUTPUT_TOKENS.get(provider, LLM_MAX_OUTPUT_TOKENS)
 
 # RIASEC Configuration
 RIASEC_TYPES = ["R", "I", "A", "S", "E", "C"]
