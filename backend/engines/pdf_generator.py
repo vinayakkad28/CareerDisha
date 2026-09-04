@@ -1,11 +1,13 @@
 """PDF Report Generator.
 
-Takes JSON report content and generates branded 8-10 page PDF reports
+Takes JSON report content and generates a branded multi-page PDF report
 using Jinja2 HTML templates and WeasyPrint.
 """
 
 import base64
 import io
+import logging
+import os
 from pathlib import Path
 from datetime import date
 
@@ -19,6 +21,8 @@ from weasyprint.text.fonts import FontConfiguration
 
 from config import BRAND_COLORS, RIASEC_TYPE_NAMES, RIASEC_ARCHETYPES, RIASEC_COLORS, TEMPLATES_DIR, FONTS_DIR, OUTPUT_DIR
 from models import Student
+
+logger = logging.getLogger(__name__)
 
 
 def generate_radar_chart(riasec_scores: dict) -> str:
@@ -203,3 +207,57 @@ def generate_student_pdf(
     )
 
     return output_path
+
+
+def ensure_student_pdf(student: Student, db=None) -> Path:
+    """Return a path to this student's PDF, rebuilding it if the file is gone.
+
+    OUTPUT_DIR is /tmp/output on the hosted free plan, which is wiped on every
+    deploy and every idle recycle — while `student.pdf_path` lives on in the
+    database and `report_status` stays "pdf_ready". So a session could report 300
+    reports ready and have zero files, and nothing could rebuild them:
+    run_pdf_generation only picks up rows in "qa_passed", and these are already
+    past that.
+
+    Everything the renderer needs is a persisted column, so a miss costs a
+    re-render and no LLM call. Raises FileNotFoundError when there is genuinely
+    nothing to rebuild from.
+    """
+    if student.pdf_path:
+        existing = Path(student.pdf_path)
+        if existing.exists():
+            return existing
+
+    if not student.report_content:
+        raise FileNotFoundError(
+            f"student {student.id} has no report_content to rebuild a PDF from"
+        )
+
+    output_dir = OUTPUT_DIR / f"session_{student.session_id}"
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    counsellor_name = ""
+    web_report_url = ""
+    if student.session_id and db is not None:
+        from models import Session as SessionModel
+
+        session = (
+            db.query(SessionModel).filter(SessionModel.id == student.session_id).first()
+        )
+        if session:
+            counsellor_name = session.counsellor_name or ""
+    if student.report_token:
+        base_url = os.getenv("APP_BASE_URL", "https://careerneeti.in")
+        web_report_url = f"{base_url}/reports/{student.report_token}"
+
+    path = generate_student_pdf(
+        student,
+        output_dir,
+        counsellor_name=counsellor_name,
+        web_report_url=web_report_url,
+    )
+    student.pdf_path = str(path)
+    if db is not None:
+        db.commit()
+    logger.info(f"Rebuilt missing PDF for student {student.id} at {path}")
+    return path

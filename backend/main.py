@@ -72,6 +72,32 @@ def _assert_schema_current() -> None:
         )
 
 
+def _warm_pdf_stack() -> None:
+    """Pay the WeasyPrint import cost at boot instead of in someone's request.
+
+    Every PDF route imported weasyprint lazily, inside the handler. The first
+    such call in a fresh container therefore paid, mid-request, for the ctypes
+    dlopen of Pango/Cairo/GObject plus a fontconfig scan. On a small instance
+    that was slow enough to drop the connection — the compliance certificate and
+    the parent circular both failed in production while the JSON variant of the
+    same endpoint returned 200, and both rendered locally in half a second
+    against a warm cache.
+
+    Importing here moves that cost to startup, where the platform's own health
+    check absorbs it. Deliberately non-fatal: a PDF backend that cannot load
+    should degrade those two endpoints, not stop the API from serving.
+    """
+    import time
+
+    started = time.monotonic()
+    try:
+        import engines.pdf_generator  # noqa: F401  (imports weasyprint + matplotlib)
+
+        logger.info(f"PDF stack warmed in {time.monotonic() - started:.1f}s")
+    except Exception as e:
+        logger.error(f"PDF stack failed to load — PDF routes will error: {e}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     if AUTO_CREATE_SCHEMA:
@@ -79,6 +105,7 @@ async def lifespan(app: FastAPI):
     else:
         _assert_schema_current()
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    _warm_pdf_stack()
     logger.info(f"CareerNeeti API started. Output dir: {OUTPUT_DIR}")
     yield
 

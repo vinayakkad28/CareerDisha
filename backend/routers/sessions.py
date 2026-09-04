@@ -374,12 +374,39 @@ def download_all_pdfs(session_id: int, db: DBSession = Depends(get_db), session:
     if not students:
         raise HTTPException(status_code=404, detail="No PDFs found for this session")
 
+    # This loop used to be `if pdf_path.exists(): zf.write(...)`, which meant a
+    # session whose files had been wiped — the normal outcome of any redeploy,
+    # since OUTPUT_DIR is ephemeral — produced an EMPTY zip with HTTP 200. A
+    # counsellor would hand out nothing and never know. Rebuild what is missing,
+    # and if any student still cannot be included, refuse rather than ship a
+    # short archive claiming to be the whole cohort.
+    from engines.pdf_generator import ensure_student_pdf
+
     zip_buffer = io.BytesIO()
+    unavailable: list[str] = []
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zf:
         for student in students:
-            pdf_path = Path(student.pdf_path)
-            if pdf_path.exists():
-                zf.write(pdf_path, pdf_path.name)
+            try:
+                pdf_path = ensure_student_pdf(student, db)
+            except Exception as e:
+                logger.error(
+                    f"Session {session_id}: no PDF for student {student.id} "
+                    f"({student.name}): {e}"
+                )
+                unavailable.append(student.name or f"id {student.id}")
+                continue
+            zf.write(pdf_path, pdf_path.name)
+
+    if unavailable:
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                f"{len(unavailable)} of {len(students)} reports could not be "
+                f"produced, so the download would be incomplete. "
+                f"Affected: {', '.join(unavailable[:10])}"
+                + ("…" if len(unavailable) > 10 else "")
+            ),
+        )
 
     zip_buffer.seek(0)
     school = db.query(School).filter(School.id == session.school_id).first()

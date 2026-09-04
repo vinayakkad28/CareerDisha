@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -10,6 +11,8 @@ from database import get_db
 from models import Student
 from schemas.students import StudentDetail
 from utils.time import utcnow
+
+logger = logging.getLogger(__name__)
 
 # resolve_scope replaces get_current_user at the router level: it authenticates
 # AND rejects tokens that cannot be scoped, before any handler body runs.
@@ -37,11 +40,28 @@ def get_student(student: Student = Depends(get_scoped_student)):
 
 
 @router.get("/{student_id}/pdf")
-def download_pdf(student: Student = Depends(get_scoped_student)):
-    if not student.pdf_path or not Path(student.pdf_path).exists():
+def download_pdf(
+    student: Student = Depends(get_scoped_student),
+    db: Session = Depends(get_db),
+):
+    # Rebuild rather than 404. OUTPUT_DIR is ephemeral on the hosted plan, so a
+    # stored pdf_path routinely outlives the file it names — and nothing else in
+    # the school pipeline can regenerate one, because run_pdf_generation only
+    # picks up rows still in "qa_passed".
+    from engines.pdf_generator import ensure_student_pdf
+
+    try:
+        path = ensure_student_pdf(student, db)
+    except FileNotFoundError:
         raise HTTPException(status_code=404, detail="PDF not generated yet")
+    except Exception as e:
+        logger.error(f"PDF rebuild failed for student {student.id}: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=503, detail="Could not rebuild the report right now."
+        )
+
     return FileResponse(
-        student.pdf_path,
+        str(path),
         media_type="application/pdf",
         filename=f"{student.name.replace(' ', '_')}_career_report.pdf",
     )
