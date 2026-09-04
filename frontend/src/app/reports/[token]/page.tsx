@@ -197,8 +197,12 @@ export default function ReportPage() {
           </div>
           <h2 className="font-heading text-lg font-bold text-on-surface mb-2">Report not available</h2>
           <p className="text-sm text-on-surface-variant font-body">
-            {error === "Payment required"
-              ? "This report requires payment. Please complete your purchase to view the full report."
+            {/* Matched against the API's 402 detail. Both sides moved together
+                when online payment was removed — leaving this on the old string
+                would show "invalid or expired" for a report that is merely
+                locked, sending the parent back to the school for no reason. */}
+            {error === "Access code required"
+              ? "This report is unlocked with the access code from your school's CareerNeeti circular. Enter it at the end of the assessment to view the full report."
               : error || "This report link is invalid or has expired."}
           </p>
           <a href="/assessment" className="btn-primary mt-5 inline-flex">

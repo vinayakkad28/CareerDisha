@@ -37,7 +37,7 @@ export default function ReportError({
           Try again
         </button>
         <p className="text-xs text-on-surface-variant">
-          If it keeps happening, reply to the WhatsApp message you received and
+          If it keeps happening, contact your school counsellor and
           we will send the PDF directly.
         </p>
       </div>

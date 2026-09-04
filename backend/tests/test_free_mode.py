@@ -110,24 +110,3 @@ class TestPaidModeStillRefuses:
         a = _submitted_assessment(client, db)
         r = client.get(f"/api/d2c/preview/{a.token}")
         assert r.json()["report_locked"] is True
-
-
-class TestTheTwoFlagsAreMutuallyExclusive:
-    def test_config_refuses_to_run_both(self):
-        """Giving reports away while the checkout is live is never intended."""
-        import importlib
-        import os
-
-        os.environ["FREE_REPORTS"] = "true"
-        os.environ["ENABLE_PAYMENTS"] = "true"
-        try:
-            import config
-
-            with pytest.raises(RuntimeError, match="Pick one"):
-                importlib.reload(config)
-        finally:
-            os.environ.pop("FREE_REPORTS", None)
-            os.environ.pop("ENABLE_PAYMENTS", None)
-            import config
-
-            importlib.reload(config)

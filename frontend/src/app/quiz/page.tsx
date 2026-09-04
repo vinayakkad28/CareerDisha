@@ -486,7 +486,7 @@ export default function QuizPage() {
 
             {phoneSaved && (
               <p className="text-center text-on-surface-variant text-sm">
-                Saved — we will reach out to you on WhatsApp shortly.
+                Saved — we will be in touch.
               </p>
             )}
 
@@ -659,7 +659,7 @@ export default function QuizPage() {
         <div className="max-w-public mx-auto flex flex-col md:flex-row items-center gap-6">
           <div className="w-full md:flex-1">
             <label className="block text-[10px] font-bold text-primary uppercase tracking-widest mb-2" htmlFor="phone">
-              WhatsApp for Results
+              Mobile number
             </label>
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-semibold">+91</span>

@@ -9,7 +9,7 @@ from database import get_db, SessionLocal
 from models import AccessCode, AuditLog, Lead, D2CAssessment, Student, School, Session
 from engines.scoring_engine import calculate_riasec_scores, determine_holland_code, match_careers, load_knowledge_base
 from rate_limit import limiter
-from config import ENABLE_PAYMENTS, FREE_REPORTS, DEFAULT_LLM_PROVIDER
+from config import FREE_REPORTS, DEFAULT_LLM_PROVIDER
 from utils.self_efficacy import normalize_self_efficacy
 from utils.time import utcnow
 
@@ -21,12 +21,13 @@ def report_is_unlocked(assessment: D2CAssessment) -> bool:
     """Whether this assessment's report may be generated and handed over.
 
     Every gate on the report — preview, JSON, PDF, and the public web report —
-    routes through here so they cannot drift apart. Three ways to be unlocked:
+    routes through here so they cannot drift apart. Two ways to be unlocked:
 
     * a school-issued access code was redeemed (the pilot's route);
-    * the report was paid for online;
-    * FREE_REPORTS is on, which is now a deliberate open-house switch rather
-      than the default posture.
+    * FREE_REPORTS is on, which is a deliberate open-house switch.
+
+    There is no online payment. Fees are collected offline at the school
+    session, and the code handed out there is what carries the entitlement.
 
     The code path matters for more than money. The site was giving away, free,
     the identical report parents were being charged ₹500 for at a school session
@@ -35,12 +36,12 @@ def report_is_unlocked(assessment: D2CAssessment) -> bool:
     evidenced by that session's signed paper form, instead of the online flow
     asserting consent a child gave on their own behalf.
 
-    Note the asymmetry: neither a code nor FREE_REPORTS marks anything "paid".
-    Payment status stays an honest record of whether money was received.
+    The payment columns on D2CAssessment are left dormant rather than dropped,
+    so nothing here writes or reads them.
     """
     if assessment.access_code_id is not None:
         return True
-    return FREE_REPORTS or assessment.payment_status == "paid"
+    return FREE_REPORTS
 
 
 def _inherited_consent(db, assessment: D2CAssessment) -> dict:
@@ -75,8 +76,8 @@ DELIVERABLE_REPORT_STATUSES = ("qa_passed", "pdf_ready", "delivered")
 def assert_report_is_deliverable(assessment: D2CAssessment, student: Student) -> None:
     """Raise unless this report may be handed to the customer.
 
-    Two independent conditions, and both must hold. Unlocking (paid, or given
-    away in the beta) is about entitlement. This is about the report being fit
+    Two independent conditions, and both must hold. Unlocking (a redeemed school
+    code, or the open-house switch) is about entitlement. This is about fitness
     to send: a QA hold means the pipeline found a structural defect, and a held
     report must not leak out of a side door.
 
@@ -85,7 +86,10 @@ def assert_report_is_deliverable(assessment: D2CAssessment, student: Student) ->
     report was downloadable while its status still said it was being held.
     """
     if not report_is_unlocked(assessment):
-        raise HTTPException(status_code=402, detail="Payment required")
+        raise HTTPException(
+            status_code=402,
+            detail="Access code required",
+        )
     if student is not None and student.report_status not in DELIVERABLE_REPORT_STATUSES:
         if student.report_status == "qa_flagged":
             raise HTTPException(
@@ -93,12 +97,6 @@ def assert_report_is_deliverable(assessment: D2CAssessment, student: Student) ->
                 detail="This report is held for a quality check and is not ready yet.",
             )
         raise HTTPException(status_code=404, detail="Report not ready yet")
-
-D2C_PRICING = {
-    "basic": 499,
-    "plus": 1999,
-    "premium": 2999,
-}
 
 D2C_SCHOOL_CODE = "D2C-ONLINE"
 
@@ -185,22 +183,6 @@ class SubmitRequest(BaseModel):
     first_gen_learner: bool = False
     self_efficacy: Optional[dict] = None
     academic_marks: Optional[dict] = None
-
-class CreateOrderRequest(BaseModel):
-    tier: str = "basic"
-
-
-class VerifyPaymentRequest(BaseModel):
-    """Razorpay handler payload.
-
-    These were previously declared as bare `str` parameters on the route, which
-    FastAPI binds as QUERY parameters — so the JSON body the client actually
-    sent was ignored and the signature never reached verification.
-    """
-    razorpay_order_id: str = ""
-    razorpay_payment_id: str = ""
-    razorpay_signature: str = ""
-
 
 @router.post("/start")
 @limiter.limit("30/minute")
@@ -703,118 +685,7 @@ def preview_results(token: str):
             "top_careers_preview": career_teasers,
             "total_careers_matched": len(matched),
             "report_locked": not report_is_unlocked(assessment),
-            "pricing": D2C_PRICING,
         }
-    finally:
-        db.close()
-
-
-@router.post("/create-order/{token}")
-@limiter.limit("10/minute")
-def create_payment_order(request: Request, token: str, body: CreateOrderRequest):
-    """Create a Razorpay order for payment."""
-    if not ENABLE_PAYMENTS:
-        # No silent mock fallback. Previously an unconfigured Razorpay produced a
-        # "mock_order_..." id that verify-payment auto-approved, so every paid
-        # report was obtainable for zero rupees.
-        raise HTTPException(
-            status_code=503,
-            detail="Online payments are not available yet.",
-        )
-
-    db = SessionLocal()
-    try:
-        assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
-        if not assessment:
-            raise HTTPException(status_code=404, detail="Assessment not found")
-        if assessment.payment_status == "paid":
-            raise HTTPException(status_code=400, detail="Already paid")
-
-        tier = body.tier
-        if tier not in D2C_PRICING:
-            raise HTTPException(status_code=400, detail=f"Invalid tier: {tier}. Options: {list(D2C_PRICING.keys())}")
-
-        amount_inr = D2C_PRICING[tier]
-        assessment.tier = tier
-        assessment.amount_inr = amount_inr
-
-        try:
-            from services.razorpay_service import PaymentsNotConfigured, create_razorpay_order
-            order = create_razorpay_order(
-                amount_inr * 100, f"d2c_{assessment.id}", {"token": token, "tier": tier}
-            )
-        except PaymentsNotConfigured as e:
-            logger.error(f"Payments enabled but Razorpay unusable: {e}")
-            raise HTTPException(status_code=503, detail="Online payments are not available yet.")
-        except Exception as e:
-            # A transient Razorpay failure must surface as an error, never as a
-            # free order.
-            logger.exception(f"Razorpay order creation failed for {token}: {e}")
-            raise HTTPException(status_code=502, detail="Could not reach the payment provider. Please try again.")
-
-        assessment.razorpay_order_id = order["id"]
-        db.commit()
-        return {
-            "order_id": order["id"],
-            # Both units are returned explicitly. The old response sent a single
-            # ambiguous "amount" in rupees which the client divided by 100,
-            # displaying (and charging) Rs 4.99 for a Rs 499 tier.
-            "amount_inr": amount_inr,
-            "amount_paise": amount_inr * 100,
-            "currency": "INR",
-            "tier": tier,
-            # Field name must match what the client checks to open the real
-            # checkout; it read `razorpay_key` while this returned `key_id`, so
-            # every customer fell through to the mock screen.
-            "razorpay_key": order.get("key_id", ""),
-        }
-    finally:
-        db.close()
-
-
-@router.post("/verify-payment/{token}")
-@limiter.limit("10/minute")
-def verify_payment(request: Request, token: str, body: VerifyPaymentRequest):
-    """Verify a Razorpay payment signature and trigger report generation."""
-    if not ENABLE_PAYMENTS:
-        raise HTTPException(status_code=503, detail="Online payments are not available yet.")
-
-    db = SessionLocal()
-    try:
-        assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
-        if not assessment:
-            raise HTTPException(status_code=404, detail="Assessment not found")
-        if assessment.payment_status == "paid":
-            return {"status": "already_paid", "token": token}
-
-        # The signature must belong to THIS assessment's order, otherwise a valid
-        # signature from any other (possibly cheaper) order could be replayed here.
-        if not assessment.razorpay_order_id or body.razorpay_order_id != assessment.razorpay_order_id:
-            raise HTTPException(status_code=400, detail="Payment verification failed")
-
-        try:
-            from services.razorpay_service import PaymentsNotConfigured, verify_razorpay_payment
-            verified = verify_razorpay_payment(
-                body.razorpay_order_id, body.razorpay_payment_id, body.razorpay_signature
-            )
-        except PaymentsNotConfigured as e:
-            logger.error(f"Cannot verify payment, Razorpay unusable: {e}")
-            raise HTTPException(status_code=503, detail="Online payments are not available yet.")
-
-        if not verified:
-            raise HTTPException(status_code=400, detail="Payment verification failed")
-
-        assessment.payment_status = "paid"
-        assessment.razorpay_payment_id = body.razorpay_payment_id
-        assessment.paid_at = utcnow()
-        assessment.status = "paid"
-        db.commit()
-
-        logger.info(f"D2C payment verified: {token} (tier={assessment.tier}, amount=Rs{assessment.amount_inr})")
-
-        _start_report_generation(assessment.id)
-
-        return {"status": "paid", "token": token, "report_generating": True}
     finally:
         db.close()
 
@@ -942,22 +813,14 @@ def _generate_d2c_report(assessment_id: int):
             except Exception as e:
                 logger.warning(f"D2C email delivery failed: {e}")
 
-        # Send WhatsApp delivery
-        if assessment.parent_phone:
-            try:
-                from services.whatsapp import WhatsAppService
-                wa = WhatsAppService()
-                result = wa.send_pdf(
-                    phone=assessment.parent_phone,
-                    pdf_path=str(pdf_path),
-                    student_name=student.name,
-                    school_name="CareerNeeti",
-                )
-                if result.get("success"):
-                    assessment.report_whatsapp_sent = True
-                    db.commit()
-            except Exception as e:
-                logger.warning(f"D2C WhatsApp delivery failed: {e}")
+        # No WhatsApp delivery. Reports are handed over offline at the school.
+        #
+        # What stood here imported a WhatsAppService class that has never existed
+        # — the module was function-based — and called an async function
+        # synchronously. The ImportError was swallowed by a broad except into a
+        # logger.warning, so `report_whatsapp_sent` was never once True and no
+        # parent ever received a report this way. Removing it changes nothing at
+        # runtime; the column is left dormant.
 
     except Exception as e:
         logger.error(f"D2C report pipeline failed for assessment {assessment_id}: {e}", exc_info=True)

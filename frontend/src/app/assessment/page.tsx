@@ -8,7 +8,6 @@ import { RiasecBarChart } from "@/components/RiasecRadarChart";
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api").replace(/\/api\/?$/, "");
 
 /* ── brand tokens ─────────────────────────────────────────── */
-const NAVY = "#1a5276";
 const GOLD = "#d4ac0d";
 
 const RIASEC_LABELS: Record<string, string> = {
@@ -68,27 +67,18 @@ interface PreviewData {
   career_teasers?: string[];
 }
 
-interface PaymentData {
-  order_id: string;
-  // The backend returns both units explicitly. A single ambiguous `amount` in
-  // rupees was previously divided by 100 here, so a Rs 499 tier displayed — and
-  // would have charged — Rs 4.99.
-  amount_inr: number;
-  amount_paise: number;
-  currency: string;
-  razorpay_key?: string;
-}
-
 /* ── progress persistence ─────────────────────────────────── */
 /* The paid flow is 12 screens and 74+ questions, roughly 20 minutes, aimed at
    parents and students on phones — and every answer lived only in React memory.
    A refresh, a back-swipe, an incoming call, or iOS discarding a backgrounded
    tab sent the user back to screen one with nothing saved. */
 
-const PROGRESS_KEY = "cn_assessment_progress_v1";
+// _v2: the step numbers changed when the online checkout was removed, so a
+// resume written by the old flow would drop the user on the wrong screen.
+const PROGRESS_KEY = "cn_assessment_progress_v2";
 
-/** Fields worth restoring. Fetched question lists and server-derived payment or
- *  preview data are deliberately excluded — those are re-fetched. */
+/** Fields worth restoring. Fetched question lists and server-derived preview
+ *  data are deliberately excluded — those are re-fetched. */
 interface PersistedProgress {
   token: string;
   step: number;
@@ -200,12 +190,13 @@ function OptionButtons({ options, value, onChange }: { options: string[]; value:
   );
 }
 
-// The flow runs to step 12 (1-8 questions, 9 preview, 10 payment, 11 generating,
-// 12 report). The header claimed "Step N of 8" and hid the bar entirely from
-// step 8 on, so a student reached "Step 7 of 8" expecting one screen to go and
-// was then handed 74 more questions plus preview, payment and generation.
-const TOTAL_STEPS = 12;
-const LAST_PROGRESS_STEP = 11; // step 12 is the finished report, not progress
+// The flow runs to step 11 (1-8 questions, 9 preview + access code, 10
+// generating, 11 report). The header claimed "Step N of 8" and hid the bar
+// entirely from step 8 on, so a student reached "Step 7 of 8" expecting one
+// screen to go and was then handed 74 more questions plus preview and
+// generation. The old step 10 was an online checkout and no longer exists.
+const TOTAL_STEPS = 11;
+const LAST_PROGRESS_STEP = 10; // step 11 is the finished report, not progress
 
 function Header({ step, progressPct, subtitle }: { step: number; progressPct: number; subtitle?: string }) {
   return (
@@ -285,6 +276,8 @@ function AssessmentFlow() {
   const [step, setStep] = useState(1);
   const [token, setToken] = useState("");
   const [error, setError] = useState("");
+  const [accessCode, setAccessCode] = useState("");
+  const [codeError, setCodeError] = useState("");
   const [nameError, setNameError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -343,10 +336,8 @@ function AssessmentFlow() {
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
 
   // Step 10: Payment
-  const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
   // True when the backend reports online payments are switched off. Distinct
   // from an error: nothing the user does will make a retry succeed.
-  const [paymentsUnavailable, setPaymentsUnavailable] = useState(false);
 
   // Step 11: Generating
   const [reportStatus, setReportStatus] = useState("");
@@ -686,7 +677,7 @@ function AssessmentFlow() {
       // payments are switched back on, the status is "assessment_complete" and
       // the preview/paywall step runs exactly as before.
       const generating = data?.status === "report_generating";
-      setStep(generating ? 11 : 9);
+      setStep(generating ? 10 : 9);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setError("Submission failed. Please try again.");
@@ -695,96 +686,54 @@ function AssessmentFlow() {
     }
   };
 
-  // Step 9 → create order
-  const handleUnlockReport = async (tier: string) => {
+  // Step 9 → redeem the school access code
+  //
+  // Fees are collected offline at the school session; the code printed on the
+  // parent circular is what unlocks the report. It also carries the parental
+  // consent evidenced by that circular, so this is a consent step as much as an
+  // entitlement one.
+  const handleRedeemCode = async () => {
+    const entered = accessCode.trim();
+    if (!entered) {
+      setCodeError("Enter the code from your school.");
+      return;
+    }
     setLoading(true);
-    setError("");
+    setCodeError("");
     try {
-      const data = await apiPost(`/api/d2c/create-order/${token}`, { tier });
-      setPaymentData(data);
-      setPaymentsUnavailable(false);
+      await apiPost(`/api/d2c/redeem/${token}`, { code: entered });
       setStep(10);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (e) {
-      // 503 means online payments are switched off server-side, which is a
-      // normal state — not an error the user can retry their way out of.
-      if (e instanceof ApiError && e.status === 503) {
-        setPaymentsUnavailable(true);
-        setStep(10);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+      // The API distinguishes these deliberately: 404 means no such code, 409
+      // means a real code that cannot be used again. Saying "invalid" to a
+      // parent holding a genuine but already-redeemed code sends them back to
+      // the school for no reason.
+      if (e instanceof ApiError && e.status === 409) {
+        setCodeError(
+          "That code has already been used, or has expired. Please ask your school for a new one."
+        );
+      } else if (e instanceof ApiError && e.status === 404) {
+        setCodeError("We do not recognise that code. Please check it and try again.");
       } else {
-        setError("Could not start payment. Please try again.");
+        setCodeError("Could not check the code just now. Please try again.");
       }
     } finally {
       setLoading(false);
     }
   };
 
-  // Load Razorpay.js when we reach the payment step
-  useEffect(() => {
-    if (!paymentData) return;
-    if (typeof window === "undefined") return;
-    if ((window as unknown as Record<string, unknown>).Razorpay) return;
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    document.head.appendChild(script);
-  }, [paymentData]);
-
-  // Step 6 → payment
-  const handlePayment = useCallback(async () => {
-    if (!paymentData) return;
-
-    // If Razorpay key present, open checkout
-    if (paymentData.razorpay_key && typeof window !== "undefined") {
-      const Razorpay = (window as unknown as Record<string, unknown>).Razorpay as
-        | (new (opts: Record<string, unknown>) => { open: () => void })
-        | undefined;
-      if (Razorpay) {
-        const rzp = new Razorpay({
-          key: paymentData.razorpay_key,
-          amount: paymentData.amount_paise,
-          currency: paymentData.currency || "INR",
-          order_id: paymentData.order_id,
-          name: "CareerNeeti",
-          description: "Career Assessment Report",
-          handler: async (response: Record<string, string>) => {
-            try {
-              await apiPost(`/api/d2c/verify-payment/${token}`, {
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-              });
-              setStep(11);
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            } catch {
-              setError("Payment verification failed. Please contact support.");
-            }
-          },
-          theme: { color: NAVY },
-        });
-        rzp.open();
-        return;
-      }
-    }
-
-    // Razorpay script not ready yet; the button on step 10 lets the user retry.
-  }, [paymentData, token, apiPost]);
-
-  // The former handleMockPayment() posted a fabricated signature that the
-  // backend accepted, so anyone reaching this screen got a paid report for
-  // free. Mock payments no longer exist on either side.
 
   // Step 11 → poll status
   useEffect(() => {
-    if (step !== 11) return;
+    if (step !== 10) return;
     const poll = async () => {
       try {
         const data = await apiGet(`/api/d2c/status/${token}`);
         setReportStatus(data.status);
         if (data.status === "report_ready") {
           if (pollRef.current) clearInterval(pollRef.current);
-          setStep(12);
+          setStep(11);
           window.scrollTo({ top: 0, behavior: "smooth" });
           return;
         }
@@ -1635,46 +1584,6 @@ function AssessmentFlow() {
   if (step === 9) {
     const pd = previewData;
 
-    const PRICING = [
-      {
-        tier: "basic",
-        name: "Basic",
-        price: "₹499",
-        features: [
-          "Full RIASEC analysis",
-          "Stream recommendation",
-          "Top 5 career paths",
-          "Basic college list",
-        ],
-        highlight: false,
-      },
-      {
-        tier: "plus",
-        name: "Plus",
-        price: "₹1,999",
-        features: [
-          "Everything in Basic",
-          "12-page detailed report",
-          "College list with NIRF rankings",
-          "Salary data & job outlook",
-          "Personalized action plan",
-        ],
-        highlight: true,
-      },
-      {
-        tier: "premium",
-        name: "Premium",
-        price: "₹2,999",
-        features: [
-          "Everything in Plus",
-          "1-on-1 counsellor call (30 min)",
-          "Parent guidance booklet",
-          "WhatsApp support for 1 month",
-          "Scholarship recommendations",
-        ],
-        highlight: false,
-      },
-    ];
 
     return (
       <div className="min-h-screen bg-surface font-body">
@@ -1764,183 +1673,49 @@ function AssessmentFlow() {
             </>
           )}
 
-          {/* Blurred/locked full report preview */}
-          <div className="sa-card relative overflow-hidden">
-            <div className="filter blur-[2px] opacity-50 pointer-events-none select-none">
-              <p className="text-sm font-heading font-medium text-on-surface mb-2">
-                Detailed Career Pathways
-              </p>
-              <p className="text-xs text-on-surface-variant mb-1">
-                Software Engineering - Expected salary: 8-25 LPA
-              </p>
-              <p className="text-xs text-on-surface-variant mb-1">
-                Data Science - Expected salary: 6-20 LPA
-              </p>
-              <p className="text-xs text-on-surface-variant mb-3">
-                Product Management - Expected salary: 10-30 LPA
-              </p>
-              <p className="text-sm font-heading font-medium text-on-surface mb-2">
-                Recommended Colleges (NIRF 2024)
-              </p>
-              <p className="text-xs text-on-surface-variant mb-1">
-                1. IIT Bombay - Rank #1
-              </p>
-              <p className="text-xs text-on-surface-variant mb-1">
-                2. IIT Delhi - Rank #2
-              </p>
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
-              <div className="text-center px-4">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-secondary-50 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                </div>
-                <p className="text-sm font-heading font-bold text-primary mb-2">
-                  Your full 12-page report includes:
-                </p>
-                <ul className="text-xs text-on-surface-variant space-y-1 text-left inline-block">
-                  <li className="flex items-center gap-1.5"><span className="text-accent">&#x2713;</span> Detailed career pathways &amp; roadmaps</li>
-                  <li className="flex items-center gap-1.5"><span className="text-accent">&#x2713;</span> College lists with NIRF rankings</li>
-                  <li className="flex items-center gap-1.5"><span className="text-accent">&#x2713;</span> Salary data &amp; job market outlook</li>
-                  <li className="flex items-center gap-1.5"><span className="text-accent">&#x2713;</span> Personalized action plan</li>
-                  <li className="flex items-center gap-1.5"><span className="text-accent">&#x2713;</span> Parent guide &amp; next steps</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Pricing cards */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-heading font-bold text-center text-primary">
-              Unlock Your Full Report
+          {/* Unlock with the school-issued access code */}
+          <div className="sa-card">
+            <h3 className="text-lg font-heading font-bold text-primary mb-1">
+              Enter your access code
             </h3>
-            {PRICING.map((plan) => (
-              <div
-                key={plan.tier}
-                className={cls(
-                  "sa-card transition-all",
-                  plan.highlight && "ring-2 ring-secondary shadow-lg shadow-secondary/10"
-                )}
-              >
-                {plan.highlight && (
-                  <span className="inline-block px-3 py-0.5 rounded-full text-xs font-heading font-bold mb-2 text-white bg-secondary">
-                    MOST POPULAR
-                  </span>
-                )}
-                <div className="flex items-baseline justify-between mb-3">
-                  <h4 className="text-lg font-heading font-bold text-primary">
-                    {plan.name}
-                  </h4>
-                  <span className="text-2xl font-heading font-bold text-primary">
-                    {plan.price}
-                  </span>
-                </div>
-                <ul className="space-y-1.5 mb-4">
-                  {plan.features.map((f, i) => (
-                    <li key={i} className="text-sm text-on-surface-variant flex items-start gap-2">
-                      <span className="text-accent mt-0.5">&#x2713;</span>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  onClick={() => handleUnlockReport(plan.tier)}
-                  disabled={loading}
-                  className={cls(
-                    "w-full py-3 font-heading font-bold text-sm transition-all",
-                    "disabled:opacity-40 disabled:cursor-not-allowed",
-                    plan.highlight ? "btn-gold" : "btn-primary"
-                  )}
-                >
-                  Unlock {plan.name} Report
-                </button>
-              </div>
-            ))}
-          </div>
-
-          <ErrorBanner error={error} />
-        </div>
-      </div>
-    );
-  }
-
-  /* ═══════════════════════════════════════════════════════════
-     STEP 10 — Payment
-     ═══════════════════════════════════════════════════════════ */
-  if (step === 10) {
-
-    return (
-      <div className="min-h-screen bg-surface font-body">
-        <Header step={step} progressPct={progressPct} subtitle="Complete Payment" />
-        <div className="max-w-form-narrow mx-auto px-4 py-8 space-y-5">
-          <div className="sa-card text-center">
-            <h3 className="text-lg font-heading font-bold text-primary mb-2">
-              {paymentsUnavailable ? "Almost done" : "Complete Your Payment"}
-            </h3>
-            <p className="text-on-surface-variant text-sm mb-4">
-              {paymentData
-                ? `Amount: ₹${paymentData.amount_inr.toLocaleString("en-IN")}`
-                : paymentsUnavailable
-                  ? "Your assessment is complete."
-                  : "Preparing payment..."}
+            <p className="text-sm text-on-surface-variant mb-4">
+              Your school gave you a code on the CareerNeeti circular. Enter it here to
+              unlock the full report.
             </p>
-
-            {/* Order summary */}
-            {paymentData && (
-              <div className="sa-card bg-surface-container-high mb-4 text-left">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-on-surface-variant">Career Assessment Report</span>
-                  <span className="font-heading font-bold text-on-surface">
-                    ₹{paymentData.amount_inr.toLocaleString("en-IN")}
-                  </span>
-                </div>
-                <div className="mt-2 pt-2 border-t border-surface-container-highest flex justify-between items-center text-sm">
-                  <span className="font-heading font-semibold text-on-surface">Total</span>
-                  <span className="font-heading font-bold text-primary text-lg">
-                    ₹{paymentData.amount_inr.toLocaleString("en-IN")}
-                  </span>
-                </div>
-              </div>
+            <input
+              type="text"
+              value={accessCode}
+              onChange={(e) => setAccessCode(e.target.value.toUpperCase())}
+              onKeyDown={(e) => { if (e.key === "Enter") handleRedeemCode(); }}
+              placeholder="e.g. ABCD2345"
+              autoCapitalize="characters"
+              autoCorrect="off"
+              spellCheck={false}
+              maxLength={16}
+              className="sa-input w-full text-center text-lg tracking-[0.3em] font-mono uppercase"
+            />
+            {codeError && (
+              <p className="text-error text-sm mt-2 text-center">{codeError}</p>
             )}
-
-            {paymentsUnavailable ? (
-              <div className="space-y-3 text-left">
-                <div className="sa-card bg-surface-container-high text-sm">
-                  <p className="font-heading font-bold text-on-surface mb-1">
-                    Online payment is not open yet
-                  </p>
-                  <p className="text-on-surface-variant">
-                    Your answers are saved. We will contact you on the number you
-                    gave us to arrange the report and payment.
-                  </p>
-                </div>
-                <p className="text-xs text-on-surface-variant text-center">
-                  Keep this link to return to your assessment:
-                  <br />
-                  <span className="font-mono break-all">{`${typeof window !== "undefined" ? window.location.origin : ""}/assessment?token=${token}`}</span>
-                </p>
-              </div>
-            ) : (
-              <button
-                onClick={handlePayment}
-                disabled={loading || !paymentData}
-                className="btn-primary w-full py-3.5 font-heading font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                {loading ? "Processing..." : "Pay with Razorpay"}
-              </button>
-            )}
+            <button
+              onClick={handleRedeemCode}
+              disabled={loading}
+              className="btn-gold w-full py-4 mt-4 rounded-lg font-bold disabled:opacity-50"
+            >
+              {loading ? "Checking\u2026" : "Unlock My Report"}
+            </button>
+            <p className="text-xs text-on-surface-variant mt-3 text-center">
+              No code? Ask your school counsellor \u2014 codes are handed out at the
+              assessment session.
+            </p>
           </div>
-          <ErrorBanner error={error} />
         </div>
       </div>
     );
   }
 
-  /* ═══════════════════════════════════════════════════════════
-     STEP 11 — Generating Report
-     ═══════════════════════════════════════════════════════════ */
-  if (step === 11) {
+
+  if (step === 10) {
     return (
       <div className="min-h-screen bg-brand-gradient flex items-center justify-center font-body">
         <div className="text-center px-6 max-w-sm">
@@ -2001,7 +1776,7 @@ function AssessmentFlow() {
   /* ═══════════════════════════════════════════════════════════
      STEP 12 — Report Ready
      ═══════════════════════════════════════════════════════════ */
-  if (step === 12) {
+  if (step === 11) {
     const pdfUrl = `${API_BASE}/api/d2c/pdf/${token}`;
     const webReportUrl = `${window.location.origin}/reports/${token}`;
     const shareText = encodeURIComponent(

@@ -16,7 +16,6 @@ from config import (
     CORS_ORIGIN_REGEX,
     CORS_ORIGINS,
     DEFAULT_LLM_PROVIDER,
-    ENABLE_PAYMENTS,
     IS_PRODUCTION,
     LLM_API_KEYS,
     OUTPUT_DIR,
@@ -24,7 +23,7 @@ from config import (
 )
 from database import init_db, SessionLocal
 from rate_limit import limiter
-from routers import auth, schools, sessions, students, reports, dashboard, consent, whatsapp, cards, quiz, nps, d2c, coaching, school_portal, audit, feedback, counsellors, outcomes, reports_public
+from routers import auth, schools, sessions, students, reports, dashboard, consent, cards, quiz, nps, d2c, coaching, school_portal, audit, feedback, counsellors, outcomes, reports_public
 
 # Configure logging
 logging.basicConfig(
@@ -142,7 +141,6 @@ app.include_router(students.router, prefix="/api/students", tags=["Students"])
 app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(consent.router, prefix="/api/consent", tags=["Consent"])
-app.include_router(whatsapp.router, prefix="/api/whatsapp", tags=["WhatsApp"])
 app.include_router(cards.router, prefix="/api/students", tags=["Cards"])
 app.include_router(quiz.router, prefix="/api/quiz", tags=["Quiz"])
 app.include_router(nps.router, prefix="/api/nps", tags=["NPS"])
@@ -214,7 +212,6 @@ def health_check():
         "db": db_status,
         "llm_provider": DEFAULT_LLM_PROVIDER,
         "llm_key_configured": llm_key_present,
-        "payments_enabled": ENABLE_PAYMENTS,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
     return JSONResponse(status_code=200 if healthy else 503, content=body)

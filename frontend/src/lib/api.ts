@@ -212,15 +212,6 @@ export const consent = {
     request<any>(`/consent/students/${studentId}/data`, { method: "DELETE" }),
 };
 
-// WhatsApp
-export const whatsapp = {
-  status: () => request<{ configured: boolean }>("/whatsapp/status"),
-  send: (studentId: number) =>
-    request<any>(`/whatsapp/send/${studentId}`, { method: "POST" }),
-  sendBulk: (sessionId: number) =>
-    request<any>(`/whatsapp/send-bulk/${sessionId}`, { method: "POST" }),
-};
-
 // School Portal
 export const schoolPortal = {
   mySchool: () => request<any>("/school-portal/my-school"),

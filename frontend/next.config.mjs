@@ -8,27 +8,27 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      // Next.js injects inline bootstrap scripts; Razorpay's checkout is loaded
-      // from their CDN and is required for the payment step to function.
-      "script-src 'self' 'unsafe-inline' https://checkout.razorpay.com",
+      // Next.js injects inline bootstrap scripts. No third-party script origin
+      // is permitted — the Razorpay checkout CDN was the only one and is gone.
+      "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "font-src 'self' data:",
-      // API calls go to the backend origin; Razorpay opens its own frames.
-      "connect-src 'self' https://*.railway.app https://*.onrender.com https://api.razorpay.com https://lumberjack.razorpay.com",
-      "frame-src https://api.razorpay.com https://checkout.razorpay.com",
+      // API calls go to the backend origin. Nothing else is embedded.
+      "connect-src 'self' https://*.railway.app https://*.onrender.com",
+      "frame-src 'none'",
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",
       "frame-ancestors 'none'",
     ].join("; "),
   },
-  // Report links are shared over WhatsApp; clickjacking them would expose a
-  // child's profile inside an attacker's page.
+  // Clickjacking a report link would expose a child's profile inside an
+  // attacker's page.
   { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(self)" },
+  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
 ];
 

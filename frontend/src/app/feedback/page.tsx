@@ -22,7 +22,7 @@ function FeedbackForm() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!linkToken) setError("Invalid feedback link. Please use the link from your WhatsApp message.");
+    if (!linkToken) setError("Invalid feedback link. Please use the link your counsellor gave you.");
   }, [linkToken]);
 
   const handleSubmit = async () => {

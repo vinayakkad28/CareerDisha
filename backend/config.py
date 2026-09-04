@@ -115,52 +115,13 @@ TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")
 TWILIO_WHATSAPP_FROM = os.getenv("TWILIO_WHATSAPP_FROM", "")
 
-# Razorpay (D2C payments)
-RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
-RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "")
-RAZORPAY_WEBHOOK_SECRET = os.getenv("RAZORPAY_WEBHOOK_SECRET", "")
-
-# Master switch for the paid D2C funnel. Defaults to OFF so the flow can never
-# be half-enabled: with no Razorpay credentials the old code silently fell back
-# to a mock order that verify-payment then auto-approved, handing out free
-# reports. Payments require BOTH this flag and real credentials.
-ENABLE_PAYMENTS = _env_flag("ENABLE_PAYMENTS", default=False)
-RAZORPAY_CONFIGURED = bool(RAZORPAY_KEY_ID.strip() and RAZORPAY_KEY_SECRET.strip())
-
-# Give the report away instead of selling it. This is the beta posture: the
-# assessment runs end to end, the report generates and is delivered, and no money
-# changes hands.
+# Open house: hand the report to anyone who completes the assessment, with no
+# school access code. Off for the pilot, where the code is what carries both the
+# entitlement and the parental consent evidenced by the school's paper circular.
 #
-# Deliberately a SEPARATE flag rather than a bypass inside verify_payment. The
-# original production hole was exactly that shape — a "mock" order id the
-# verifier auto-approved — and re-opening the payment path to unlock reports
-# would recreate it the day payments are switched on. The two are mutually
-# exclusive and asserted so below.
+# This is NOT a payment flag. It is also the switch that makes report generation
+# start at all (routers/d2c.py), so removing it strands every online assessment.
 FREE_REPORTS = _env_flag("FREE_REPORTS", default=False)
-
-if FREE_REPORTS and ENABLE_PAYMENTS:
-    raise RuntimeError(
-        "Refusing to start: FREE_REPORTS and ENABLE_PAYMENTS are both true. "
-        "Reports would be given away while the checkout is live. Pick one."
-    )
-
-if ENABLE_PAYMENTS and not RAZORPAY_CONFIGURED:
-    if IS_PRODUCTION:
-        raise RuntimeError(
-            "Refusing to start: ENABLE_PAYMENTS is true but RAZORPAY_KEY_ID / "
-            "RAZORPAY_KEY_SECRET are not set. Payments would be uncollectable."
-        )
-    logger.warning(
-        "ENABLE_PAYMENTS is true but Razorpay credentials are missing — "
-        "payment endpoints will reject requests instead of falling back to mock."
-    )
-
-# D2C Pricing (INR)
-D2C_PRICING = {
-    "basic": 499,
-    "plus": 1999,
-    "premium": 2999,
-}
 
 # Email (SMTP)
 SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
