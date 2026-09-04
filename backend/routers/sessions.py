@@ -1,7 +1,7 @@
 import io
 import csv
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from utils.time import utcnow
 from typing import Optional
 
@@ -358,6 +358,79 @@ def generate_pdfs(session_id: int, background_tasks: BackgroundTasks, db: DBSess
     from tasks.batch_processor import run_pdf_generation
     background_tasks.add_task(run_pdf_generation, session_id)
     return {"message": "PDF generation started in background"}
+
+
+class IssueCodesRequest(BaseModel):
+    count: int = 0          # 0 = one per student in the session
+    max_uses: int = 1
+    valid_days: int = 120
+
+
+@router.post("/{session_id}/access-codes")
+def issue_access_codes(
+    session_id: int,
+    body: IssueCodesRequest,
+    db: DBSession = Depends(get_db),
+    session: Session = Depends(get_scoped_session),
+    scope: AccessScope = Depends(resolve_scope),
+):
+    """Mint access codes for this session's parents.
+
+    These are printed on the circular and typed by a parent, so they are short
+    and read-aloud friendly: no O/0 or I/1, and uppercase throughout.
+    """
+    import secrets
+
+    from models import AccessCode, AuditLog
+
+    if body.count < 0:
+        raise HTTPException(status_code=400, detail="count cannot be negative")
+
+    count = body.count or db.query(Student).filter(
+        Student.session_id == session_id
+    ).count()
+    if count == 0:
+        raise HTTPException(
+            status_code=400,
+            detail="This session has no students yet. Upload the roster first, "
+                   "or pass an explicit count.",
+        )
+    if count > 1000:
+        raise HTTPException(status_code=400, detail="Refusing to mint more than 1000 codes at once")
+
+    alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"   # no O/0, no I/1
+    expires_at = utcnow() + timedelta(days=body.valid_days) if body.valid_days else None
+
+    codes = []
+    for _ in range(count):
+        # Retry on the (vanishingly unlikely) collision rather than trusting it.
+        for _attempt in range(5):
+            candidate = "".join(secrets.choice(alphabet) for _ in range(8))
+            if not db.query(AccessCode).filter(AccessCode.code == candidate).first():
+                break
+        else:
+            raise HTTPException(status_code=500, detail="Could not mint a unique code")
+
+        code = AccessCode(
+            code=candidate,
+            session_id=session_id,
+            max_uses=max(1, body.max_uses),
+            expires_at=expires_at,
+            created_by=scope.user_id or None,
+        )
+        db.add(code)
+        codes.append(candidate)
+
+    db.add(AuditLog(
+        user_id=scope.user_id or None,
+        action="access_codes_issued",
+        entity_type="session",
+        entity_id=session_id,
+        detail=f"{len(codes)} codes, max_uses={max(1, body.max_uses)}",
+    ))
+    db.commit()
+    logger.info(f"Session {session_id}: issued {len(codes)} access codes")
+    return {"session_id": session_id, "issued": len(codes), "codes": codes}
 
 
 @router.get("/{session_id}/download")

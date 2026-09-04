@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 from database import get_db, SessionLocal
-from models import Lead, D2CAssessment, Student, School, Session
+from models import AccessCode, AuditLog, Lead, D2CAssessment, Student, School, Session
 from engines.scoring_engine import calculate_riasec_scores, determine_holland_code, match_careers, load_knowledge_base
 from rate_limit import limiter
 from config import ENABLE_PAYMENTS, FREE_REPORTS, DEFAULT_LLM_PROVIDER
@@ -21,14 +21,51 @@ def report_is_unlocked(assessment: D2CAssessment) -> bool:
     """Whether this assessment's report may be generated and handed over.
 
     Every gate on the report — preview, JSON, PDF, and the public web report —
-    routes through here so they cannot drift apart. There are exactly two ways
-    to be unlocked: the beta gives reports away, or the report was paid for.
+    routes through here so they cannot drift apart. Three ways to be unlocked:
 
-    Note the asymmetry: FREE_REPORTS does not mark anything "paid". Payment
-    status stays an honest record of whether money was received, which is what
-    keeps the switch back to a paid funnel clean.
+    * a school-issued access code was redeemed (the pilot's route);
+    * the report was paid for online;
+    * FREE_REPORTS is on, which is now a deliberate open-house switch rather
+      than the default posture.
+
+    The code path matters for more than money. The site was giving away, free,
+    the identical report parents were being charged ₹500 for at a school session
+    — one parent with a phone during the pitch ends the pilot. And because every
+    code is issued against a Session, redeeming one inherits the parental consent
+    evidenced by that session's signed paper form, instead of the online flow
+    asserting consent a child gave on their own behalf.
+
+    Note the asymmetry: neither a code nor FREE_REPORTS marks anything "paid".
+    Payment status stays an honest record of whether money was received.
     """
+    if assessment.access_code_id is not None:
+        return True
     return FREE_REPORTS or assessment.payment_status == "paid"
+
+
+def _inherited_consent(db, assessment: D2CAssessment) -> dict:
+    """Consent fields for a Student created from an online assessment.
+
+    Returns real values only where they are actually evidenced. A redeemed
+    school access code points at a Session, and a school session is where a
+    signed paper consent circular is collected — so that, and only that, is
+    treated as parental consent here.
+
+    Everything else gets False. An unconsented row is an honest gap; a
+    fabricated one is a false record about a child, and materially worse.
+    """
+    if assessment.access_code_id is None:
+        return {"consent_obtained": False, "consent_method": ""}
+
+    code = db.query(AccessCode).filter(AccessCode.id == assessment.access_code_id).first()
+    if code is None:
+        return {"consent_obtained": False, "consent_method": ""}
+
+    return {
+        "consent_obtained": True,
+        "consent_method": "paper_form",
+        "consent_timestamp": utcnow(),
+    }
 
 
 # Statuses in which a report has cleared review and may be handed over.
@@ -382,6 +419,56 @@ def save_career_readiness(token: str, body: CareerReadinessRequest):
         db.close()
 
 
+class RedeemCodeRequest(BaseModel):
+    code: str = ""
+
+
+@router.post("/redeem/{token}")
+@limiter.limit("10/minute")
+def redeem_access_code(request: Request, token: str, body: RedeemCodeRequest):
+    """Redeem a school-issued code against this assessment.
+
+    Rate-limited because the code space is guessable by design — they are handed
+    out on paper and typed by parents, so they are short.
+    """
+    entered = (body.code or "").strip().upper()
+    if not entered:
+        raise HTTPException(status_code=400, detail="Enter the code from your school.")
+
+    db = SessionLocal()
+    try:
+        assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
+        if not assessment:
+            raise HTTPException(status_code=404, detail="Assessment not found")
+        if assessment.access_code_id is not None:
+            return {"status": "already_redeemed"}
+
+        code = db.query(AccessCode).filter(AccessCode.code == entered).first()
+        if not code:
+            # Deliberately identical to the exhausted/expired wording below, so a
+            # caller cannot probe which codes exist.
+            raise HTTPException(
+                status_code=404, detail="That code is not valid. Please check with your school."
+            )
+        reason = code.redeemable_reason()
+        if reason:
+            raise HTTPException(status_code=409, detail=reason)
+
+        code.times_used = (code.times_used or 0) + 1
+        assessment.access_code_id = code.id
+        db.add(AuditLog(
+            action="access_code_redeemed",
+            entity_type="d2c_assessment",
+            entity_id=assessment.id,
+            detail=f"code={code.code} session_id={code.session_id}",
+        ))
+        db.commit()
+        logger.info(f"Access code {code.code} redeemed for assessment {token}")
+        return {"status": "redeemed", "session_id": code.session_id}
+    finally:
+        db.close()
+
+
 @router.post("/submit/{token}")
 @limiter.limit("10/minute")
 def submit_assessment(request: Request, token: str, body: SubmitRequest):
@@ -465,9 +552,16 @@ def submit_assessment(request: Request, token: str, body: SubmitRequest):
             work_values=work_values,
             matched_careers=matched,
             report_status="scored",
-            consent_obtained=True,
-            consent_method="digital",
-            consent_timestamp=datetime.now(timezone.utc),
+            # Consent is inherited, never asserted here. This used to be a
+            # hardcoded True with method "digital" — the same label a real OTP
+            # verification writes, so a fabricated record was indistinguishable
+            # from a genuine one, and school_portal computed a "consent_rate"
+            # from it that the UI labelled DPDPA compliant.
+            #
+            # A redeemed school code carries the consent evidenced by that
+            # session's signed paper circular. Without one there is no consent,
+            # and it stays False until a real verification writes it.
+            **_inherited_consent(db, assessment),
             d2c_assessment_id=assessment.id,
         )
         db.add(student)
