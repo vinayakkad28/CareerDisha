@@ -303,6 +303,6 @@ def submit_quiz(request: Request, submission: QuizSubmission):
         "message": rec["message"],
         "message_hi": rec.get("message_hi", ""),
         "is_flat": rec["is_flat"],
-        "cta": "Get Your Full Career Report \u2014 \u20b9500 only",
+        "cta": "Get Your Full Career Report",
         "cta_url": "https://www.careerneeti.in",
     }

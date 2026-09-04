@@ -9,9 +9,9 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, BackgroundTasks, Request
 from fastapi.responses import StreamingResponse, FileResponse
 from sqlalchemy.orm import Session as DBSession
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
-from config import DEFAULT_LLM_PROVIDER
+from config import DEFAULT_LLM_PROVIDER, LLM_MODELS
 from access import AccessScope, get_scoped_session, resolve_scope, scoped_sessions
 from database import get_db
 from models import Session, Student, School
@@ -59,6 +59,27 @@ class SessionCreate(BaseModel):
     counsellor_certification: str = ""
     llm_provider: str = DEFAULT_LLM_PROVIDER
     notes: str = ""
+
+    @field_validator("llm_provider")
+    @classmethod
+    def _known_provider(cls, v: str) -> str:
+        """Reject a provider the generator cannot dispatch.
+
+        An unknown value reaches LLMClient.generate and raises ValueError, which
+        _is_permanent_llm_error classifies as permanent — so every student in the
+        session fails instantly with no retry, the batch reports zero completed,
+        and the session status is left untouched. The counsellor sees a spinner
+        that never resolves and no error anywhere. Catch it at the door instead.
+
+        Blank is allowed and means "use the configured default".
+        """
+        if not v:
+            return DEFAULT_LLM_PROVIDER
+        if v not in LLM_MODELS:
+            raise ValueError(
+                f"unknown llm_provider {v!r}; expected one of {sorted(LLM_MODELS)}"
+            )
+        return v
 
 
 @router.get("")
@@ -475,7 +496,10 @@ def compliance_certificate(session_id: int, db: DBSession = Depends(get_db), ses
         "parental_consent_obtained": consented,
         "reports_delivered": reports_delivered,
         "assessment_tool": "RIASEC Career Interest Inventory (74 items)",
-        "report_method": "AI-assisted analysis reviewed by qualified counsellor",
+        # Describes what actually happens. There is no human review step anywhere in
+        # the codebase (no reviewed_by/approved_by field, no reviewer role), and
+        # this string goes on a CBSE compliance document handed to a principal.
+        "report_method": "AI-generated analysis with automated quality validation",
         "compliance_note": "This session was conducted in compliance with CBSE Affiliation Bye-Laws Clause 2.4.12 and NEP 2020 career guidance requirements.",
         "generated_at": utcnow().isoformat(),
     }
