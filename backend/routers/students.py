@@ -3,12 +3,13 @@ from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from sqlalchemy.orm import Session
 
 from access import AccessScope, get_scoped_student, require_role, resolve_scope
 from database import get_db
-from models import Student
+from models import AuditLog, Student
+from routers.counsellors import PRICE_PER_STUDENT_INR
 from schemas.students import StudentDetail
 from utils.time import utcnow
 
@@ -21,6 +22,35 @@ router = APIRouter(dependencies=[Depends(resolve_scope)])
 
 class DeliveryUpdate(BaseModel):
     delivery_status: str  # pending, sent, delivered, failed
+
+
+# The fee is collected in person at the school; nothing is charged online. This
+# records what was taken so a session reconciles and commission accrues on money
+# received rather than on a PDF having been handed over.
+PAYMENT_MODES = ("cash", "upi", "cheque", "school")
+
+
+class FeeUpdate(BaseModel):
+    fee_paid: bool
+    fee_amount: int = PRICE_PER_STUDENT_INR
+    payment_mode: str = ""
+    collected_by: str = ""
+    receipt_no: str = ""
+
+    @field_validator("payment_mode")
+    @classmethod
+    def _known_mode(cls, v: str) -> str:
+        v = (v or "").strip().lower()
+        if v and v not in PAYMENT_MODES:
+            raise ValueError(f"payment_mode must be one of {', '.join(PAYMENT_MODES)}")
+        return v
+
+    @field_validator("fee_amount")
+    @classmethod
+    def _sane_amount(cls, v: int) -> int:
+        if v < 0:
+            raise ValueError("fee_amount cannot be negative")
+        return v
 
 
 def _detail(student: Student) -> StudentDetail:
@@ -92,3 +122,49 @@ def update_delivery(
         student.delivery_timestamp = utcnow()
     db.commit()
     return {"message": "Delivery status updated", "delivery_status": update.delivery_status}
+
+
+@router.put("/{student_id}/fee")
+def update_fee(
+    update: FeeUpdate,
+    student: Student = Depends(get_scoped_student),
+    db: Session = Depends(get_db),
+    # A school_admin sees their own students but must not write our revenue
+    # record: it is what counsellor commission is computed from.
+    scope: AccessScope = Depends(require_role("admin", "counsellor")),
+):
+    """Record — or reverse — an offline fee collection.
+
+    Marking unpaid clears the whole record rather than leaving a stale receipt
+    number and timestamp behind, because a reversal is normally a correction of
+    the wrong student having been ticked.
+    """
+    student.fee_paid = update.fee_paid
+    if update.fee_paid:
+        student.fee_amount = update.fee_amount
+        student.payment_mode = update.payment_mode
+        student.collected_by = update.collected_by
+        student.receipt_no = update.receipt_no
+        student.fee_paid_at = utcnow()
+        detail = f"paid Rs {update.fee_amount} via {update.payment_mode or 'unspecified'}"
+    else:
+        student.fee_amount = 0
+        student.payment_mode = ""
+        student.collected_by = ""
+        student.receipt_no = ""
+        student.fee_paid_at = None
+        detail = "marked unpaid"
+
+    db.add(AuditLog(
+        user_id=scope.user_id or None,
+        action="student_fee_updated",
+        entity_type="student",
+        entity_id=student.id,
+        detail=detail,
+    ))
+    db.commit()
+    return {
+        "message": "Fee record updated",
+        "fee_paid": student.fee_paid,
+        "fee_amount": student.fee_amount,
+    }

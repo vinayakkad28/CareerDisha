@@ -129,6 +129,15 @@ export const sessions = {
     return request<any[]>(`/sessions${qs ? `?${qs}` : ""}`);
   },
   get: (id: number) => request<any>(`/sessions/${id}`),
+  // School codes: the student types one at the start of the assessment, and it
+  // decides which session their answers land in.
+  listAccessCodes: (id: number) =>
+    request<any>(`/sessions/${id}/access-codes`),
+  issueAccessCodes: (id: number, count: number) =>
+    request<any>(`/sessions/${id}/access-codes`, {
+      method: "POST",
+      body: JSON.stringify({ count }),
+    }),
   create: (data: {
     school_id: number;
     session_date: string;
@@ -182,6 +191,21 @@ export const students = {
     request<any>(`/students/${id}/delivery`, {
       method: "PUT",
       body: JSON.stringify({ delivery_status: status }),
+    }),
+  // The fee is collected in person at the school; this only records it.
+  updateFee: (
+    id: number,
+    body: {
+      fee_paid: boolean;
+      fee_amount?: number;
+      payment_mode?: string;
+      collected_by?: string;
+      receipt_no?: string;
+    }
+  ) =>
+    request<any>(`/students/${id}/fee`, {
+      method: "PUT",
+      body: JSON.stringify(body),
     }),
 };
 

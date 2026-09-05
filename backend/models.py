@@ -131,6 +131,17 @@ class Student(Base):
     # Delivery
     delivery_status = Column(String(20), default="pending")
     delivery_timestamp = Column(DateTime(timezone=True), nullable=True)
+
+    # Fee, collected offline at the school. There is no online payment: the
+    # counsellor takes cash or UPI on the day and records it here, so ~600
+    # parents' fees reconcile against a session total and commission accrues on
+    # money actually collected rather than on a report having been handed over.
+    fee_amount = Column(Integer, default=0)
+    fee_paid = Column(Boolean, default=False)
+    payment_mode = Column(String(20), default="")   # cash, upi, cheque, school
+    collected_by = Column(String(120), default="")
+    receipt_no = Column(String(60), default="")
+    fee_paid_at = Column(DateTime(timezone=True), nullable=True)
     helpline_booked_at = Column(DateTime(timezone=True), nullable=True)   # Calendly booking confirmed
 
     # DPDPA consent tracking
@@ -273,7 +284,7 @@ class StudentOutcome(Base):
     actual_career_interest = Column(String(255), default="")  # free text
     recommendation_matched = Column(Boolean, nullable=True)   # did prediction match?
     notes = Column(Text, default="")
-    collected_via = Column(String(20), default="whatsapp")    # "whatsapp", "manual", "form"
+    collected_via = Column(String(20), default="form")    # "form", "manual", "whatsapp" (historic)
     updated_at = Column(DateTime(timezone=True), default=utcnow)
     created_at = Column(DateTime(timezone=True), default=utcnow)
 

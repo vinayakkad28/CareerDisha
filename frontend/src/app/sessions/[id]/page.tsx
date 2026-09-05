@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { sessions as sessionsApi, consent as consentApi } from "@/lib/api";
+import { sessions as sessionsApi, consent as consentApi, students as studentsApi } from "@/lib/api";
 import { LoadingSpinner, ErrorState, ConfirmDialog } from "@/components/UIStates";
 import { useToast } from "@/components/Toast";
 import SessionTimeline from "@/components/SessionTimeline";
 import PageHeader from "@/components/PageHeader";
 import StatCard from "@/components/StatCard";
 import StatusBadge from "@/components/StatusBadge";
+import AccessCodePanel from "@/components/AccessCodePanel";
 
 const RIASEC_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   R: { bg: "bg-red-50", text: "text-red-600", border: "border-red-200" },
@@ -29,6 +30,7 @@ export default function SessionDetailPage() {
   const [consentStatus, setConsentStatus] = useState<Record<number, boolean>>({});
   const [consentLoading, setConsentLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [feeSaving, setFeeSaving] = useState<number | null>(null);
   const { toast } = useToast();
 
   const loadSession = () => {
@@ -102,11 +104,30 @@ export default function SessionDetailPage() {
     }
   };
 
+  // Fees are taken in cash or UPI at the school. Nothing is charged online —
+  // this only records what was collected, which is what the session total and
+  // the counsellor's commission are computed from.
+  const toggleFee = async (studentId: number, currentlyPaid: boolean) => {
+    setFeeSaving(studentId);
+    try {
+      await studentsApi.updateFee(studentId, { fee_paid: !currentlyPaid });
+      toast(currentlyPaid ? "Marked unpaid" : "Fee recorded", "success");
+      loadSession();
+    } catch (err: any) {
+      toast(err.message || "Could not update the fee record", "error");
+    } finally {
+      setFeeSaving(null);
+    }
+  };
+
   if (fetchError) return <ErrorState message={fetchError} onRetry={loadSession} />;
   if (!session) return <LoadingSpinner />;
 
   const students = session.students || [];
   const sessionStats = session.stats || {};
+  const fees = session.fees || {
+    paid_count: 0, unpaid_count: 0, collected_inr: 0, expected_inr: 0,
+  };
   const consented = students.filter((s: any) => consentStatus[s.id]).length;
 
   // Filtered students based on search
@@ -174,6 +195,36 @@ export default function SessionDetailPage() {
               : undefined
           }
         />
+      </div>
+
+      <AccessCodePanel sessionId={Number(params.id)} />
+
+      {/* Fees collected offline */}
+      <div className="bg-white p-6 rounded-lg flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="flex-1 w-full space-y-3">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+            <h3 className="font-bold text-primary font-heading">Fees Collected (offline)</h3>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-amber-500 transition-all duration-500"
+                style={{
+                  width: `${fees.expected_inr > 0 ? (fees.collected_inr / fees.expected_inr) * 100 : 0}%`,
+                }}
+              />
+            </div>
+            <span className="text-sm font-bold text-on-surface whitespace-nowrap">
+              &#8377;{fees.collected_inr.toLocaleString("en-IN")} of &#8377;
+              {fees.expected_inr.toLocaleString("en-IN")}
+            </span>
+          </div>
+          <p className="text-xs text-slate-500">
+            {fees.paid_count} paid &middot; {fees.unpaid_count} pending. Cash or UPI is
+            taken at the school; tick each student off in the roster below.
+          </p>
+        </div>
       </div>
 
       {/* DPDPA Consent Compliance */}
@@ -397,6 +448,7 @@ export default function SessionDetailPage() {
                 <th className="px-4 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">RIASEC Scores</th>
                 <th className="px-4 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest">Consent</th>
                 <th className="px-4 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Report</th>
+                <th className="px-4 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Fee</th>
                 <th className="px-8 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Delivery</th>
               </tr>
             </thead>
@@ -457,6 +509,20 @@ export default function SessionDetailPage() {
                   </td>
                   <td className="px-4 py-4 text-center">
                     <StatusBadge status={s.report_status || "pending"} />
+                  </td>
+                  <td className="px-4 py-4 text-center">
+                    <button
+                      onClick={() => toggleFee(s.id, !!s.fee_paid)}
+                      disabled={feeSaving === s.id}
+                      title={s.fee_paid ? "Click to reverse this fee record" : "Record the fee collected in person"}
+                      className={`px-3 py-1 text-[11px] font-bold rounded-full transition-colors disabled:opacity-50 ${
+                        s.fee_paid
+                          ? "bg-amber-500 text-white hover:bg-amber-600"
+                          : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                      }`}
+                    >
+                      {s.fee_paid ? `\u20B9${s.fee_amount || 0} paid` : "Mark paid"}
+                    </button>
                   </td>
                   <td className="px-8 py-4 text-center">
                     <StatusBadge status={s.delivery_status || "pending"} />

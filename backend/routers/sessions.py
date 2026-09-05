@@ -16,6 +16,7 @@ from access import AccessScope, get_scoped_session, resolve_scope, scoped_sessio
 from database import get_db
 from models import Session, Student, School
 from rate_limit import limiter
+from routers.counsellors import PRICE_PER_STUDENT_INR
 from schemas.students import StudentSummary
 from utils.self_efficacy import CANONICAL_DOMAINS, normalize_self_efficacy
 
@@ -155,6 +156,14 @@ def get_session(session_id: int, db: DBSession = Depends(get_db), session: Sessi
             "qa_flagged": sum(1 for s in students if s.report_status == "qa_flagged"),
             "pdf_ready": sum(1 for s in students if s.report_status in ("pdf_ready", "delivered")),
             "delivered": sum(1 for s in students if s.report_status == "delivered"),
+        },
+        # Fees are collected in person; this is what reconciles the cash bag
+        # against the roster at the end of a school visit.
+        "fees": {
+            "paid_count": sum(1 for s in students if s.fee_paid),
+            "unpaid_count": sum(1 for s in students if not s.fee_paid),
+            "collected_inr": sum(s.fee_amount or 0 for s in students if s.fee_paid),
+            "expected_inr": len(students) * PRICE_PER_STUDENT_INR,
         },
     }
 
@@ -364,6 +373,50 @@ class IssueCodesRequest(BaseModel):
     count: int = 0          # 0 = one per student in the session
     max_uses: int = 1
     valid_days: int = 120
+
+
+@router.get("/{session_id}/access-codes")
+def list_access_codes(
+    session_id: int,
+    db: DBSession = Depends(get_db),
+    session: Session = Depends(get_scoped_session),
+):
+    """List this session's codes, so they can be reprinted.
+
+    Minting used to be the only way to see a code: the POST returned them once,
+    and closing the tab lost 300 of them with no way to recover — re-minting
+    would hand out a second, unrelated set.
+    """
+    from models import AccessCode, D2CAssessment
+
+    codes = db.query(AccessCode).filter(
+        AccessCode.session_id == session_id
+    ).order_by(AccessCode.id).all()
+
+    used_by = {}
+    if codes:
+        rows = db.query(D2CAssessment).filter(
+            D2CAssessment.access_code_id.in_([c.id for c in codes])
+        ).all()
+        for row in rows:
+            used_by.setdefault(row.access_code_id, row.student_name or "")
+
+    return {
+        "session_id": session_id,
+        "total": len(codes),
+        "unused": sum(1 for c in codes if not c.times_used),
+        "codes": [
+            {
+                "code": c.code,
+                "times_used": c.times_used or 0,
+                "max_uses": c.max_uses,
+                "is_active": bool(c.is_active),
+                "expires_at": c.expires_at,
+                "used_by": used_by.get(c.id, ""),
+            }
+            for c in codes
+        ],
+    }
 
 
 @router.post("/{session_id}/access-codes")
