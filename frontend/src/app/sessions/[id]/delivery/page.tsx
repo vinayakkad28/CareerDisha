@@ -162,9 +162,11 @@ export default function DeliveryPage() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <div>
-            <h4 className="font-bold text-primary">Auto-Delivery Sync</h4>
+            <h4 className="font-bold text-primary">Where the PDFs come from</h4>
             <p className="text-xs text-on-surface-variant leading-relaxed mt-1">
-              PDF reports are automatically generated after the assessment is completed. Marking a student as &quot;Delivered&quot; will timestamp the activity in the audit log for school principals.
+              Reports are generated in a batch you start from the session page, then
+              checked in QA. Only students with a finished PDF appear here. Marking one
+              delivered timestamps it in the audit log for the school.
             </p>
           </div>
         </div>

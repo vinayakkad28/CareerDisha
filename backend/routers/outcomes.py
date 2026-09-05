@@ -24,7 +24,7 @@ from models import Student, StudentOutcome, Session as SessionModel, School
 logger = logging.getLogger(__name__)
 router = APIRouter(dependencies=[Depends(resolve_scope)])
 
-# Separate public router — no auth (parents submit from WhatsApp link)
+# Separate public router — no auth (parents submit from a link we share)
 public_router = APIRouter()
 
 
@@ -48,7 +48,7 @@ def public_record_outcome(req: PublicOutcomeRecord, db: Session = Depends(get_db
         existing.actual_stream_chosen = req.actual_stream_chosen
         existing.actual_career_interest = req.actual_career_interest
         existing.notes = req.notes
-        existing.collected_via = "whatsapp"
+        existing.collected_via = "form"
         existing.updated_at = utcnow()
         db.commit()
     else:
@@ -183,4 +183,3 @@ def session_outcomes(
     }
 
 
-# ── WhatsApp follow-up ────────────────────────────────────────────────────────

@@ -755,9 +755,13 @@ def _validate_report_dict(entry: dict, whitelist: set) -> list[str]:
 @cli.command()
 @click.option("--reports-dir", required=True, type=click.Path(exists=True), help="Directory containing generated PDFs")
 @click.option("--student-info", required=True, type=click.Path(exists=True), help="Student info CSV with phone numbers")
-@click.option("--method", type=click.Choice(["manual", "whatsapp"]), default="manual", help="Delivery method")
-def send(reports_dir, student_info, method):
-    """Generate WhatsApp delivery checklist (manual mode) or send via API."""
+def send(reports_dir, student_info):
+    """Print a handover checklist for the PDFs in a directory.
+
+    Delivery is in person: the counsellor hands each report over at the school
+    and ticks the student off in the app. The --method flag used to offer a
+    "whatsapp" choice that sent nothing.
+    """
     student_data = _parse_student_info_csv(student_info)
     pdf_dir = Path(reports_dir)
     pdf_files = sorted(pdf_dir.glob("*.pdf"))
@@ -766,7 +770,7 @@ def send(reports_dir, student_info, method):
         click.echo(click.style("No PDF files found in the specified directory.", fg="red"))
         return
 
-    click.echo(f"\nWhatsApp Delivery Checklist — {len(pdf_files)} reports")
+    click.echo(f"\nHandover Checklist — {len(pdf_files)} reports")
     click.echo(f"{'='*70}")
     click.echo(f"{'#':<4} {'Student Name':<25} {'Phone':<15} {'PDF File':<30}")
     click.echo(f"{'-'*70}")
@@ -783,17 +787,14 @@ def send(reports_dir, student_info, method):
         name = matched_info.get("name", fname) if matched_info else fname
         phone = matched_info.get("parent_phone", "N/A") if matched_info else "N/A"
 
-        if method == "manual":
-            click.echo(f"{i:<4} {name:<25} {phone:<15} {pdf_file.name}")
+        click.echo(f"{i:<4} {name:<25} {phone:<15} {pdf_file.name}")
 
     click.echo(f"\n{'='*70}")
     click.echo(f"Total: {len(pdf_files)} reports to deliver")
-    if method == "manual":
-        click.echo("\nManual delivery steps:")
-        click.echo("  1. Open WhatsApp Web or WhatsApp Business")
-        click.echo("  2. For each student, search the phone number")
-        click.echo("  3. Attach the corresponding PDF file")
-        click.echo("  4. Send with message: 'Dear Parent, please find your child's Career Assessment Report attached. - CareerNeeti'")
+    click.echo("\nHandover steps:")
+    click.echo("  1. Print or carry the PDFs to the school")
+    click.echo("  2. Hand each report to the student or parent in person")
+    click.echo("  3. Mark the student delivered in the session's delivery checklist")
 
 
 # ---- PIPELINE --------------------------------------------------------------
