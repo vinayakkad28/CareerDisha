@@ -1120,8 +1120,19 @@ function AssessmentFlow() {
                         key={score}
                         onClick={() => {
                           setTipiAnswers((prev) => ({ ...prev, [tipiQ.id]: score }));
+                          // Advance only if we are still on the question that
+                          // was just answered. The guard used to read the captured
+                          // index while the updater incremented the live one, so two
+                          // taps inside the 250ms window — the ordinary phone gesture
+                          // when the screen has not moved yet — advanced twice and
+                          // skipped an item. That left allTipiAnswered false, so
+                          // Continue stayed disabled at the end of the section with
+                          // nothing on screen saying which question was missed.
+                          const answered = tipiCurrentQ;
                           setTimeout(() => {
-                            if (tipiCurrentQ < tipiTotal - 1) setTipiCurrentQ((c) => c + 1);
+                            setTipiCurrentQ((c) =>
+                              c === answered ? Math.min(c + 1, tipiTotal - 1) : c
+                            );
                           }, 250);
                         }}
                         className={cls(
@@ -1197,8 +1208,11 @@ function AssessmentFlow() {
                         key={score}
                         onClick={() => {
                           setCrAnswers((prev) => ({ ...prev, [crQ.id]: score }));
+                          const answered = crCurrentQ;
                           setTimeout(() => {
-                            if (crCurrentQ < crTotal - 1) setCrCurrentQ((c) => c + 1);
+                            setCrCurrentQ((c) =>
+                              c === answered ? Math.min(c + 1, crTotal - 1) : c
+                            );
                           }, 250);
                         }}
                         className={cls(
@@ -1293,8 +1307,11 @@ function AssessmentFlow() {
                           aptAnswersRef.current = next;
                           return next;
                         });
+                        const answered = aptCurrentQ;
                         setTimeout(() => {
-                          if (aptCurrentQ < aptTotal - 1) setAptCurrentQ((c) => c + 1);
+                          setAptCurrentQ((c) =>
+                            c === answered ? Math.min(c + 1, aptTotal - 1) : c
+                          );
                         }, 250);
                       }}
                       className={cls(
