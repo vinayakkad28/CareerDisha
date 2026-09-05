@@ -107,22 +107,6 @@ if _jwt_private_key_path and Path(_jwt_private_key_path).exists():
 # Monitoring
 SENTRY_DSN = os.getenv("SENTRY_DSN", "")
 
-# WhatsApp
-WHATSAPP_PROVIDER = os.getenv("WHATSAPP_PROVIDER", "")  # "meta" or "twilio"
-META_WHATSAPP_TOKEN = os.getenv("META_WHATSAPP_TOKEN", "")
-META_PHONE_NUMBER_ID = os.getenv("META_PHONE_NUMBER_ID", "")
-TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")
-TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")
-TWILIO_WHATSAPP_FROM = os.getenv("TWILIO_WHATSAPP_FROM", "")
-
-# Open house: hand the report to anyone who completes the assessment, with no
-# school access code. Off for the pilot, where the code is what carries both the
-# entitlement and the parental consent evidenced by the school's paper circular.
-#
-# This is NOT a payment flag. It is also the switch that makes report generation
-# start at all (routers/d2c.py), so removing it strands every online assessment.
-FREE_REPORTS = _env_flag("FREE_REPORTS", default=False)
-
 # Email (SMTP)
 SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))

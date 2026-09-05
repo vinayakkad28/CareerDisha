@@ -20,12 +20,6 @@ def _assessment(client) -> str:
     return client.post("/api/d2c/start", json={"student_name": "Riya"}).json()["token"]
 
 
-@pytest.fixture()
-def gated(monkeypatch):
-    """The pilot posture: no open house, so only a school code unlocks."""
-    monkeypatch.setattr("routers.d2c.FREE_REPORTS", False)
-
-
 class TestThePaymentRoutesAreGone:
     @pytest.mark.parametrize("path", ["create-order", "verify-payment"])
     def test_route_no_longer_exists(self, client, path):
@@ -47,8 +41,8 @@ class TestThePaymentRoutesAreGone:
             assert not hasattr(config, name), f"config still exposes {name}"
 
 
-class TestNoBodyCanUnlockAReport:
-    """The invariant the deleted file existed to protect."""
+class TestNoBodyCanBuyItsWayIn:
+    """The invariant the deleted payment tests existed to protect."""
 
     @pytest.mark.parametrize("payload", [
         {},
@@ -58,7 +52,7 @@ class TestNoBodyCanUnlockAReport:
         {"access_code_id": 1},
         {"tier": "premium", "amount_inr": 0},
     ])
-    def test_posting_a_hopeful_body_does_not_unlock(self, client, db, gated, payload):
+    def test_a_hopeful_body_never_links_a_session(self, client, db, payload):
         token = _assessment(client)
         for path in ("start", "redeem", "submit"):
             client.post(f"/api/d2c/{path}/{token}", json=payload)
@@ -66,18 +60,7 @@ class TestNoBodyCanUnlockAReport:
         a = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
         db.refresh(a)
         assert a.access_code_id is None
-
-        from routers.d2c import report_is_unlocked
-
-        assert report_is_unlocked(a) is False
-
-    def test_an_ungated_assessment_refuses_every_delivery_surface(self, client, gated):
-        token = _assessment(client)
-        for path in (f"/api/d2c/report/{token}", f"/api/d2c/pdf/{token}",
-                     f"/api/reports/{token}"):
-            assert client.get(path).status_code in (400, 402, 404), (
-                f"{path} handed something over without an access code"
-            )
+        assert a.payment_status == "pending"
 
 
 class TestTheOfflineFeeModelIsIntact:

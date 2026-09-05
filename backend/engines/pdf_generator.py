@@ -7,7 +7,6 @@ using Jinja2 HTML templates and WeasyPrint.
 import base64
 import io
 import logging
-import os
 from pathlib import Path
 from datetime import date
 
@@ -237,7 +236,6 @@ def ensure_student_pdf(student: Student, db=None) -> Path:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     counsellor_name = ""
-    web_report_url = ""
     if student.session_id and db is not None:
         from models import Session as SessionModel
 
@@ -246,16 +244,10 @@ def ensure_student_pdf(student: Student, db=None) -> Path:
         )
         if session:
             counsellor_name = session.counsellor_name or ""
-    if student.report_token:
-        base_url = os.getenv("APP_BASE_URL", "https://careerneeti.in")
-        web_report_url = f"{base_url}/reports/{student.report_token}"
 
-    path = generate_student_pdf(
-        student,
-        output_dir,
-        counsellor_name=counsellor_name,
-        web_report_url=web_report_url,
-    )
+    # No web_report_url: there is no online report to link to, so no QR is
+    # rendered. Printing one that resolves to nothing is worse than none.
+    path = generate_student_pdf(student, output_dir, counsellor_name=counsellor_name)
     student.pdf_path = str(path)
     if db is not None:
         db.commit()

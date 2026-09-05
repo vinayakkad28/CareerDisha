@@ -126,3 +126,20 @@ class TestBulkZipNeverShipsShort:
             "handed out as if it were the whole cohort"
         )
         assert "incomplete" in r.json()["detail"].lower()
+
+
+def test_pdf_generation_assigns_the_survey_token(db):
+    """The feedback, NPS and outcome forms authenticate on report_token.
+
+    Removing the web report took the QR code with it, and the token assignment
+    went with the QR — silently disabling all three parent-facing forms, since
+    nothing else in the codebase ever writes that column.
+    """
+    import inspect
+
+    from tasks.batch_processor import run_pdf_generation
+
+    src = inspect.getsource(run_pdf_generation)
+    assert "student.report_token = uuid.uuid4().hex" in src, (
+        "nothing assigns report_token any more; the parent survey links are dead"
+    )

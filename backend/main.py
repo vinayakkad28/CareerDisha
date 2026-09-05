@@ -23,7 +23,7 @@ from config import (
 )
 from database import init_db, SessionLocal
 from rate_limit import limiter
-from routers import auth, schools, sessions, students, reports, dashboard, consent, cards, quiz, nps, d2c, coaching, school_portal, audit, feedback, counsellors, outcomes, reports_public
+from routers import auth, schools, sessions, students, reports, dashboard, consent, cards, quiz, nps, d2c, coaching, school_portal, audit, feedback, counsellors, outcomes
 
 # Configure logging
 logging.basicConfig(
@@ -154,7 +154,6 @@ app.include_router(feedback.summary_router, prefix="/api/feedback", tags=["Feedb
 app.include_router(counsellors.router, prefix="/api/counsellors", tags=["Counsellors"])
 app.include_router(outcomes.router, prefix="/api/outcomes", tags=["Outcomes"])
 app.include_router(outcomes.public_router, prefix="/api/outcomes", tags=["Outcomes"])
-app.include_router(reports_public.router, prefix="/api/reports", tags=["Reports Public"])
 
 # NOTE: generated report PDFs are deliberately NOT served as static files.
 #
