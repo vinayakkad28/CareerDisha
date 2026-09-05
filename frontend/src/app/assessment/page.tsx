@@ -3,31 +3,11 @@
 import { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/components/Toast";
-import { RiasecBarChart } from "@/components/RiasecRadarChart";
 
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api").replace(/\/api\/?$/, "");
 
 /* ── brand tokens ─────────────────────────────────────────── */
-const NAVY = "#1a5276";
 const GOLD = "#d4ac0d";
-
-const RIASEC_LABELS: Record<string, string> = {
-  R: "Realistic",
-  I: "Investigative",
-  A: "Artistic",
-  S: "Social",
-  E: "Enterprising",
-  C: "Conventional",
-};
-
-const RIASEC_COLORS: Record<string, string> = {
-  R: "#e74c3c",
-  I: "#3498db",
-  A: "#9b59b6",
-  S: "#2ecc71",
-  E: "#e67e22",
-  C: "#1abc9c",
-};
 
 const SCALE_LABELS = [
   "Strongly Disagree",
@@ -60,35 +40,19 @@ interface Question {
   type?: string;
 }
 
-interface PreviewData {
-  holland_code: string;
-  riasec_scores: Record<string, number>;
-  recommended_stream: string;
-  confidence: string;
-  career_teasers?: string[];
-}
-
-interface PaymentData {
-  order_id: string;
-  // The backend returns both units explicitly. A single ambiguous `amount` in
-  // rupees was previously divided by 100 here, so a Rs 499 tier displayed — and
-  // would have charged — Rs 4.99.
-  amount_inr: number;
-  amount_paise: number;
-  currency: string;
-  razorpay_key?: string;
-}
-
 /* ── progress persistence ─────────────────────────────────── */
 /* The paid flow is 12 screens and 74+ questions, roughly 20 minutes, aimed at
    parents and students on phones — and every answer lived only in React memory.
    A refresh, a back-swipe, an incoming call, or iOS discarding a backgrounded
    tab sent the user back to screen one with nothing saved. */
 
-const PROGRESS_KEY = "cn_assessment_progress_v1";
+// _v3: the step numbers changed again when the online report was removed. A
+// resume written by an older flow would drop the user on a screen that no longer
+// means what it did.
+const PROGRESS_KEY = "cn_assessment_progress_v3";
 
-/** Fields worth restoring. Fetched question lists and server-derived payment or
- *  preview data are deliberately excluded — those are re-fetched. */
+/** Fields worth restoring. Fetched question lists and server-derived preview
+ *  data are deliberately excluded — those are re-fetched. */
 interface PersistedProgress {
   token: string;
   step: number;
@@ -200,12 +164,13 @@ function OptionButtons({ options, value, onChange }: { options: string[]; value:
   );
 }
 
-// The flow runs to step 12 (1-8 questions, 9 preview, 10 payment, 11 generating,
-// 12 report). The header claimed "Step N of 8" and hid the bar entirely from
-// step 8 on, so a student reached "Step 7 of 8" expecting one screen to go and
-// was then handed 74 more questions plus preview, payment and generation.
-const TOTAL_STEPS = 12;
-const LAST_PROGRESS_STEP = 11; // step 12 is the finished report, not progress
+// The flow runs to step 9: 1-8 are the questions, 9 confirms the answers were
+// received. The header once claimed "Step N of 8" and hid the bar from step 8
+// on, so a student reached "Step 7 of 8" expecting one screen to go and was then
+// handed 74 more questions. There is no online report, payment or generation
+// wait any more — the counsellor produces the report and hands it over.
+const TOTAL_STEPS = 9;
+const LAST_PROGRESS_STEP = 8; // step 9 is the confirmation, not progress
 
 function Header({ step, progressPct, subtitle }: { step: number; progressPct: number; subtitle?: string }) {
   return (
@@ -285,6 +250,8 @@ function AssessmentFlow() {
   const [step, setStep] = useState(1);
   const [token, setToken] = useState("");
   const [error, setError] = useState("");
+  const [accessCode, setAccessCode] = useState("");
+  const [codeError, setCodeError] = useState("");
   const [nameError, setNameError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -339,18 +306,6 @@ function AssessmentFlow() {
   const [currentQ, setCurrentQ] = useState(0);
   const [questionsLoading, setQuestionsLoading] = useState(false);
 
-  // Step 9: Preview
-  const [previewData, setPreviewData] = useState<PreviewData | null>(null);
-
-  // Step 10: Payment
-  const [paymentData, setPaymentData] = useState<PaymentData | null>(null);
-  // True when the backend reports online payments are switched off. Distinct
-  // from an error: nothing the user does will make a retry succeed.
-  const [paymentsUnavailable, setPaymentsUnavailable] = useState(false);
-
-  // Step 11: Generating
-  const [reportStatus, setReportStatus] = useState("");
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   /* ── restore in-progress work ────────────────────────────── */
   // Runs once, before anything is fetched, so a refresh mid-assessment resumes
@@ -440,12 +395,6 @@ function AssessmentFlow() {
     []
   );
 
-  const apiGet = useCallback(async (path: string) => {
-    const res = await fetch(`${API_BASE}${path}`);
-    if (!res.ok) throw new Error(`Request failed (${res.status})`);
-    return res.json();
-  }, []);
-
   /* ── step handlers ──────────────────────────────────────── */
 
   // Step 1 → start assessment
@@ -454,7 +403,12 @@ function AssessmentFlow() {
       setNameError("Student name is required.");
       return;
     }
+    if (!accessCode.trim()) {
+      setCodeError("Enter the code from your school.");
+      return;
+    }
     setNameError("");
+    setCodeError("");
     setLoading(true);
     setError("");
     try {
@@ -465,6 +419,28 @@ function AssessmentFlow() {
         class_level: classLevel || undefined,
         lead_token: leadToken || undefined,
       });
+      // Redeem before the first question, not after the last. The code decides
+      // which school session this test belongs to and carries the parental
+      // consent from that session's signed circular — and batch generation
+      // refuses to produce a report without consent. Binding it up front means a
+      // student cannot spend 40 minutes answering and only then discover their
+      // code is wrong.
+      try {
+        await apiPost(`/api/d2c/redeem/${data.token}`, { code: accessCode.trim() });
+      } catch (e) {
+        if (e instanceof ApiError && e.status === 409) {
+          setCodeError(
+            "That code has already been used, or has expired. Please ask your school for another."
+          );
+        } else if (e instanceof ApiError && e.status === 404) {
+          setCodeError("We do not recognise that code. Please check it and try again.");
+        } else {
+          setCodeError("Could not check the code just now. Please try again.");
+        }
+        setLoading(false);
+        return;
+      }
+
       setToken(data.token);
       setStep(2);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -659,7 +635,7 @@ function AssessmentFlow() {
     setLoading(true);
     setError("");
     try {
-      const data = await apiPost(`/api/d2c/submit/${token}`, {
+      await apiPost(`/api/d2c/submit/${token}`, {
         student_name: studentName,
         student_email: email || "",
         parent_phone: parentPhone || "",
@@ -678,15 +654,9 @@ function AssessmentFlow() {
           social_studies: socialStudiesMarks ? Number(socialStudiesMarks) : undefined,
         } : undefined,
       });
-      setPreviewData(data);
-      // The server decides whether there is anything to pay for. In the free
-      // beta it starts generating as soon as the assessment is scored and says
-      // so here, and we go straight to the progress screen — showing a paywall
-      // for a report that is already being built would be nonsense. When
-      // payments are switched back on, the status is "assessment_complete" and
-      // the preview/paywall step runs exactly as before.
-      const generating = data?.status === "report_generating";
-      setStep(generating ? 11 : 9);
+      // Nothing to wait for: the counsellor generates the report in batch and
+      // hands over the PDF, so the student goes straight to a confirmation.
+      setStep(9);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setError("Submission failed. Please try again.");
@@ -694,120 +664,6 @@ function AssessmentFlow() {
       setLoading(false);
     }
   };
-
-  // Step 9 → create order
-  const handleUnlockReport = async (tier: string) => {
-    setLoading(true);
-    setError("");
-    try {
-      const data = await apiPost(`/api/d2c/create-order/${token}`, { tier });
-      setPaymentData(data);
-      setPaymentsUnavailable(false);
-      setStep(10);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch (e) {
-      // 503 means online payments are switched off server-side, which is a
-      // normal state — not an error the user can retry their way out of.
-      if (e instanceof ApiError && e.status === 503) {
-        setPaymentsUnavailable(true);
-        setStep(10);
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      } else {
-        setError("Could not start payment. Please try again.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Load Razorpay.js when we reach the payment step
-  useEffect(() => {
-    if (!paymentData) return;
-    if (typeof window === "undefined") return;
-    if ((window as unknown as Record<string, unknown>).Razorpay) return;
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    document.head.appendChild(script);
-  }, [paymentData]);
-
-  // Step 6 → payment
-  const handlePayment = useCallback(async () => {
-    if (!paymentData) return;
-
-    // If Razorpay key present, open checkout
-    if (paymentData.razorpay_key && typeof window !== "undefined") {
-      const Razorpay = (window as unknown as Record<string, unknown>).Razorpay as
-        | (new (opts: Record<string, unknown>) => { open: () => void })
-        | undefined;
-      if (Razorpay) {
-        const rzp = new Razorpay({
-          key: paymentData.razorpay_key,
-          amount: paymentData.amount_paise,
-          currency: paymentData.currency || "INR",
-          order_id: paymentData.order_id,
-          name: "CareerNeeti",
-          description: "Career Assessment Report",
-          handler: async (response: Record<string, string>) => {
-            try {
-              await apiPost(`/api/d2c/verify-payment/${token}`, {
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-              });
-              setStep(11);
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            } catch {
-              setError("Payment verification failed. Please contact support.");
-            }
-          },
-          theme: { color: NAVY },
-        });
-        rzp.open();
-        return;
-      }
-    }
-
-    // Razorpay script not ready yet; the button on step 10 lets the user retry.
-  }, [paymentData, token, apiPost]);
-
-  // The former handleMockPayment() posted a fabricated signature that the
-  // backend accepted, so anyone reaching this screen got a paid report for
-  // free. Mock payments no longer exist on either side.
-
-  // Step 11 → poll status
-  useEffect(() => {
-    if (step !== 11) return;
-    const poll = async () => {
-      try {
-        const data = await apiGet(`/api/d2c/status/${token}`);
-        setReportStatus(data.status);
-        if (data.status === "report_ready") {
-          if (pollRef.current) clearInterval(pollRef.current);
-          setStep(12);
-          window.scrollTo({ top: 0, behavior: "smooth" });
-          return;
-        }
-        // Terminal failure states. Without this the loop span forever showing
-        // "Status: qa flagged" — a permanent, silent hang with no way out and
-        // nothing telling the user their report was held back.
-        if (data.status === "qa_flagged" || data.status === "generation_failed") {
-          if (pollRef.current) clearInterval(pollRef.current);
-          setError(
-            "Your report needs a quick manual check before we release it. " +
-              "We have kept your answers — please contact us and we will finish it."
-          );
-        }
-      } catch {
-        // keep polling
-      }
-    };
-    poll();
-    pollRef.current = setInterval(poll, 3000);
-    return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
-    };
-  }, [step, token, apiGet]);
 
   /* ── progress % ─────────────────────────────────────────── */
   const progressPct =
@@ -872,6 +728,31 @@ function AssessmentFlow() {
 
               <div>
                 <label className="block text-sm font-heading font-semibold text-on-surface mb-1">
+                  School Code <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={accessCode}
+                  onChange={(e) => { setAccessCode(e.target.value.toUpperCase()); if (e.target.value.trim()) setCodeError(""); }}
+                  placeholder="e.g. ABCD2345"
+                  autoCapitalize="characters"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  maxLength={16}
+                  className={cls(
+                    "sa-input text-center tracking-[0.25em] font-mono uppercase",
+                    codeError && "!border-red-400 focus:!border-red-400"
+                  )}
+                />
+                {codeError
+                  ? <p className="text-red-500 text-xs mt-1">{codeError}</p>
+                  : <p className="text-on-surface-variant text-xs mt-1">
+                      From the CareerNeeti sheet your school gave you.
+                    </p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-heading font-semibold text-on-surface mb-1">
                   Email{" "}
                   <span className="text-on-surface-variant font-normal font-body">(optional)</span>
                 </label>
@@ -893,7 +774,7 @@ function AssessmentFlow() {
                   type="tel"
                   value={parentPhone}
                   onChange={(e) => setParentPhone(e.target.value)}
-                  placeholder="WhatsApp number"
+                  placeholder="10-digit mobile number"
                   className="sa-input"
                 />
               </div>
@@ -1239,8 +1120,19 @@ function AssessmentFlow() {
                         key={score}
                         onClick={() => {
                           setTipiAnswers((prev) => ({ ...prev, [tipiQ.id]: score }));
+                          // Advance only if we are still on the question that
+                          // was just answered. The guard used to read the captured
+                          // index while the updater incremented the live one, so two
+                          // taps inside the 250ms window — the ordinary phone gesture
+                          // when the screen has not moved yet — advanced twice and
+                          // skipped an item. That left allTipiAnswered false, so
+                          // Continue stayed disabled at the end of the section with
+                          // nothing on screen saying which question was missed.
+                          const answered = tipiCurrentQ;
                           setTimeout(() => {
-                            if (tipiCurrentQ < tipiTotal - 1) setTipiCurrentQ((c) => c + 1);
+                            setTipiCurrentQ((c) =>
+                              c === answered ? Math.min(c + 1, tipiTotal - 1) : c
+                            );
                           }, 250);
                         }}
                         className={cls(
@@ -1316,8 +1208,11 @@ function AssessmentFlow() {
                         key={score}
                         onClick={() => {
                           setCrAnswers((prev) => ({ ...prev, [crQ.id]: score }));
+                          const answered = crCurrentQ;
                           setTimeout(() => {
-                            if (crCurrentQ < crTotal - 1) setCrCurrentQ((c) => c + 1);
+                            setCrCurrentQ((c) =>
+                              c === answered ? Math.min(c + 1, crTotal - 1) : c
+                            );
                           }, 250);
                         }}
                         className={cls(
@@ -1412,8 +1307,11 @@ function AssessmentFlow() {
                           aptAnswersRef.current = next;
                           return next;
                         });
+                        const answered = aptCurrentQ;
                         setTimeout(() => {
-                          if (aptCurrentQ < aptTotal - 1) setAptCurrentQ((c) => c + 1);
+                          setAptCurrentQ((c) =>
+                            c === answered ? Math.min(c + 1, aptTotal - 1) : c
+                          );
                         }, 250);
                       }}
                       className={cls(
@@ -1632,479 +1530,49 @@ function AssessmentFlow() {
   /* ═══════════════════════════════════════════════════════════
      STEP 9 — Preview Results
      ═══════════════════════════════════════════════════════════ */
+  // Step 9 — the end of the student's journey.
+  //
+  // There is no online report, no download and nothing to poll for. The
+  // counsellor generates reports in batch and hands over the PDF, so showing a
+  // spinner and a download button here would promise something the product does
+  // not do.
   if (step === 9) {
-    const pd = previewData;
-
-    const PRICING = [
-      {
-        tier: "basic",
-        name: "Basic",
-        price: "₹499",
-        features: [
-          "Full RIASEC analysis",
-          "Stream recommendation",
-          "Top 5 career paths",
-          "Basic college list",
-        ],
-        highlight: false,
-      },
-      {
-        tier: "plus",
-        name: "Plus",
-        price: "₹1,999",
-        features: [
-          "Everything in Basic",
-          "12-page detailed report",
-          "College list with NIRF rankings",
-          "Salary data & job outlook",
-          "Personalized action plan",
-        ],
-        highlight: true,
-      },
-      {
-        tier: "premium",
-        name: "Premium",
-        price: "₹2,999",
-        features: [
-          "Everything in Plus",
-          "1-on-1 counsellor call (30 min)",
-          "Parent guidance booklet",
-          "WhatsApp support for 1 month",
-          "Scholarship recommendations",
-        ],
-        highlight: false,
-      },
-    ];
-
     return (
       <div className="min-h-screen bg-surface font-body">
-        <Header step={step} progressPct={progressPct} subtitle="Your Preview Results" />
-        <div className="max-w-form-narrow mx-auto px-4 py-8 space-y-6">
-          {/* Holland Code */}
-          {pd && (
-            <>
-              <div className="sa-card text-center">
-                <p className="text-xs font-heading uppercase tracking-widest text-on-surface-variant mb-2">
-                  Your Holland Code
-                </p>
-                <div className="flex justify-center gap-2 mb-3">
-                  {pd.holland_code.split("").map((letter, i) => (
-                    <span
-                      key={i}
-                      className="w-14 h-14 rounded flex items-center justify-center text-white text-xl font-heading font-bold"
-                      style={{
-                        backgroundColor: RIASEC_COLORS[letter] || "#888",
-                      }}
-                    >
-                      {letter}
-                    </span>
-                  ))}
-                </div>
-                <p className="text-on-surface-variant text-sm">
-                  {pd.holland_code
-                    .split("")
-                    .map((l) => RIASEC_LABELS[l] || l)
-                    .join(" / ")}
-                </p>
-              </div>
-
-              {/* RIASEC bar chart */}
-              <div className="sa-card">
-                <p className="text-xs font-heading uppercase tracking-widest text-on-surface-variant mb-4 text-center">
-                  Your Interest Profile
-                </p>
-                <RiasecBarChart scores={pd.riasec_scores} />
-              </div>
-
-              {/* Stream recommendation */}
-              <div className="sa-card text-center">
-                <p className="text-xs font-heading uppercase tracking-widest text-on-surface-variant mb-2">
-                  Recommended Stream
-                </p>
-                <h2 className="text-2xl font-heading font-bold text-primary">
-                  {pd.recommended_stream}
-                </h2>
-                <span
-                  className={cls(
-                    "inline-block mt-2 px-3 py-1 rounded-full text-xs font-semibold",
-                    pd.confidence === "High"
-                      ? "bg-accent-100 text-accent-600"
-                      : pd.confidence === "Medium"
-                      ? "bg-secondary-100 text-secondary-600"
-                      : "bg-surface-container-high text-on-surface-variant"
-                  )}
-                >
-                  Confidence: {pd.confidence}
-                </span>
-              </div>
-
-              {/* Career teasers as pills */}
-              {pd.career_teasers && pd.career_teasers.length > 0 && (
-                <div className="sa-card">
-                  <p className="text-xs font-heading uppercase tracking-widest text-on-surface-variant mb-3 text-center">
-                    Top Career Matches
-                  </p>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {pd.career_teasers.slice(0, 3).map((career, i) => (
-                      <span
-                        key={i}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-secondary-50 text-on-surface rounded-full text-sm font-medium"
-                      >
-                        <span
-                          className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0 bg-secondary"
-                        >
-                          {i + 1}
-                        </span>
-                        {typeof career === "string" ? career : (career as {name: string}).name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-
-          {/* Blurred/locked full report preview */}
-          <div className="sa-card relative overflow-hidden">
-            <div className="filter blur-[2px] opacity-50 pointer-events-none select-none">
-              <p className="text-sm font-heading font-medium text-on-surface mb-2">
-                Detailed Career Pathways
-              </p>
-              <p className="text-xs text-on-surface-variant mb-1">
-                Software Engineering - Expected salary: 8-25 LPA
-              </p>
-              <p className="text-xs text-on-surface-variant mb-1">
-                Data Science - Expected salary: 6-20 LPA
-              </p>
-              <p className="text-xs text-on-surface-variant mb-3">
-                Product Management - Expected salary: 10-30 LPA
-              </p>
-              <p className="text-sm font-heading font-medium text-on-surface mb-2">
-                Recommended Colleges (NIRF 2024)
-              </p>
-              <p className="text-xs text-on-surface-variant mb-1">
-                1. IIT Bombay - Rank #1
-              </p>
-              <p className="text-xs text-on-surface-variant mb-1">
-                2. IIT Delhi - Rank #2
-              </p>
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
-              <div className="text-center px-4">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-secondary-50 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                </div>
-                <p className="text-sm font-heading font-bold text-primary mb-2">
-                  Your full 12-page report includes:
-                </p>
-                <ul className="text-xs text-on-surface-variant space-y-1 text-left inline-block">
-                  <li className="flex items-center gap-1.5"><span className="text-accent">&#x2713;</span> Detailed career pathways &amp; roadmaps</li>
-                  <li className="flex items-center gap-1.5"><span className="text-accent">&#x2713;</span> College lists with NIRF rankings</li>
-                  <li className="flex items-center gap-1.5"><span className="text-accent">&#x2713;</span> Salary data &amp; job market outlook</li>
-                  <li className="flex items-center gap-1.5"><span className="text-accent">&#x2713;</span> Personalized action plan</li>
-                  <li className="flex items-center gap-1.5"><span className="text-accent">&#x2713;</span> Parent guide &amp; next steps</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Pricing cards */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-heading font-bold text-center text-primary">
-              Unlock Your Full Report
-            </h3>
-            {PRICING.map((plan) => (
-              <div
-                key={plan.tier}
-                className={cls(
-                  "sa-card transition-all",
-                  plan.highlight && "ring-2 ring-secondary shadow-lg shadow-secondary/10"
-                )}
-              >
-                {plan.highlight && (
-                  <span className="inline-block px-3 py-0.5 rounded-full text-xs font-heading font-bold mb-2 text-white bg-secondary">
-                    MOST POPULAR
-                  </span>
-                )}
-                <div className="flex items-baseline justify-between mb-3">
-                  <h4 className="text-lg font-heading font-bold text-primary">
-                    {plan.name}
-                  </h4>
-                  <span className="text-2xl font-heading font-bold text-primary">
-                    {plan.price}
-                  </span>
-                </div>
-                <ul className="space-y-1.5 mb-4">
-                  {plan.features.map((f, i) => (
-                    <li key={i} className="text-sm text-on-surface-variant flex items-start gap-2">
-                      <span className="text-accent mt-0.5">&#x2713;</span>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  onClick={() => handleUnlockReport(plan.tier)}
-                  disabled={loading}
-                  className={cls(
-                    "w-full py-3 font-heading font-bold text-sm transition-all",
-                    "disabled:opacity-40 disabled:cursor-not-allowed",
-                    plan.highlight ? "btn-gold" : "btn-primary"
-                  )}
-                >
-                  Unlock {plan.name} Report
-                </button>
-              </div>
-            ))}
-          </div>
-
-          <ErrorBanner error={error} />
-        </div>
-      </div>
-    );
-  }
-
-  /* ═══════════════════════════════════════════════════════════
-     STEP 10 — Payment
-     ═══════════════════════════════════════════════════════════ */
-  if (step === 10) {
-
-    return (
-      <div className="min-h-screen bg-surface font-body">
-        <Header step={step} progressPct={progressPct} subtitle="Complete Payment" />
-        <div className="max-w-form-narrow mx-auto px-4 py-8 space-y-5">
+        <Header step={step} progressPct={100} subtitle="All done" />
+        <div className="max-w-form-narrow mx-auto px-4 py-12 space-y-6">
           <div className="sa-card text-center">
-            <h3 className="text-lg font-heading font-bold text-primary mb-2">
-              {paymentsUnavailable ? "Almost done" : "Complete Your Payment"}
-            </h3>
-            <p className="text-on-surface-variant text-sm mb-4">
-              {paymentData
-                ? `Amount: ₹${paymentData.amount_inr.toLocaleString("en-IN")}`
-                : paymentsUnavailable
-                  ? "Your assessment is complete."
-                  : "Preparing payment..."}
-            </p>
-
-            {/* Order summary */}
-            {paymentData && (
-              <div className="sa-card bg-surface-container-high mb-4 text-left">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-on-surface-variant">Career Assessment Report</span>
-                  <span className="font-heading font-bold text-on-surface">
-                    ₹{paymentData.amount_inr.toLocaleString("en-IN")}
-                  </span>
-                </div>
-                <div className="mt-2 pt-2 border-t border-surface-container-highest flex justify-between items-center text-sm">
-                  <span className="font-heading font-semibold text-on-surface">Total</span>
-                  <span className="font-heading font-bold text-primary text-lg">
-                    ₹{paymentData.amount_inr.toLocaleString("en-IN")}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {paymentsUnavailable ? (
-              <div className="space-y-3 text-left">
-                <div className="sa-card bg-surface-container-high text-sm">
-                  <p className="font-heading font-bold text-on-surface mb-1">
-                    Online payment is not open yet
-                  </p>
-                  <p className="text-on-surface-variant">
-                    Your answers are saved. We will contact you on the number you
-                    gave us to arrange the report and payment.
-                  </p>
-                </div>
-                <p className="text-xs text-on-surface-variant text-center">
-                  Keep this link to return to your assessment:
-                  <br />
-                  <span className="font-mono break-all">{`${typeof window !== "undefined" ? window.location.origin : ""}/assessment?token=${token}`}</span>
-                </p>
-              </div>
-            ) : (
-              <button
-                onClick={handlePayment}
-                disabled={loading || !paymentData}
-                className="btn-primary w-full py-3.5 font-heading font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                {loading ? "Processing..." : "Pay with Razorpay"}
-              </button>
-            )}
-          </div>
-          <ErrorBanner error={error} />
-        </div>
-      </div>
-    );
-  }
-
-  /* ═══════════════════════════════════════════════════════════
-     STEP 11 — Generating Report
-     ═══════════════════════════════════════════════════════════ */
-  if (step === 11) {
-    return (
-      <div className="min-h-screen bg-brand-gradient flex items-center justify-center font-body">
-        <div className="text-center px-6 max-w-sm">
-          <Logo />
-          <div className="mt-8" />
-
-          {/* Animated loader */}
-          <div className="relative w-20 h-20 mx-auto mb-6">
-            <div
-              className="absolute inset-0 border-4 rounded-full animate-spin"
-              style={{
-                borderColor: "rgba(255,255,255,0.15)",
-                borderTopColor: GOLD,
-              }}
-            />
-            <div
-              className="absolute inset-2 border-4 rounded-full animate-spin"
-              style={{
-                borderColor: "rgba(255,255,255,0.1)",
-                borderTopColor: "white",
-                animationDirection: "reverse",
-                animationDuration: "1.5s",
-              }}
-            />
-          </div>
-
-          <h2 className="text-white text-lg font-heading font-bold mb-2">
-            Generating your personalized report...
-          </h2>
-          <p className="text-white/50 text-sm mb-4">
-            Our AI is analyzing your responses and building a detailed career
-            roadmap.
-          </p>
-
-          {/* Progress dots */}
-          <div className="flex justify-center gap-2">
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                className="w-2.5 h-2.5 rounded-full bg-secondary animate-pulse"
-                style={{
-                  animationDelay: `${i * 0.3}s`,
-                }}
-              />
-            ))}
-          </div>
-
-          {reportStatus && (
-            <p className="text-white/30 text-xs mt-4 capitalize">
-              Status: {reportStatus.replace(/_/g, " ")}
-            </p>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  /* ═══════════════════════════════════════════════════════════
-     STEP 12 — Report Ready
-     ═══════════════════════════════════════════════════════════ */
-  if (step === 12) {
-    const pdfUrl = `${API_BASE}/api/d2c/pdf/${token}`;
-    const webReportUrl = `${window.location.origin}/reports/${token}`;
-    const shareText = encodeURIComponent(
-      `I just completed my AI Career Assessment on CareerNeeti! My Holland Code is ${
-        previewData?.holland_code || "..."
-      }. View my report: ${webReportUrl}`
-    );
-    const whatsappUrl = `https://wa.me/?text=${shareText}`;
-
-    return (
-      <div className="min-h-screen bg-surface font-body">
-        <Header step={step} progressPct={progressPct} subtitle="Report Ready" />
-        <div className="max-w-form-narrow mx-auto px-4 py-8 space-y-6">
-          {/* Celebration */}
-          <div className="sa-card text-center">
-            <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-accent-100 flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-accent-100 flex items-center justify-center">
               <svg className="w-8 h-8 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-xl font-heading font-bold text-primary mb-1">
-              Your Career Report is Ready!
+            <h2 className="text-2xl font-heading font-bold text-primary mb-2">
+              Your answers are in
             </h2>
-            <p className="text-on-surface-variant text-sm">
-              Your personalized 12-page career report has been generated.
+            <p className="text-on-surface-variant leading-relaxed">
+              Thank you, {studentName || "there"}. Your responses have been recorded.
+            </p>
+            <p className="text-on-surface-variant leading-relaxed mt-3">
+              Your counsellor will prepare your personalised career report and share
+              it with you.
+            </p>
+            <p lang="hi" className="text-sm text-on-surface-variant leading-relaxed mt-3">
+              आपके उत्तर दर्ज कर लिए गए हैं। आपके काउंसलर आपकी रिपोर्ट तैयार करके
+              आपके साथ साझा करेंगे।
             </p>
           </div>
 
-          {/* Holland Code recap */}
-          {previewData && (
-            <div className="sa-card text-center">
-              <p className="text-xs font-heading uppercase tracking-widest text-on-surface-variant mb-2">
-                Your Holland Code
-              </p>
-              <div className="flex justify-center gap-2 mb-2">
-                {previewData.holland_code.split("").map((letter, i) => (
-                  <span
-                    key={i}
-                    className="w-12 h-12 rounded flex items-center justify-center text-white text-lg font-heading font-bold"
-                    style={{
-                      backgroundColor: RIASEC_COLORS[letter] || "#888",
-                    }}
-                  >
-                    {letter}
-                  </span>
-                ))}
-              </div>
-              <p className="text-sm font-heading font-medium text-primary">
-                {previewData.recommended_stream}
-              </p>
-            </div>
-          )}
-
-          {/* Download PDF */}
-          <a
-            href={pdfUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-gold block w-full py-3.5 font-heading font-bold text-sm text-center"
-          >
-            Download Full Report (PDF)
-          </a>
-
-          {/* View online */}
-          <a
-            href={webReportUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-ghost block w-full py-3.5 font-heading font-bold text-sm text-center"
-          >
-            View Report Online
-          </a>
-
-          {/* Share on WhatsApp */}
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block w-full py-3.5 rounded font-heading font-bold text-sm text-center
-              transition-all hover:shadow-lg active:scale-[0.98]"
-            style={{ backgroundColor: "#25D366", color: "white" }}
-          >
-            Share on WhatsApp
-          </a>
-
-          {/* Retake */}
-          <div className="text-center pt-2">
-            <a
-              href="/assessment"
-              className="text-sm text-on-surface-variant hover:text-on-surface underline transition-colors"
-            >
-              Take the assessment again
-            </a>
+          <div className="sa-card bg-surface-container-high">
+            <p className="text-sm text-on-surface-variant leading-relaxed">
+              You can close this page now. There is nothing further to do here.
+            </p>
           </div>
-
-          {/* Footer */}
-          <p className="text-center text-xs text-on-surface-variant pb-6">
-            &copy; {new Date().getFullYear()} CareerNeeti. AI Career Assessment.
-          </p>
         </div>
       </div>
     );
   }
+
 
   /* fallback */
   return null;

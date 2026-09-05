@@ -75,10 +75,19 @@ export default function PrivacyPolicy() {
 
       <LegalHeading>Parental consent</LegalHeading>
       <p>
-        Where the student is under 18, we require verifiable consent from a parent or guardian
-        before the report is generated. Consent is confirmed by a one-time code sent to the parent
-        or guardian&rsquo;s phone number. Assessment answers may be scored to show an on-screen
-        preview before that point, but no report is generated or stored without confirmed consent.
+        Most people who take this assessment are under 18, and Indian law requires verifiable
+        consent from a parent or guardian before we process their personal data.
+      </p>
+      <p>
+        <strong>Where CareerNeeti runs a session at a school</strong>, consent is collected on a
+        signed paper form issued to parents before the session, and we record that it was given.
+      </p>
+      <p>
+        <strong>Where a student takes the assessment on this website</strong>, we are still
+        building the parent-verification step. Until it is in place, please do not use the online
+        assessment unless a parent or guardian is present and agrees. If you are a parent and want
+        your child&rsquo;s data removed, write to the grievance officer below and we will delete
+        it.
       </p>
 
       <LegalHeading>Who we share it with</LegalHeading>
@@ -112,8 +121,10 @@ export default function PrivacyPolicy() {
 
       <LegalHeading>How long we keep it</LegalHeading>
       <p>
-        We retain assessment data for 90 days after the report is delivered, after which identifying
-        fields are erased automatically. Aggregate, non-identifying statistics may be retained
+        We keep assessment data for as long as we are providing the service to you, and we delete
+        it on request. We are working towards a fixed retention period of 90 days after a report
+        is delivered; that automatic deletion is not yet running, so until it is, ask us and we
+        will erase your data manually. Aggregate, non-identifying statistics may be retained
         longer.
       </p>
 

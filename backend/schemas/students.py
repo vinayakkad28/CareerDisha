@@ -27,6 +27,8 @@ class StudentSummary(BaseModel):
     report_status: str = "pending"
     delivery_status: str = "pending"
     consent_obtained: bool = False
+    fee_paid: bool = False
+    fee_amount: int = 0
 
 
 class StudentDetail(BaseModel):
@@ -44,6 +46,10 @@ class StudentDetail(BaseModel):
     parent_phone: str = ""
     report_status: str = "pending"
     delivery_status: str = "pending"
+    fee_paid: bool = False
+    fee_amount: int = 0
+    payment_mode: str = ""
+    receipt_no: str = ""
     riasec_scores: dict = Field(default_factory=dict)
     report_content: dict = Field(default_factory=dict)
     # Replaces pdf_path, which the client only tested for truthiness and which

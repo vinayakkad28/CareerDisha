@@ -76,20 +76,6 @@ services:
       - key: CORS_ORIGINS
         value: https://careerneeti.in,https://www.careerneeti.in
 
-      # --- Payments: off until Razorpay credentials exist. ---
-      - key: ENABLE_PAYMENTS
-        value: "false"
-      # Beta posture: the report is given away. Mutually exclusive with
-      # ENABLE_PAYMENTS — config.py refuses to boot if both are true, so the
-      # report can never be free while a checkout is live.
-      - key: FREE_REPORTS
-        value: "true"
-      - key: RAZORPAY_KEY_ID
-        sync: false
-      - key: RAZORPAY_KEY_SECRET
-        sync: false
-      - key: RAZORPAY_WEBHOOK_SECRET
-        sync: false
 
       # --- Optional integrations. Unset = feature is a no-op, not an error. ---
       - key: APP_BASE_URL

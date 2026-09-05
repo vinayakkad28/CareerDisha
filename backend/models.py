@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timezone
 from sqlalchemy import (
     Boolean, Column, Integer, String, Text, Float, Date, DateTime,
     ForeignKey, JSON,
@@ -131,6 +131,17 @@ class Student(Base):
     # Delivery
     delivery_status = Column(String(20), default="pending")
     delivery_timestamp = Column(DateTime(timezone=True), nullable=True)
+
+    # Fee, collected offline at the school. There is no online payment: the
+    # counsellor takes cash or UPI on the day and records it here, so ~600
+    # parents' fees reconcile against a session total and commission accrues on
+    # money actually collected rather than on a report having been handed over.
+    fee_amount = Column(Integer, default=0)
+    fee_paid = Column(Boolean, default=False)
+    payment_mode = Column(String(20), default="")   # cash, upi, cheque, school
+    collected_by = Column(String(120), default="")
+    receipt_no = Column(String(60), default="")
+    fee_paid_at = Column(DateTime(timezone=True), nullable=True)
     helpline_booked_at = Column(DateTime(timezone=True), nullable=True)   # Calendly booking confirmed
 
     # DPDPA consent tracking
@@ -225,6 +236,9 @@ class D2CAssessment(Base):
     razorpay_payment_id = Column(String(100), default="")
     payment_status = Column(String(20), default="pending")
     paid_at = Column(DateTime(timezone=True), nullable=True)
+    # Set when a school-issued code is redeemed. Carries the entitlement to a
+    # full report AND the parental consent evidenced by that session's paper form.
+    access_code_id = Column(Integer, ForeignKey("access_codes.id"), nullable=True)
     status = Column(String(30), default="created")
     raw_responses = Column(JSON, default=dict)
     self_efficacy = Column(JSON, nullable=True)
@@ -270,7 +284,7 @@ class StudentOutcome(Base):
     actual_career_interest = Column(String(255), default="")  # free text
     recommendation_matched = Column(Boolean, nullable=True)   # did prediction match?
     notes = Column(Text, default="")
-    collected_via = Column(String(20), default="whatsapp")    # "whatsapp", "manual", "form"
+    collected_via = Column(String(20), default="form")    # "form", "manual", "whatsapp" (historic)
     updated_at = Column(DateTime(timezone=True), default=utcnow)
     created_at = Column(DateTime(timezone=True), default=utcnow)
 
@@ -302,3 +316,59 @@ class CounsellorCommission(Base):
     paid_at = Column(DateTime(timezone=True), nullable=True)
     notes = Column(Text, default="")
     created_at = Column(DateTime(timezone=True), default=utcnow)
+
+
+class AccessCode(Base):
+    """A school-issued code that unlocks one full online report.
+
+    This is what resolves two problems at once.
+
+    Commercially: the public site was giving away, free, the identical report
+    parents were being charged ₹500 for at a school session. One parent with a
+    phone during the pitch and the pilot is over. The free preliminary quiz stays
+    public; the full report now needs a code the school hands out.
+
+    For consent: every code is issued against a Session, and a school session is
+    where a signed paper consent form is actually collected. So redeeming a code
+    inherits real, evidenced parental consent instead of the online flow
+    fabricating `consent_obtained=True` for a child who typed their own name.
+    """
+
+    __tablename__ = "access_codes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    code = Column(String(32), unique=True, nullable=False, index=True)
+    session_id = Column(Integer, ForeignKey("sessions.id"), nullable=False, index=True)
+
+    # A code is single-use by default. `max_uses` exists for the sibling case —
+    # one family, two children — rather than as a general quota.
+    max_uses = Column(Integer, default=1)
+    times_used = Column(Integer, default=0)
+
+    expires_at = Column(DateTime(timezone=True), nullable=True)
+    is_active = Column(Boolean, default=True)
+
+    created_by = Column(Integer, nullable=True)   # user id, None = system
+    created_at = Column(DateTime(timezone=True), default=utcnow)
+    notes = Column(Text, default="")
+
+    session = relationship("Session")
+
+    def redeemable_reason(self) -> str | None:
+        """Why this code cannot be redeemed, or None if it can."""
+        if not self.is_active:
+            return "This code has been deactivated."
+        if self.expires_at is not None:
+            expires = self.expires_at
+            # SQLite hands back a naive datetime for DateTime(timezone=True)
+            # where Postgres returns an aware one, and comparing the two raises.
+            # Local dev is SQLite and production is Postgres, so without this the
+            # expiry check works in CI and blows up on a developer's machine —
+            # or vice versa after a driver change. Treat naive as UTC.
+            if expires.tzinfo is None:
+                expires = expires.replace(tzinfo=timezone.utc)
+            if utcnow() > expires:
+                return "This code has expired."
+        if (self.times_used or 0) >= (self.max_uses or 1):
+            return "This code has already been used."
+        return None

@@ -11,9 +11,9 @@ matplotlib>=3.9.0
 pandas>=2.2.0
 tqdm>=4.66.0
 python-dotenv>=1.0.1
-# Imported directly by services/whatsapp.py and routers/consent.py. It was only
-# present as a transitive dependency of anthropic/openai, so a clean install had
-# no httpx and `from main import app` failed with ModuleNotFoundError.
+# Imported directly by the LLM clients and the test client. It was only present
+# as a transitive dependency of anthropic/openai, so a clean install had no httpx
+# and `from main import app` failed with ModuleNotFoundError.
 httpx>=0.27.0
 # CLI entrypoint (careerneeti.py) and chart rendering (engines/pdf_generator.py).
 # Both were relying on another package happening to pull them in.
@@ -23,7 +23,6 @@ python-multipart>=0.0.12
 aiofiles>=24.1.0
 pydantic>=2.9.0
 psycopg2-binary>=2.9.9
-razorpay>=1.4.2
 PyJWT[crypto]>=2.8.0
 bcrypt>=4.1.0
 sentry-sdk[fastapi]>=1.40.0

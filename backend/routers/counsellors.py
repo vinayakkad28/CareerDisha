@@ -184,14 +184,16 @@ def calculate_commission(
     if not assignment:
         raise HTTPException(status_code=404, detail="No active counsellor assigned to this school")
 
-    # Count students with delivered/sent reports
+    # Count students whose fee was actually collected. This used to count
+    # delivery_status instead, which accrued commission for every report handed
+    # over — so at 60% collection you owed 100% of the commission.
     students_count = db.query(Student).filter(
         Student.session_id == session_id,
-        Student.delivery_status.in_(["sent", "delivered"]),
+        Student.fee_paid.is_(True),
     ).count()
 
     if students_count == 0:
-        raise HTTPException(status_code=400, detail="No delivered students in this session yet")
+        raise HTTPException(status_code=400, detail="No paid students in this session yet")
 
     # Idempotent — update if exists
     existing = db.query(CounsellorCommission).filter(

@@ -200,10 +200,10 @@ def calculate_recommendation(riasec_pct: dict, answers: dict[str, int]) -> dict:
 def save_quiz_contact(request: Request, body: QuizContactRequest):
     """Attach contact details to an existing quiz lead.
 
-    The results screen collects a WhatsApp number and email after scoring. The
-    button that submits them previously only set a local flag and displayed
-    "We will reach out to you on WhatsApp shortly" — nothing was ever sent, so
-    every warm lead who volunteered a number was discarded.
+    The results screen collects a phone number and email after scoring. The
+    button that submits them previously only set a local flag and promised a
+    follow-up that was never sent, so every warm lead who volunteered a number
+    was discarded. They are the pilot's call list.
     """
     if not body.parent_phone and not body.email:
         raise HTTPException(status_code=400, detail="Enter a phone number or an email address")
@@ -303,6 +303,6 @@ def submit_quiz(request: Request, submission: QuizSubmission):
         "message": rec["message"],
         "message_hi": rec.get("message_hi", ""),
         "is_flat": rec["is_flat"],
-        "cta": "Get Your Full Career Report \u2014 \u20b9500 only",
+        "cta": "Get Your Full Career Report",
         "cta_url": "https://www.careerneeti.in",
     }

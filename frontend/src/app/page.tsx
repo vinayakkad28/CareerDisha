@@ -65,7 +65,7 @@ export default function Home() {
                   href="/assessment"
                   className="btn-primary px-8 py-4 rounded-lg font-bold shadow-xl hover:brightness-110 transition-all"
                 >
-                  Get Full Report — Free
+                  I have a school code
                 </Link>
               </div>
             </div>
@@ -98,7 +98,7 @@ export default function Home() {
               { icon: "5", label: "Interests, Aptitude & Personality" },
               { icon: "PDF", label: "Personalised PDF Report" },
               { icon: "हिं", label: "English & हिन्दी" },
-              { icon: "₹0", label: "Free while in beta" },
+              { icon: "\u0938", label: "Through your school" },
             ].map((pill) => (
               <div
                 key={pill.label}
@@ -135,9 +135,9 @@ export default function Home() {
                 },
                 {
                   step: "03",
-                  title: "Get Career Roadmap PDF",
+                  title: "Counsellor shares your report",
                   description:
-                    "Receive a detailed personalised PDF report with stream recommendations and action steps for Class 11.",
+                    "Your counsellor prepares a detailed personalised report from your answers and shares it with you.",
                 },
               ].map((item) => (
                 <div
@@ -205,20 +205,23 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── Pricing ────────────────────────────────────────── */}
+        {/* ── How to take it ────────────────────────────────── */}
         <section id="pricing" className="py-24 bg-surface">
           <div className="max-w-4xl mx-auto px-8">
             <div className="text-center mb-16">
-              <h2 className="font-heading text-4xl font-bold text-primary mb-4">Choose Your Path</h2>
-              <p className="text-on-surface-variant">Investment in clarity for a lifetime of success</p>
+              <h2 className="font-heading text-4xl font-bold text-primary mb-4">
+                Two ways in
+              </h2>
+              <p className="text-on-surface-variant">
+                Try the quiz yourself, or take the full assessment through your school
+              </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              {/* Free Tier */}
               <div className="sa-card p-10 rounded-xl shadow-sm border-t-4 border-slate-200 flex flex-col">
                 <h3 className="text-2xl font-bold text-primary mb-2">Free Quiz</h3>
-                <div className="mb-6">
-                  <span className="text-4xl font-extrabold text-primary">₹0</span>
-                </div>
+                <p className="text-sm text-on-surface-variant mb-6">
+                  Open to anyone, no code needed
+                </p>
                 <ul className="space-y-4 mb-10 flex-grow">
                   {[
                     "15 high-impact questions",
@@ -239,25 +242,20 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* Paid Tier */}
               <div className="sa-card p-10 rounded-xl shadow-2xl border-t-4 border-secondary flex flex-col relative md:scale-105">
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary text-white text-[10px] font-black tracking-widest uppercase px-4 py-1 rounded-full">
-                  Most Popular
+                  Through your school
                 </div>
-                <h3 className="text-2xl font-bold text-primary mb-2">Full Report</h3>
-                <div className="mb-6">
-                  <span className="text-4xl font-extrabold text-primary">₹0</span>
-                  <span className="ml-2 text-sm font-semibold text-on-surface-variant">
-                    free while in beta
-                  </span>
-                </div>
+                <h3 className="text-2xl font-bold text-primary mb-2">Full Assessment</h3>
+                <p className="text-sm text-on-surface-variant mb-6">
+                  Needs the code your school gives you
+                </p>
                 <ul className="space-y-4 mb-10 flex-grow">
                   {[
-                    "Full assessment: interests, work values, aptitude & personality",
-                    "Personalised PDF Report",
-                    "Career Roadmap & Action Plan",
-                    "Parent Insight Section",
-                    "Life-time access to dashboard",
+                    "Interests, work values, aptitude & personality",
+                    "Personalised report prepared by your counsellor",
+                    "Career roadmap & action plan",
+                    "Parent section, in English and Hindi",
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-3 text-on-surface-variant font-medium">
                       <span className="text-secondary font-bold text-sm mt-0.5">&#10003;</span>
@@ -269,7 +267,7 @@ export default function Home() {
                   href="/assessment"
                   className="btn-gold w-full py-4 rounded-lg text-center font-bold shadow-lg hover:brightness-110 transition-all"
                 >
-                  Get Your Full Report
+                  I have a school code
                 </Link>
               </div>
             </div>
