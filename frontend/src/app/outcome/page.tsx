@@ -26,7 +26,7 @@ function OutcomeForm() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!linkToken) setError("Invalid link. Please use the link from your WhatsApp message.");
+    if (!linkToken) setError("Invalid link. Please use the link your counsellor gave you.");
   }, [linkToken]);
 
   const handleSubmit = async () => {

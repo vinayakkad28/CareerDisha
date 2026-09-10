@@ -20,7 +20,7 @@ export default function NewSessionPage() {
     session_date: new Date().toISOString().split("T")[0],
     classes_assessed: [] as number[],
     counsellor_name: "",
-    llm_provider: "groq",
+    llm_provider: "",
     notes: "",
   });
 
@@ -51,7 +51,9 @@ export default function NewSessionPage() {
         session_date: form.session_date,
         classes_assessed: form.classes_assessed,
         counsellor_name: form.counsellor_name,
-        llm_provider: form.llm_provider,
+        // Omitted when blank so the backend's configured default governs.
+        // Sending "" would persist "" and break generation.
+        ...(form.llm_provider ? { llm_provider: form.llm_provider } : {}),
         notes: form.notes,
       });
       setSessionId(session.id);
@@ -148,10 +150,11 @@ export default function NewSessionPage() {
                         onChange={(e) => setForm({ ...form, llm_provider: e.target.value })}
                         className="w-full bg-[#F0F2F5] border-none rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#1A5276] transition-all"
                       >
-                        <option value="groq">Groq (Llama 3)</option>
-                        <option value="openai">GPT-4o</option>
-                        <option value="anthropic">Claude 3.5 Sonnet</option>
-                        <option value="google">Gemini 1.5 Pro</option>
+                        <option value="">Server default (recommended)</option>
+                        <option value="google">Google — Gemini Flash</option>
+                        <option value="openai">OpenAI — GPT-4o mini</option>
+                        <option value="anthropic">Anthropic — Claude Haiku</option>
+                        <option value="groq">Groq — Llama 3.1 8B (too small, not recommended)</option>
                       </select>
                     </div>
                   )}

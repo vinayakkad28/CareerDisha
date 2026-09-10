@@ -20,7 +20,7 @@ from config import (
     RIASEC_TYPE_NAMES,
     MAX_CONCURRENT_REQUESTS,
     LLM_TIMEOUT_SECONDS,
-    LLM_MAX_OUTPUT_TOKENS,
+    max_output_tokens_for,
     DEFAULT_LLM_PROVIDER,
 )
 from database import SessionLocal
@@ -504,7 +504,7 @@ class LLMClient:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            max_tokens=LLM_MAX_OUTPUT_TOKENS,
+            max_tokens=max_output_tokens_for("openai"),
             response_format={"type": "json_object"},
             # Deterministic: identical answers must yield an identical report.
             temperature=0,
@@ -529,7 +529,7 @@ class LLMClient:
             user_prompt,
             generation_config=genai.types.GenerationConfig(
                 response_mime_type="application/json",
-                max_output_tokens=LLM_MAX_OUTPUT_TOKENS,
+                max_output_tokens=max_output_tokens_for("google"),
                 # Same answers should produce the same report. Every provider
                 # was running at its SDK default (1.0), so a student who
                 # retook the assessment identically got a materially different
@@ -563,7 +563,7 @@ class LLMClient:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ],
-            max_tokens=LLM_MAX_OUTPUT_TOKENS,
+            max_tokens=max_output_tokens_for("groq"),
             response_format={"type": "json_object"},
             # Deterministic: identical answers must yield an identical report.
             temperature=0,

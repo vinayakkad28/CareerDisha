@@ -1,6 +1,16 @@
 FROM python:3.12-slim
 
 # Install system dependencies for WeasyPrint (Pango, Cairo, GDK-Pixbuf)
+#
+# fonts-noto-core + fonts-noto-devanagari, NOT the fonts-noto metapackage. The
+# metapackage pulls in thousands of font files covering every script, and the
+# templates ask for 'Noto Sans' / 'Noto Sans Devanagari' by family name — which
+# forces fontconfig to scan the lot. On a 0.1-CPU / 512MB instance with a cold
+# cache that scan took minutes and spiked RSS hard enough to get the worker
+# OOM-killed mid-response: the compliance certificate and the parent circular
+# both died with a dropped connection, while the JSON variant of the same
+# endpoint returned 200. These two are the documents that collect the fee and
+# satisfy CBSE, so they cannot be the slowest things in the image.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpango-1.0-0 \
     libpangoft2-1.0-0 \
@@ -9,8 +19,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcairo2 \
     libffi-dev \
     libglib2.0-0 \
-    fonts-noto \
-    && rm -rf /var/lib/apt/lists/*
+    fontconfig \
+    fonts-noto-core \
+    fonts-noto-devanagari \
+    && rm -rf /var/lib/apt/lists/* \
+    && fc-cache -f
 
 WORKDIR /app
 

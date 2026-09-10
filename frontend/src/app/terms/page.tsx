@@ -62,9 +62,14 @@ export default function TermsOfService() {
 
       <LegalHeading>Cost</LegalHeading>
       <p>
-        The assessment and report are currently provided free of charge while the service is in
-        beta. If we introduce charges in future, we will say so clearly before you are asked to pay,
-        and these terms will be updated.
+        <strong>On this website</strong>, the preliminary quiz is free. Where the full assessment
+        is offered online without charge, that is stated at the point you start it.
+      </p>
+      <p>
+        <strong>Through a school</strong>, CareerNeeti runs an in-person session and the school
+        communicates the fee to parents in advance on a printed circular, along with what is
+        included. Any fee is collected by arrangement with the school, not through this website.
+        You will always be told the amount before you are asked to pay.
       </p>
 
       <LegalHeading>Acceptable use</LegalHeading>

@@ -386,7 +386,7 @@ export default function QuizPage() {
                   <div className="flex-1 space-y-4 text-center md:text-left">
                     <h2 className="text-2xl font-bold text-white font-heading">Want a detailed career roadmap?</h2>
                     <p className="text-slate-200 text-sm">
-                      Get your full personalised report covering sub-stream choices, college recommendations, and a 5-year skill roadmap.
+                      Taking the full assessment through your school gets you a personalised report covering sub-stream choices, college recommendations and a 5-year skill roadmap.
                     </p>
                     <div className="flex flex-col gap-3">
                       <input
@@ -407,8 +407,7 @@ export default function QuizPage() {
                   </div>
                   <div className="flex flex-col items-center gap-4">
                     <div className="bg-white p-6 rounded text-center w-full md:w-64 border-t-4 border-secondary">
-                      <p className="text-xs font-bold text-outline mb-1 uppercase">Free while in beta</p>
-                      <p className="text-3xl font-extrabold text-primary mb-4 font-heading">{"\u20B9"}0</p>
+                      <p className="text-xs font-bold text-outline mb-1 uppercase">Through your school</p>
                       <button
                         onClick={async () => {
                           if (!(await saveContact())) return;
@@ -425,7 +424,7 @@ export default function QuizPage() {
                       </button>
                       <p className="text-[10px] text-outline mt-3 flex items-center justify-center gap-1">
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-                        No payment required
+                        School code needed
                       </p>
                     </div>
                   </div>
@@ -460,7 +459,7 @@ export default function QuizPage() {
                     type="tel"
                     value={parentPhone}
                     onChange={(e) => setParentPhone(e.target.value)}
-                    placeholder="WhatsApp number"
+                    placeholder="10-digit mobile number"
                     className="sa-input flex-1"
                   />
                   <button
@@ -486,7 +485,7 @@ export default function QuizPage() {
 
             {phoneSaved && (
               <p className="text-center text-on-surface-variant text-sm">
-                Saved — we will reach out to you on WhatsApp shortly.
+                Saved — we will be in touch.
               </p>
             )}
 
@@ -659,7 +658,7 @@ export default function QuizPage() {
         <div className="max-w-public mx-auto flex flex-col md:flex-row items-center gap-6">
           <div className="w-full md:flex-1">
             <label className="block text-[10px] font-bold text-primary uppercase tracking-widest mb-2" htmlFor="phone">
-              WhatsApp for Results
+              Mobile number
             </label>
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-semibold">+91</span>

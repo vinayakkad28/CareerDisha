@@ -1,15 +1,15 @@
 import uuid
 import logging
-from datetime import datetime, date, timezone
+from datetime import date
 from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from typing import Optional
 
-from database import get_db, SessionLocal
-from models import Lead, D2CAssessment, Student, School, Session
+from database import SessionLocal
+from models import AccessCode, AuditLog, Lead, D2CAssessment, Student, School, Session
 from engines.scoring_engine import calculate_riasec_scores, determine_holland_code, match_careers, load_knowledge_base
 from rate_limit import limiter
-from config import ENABLE_PAYMENTS, FREE_REPORTS, DEFAULT_LLM_PROVIDER
+from config import DEFAULT_LLM_PROVIDER
 from utils.self_efficacy import normalize_self_efficacy
 from utils.time import utcnow
 
@@ -17,51 +17,30 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-def report_is_unlocked(assessment: D2CAssessment) -> bool:
-    """Whether this assessment's report may be generated and handed over.
+def _inherited_consent(db, assessment: D2CAssessment) -> dict:
+    """Consent fields for a Student created from an online assessment.
 
-    Every gate on the report — preview, JSON, PDF, and the public web report —
-    routes through here so they cannot drift apart. There are exactly two ways
-    to be unlocked: the beta gives reports away, or the report was paid for.
+    Returns real values only where they are actually evidenced. A redeemed
+    school access code points at a Session, and a school session is where a
+    signed paper consent circular is collected — so that, and only that, is
+    treated as parental consent here.
 
-    Note the asymmetry: FREE_REPORTS does not mark anything "paid". Payment
-    status stays an honest record of whether money was received, which is what
-    keeps the switch back to a paid funnel clean.
+    Everything else gets False. An unconsented row is an honest gap; a
+    fabricated one is a false record about a child, and materially worse.
     """
-    return FREE_REPORTS or assessment.payment_status == "paid"
+    if assessment.access_code_id is None:
+        return {"consent_obtained": False, "consent_method": ""}
 
+    code = db.query(AccessCode).filter(AccessCode.id == assessment.access_code_id).first()
+    if code is None:
+        return {"consent_obtained": False, "consent_method": ""}
 
-# Statuses in which a report has cleared review and may be handed over.
-DELIVERABLE_REPORT_STATUSES = ("qa_passed", "pdf_ready", "delivered")
+    return {
+        "consent_obtained": True,
+        "consent_method": "paper_form",
+        "consent_timestamp": utcnow(),
+    }
 
-
-def assert_report_is_deliverable(assessment: D2CAssessment, student: Student) -> None:
-    """Raise unless this report may be handed to the customer.
-
-    Two independent conditions, and both must hold. Unlocking (paid, or given
-    away in the beta) is about entitlement. This is about the report being fit
-    to send: a QA hold means the pipeline found a structural defect, and a held
-    report must not leak out of a side door.
-
-    That side door was real — on-demand PDF regeneration rebuilds from
-    `report_content`, which exists as soon as the model returns, so a flagged
-    report was downloadable while its status still said it was being held.
-    """
-    if not report_is_unlocked(assessment):
-        raise HTTPException(status_code=402, detail="Payment required")
-    if student is not None and student.report_status not in DELIVERABLE_REPORT_STATUSES:
-        if student.report_status == "qa_flagged":
-            raise HTTPException(
-                status_code=409,
-                detail="This report is held for a quality check and is not ready yet.",
-            )
-        raise HTTPException(status_code=404, detail="Report not ready yet")
-
-D2C_PRICING = {
-    "basic": 499,
-    "plus": 1999,
-    "premium": 2999,
-}
 
 D2C_SCHOOL_CODE = "D2C-ONLINE"
 
@@ -148,22 +127,6 @@ class SubmitRequest(BaseModel):
     first_gen_learner: bool = False
     self_efficacy: Optional[dict] = None
     academic_marks: Optional[dict] = None
-
-class CreateOrderRequest(BaseModel):
-    tier: str = "basic"
-
-
-class VerifyPaymentRequest(BaseModel):
-    """Razorpay handler payload.
-
-    These were previously declared as bare `str` parameters on the route, which
-    FastAPI binds as QUERY parameters — so the JSON body the client actually
-    sent was ignored and the signature never reached verification.
-    """
-    razorpay_order_id: str = ""
-    razorpay_payment_id: str = ""
-    razorpay_signature: str = ""
-
 
 @router.post("/start")
 @limiter.limit("30/minute")
@@ -382,6 +345,56 @@ def save_career_readiness(token: str, body: CareerReadinessRequest):
         db.close()
 
 
+class RedeemCodeRequest(BaseModel):
+    code: str = ""
+
+
+@router.post("/redeem/{token}")
+@limiter.limit("10/minute")
+def redeem_access_code(request: Request, token: str, body: RedeemCodeRequest):
+    """Redeem a school-issued code against this assessment.
+
+    Rate-limited because the code space is guessable by design — they are handed
+    out on paper and typed by parents, so they are short.
+    """
+    entered = (body.code or "").strip().upper()
+    if not entered:
+        raise HTTPException(status_code=400, detail="Enter the code from your school.")
+
+    db = SessionLocal()
+    try:
+        assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
+        if not assessment:
+            raise HTTPException(status_code=404, detail="Assessment not found")
+        if assessment.access_code_id is not None:
+            return {"status": "already_redeemed"}
+
+        code = db.query(AccessCode).filter(AccessCode.code == entered).first()
+        if not code:
+            # Deliberately identical to the exhausted/expired wording below, so a
+            # caller cannot probe which codes exist.
+            raise HTTPException(
+                status_code=404, detail="That code is not valid. Please check with your school."
+            )
+        reason = code.redeemable_reason()
+        if reason:
+            raise HTTPException(status_code=409, detail=reason)
+
+        code.times_used = (code.times_used or 0) + 1
+        assessment.access_code_id = code.id
+        db.add(AuditLog(
+            action="access_code_redeemed",
+            entity_type="d2c_assessment",
+            entity_id=assessment.id,
+            detail=f"code={code.code} session_id={code.session_id}",
+        ))
+        db.commit()
+        logger.info(f"Access code {code.code} redeemed for assessment {token}")
+        return {"status": "redeemed", "session_id": code.session_id}
+    finally:
+        db.close()
+
+
 @router.post("/submit/{token}")
 @limiter.limit("10/minute")
 def submit_assessment(request: Request, token: str, body: SubmitRequest):
@@ -394,14 +407,18 @@ def submit_assessment(request: Request, token: str, body: SubmitRequest):
         if assessment.status not in ("created", "info_collected"):
             raise HTTPException(status_code=400, detail=f"Assessment already submitted (status: {assessment.status})")
 
-        if body.class_level not in (9, 10, 11, 12):
+        # SubmitRequest documents 0 as "fall back to the value given at /start",
+        # but this checked the request field directly — so a client that omitted
+        # it got a hard 400 at the end of a 40-minute assessment, with every
+        # answer already typed and nothing saying which field was wrong.
+        class_level = body.class_level or assessment.class_level or 0
+        if class_level not in (9, 10, 11, 12):
             raise HTTPException(status_code=400, detail="Class must be 9, 10, 11, or 12")
+        body.class_level = class_level
 
         # Fall back to values stored at /start if not provided in submit body
         if not body.student_name:
             body.student_name = assessment.student_name or "Student"
-        if not body.class_level:
-            body.class_level = assessment.class_level or 10
         if not body.student_email:
             body.student_email = assessment.student_email or ""
         if not body.parent_phone:
@@ -442,12 +459,25 @@ def submit_assessment(request: Request, token: str, body: SubmitRequest):
         kb = load_knowledge_base()
         matched = match_careers(holland_code, kb, top_n=10)
 
-        # Get or create D2C virtual session
-        d2c_session = get_or_create_d2c_session(db)
+        # Route the student into the session their access code belongs to, so
+        # they appear on the counsellor's roster for that school visit and are
+        # picked up by the batch generate / QA / PDF run. Only a student with no
+        # code falls back to the synthetic online session.
+        target_session = None
+        if assessment.access_code_id is not None:
+            code = db.query(AccessCode).filter(
+                AccessCode.id == assessment.access_code_id
+            ).first()
+            if code is not None:
+                target_session = db.query(Session).filter(
+                    Session.id == code.session_id
+                ).first()
+        if target_session is None:
+            target_session = get_or_create_d2c_session(db)
 
         # Create Student record
         student = Student(
-            session_id=d2c_session.id,
+            session_id=target_session.id,
             student_id_external=f"D2C-{assessment.id}",
             name=body.student_name,
             class_level=body.class_level,
@@ -465,9 +495,16 @@ def submit_assessment(request: Request, token: str, body: SubmitRequest):
             work_values=work_values,
             matched_careers=matched,
             report_status="scored",
-            consent_obtained=True,
-            consent_method="digital",
-            consent_timestamp=datetime.now(timezone.utc),
+            # Consent is inherited, never asserted here. This used to be a
+            # hardcoded True with method "digital" — the same label a real OTP
+            # verification writes, so a fabricated record was indistinguishable
+            # from a genuine one, and school_portal computed a "consent_rate"
+            # from it that the UI labelled DPDPA compliant.
+            #
+            # A redeemed school code carries the consent evidenced by that
+            # session's signed paper circular. Without one there is no consent,
+            # and it stays False until a real verification writes it.
+            **_inherited_consent(db, assessment),
             d2c_assessment_id=assessment.id,
         )
         db.add(student)
@@ -541,17 +578,10 @@ def submit_assessment(request: Request, token: str, body: SubmitRequest):
 
         logger.info(f"D2C assessment {token}: scored for {body.student_name} (Class {body.class_level}, Holland: {holland_code}, confidence: {rec['confidence']})")
 
-        # In the free beta there is no purchase decision to wait for, so the
-        # report starts building the moment the assessment is scored. Without
-        # this, generation is unreachable: the only other caller is
-        # verify_payment, which returns 503 while payments are off — which is
-        # why no report was ever produced through the online funnel.
-        if FREE_REPORTS:
-            _start_report_generation(assessment.id)
 
         return {
             "token": token,
-            "status": "report_generating" if FREE_REPORTS else "assessment_complete",
+            "status": "assessment_complete",
             "holland_code": holland_code,
             "riasec_scores": riasec_scores,
             "recommended_stream": rec["recommended_stream"],
@@ -569,308 +599,6 @@ def submit_assessment(request: Request, token: str, body: SubmitRequest):
         db.close()
 
 
-@router.get("/preview/{token}")
-def preview_results(token: str):
-    """Return teaser results — enough to motivate purchase, not enough for free."""
-    db = SessionLocal()
-    try:
-        assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
-        if not assessment:
-            raise HTTPException(status_code=404, detail="Assessment not found")
-        if not assessment.student_id:
-            raise HTTPException(status_code=400, detail="Assessment not yet submitted")
-
-        student = db.query(Student).filter(Student.id == assessment.student_id).first()
-        if not student:
-            raise HTTPException(status_code=404, detail="Student record not found")
-
-        # Teaser: scores + stream + 3 career NAMES only (no details)
-        matched = student.matched_careers or []
-        career_teasers = [{"name": m.get("career_name", ""), "match_type": m.get("match_type", "")} for m in matched[:3]]
-
-        # Read the stored engine result. This previously used a separate
-        # single-letter Holland lookup that ignored academic, aptitude,
-        # personality and feasibility data, so the pre-payment teaser could
-        # confidently name a stream the paid report then contradicted — or name
-        # one where the engine had returned "Insufficient".
-        rec = assessment.stream_recommendation or {}
-        stream = rec.get("recommended_stream")
-        confidence = rec.get("confidence", "")
-
-        return {
-            "token": token,
-            "student_name": student.name,
-            "class_level": student.class_level,
-            "holland_code": student.holland_code,
-            "riasec_scores": student.riasec_scores,
-            "recommended_stream": stream,
-            "confidence": confidence,
-            "explanation": rec.get("explanation", ""),
-            "top_careers_preview": career_teasers,
-            "total_careers_matched": len(matched),
-            "report_locked": not report_is_unlocked(assessment),
-            "pricing": D2C_PRICING,
-        }
-    finally:
-        db.close()
-
-
-@router.post("/create-order/{token}")
-@limiter.limit("10/minute")
-def create_payment_order(request: Request, token: str, body: CreateOrderRequest):
-    """Create a Razorpay order for payment."""
-    if not ENABLE_PAYMENTS:
-        # No silent mock fallback. Previously an unconfigured Razorpay produced a
-        # "mock_order_..." id that verify-payment auto-approved, so every paid
-        # report was obtainable for zero rupees.
-        raise HTTPException(
-            status_code=503,
-            detail="Online payments are not available yet.",
-        )
-
-    db = SessionLocal()
-    try:
-        assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
-        if not assessment:
-            raise HTTPException(status_code=404, detail="Assessment not found")
-        if assessment.payment_status == "paid":
-            raise HTTPException(status_code=400, detail="Already paid")
-
-        tier = body.tier
-        if tier not in D2C_PRICING:
-            raise HTTPException(status_code=400, detail=f"Invalid tier: {tier}. Options: {list(D2C_PRICING.keys())}")
-
-        amount_inr = D2C_PRICING[tier]
-        assessment.tier = tier
-        assessment.amount_inr = amount_inr
-
-        try:
-            from services.razorpay_service import PaymentsNotConfigured, create_razorpay_order
-            order = create_razorpay_order(
-                amount_inr * 100, f"d2c_{assessment.id}", {"token": token, "tier": tier}
-            )
-        except PaymentsNotConfigured as e:
-            logger.error(f"Payments enabled but Razorpay unusable: {e}")
-            raise HTTPException(status_code=503, detail="Online payments are not available yet.")
-        except Exception as e:
-            # A transient Razorpay failure must surface as an error, never as a
-            # free order.
-            logger.exception(f"Razorpay order creation failed for {token}: {e}")
-            raise HTTPException(status_code=502, detail="Could not reach the payment provider. Please try again.")
-
-        assessment.razorpay_order_id = order["id"]
-        db.commit()
-        return {
-            "order_id": order["id"],
-            # Both units are returned explicitly. The old response sent a single
-            # ambiguous "amount" in rupees which the client divided by 100,
-            # displaying (and charging) Rs 4.99 for a Rs 499 tier.
-            "amount_inr": amount_inr,
-            "amount_paise": amount_inr * 100,
-            "currency": "INR",
-            "tier": tier,
-            # Field name must match what the client checks to open the real
-            # checkout; it read `razorpay_key` while this returned `key_id`, so
-            # every customer fell through to the mock screen.
-            "razorpay_key": order.get("key_id", ""),
-        }
-    finally:
-        db.close()
-
-
-@router.post("/verify-payment/{token}")
-@limiter.limit("10/minute")
-def verify_payment(request: Request, token: str, body: VerifyPaymentRequest):
-    """Verify a Razorpay payment signature and trigger report generation."""
-    if not ENABLE_PAYMENTS:
-        raise HTTPException(status_code=503, detail="Online payments are not available yet.")
-
-    db = SessionLocal()
-    try:
-        assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
-        if not assessment:
-            raise HTTPException(status_code=404, detail="Assessment not found")
-        if assessment.payment_status == "paid":
-            return {"status": "already_paid", "token": token}
-
-        # The signature must belong to THIS assessment's order, otherwise a valid
-        # signature from any other (possibly cheaper) order could be replayed here.
-        if not assessment.razorpay_order_id or body.razorpay_order_id != assessment.razorpay_order_id:
-            raise HTTPException(status_code=400, detail="Payment verification failed")
-
-        try:
-            from services.razorpay_service import PaymentsNotConfigured, verify_razorpay_payment
-            verified = verify_razorpay_payment(
-                body.razorpay_order_id, body.razorpay_payment_id, body.razorpay_signature
-            )
-        except PaymentsNotConfigured as e:
-            logger.error(f"Cannot verify payment, Razorpay unusable: {e}")
-            raise HTTPException(status_code=503, detail="Online payments are not available yet.")
-
-        if not verified:
-            raise HTTPException(status_code=400, detail="Payment verification failed")
-
-        assessment.payment_status = "paid"
-        assessment.razorpay_payment_id = body.razorpay_payment_id
-        assessment.paid_at = utcnow()
-        assessment.status = "paid"
-        db.commit()
-
-        logger.info(f"D2C payment verified: {token} (tier={assessment.tier}, amount=Rs{assessment.amount_inr})")
-
-        _start_report_generation(assessment.id)
-
-        return {"status": "paid", "token": token, "report_generating": True}
-    finally:
-        db.close()
-
-
-def _start_report_generation(assessment_id: int) -> None:
-    """Kick off report generation for an assessment, off the request thread.
-
-    Single entry point so the free-beta path and the paid path start work the
-    same way. Note the known weakness this inherits: a bare daemon thread has no
-    watchdog, so a container recycle mid-generation strands the row at
-    "report_generating" with nothing to re-drive it. The startup sweep in
-    main.py's lifespan is what recovers those.
-    """
-    import threading
-
-    thread = threading.Thread(
-        target=_generate_d2c_report, args=(assessment_id,), daemon=True
-    )
-    thread.start()
-
-
-def _generate_d2c_report(assessment_id: int):
-    """Background: generate report, PDF, and deliver."""
-    from engines.report_generator import generate_single_report
-    from engines.pdf_generator import generate_student_pdf
-    from engines.scoring_engine import load_knowledge_base
-    from config import OUTPUT_DIR
-
-    db = SessionLocal()
-    try:
-        assessment = db.query(D2CAssessment).filter(D2CAssessment.id == assessment_id).first()
-        if not assessment or not assessment.student_id:
-            return
-
-        student = db.query(Student).filter(Student.id == assessment.student_id).first()
-        if not student:
-            return
-
-        assessment.status = "report_generating"
-        db.commit()
-
-        # Generate LLM report
-        kb = load_knowledge_base()
-        try:
-            # This was a vendor literal, which pinned every online report to
-            # llama-3.1-8b-instant no matter what the deployment was configured
-            # for — while /api/health cheerfully reported the real provider. The
-            # repo's own fix_groq.py rates 8B models 0, "too small for this
-            # schema": they truncate the ~20-section report JSON, which then
-            # fails QA and strands the customer. Honour the configured provider.
-            cost = generate_single_report(student, kb, DEFAULT_LLM_PROVIDER, db)
-            student.report_status = "report_generated"
-            db.commit()
-            logger.info(f"D2C report generated for assessment {assessment.token} (cost: ${cost:.4f})")
-        except Exception as e:
-            logger.error(f"D2C report generation failed for {assessment.token}: {e}")
-            assessment.status = "assessment_complete"  # Allow retry
-            db.commit()
-            return
-
-        # Run the same 17 validation checks the school pipeline runs. This used
-        # to be "Skip QA for D2C (auto-pass)", so a malformed LLM response — the
-        # report template gates every section on `{% if report.X %}` and Jinja's
-        # default Undefined is silent — rendered a PDF with blank sections and
-        # shipped it to a paying customer with nothing flagged anywhere.
-        from engines.qa_checker import validate_report
-
-        flags = validate_report(student)
-        student.qa_flags = flags
-        # Block on real structural defects only. `[WARNING]` flags are advisory
-        # — a personal_note under 200 characters, fewer than three recommended
-        # books — and holding a finished report for those left the customer
-        # polling a spinner forever with no route out and no notification. The
-        # school pipeline already draws this line (qa_checker.run_qa_checks);
-        # D2C was the outlier. Warnings are still recorded on the row.
-        hard_flags = [f for f in flags if not f.startswith("[WARNING]")]
-        if hard_flags:
-            student.report_status = "qa_flagged"
-            assessment.status = "qa_flagged"
-            db.commit()
-            logger.error(
-                f"D2C report FAILED QA for {assessment.token}: {hard_flags}. "
-                "Holding for review instead of delivering."
-            )
-            return
-        if flags:
-            logger.warning(
-                f"D2C report for {assessment.token} delivered with advisory "
-                f"flags: {flags}"
-            )
-        student.report_status = "qa_passed"
-        db.commit()
-
-        output_dir = OUTPUT_DIR / "d2c"
-        output_dir.mkdir(parents=True, exist_ok=True)
-        try:
-            pdf_path = generate_student_pdf(student, output_dir, counsellor_name="CareerNeeti AI")
-            student.pdf_path = str(pdf_path)
-            student.report_status = "pdf_ready"
-            assessment.pdf_url = str(pdf_path)
-            assessment.status = "report_ready"
-            assessment.completed_at = datetime.now(timezone.utc)
-            db.commit()
-            logger.info(f"D2C PDF generated: {pdf_path}")
-        except Exception as e:
-            logger.error(f"D2C PDF generation failed: {e}")
-            assessment.status = "report_generating"  # Allow retry
-            db.commit()
-
-        # Send email delivery
-        if assessment.student_email:
-            try:
-                from services.email_service import send_report_email
-                stream_rec = (student.report_content or {}).get("stream_recommendation", {}).get("recommended_stream", "")
-                sent = send_report_email(
-                    to_email=assessment.student_email,
-                    student_name=student.name,
-                    pdf_path=str(pdf_path),
-                    holland_code=student.holland_code or "",
-                    stream=stream_rec,
-                )
-                if sent:
-                    assessment.report_email_sent = True
-                    db.commit()
-            except Exception as e:
-                logger.warning(f"D2C email delivery failed: {e}")
-
-        # Send WhatsApp delivery
-        if assessment.parent_phone:
-            try:
-                from services.whatsapp import WhatsAppService
-                wa = WhatsAppService()
-                result = wa.send_pdf(
-                    phone=assessment.parent_phone,
-                    pdf_path=str(pdf_path),
-                    student_name=student.name,
-                    school_name="CareerNeeti",
-                )
-                if result.get("success"):
-                    assessment.report_whatsapp_sent = True
-                    db.commit()
-            except Exception as e:
-                logger.warning(f"D2C WhatsApp delivery failed: {e}")
-
-    except Exception as e:
-        logger.error(f"D2C report pipeline failed for assessment {assessment_id}: {e}", exc_info=True)
-    finally:
-        db.close()
-
-
 @router.get("/status/{token}")
 def check_status(token: str):
     """Check assessment and report generation status."""
@@ -880,108 +608,14 @@ def check_status(token: str):
         if not assessment:
             raise HTTPException(status_code=404, detail="Assessment not found")
 
+        # The student sees only whether their answers were received. The report
+        # itself is generated in batch by the counsellor and handed over as a
+        # PDF, so there is nothing here for them to poll for or download.
         return {
             "token": token,
             "status": assessment.status,
-            "payment_status": assessment.payment_status,
-            "report_ready": assessment.status == "report_ready",
-            # Regeneration (see download_pdf) means a report with content is
-            # still deliverable even when the rendered file is gone.
-            "pdf_available": bool(assessment.pdf_url) or bool(assessment.student_id),
+            "submitted": assessment.student_id is not None,
         }
     finally:
         db.close()
 
-
-@router.get("/report/{token}")
-def get_report(token: str):
-    """Get full report JSON (payment required)."""
-    db = SessionLocal()
-    try:
-        assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
-        if not assessment:
-            raise HTTPException(status_code=404, detail="Assessment not found")
-        if not assessment.student_id:
-            raise HTTPException(status_code=400, detail="Report not yet generated")
-
-        student = db.query(Student).filter(Student.id == assessment.student_id).first()
-        assert_report_is_deliverable(assessment, student)
-        if not student or not student.report_content:
-            raise HTTPException(status_code=404, detail="Report not ready yet")
-
-        return {
-            "token": token,
-            "student_name": student.name,
-            "class_level": student.class_level,
-            "holland_code": student.holland_code,
-            "riasec_scores": student.riasec_scores,
-            "report": student.report_content,
-        }
-    finally:
-        db.close()
-
-
-@router.get("/pdf/{token}")
-def download_pdf(token: str):
-    """Download PDF report (payment required)."""
-    from fastapi.responses import FileResponse
-    from pathlib import Path
-
-    db = SessionLocal()
-    try:
-        assessment = db.query(D2CAssessment).filter(D2CAssessment.token == token).first()
-        if not assessment:
-            raise HTTPException(status_code=404, detail="Assessment not found")
-        pdf_student = (
-            db.query(Student).filter(Student.id == assessment.student_id).first()
-            if assessment.student_id
-            else None
-        )
-        assert_report_is_deliverable(assessment, pdf_student)
-
-        pdf_path = Path(assessment.pdf_url) if assessment.pdf_url else None
-
-        # The stored path routinely outlives the file. OUTPUT_DIR is /tmp/output
-        # on the hosted free plan, which is wiped on every deploy and idle
-        # recycle, so a customer returning to their link the next day used to get
-        # a permanent "PDF not ready yet" for a report that exists perfectly well
-        # in the database. Re-render it instead of 404ing: every input
-        # generate_student_pdf needs is a persisted column, so this costs a
-        # couple of seconds of CPU and no LLM call.
-        if pdf_path is None or not pdf_path.exists():
-            student = pdf_student
-            if not student or not student.report_content:
-                raise HTTPException(status_code=404, detail="Report not ready yet")
-
-            # Imported here, not at module scope: matplotlib and WeasyPrint cost
-            # real resident memory, and this process runs in 512MB.
-            from engines.pdf_generator import generate_student_pdf
-            from config import OUTPUT_DIR
-
-            try:
-                output_dir = OUTPUT_DIR / "d2c"
-                output_dir.mkdir(parents=True, exist_ok=True)
-                pdf_path = generate_student_pdf(
-                    student, output_dir, counsellor_name="CareerNeeti AI"
-                )
-            except Exception as e:
-                logger.error(
-                    f"PDF regeneration failed for {token}: {e}", exc_info=True
-                )
-                raise HTTPException(
-                    status_code=503,
-                    detail="Could not rebuild the report right now. Please try again.",
-                )
-
-            student.pdf_path = str(pdf_path)
-            assessment.pdf_url = str(pdf_path)
-            db.commit()
-            logger.info(f"Regenerated missing PDF for {token}")
-
-        return FileResponse(
-            str(pdf_path),
-            media_type="application/pdf",
-            filename=f"CareerNeeti_Report_{assessment.student_name.replace(' ', '_')}.pdf",
-        )
-    finally:
-        db.close()

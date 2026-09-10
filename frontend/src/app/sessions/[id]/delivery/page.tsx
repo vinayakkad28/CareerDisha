@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { reports as reportsApi, students as studentsApi, whatsapp as whatsappApi } from "@/lib/api";
+import { reports as reportsApi, students as studentsApi } from "@/lib/api";
 import { LoadingSpinner, ErrorState } from "@/components/UIStates";
 import { useToast } from "@/components/Toast";
 
@@ -10,12 +10,9 @@ export default function DeliveryPage() {
   const params = useParams();
   const [data, setData] = useState<any>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
-  const [waConfigured, setWaConfigured] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    whatsappApi.status().then(d => setWaConfigured(d.configured)).catch(() => {});
-  }, []);
+  useEffect(() => {  }, []);
 
   const loadData = () => {
     setFetchError(null);
@@ -67,26 +64,6 @@ export default function DeliveryPage() {
             Delivery Progress: <span className="text-accent-600 font-bold">{data.delivered}/{data.total} delivered</span>
           </p>
         </div>
-        <button
-          onClick={async () => {
-            try {
-              toast("Sending reports via WhatsApp...", "info");
-              const result = await whatsappApi.sendBulk(Number(params.id));
-              toast(`Sent: ${result.sent}, Failed: ${result.failed}`, result.failed > 0 ? "warning" : "success");
-              loadData();
-            } catch (err: any) {
-              toast(err.message || "WhatsApp send failed", "error");
-            }
-          }}
-          disabled={!waConfigured}
-          className="px-6 py-2.5 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 text-white font-bold rounded-lg shadow-md transition-all flex items-center gap-2 active:scale-95 disabled:opacity-50"
-          title={waConfigured ? "Send all reports via WhatsApp" : "WhatsApp not configured -- set WHATSAPP_PROVIDER in .env"}
-        >
-          Send All via WhatsApp
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-          </svg>
-        </button>
       </div>
 
       {/* Progress Bar */}
@@ -109,7 +86,6 @@ export default function DeliveryPage() {
                 <th className="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Phone</th>
                 <th className="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">PDF</th>
                 <th className="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest">Status</th>
-                <th className="px-6 py-4 text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest text-center">WhatsApp</th>
               </tr>
             </thead>
             <tbody className="divide-y-0">
@@ -163,26 +139,6 @@ export default function DeliveryPage() {
                       )}
                     </button>
                   </td>
-                  <td className="px-6 py-4 text-center">
-                    <button
-                      onClick={async () => {
-                        try {
-                          await whatsappApi.send(item.student_id);
-                          toast(`Sent to ${item.parent_name || item.name}`, "success");
-                          loadData();
-                        } catch (err: any) {
-                          toast(err.message, "error");
-                        }
-                      }}
-                      disabled={!waConfigured || !item.pdf_available}
-                      className="p-2 text-green-600 hover:bg-green-100 rounded-full transition-colors disabled:opacity-40"
-                      title={!waConfigured ? "WhatsApp not configured" : !item.pdf_available ? "PDF not ready" : "Send via WhatsApp"}
-                    >
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-                      </svg>
-                    </button>
-                  </td>
                 </tr>
               ))}
             </tbody>
@@ -206,20 +162,24 @@ export default function DeliveryPage() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <div>
-            <h4 className="font-bold text-primary">Auto-Delivery Sync</h4>
+            <h4 className="font-bold text-primary">Where the PDFs come from</h4>
             <p className="text-xs text-on-surface-variant leading-relaxed mt-1">
-              PDF reports are automatically generated after the assessment is completed. Marking a student as &quot;Delivered&quot; will timestamp the activity in the audit log for school principals.
+              Reports are generated in a batch you start from the session page, then
+              checked in QA. Only students with a finished PDF appear here. Marking one
+              delivered timestamps it in the audit log for the school.
             </p>
           </div>
         </div>
         <div className="p-6 bg-surface-container-high rounded-xl flex items-start gap-4">
           <svg className="w-7 h-7 text-on-surface-variant flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+            <path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-9 14l-5-5 1.4-1.4L10 14.2l7.6-7.6L19 8l-9 9z" />
           </svg>
           <div>
-            <h4 className="font-bold text-on-surface">WhatsApp API Status</h4>
+            <h4 className="font-bold text-on-surface">Offline delivery</h4>
             <p className="text-xs text-on-surface-variant leading-relaxed mt-1">
-              Bulk WhatsApp delivery is currently throttled to 50 messages per minute to comply with provider limits. Use &quot;Send All&quot; to queue all pending reports for delivery.
+              Download each report and hand it to the parent yourself, then mark the
+              student delivered here. The count feeds the CBSE compliance certificate
+              for this session.
             </p>
           </div>
         </div>

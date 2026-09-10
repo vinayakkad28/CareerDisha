@@ -16,7 +16,6 @@ from config import (
     CORS_ORIGIN_REGEX,
     CORS_ORIGINS,
     DEFAULT_LLM_PROVIDER,
-    ENABLE_PAYMENTS,
     IS_PRODUCTION,
     LLM_API_KEYS,
     OUTPUT_DIR,
@@ -24,7 +23,7 @@ from config import (
 )
 from database import init_db, SessionLocal
 from rate_limit import limiter
-from routers import auth, schools, sessions, students, reports, dashboard, consent, whatsapp, cards, quiz, nps, d2c, coaching, school_portal, audit, feedback, counsellors, outcomes, reports_public
+from routers import auth, schools, sessions, students, reports, dashboard, consent, cards, quiz, nps, d2c, coaching, school_portal, audit, feedback, counsellors, outcomes
 
 # Configure logging
 logging.basicConfig(
@@ -72,6 +71,32 @@ def _assert_schema_current() -> None:
         )
 
 
+def _warm_pdf_stack() -> None:
+    """Pay the WeasyPrint import cost at boot instead of in someone's request.
+
+    Every PDF route imported weasyprint lazily, inside the handler. The first
+    such call in a fresh container therefore paid, mid-request, for the ctypes
+    dlopen of Pango/Cairo/GObject plus a fontconfig scan. On a small instance
+    that was slow enough to drop the connection — the compliance certificate and
+    the parent circular both failed in production while the JSON variant of the
+    same endpoint returned 200, and both rendered locally in half a second
+    against a warm cache.
+
+    Importing here moves that cost to startup, where the platform's own health
+    check absorbs it. Deliberately non-fatal: a PDF backend that cannot load
+    should degrade those two endpoints, not stop the API from serving.
+    """
+    import time
+
+    started = time.monotonic()
+    try:
+        import engines.pdf_generator  # noqa: F401  (imports weasyprint + matplotlib)
+
+        logger.info(f"PDF stack warmed in {time.monotonic() - started:.1f}s")
+    except Exception as e:
+        logger.error(f"PDF stack failed to load — PDF routes will error: {e}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     if AUTO_CREATE_SCHEMA:
@@ -79,6 +104,7 @@ async def lifespan(app: FastAPI):
     else:
         _assert_schema_current()
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    _warm_pdf_stack()
     logger.info(f"CareerNeeti API started. Output dir: {OUTPUT_DIR}")
     yield
 
@@ -115,7 +141,6 @@ app.include_router(students.router, prefix="/api/students", tags=["Students"])
 app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
 app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
 app.include_router(consent.router, prefix="/api/consent", tags=["Consent"])
-app.include_router(whatsapp.router, prefix="/api/whatsapp", tags=["WhatsApp"])
 app.include_router(cards.router, prefix="/api/students", tags=["Cards"])
 app.include_router(quiz.router, prefix="/api/quiz", tags=["Quiz"])
 app.include_router(nps.router, prefix="/api/nps", tags=["NPS"])
@@ -129,7 +154,6 @@ app.include_router(feedback.summary_router, prefix="/api/feedback", tags=["Feedb
 app.include_router(counsellors.router, prefix="/api/counsellors", tags=["Counsellors"])
 app.include_router(outcomes.router, prefix="/api/outcomes", tags=["Outcomes"])
 app.include_router(outcomes.public_router, prefix="/api/outcomes", tags=["Outcomes"])
-app.include_router(reports_public.router, prefix="/api/reports", tags=["Reports Public"])
 
 # NOTE: generated report PDFs are deliberately NOT served as static files.
 #
@@ -187,7 +211,6 @@ def health_check():
         "db": db_status,
         "llm_provider": DEFAULT_LLM_PROVIDER,
         "llm_key_configured": llm_key_present,
-        "payments_enabled": ENABLE_PAYMENTS,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
     return JSONResponse(status_code=200 if healthy else 503, content=body)

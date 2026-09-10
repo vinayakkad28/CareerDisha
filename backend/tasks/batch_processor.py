@@ -1,5 +1,4 @@
 import logging
-import os
 import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -165,17 +164,22 @@ def run_pdf_generation(session_id: int):
 
         counsellor_name = session.counsellor_name or ""
 
-        base_url = os.getenv("APP_BASE_URL", "https://careerneeti.in")
         logger.info(f"Session {session_id}: generating PDFs for {len(students)} students in {output_dir}")
         completed = 0
         failed = 0
         for student in students:
             try:
-                # Assign a stable report token if not already set
+                # The token is what the parent feedback, NPS and 6-month
+                # outcome forms authenticate on — student_from_report_token
+                # resolves it — so it is still assigned here even though there
+                # is no web report. Dropping it silently disabled all three.
                 if not student.report_token:
                     student.report_token = uuid.uuid4().hex
                     db.commit()
-                web_report_url = f"{base_url}/reports/{student.report_token}"
+                # No web report to link to: reports are handed over as PDFs, and
+                # a QR pointing at a route that no longer exists is worse than
+                # no QR, so none is rendered.
+                web_report_url = ""
                 pdf_path = generate_student_pdf(
                     student, output_dir,
                     counsellor_name=counsellor_name,

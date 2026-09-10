@@ -1,7 +1,7 @@
 import io
 import csv
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from utils.time import utcnow
 from typing import Optional
 
@@ -9,13 +9,14 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, BackgroundTasks, Request
 from fastapi.responses import StreamingResponse, FileResponse
 from sqlalchemy.orm import Session as DBSession
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
-from config import DEFAULT_LLM_PROVIDER
+from config import DEFAULT_LLM_PROVIDER, LLM_MODELS
 from access import AccessScope, get_scoped_session, resolve_scope, scoped_sessions
 from database import get_db
 from models import Session, Student, School
 from rate_limit import limiter
+from routers.counsellors import PRICE_PER_STUDENT_INR
 from schemas.students import StudentSummary
 from utils.self_efficacy import CANONICAL_DOMAINS, normalize_self_efficacy
 
@@ -59,6 +60,27 @@ class SessionCreate(BaseModel):
     counsellor_certification: str = ""
     llm_provider: str = DEFAULT_LLM_PROVIDER
     notes: str = ""
+
+    @field_validator("llm_provider")
+    @classmethod
+    def _known_provider(cls, v: str) -> str:
+        """Reject a provider the generator cannot dispatch.
+
+        An unknown value reaches LLMClient.generate and raises ValueError, which
+        _is_permanent_llm_error classifies as permanent — so every student in the
+        session fails instantly with no retry, the batch reports zero completed,
+        and the session status is left untouched. The counsellor sees a spinner
+        that never resolves and no error anywhere. Catch it at the door instead.
+
+        Blank is allowed and means "use the configured default".
+        """
+        if not v:
+            return DEFAULT_LLM_PROVIDER
+        if v not in LLM_MODELS:
+            raise ValueError(
+                f"unknown llm_provider {v!r}; expected one of {sorted(LLM_MODELS)}"
+            )
+        return v
 
 
 @router.get("")
@@ -134,6 +156,14 @@ def get_session(session_id: int, db: DBSession = Depends(get_db), session: Sessi
             "qa_flagged": sum(1 for s in students if s.report_status == "qa_flagged"),
             "pdf_ready": sum(1 for s in students if s.report_status in ("pdf_ready", "delivered")),
             "delivered": sum(1 for s in students if s.report_status == "delivered"),
+        },
+        # Fees are collected in person; this is what reconciles the cash bag
+        # against the roster at the end of a school visit.
+        "fees": {
+            "paid_count": sum(1 for s in students if s.fee_paid),
+            "unpaid_count": sum(1 for s in students if not s.fee_paid),
+            "collected_inr": sum(s.fee_amount or 0 for s in students if s.fee_paid),
+            "expected_inr": len(students) * PRICE_PER_STUDENT_INR,
         },
     }
 
@@ -339,6 +369,123 @@ def generate_pdfs(session_id: int, background_tasks: BackgroundTasks, db: DBSess
     return {"message": "PDF generation started in background"}
 
 
+class IssueCodesRequest(BaseModel):
+    count: int = 0          # 0 = one per student in the session
+    max_uses: int = 1
+    valid_days: int = 120
+
+
+@router.get("/{session_id}/access-codes")
+def list_access_codes(
+    session_id: int,
+    db: DBSession = Depends(get_db),
+    session: Session = Depends(get_scoped_session),
+):
+    """List this session's codes, so they can be reprinted.
+
+    Minting used to be the only way to see a code: the POST returned them once,
+    and closing the tab lost 300 of them with no way to recover — re-minting
+    would hand out a second, unrelated set.
+    """
+    from models import AccessCode, D2CAssessment
+
+    codes = db.query(AccessCode).filter(
+        AccessCode.session_id == session_id
+    ).order_by(AccessCode.id).all()
+
+    used_by = {}
+    if codes:
+        rows = db.query(D2CAssessment).filter(
+            D2CAssessment.access_code_id.in_([c.id for c in codes])
+        ).all()
+        for row in rows:
+            used_by.setdefault(row.access_code_id, row.student_name or "")
+
+    return {
+        "session_id": session_id,
+        "total": len(codes),
+        "unused": sum(1 for c in codes if not c.times_used),
+        "codes": [
+            {
+                "code": c.code,
+                "times_used": c.times_used or 0,
+                "max_uses": c.max_uses,
+                "is_active": bool(c.is_active),
+                "expires_at": c.expires_at,
+                "used_by": used_by.get(c.id, ""),
+            }
+            for c in codes
+        ],
+    }
+
+
+@router.post("/{session_id}/access-codes")
+def issue_access_codes(
+    session_id: int,
+    body: IssueCodesRequest,
+    db: DBSession = Depends(get_db),
+    session: Session = Depends(get_scoped_session),
+    scope: AccessScope = Depends(resolve_scope),
+):
+    """Mint access codes for this session's parents.
+
+    These are printed on the circular and typed by a parent, so they are short
+    and read-aloud friendly: no O/0 or I/1, and uppercase throughout.
+    """
+    import secrets
+
+    from models import AccessCode, AuditLog
+
+    if body.count < 0:
+        raise HTTPException(status_code=400, detail="count cannot be negative")
+
+    count = body.count or db.query(Student).filter(
+        Student.session_id == session_id
+    ).count()
+    if count == 0:
+        raise HTTPException(
+            status_code=400,
+            detail="This session has no students yet. Upload the roster first, "
+                   "or pass an explicit count.",
+        )
+    if count > 1000:
+        raise HTTPException(status_code=400, detail="Refusing to mint more than 1000 codes at once")
+
+    alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"   # no O/0, no I/1
+    expires_at = utcnow() + timedelta(days=body.valid_days) if body.valid_days else None
+
+    codes = []
+    for _ in range(count):
+        # Retry on the (vanishingly unlikely) collision rather than trusting it.
+        for _attempt in range(5):
+            candidate = "".join(secrets.choice(alphabet) for _ in range(8))
+            if not db.query(AccessCode).filter(AccessCode.code == candidate).first():
+                break
+        else:
+            raise HTTPException(status_code=500, detail="Could not mint a unique code")
+
+        code = AccessCode(
+            code=candidate,
+            session_id=session_id,
+            max_uses=max(1, body.max_uses),
+            expires_at=expires_at,
+            created_by=scope.user_id or None,
+        )
+        db.add(code)
+        codes.append(candidate)
+
+    db.add(AuditLog(
+        user_id=scope.user_id or None,
+        action="access_codes_issued",
+        entity_type="session",
+        entity_id=session_id,
+        detail=f"{len(codes)} codes, max_uses={max(1, body.max_uses)}",
+    ))
+    db.commit()
+    logger.info(f"Session {session_id}: issued {len(codes)} access codes")
+    return {"session_id": session_id, "issued": len(codes), "codes": codes}
+
+
 @router.get("/{session_id}/download")
 def download_all_pdfs(session_id: int, db: DBSession = Depends(get_db), session: Session = Depends(get_scoped_session)):
     import zipfile
@@ -353,12 +500,39 @@ def download_all_pdfs(session_id: int, db: DBSession = Depends(get_db), session:
     if not students:
         raise HTTPException(status_code=404, detail="No PDFs found for this session")
 
+    # This loop used to be `if pdf_path.exists(): zf.write(...)`, which meant a
+    # session whose files had been wiped — the normal outcome of any redeploy,
+    # since OUTPUT_DIR is ephemeral — produced an EMPTY zip with HTTP 200. A
+    # counsellor would hand out nothing and never know. Rebuild what is missing,
+    # and if any student still cannot be included, refuse rather than ship a
+    # short archive claiming to be the whole cohort.
+    from engines.pdf_generator import ensure_student_pdf
+
     zip_buffer = io.BytesIO()
+    unavailable: list[str] = []
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zf:
         for student in students:
-            pdf_path = Path(student.pdf_path)
-            if pdf_path.exists():
-                zf.write(pdf_path, pdf_path.name)
+            try:
+                pdf_path = ensure_student_pdf(student, db)
+            except Exception as e:
+                logger.error(
+                    f"Session {session_id}: no PDF for student {student.id} "
+                    f"({student.name}): {e}"
+                )
+                unavailable.append(student.name or f"id {student.id}")
+                continue
+            zf.write(pdf_path, pdf_path.name)
+
+    if unavailable:
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                f"{len(unavailable)} of {len(students)} reports could not be "
+                f"produced, so the download would be incomplete. "
+                f"Affected: {', '.join(unavailable[:10])}"
+                + ("…" if len(unavailable) > 10 else "")
+            ),
+        )
 
     zip_buffer.seek(0)
     school = db.query(School).filter(School.id == session.school_id).first()
@@ -475,7 +649,10 @@ def compliance_certificate(session_id: int, db: DBSession = Depends(get_db), ses
         "parental_consent_obtained": consented,
         "reports_delivered": reports_delivered,
         "assessment_tool": "RIASEC Career Interest Inventory (74 items)",
-        "report_method": "AI-assisted analysis reviewed by qualified counsellor",
+        # Describes what actually happens. There is no human review step anywhere in
+        # the codebase (no reviewed_by/approved_by field, no reviewer role), and
+        # this string goes on a CBSE compliance document handed to a principal.
+        "report_method": "AI-generated analysis with automated quality validation",
         "compliance_note": "This session was conducted in compliance with CBSE Affiliation Bye-Laws Clause 2.4.12 and NEP 2020 career guidance requirements.",
         "generated_at": utcnow().isoformat(),
     }

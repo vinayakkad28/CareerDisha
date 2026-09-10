@@ -96,8 +96,13 @@ def _truncate_all():
         # Break the FK cycle before deleting either side.
         session.query(models.Student).update({models.Student.d2c_assessment_id: None})
         session.commit()
-        for model in (models.D2CAssessment, models.Student, models.Session,
-                      models.Lead, models.User, models.School):
+        # AccessCode sits between the two: d2c_assessments references it, and it
+        # references sessions — so it deletes after the former and before the
+        # latter. Its `code` column is unique, so a row surviving one test makes
+        # the next one fail on an insert that has nothing to do with the bug it
+        # is testing.
+        for model in (models.D2CAssessment, models.AccessCode, models.Student,
+                      models.Session, models.Lead, models.User, models.School):
             session.query(model).delete()
         session.commit()
     finally:

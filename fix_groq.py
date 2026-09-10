@@ -16,7 +16,20 @@ import urllib.error
 import urllib.request
 
 BASE = "https://api.groq.com/openai/v1"
-APP_MAX_TOKENS = 12000  # must match _call_groq
+# Must match what _call_groq actually sends, which is now
+# config.max_output_tokens_for("groq") — read it from config rather than
+# duplicating the number, because this constant silently drifting out of step
+# with the app is exactly how an unsupported max_tokens reaches production.
+try:
+    import os
+    import sys
+
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "backend"))
+    from config import max_output_tokens_for
+
+    APP_MAX_TOKENS = max_output_tokens_for("groq")
+except Exception:  # standalone use, without the backend importable
+    APP_MAX_TOKENS = 12000
 
 
 def api(path, key, body=None, timeout=90):
@@ -104,7 +117,7 @@ if not working:
             })
             if st == 200:
                 print(f"    {m['id']} works at max_tokens={cap} but not 12000.")
-                print(f"    -> lower max_tokens in _call_groq to {cap}, or pick a "
+                print(f"    -> lower GROQ_MAX_OUTPUT_TOKENS to {cap}, or pick a "
                       f"model with a larger completion limit.")
                 sys.exit(0)
     sys.exit("\nNo working combination found. Check your Groq account tier.")

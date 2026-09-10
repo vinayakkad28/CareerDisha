@@ -71,19 +71,17 @@ def test_google_model_default_is_not_a_retired_model():
     assert config.LLM_MODELS["google"] not in ("gemini-2.0-flash", "gemini-2.5-flash")
 
 
-def test_d2c_report_generation_does_not_hardcode_a_vendor():
-    """The online funnel pinned itself to Groq regardless of configuration.
+def test_batch_generation_does_not_hardcode_a_vendor():
+    """The online per-submission generator used to pin itself to a vendor literal.
 
-    `_generate_d2c_report` called generate_single_report(student, kb, "groq", db)
-    with the vendor as a literal, so every report bought or given away through
-    the website was written by llama-3.1-8b-instant even though /api/health
-    truthfully reported the deployment's real provider. The two disagreed and
-    nothing surfaced it.
+    That path is gone — reports are produced only by the batch run a counsellor
+    starts — so the guard moves to the surviving generator. It resolves the
+    provider from the session, and the session validates it against LLM_MODELS.
     """
-    from routers.d2c import _generate_d2c_report
+    from tasks.batch_processor import run_report_generation
 
-    src = inspect.getsource(_generate_d2c_report)
-    assert '"groq"' not in src, "D2C generation is pinned to a vendor literal again"
+    src = inspect.getsource(run_report_generation)
+    assert '"groq"' not in src, "batch generation is pinned to a vendor literal again"
     assert "DEFAULT_LLM_PROVIDER" in src
 
 

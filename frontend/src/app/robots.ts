@@ -10,7 +10,7 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "*",
         allow: "/",
         // Staff tooling and anything keyed by a personal token must never be
-        // indexed: /reports/<token> and the survey links identify a real child.
+        // indexed: the survey links identify a real child.
         disallow: [
           "/dashboard",
           "/schools",
@@ -19,7 +19,6 @@ export default function robots(): MetadataRoute.Robots {
           "/settings",
           "/school-portal",
           "/login",
-          "/reports/",
           "/feedback",
           "/outcome",
           "/assessment",
