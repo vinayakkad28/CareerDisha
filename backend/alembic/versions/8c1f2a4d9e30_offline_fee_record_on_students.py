@@ -37,6 +37,14 @@ def upgrade() -> None:
         "WHERE delivery_status IN ('sent', 'delivered')"
     )
 
+    # The server defaults existed only to give already-present rows a value
+    # instead of NULL. Drop them again: every other column on this table takes
+    # its default from the model, and leaving them on the table is drift that
+    # `alembic check` fails on, because models.py declares no server_default.
+    with op.batch_alter_table("students") as batch:
+        for col in ("fee_amount", "fee_paid", "payment_mode", "collected_by", "receipt_no"):
+            batch.alter_column(col, server_default=None)
+
 
 def downgrade() -> None:
     with op.batch_alter_table("students") as batch:
