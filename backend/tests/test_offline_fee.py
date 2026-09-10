@@ -179,10 +179,44 @@ class TestCommissionFollowsTheMoney:
         assert rows[0].amount_inr == 400
 
 
+def _all_paths(app) -> list[str]:
+    """Every path the app serves, whatever FastAPI version is installed.
+
+    ``[r.path for r in app.routes]`` raised AttributeError on CI but not locally:
+    from 0.136 FastAPI wraps each included router in an _IncludedRouter that
+    carries no path of its own and holds the real routes behind
+    ``original_router``, unprefixed. requirements.txt floats fastapi, so CI — and
+    the production image — install whatever is newest at build time.
+
+    The OpenAPI schema is the version-stable source, and the walk below adds any
+    route deliberately kept out of it. Both layouts are covered, so this does not
+    quietly go empty on the next release; the caller asserts a known path is
+    present precisely so that "no route contains 'razorpay'" cannot pass by
+    describing an empty list.
+    """
+    paths = set(app.openapi().get("paths", {}))
+
+    def walk(router, prefix=""):
+        for r in getattr(router, "routes", None) or []:
+            path = getattr(r, "path", None)
+            if path:
+                paths.add(prefix + path)
+            ctx = getattr(r, "include_context", None)
+            sub = getattr(ctx, "included_router", None) or getattr(r, "original_router", None)
+            if sub is not None:
+                walk(sub, prefix + (getattr(ctx, "prefix", "") or ""))
+            elif hasattr(r, "routes"):
+                walk(r, prefix)
+
+    walk(app)
+    return sorted(paths)
+
+
 class TestNothingChargesOnline:
     def test_there_is_no_route_that_takes_money(self):
         from main import app
 
-        paths = [r.path for r in app.routes]
+        paths = _all_paths(app)
+        assert "/api/d2c/submit/{token}" in paths, "route list did not resolve"
         for word in ("order", "checkout", "razorpay", "payment/verify"):
             assert not any(word in p.lower() for p in paths), f"{word} route is back"
