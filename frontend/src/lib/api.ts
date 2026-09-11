@@ -1,22 +1,47 @@
 // Normalize: strip trailing /api then re-add, so env var works with or without it
 const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api").replace(/\/api\/?$/, "") + "/api";
 
-/** Download a file with auth token, triggering a browser save dialog. */
+/** An authenticated response that is not a session problem. */
+function onAuthFailure(status: number) {
+  // 401 means the token is missing or expired: clearing it and going to /login
+  // is right. 403 means authenticated but not permitted — a school_admin
+  // pressing an admin-only control, say. Signing them out for that logged the
+  // user out mid-session and navigated away before the error toast could render,
+  // so the action appeared to do nothing at all.
+  if (status === 401 && typeof window !== "undefined") {
+    localStorage.removeItem("cd_token");
+    window.location.href = "/login";
+  }
+}
+
+/** Download a file with the auth token, triggering a browser save. */
 export async function downloadFile(url: string, filename: string) {
   const token = typeof window !== "undefined" ? localStorage.getItem("cd_token") : null;
   const res = await fetch(url, {
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
   if (!res.ok) {
+    onAuthFailure(res.status);
     const err = await res.json().catch(() => ({ detail: res.statusText }));
     throw new Error(err.detail || `Download failed: ${res.status}`);
   }
   const blob = await res.blob();
+
+  // The anchor must be in the document and the object URL must outlive the
+  // click. Previously neither held: a detached anchor is ignored outright by
+  // Firefox, and revoking the blob URL on the very next line races the browser
+  // starting the save in Chrome and Safari. The fetch had succeeded either way,
+  // so no error was thrown and the caller cheerfully toasted "downloaded!" while
+  // no file appeared anywhere.
+  const href = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
+  a.href = href;
   a.download = filename;
+  a.style.display = "none";
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(a.href);
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(href), 60_000);
 }
 
 async function request<T>(
@@ -45,10 +70,7 @@ async function request<T>(
   });
 
   if (!res.ok) {
-    if ((res.status === 401 || res.status === 403) && typeof window !== "undefined") {
-      localStorage.removeItem("cd_token");
-      window.location.href = "/login";
-    }
+    onAuthFailure(res.status);
     const error = await res.json().catch(() => ({ detail: res.statusText }));
     throw new Error(error.detail || `API error: ${res.status}`);
   }
@@ -184,7 +206,16 @@ export const sessions = {
 // Students
 export const students = {
   get: (id: number) => request<any>(`/students/${id}`),
-  downloadPdfURL: (id: number) => `${BASE_URL}/students/${id}/pdf`,
+  /** Download a student's report PDF.
+   *
+   * Not a URL helper. /students/{id}/pdf sits behind the router-level auth
+   * dependency and the token lives in localStorage, so a browser navigating to
+   * the bare URL — an <a href>, which is what both call sites used — sends no
+   * Authorization header and lands on a JSON 401. Going through downloadFile
+   * attaches the token and saves the file.
+   */
+  downloadPdf: (id: number, filename: string) =>
+    downloadFile(`${BASE_URL}/students/${id}/pdf`, filename),
   regenerate: (id: number) =>
     request<any>(`/students/${id}/regenerate`, { method: "POST" }),
   updateDelivery: (id: number, status: string) =>

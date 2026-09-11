@@ -152,8 +152,11 @@ export default function DashboardPage() {
             subtitle={`${stats.total_students > 0 ? Math.round((stats.reports_generated / stats.total_students) * 100) : 0}% Completion`}
           />
           <StatCard
-            label="Total Cost"
-            value={`\u20B9${stats.total_cost_usd.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+            label="Total LLM Cost"
+            /* total_cost_usd is dollars — it is summed from Student.llm_cost and
+               the session page already renders it as $. Printing it with a rupee
+               sign made the same figure disagree with itself across two screens. */
+            value={`$${stats.total_cost_usd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
             icon={
               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M19 14V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zm-2 0H3V6h14v8zm-7-7c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm13 0v11c0 1.1-.9 2-2 2H4v-2h17V7h2z"/>

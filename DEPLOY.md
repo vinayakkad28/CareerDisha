@@ -113,8 +113,8 @@ The frontend's API host lives **only** in the Vercel dashboard — there is no
 site at the deleted Railway app.
 
 1. Vercel → project `frontend` → **Settings → Environment Variables**.
-2. Set `NEXT_PUBLIC_API_URL` to your Render URL, e.g.
-   `https://careerneeti-api.onrender.com/api`
+2. Set `NEXT_PUBLIC_API_URL` to your Render URL. The live service is
+   `https://careerdisha.onrender.com/api`
    (with or without the trailing `/api` — the client normalises it).
 3. Redeploy. The variable is compiled into the bundle at build time, so a
    redeploy is required; changing it alone does nothing.
@@ -140,20 +140,47 @@ scoped to a school.
 
 ---
 
-## 5. Turning payments on
+## 5. Verify every deploy — before every school visit
 
-Payments are **off** by default and both payment endpoints return 503. This is
-deliberate: with no credentials the old code silently issued a mock order that
-verification auto-approved, so every paid report was obtainable for zero rupees.
+**Vercel and Render deploy independently, and nothing stops them drifting.** On
+2026-09-10 careerneeti.in was built from the pilot branch while Render still ran
+`main`. Each looked healthy on its own. Together, `/api/d2c/redeem` did not exist,
+so every valid school code was rejected with "We do not recognise that code" —
+no student could start, so nothing reached a roster to generate or download.
 
-When Razorpay is KYC-approved:
+Three checks, cheapest first:
 
-1. Set `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`.
-2. Set `ENABLE_PAYMENTS=true`.
-3. Redeploy. The app refuses to start if the flag is on without credentials, so
-   a half-configured payment path cannot reach production.
-4. Verify with a real ₹1 test order that `/api/d2c/verify-payment` returns 400
-   for a tampered signature and 200 only for a genuine one.
+1. **Deployment matches the frontend** — read-only, safe against production:
+
+   ```
+   python scripts/check_deployment.py                  # production
+   python scripts/check_deployment.py http://localhost:8000
+   ```
+
+   Reports the database, LLM provider, model and key; confirms every route the
+   current frontend calls exists; confirms the routes the pilot removed are gone;
+   and flags a model too small for the report schema. It never writes.
+
+2. **The counsellor pipeline** — runs in CI, no LLM spend:
+
+   ```
+   cd backend && python -m pytest tests/test_pipeline_end_to_end.py
+   ```
+
+   scored → generate (consent gate) → QA pass and QA hold → real PDF → ZIP.
+
+3. **Both journeys in a real browser** — needs a local backend on :8000 and the
+   frontend on :3099; setup is in each script's docstring:
+
+   ```
+   python scripts/rehearse_pilot_flow.py        # student: code -> all 110 items
+   python scripts/rehearse_counsellor_flow.py   # counsellor: ZIP + per-student PDF
+   ```
+
+   These are the only checks that catch download bugs. Both the per-student
+   `<a href>` 401 and the download helper that toasted "downloaded!" without
+   saving a file passed every API test — only `expect_download` in a browser
+   tells them apart from working.
 
 ---
 
@@ -168,14 +195,28 @@ When Razorpay is KYC-approved:
   and Render suspends *all* free services until the next month.
 - **Do not move the database onto Render's free Postgres.** It is deleted after
   30 days. See section 1.
-- **Run a single worker.** The consent OTP store is process-local; with more than
-  one worker, OTPs issued by one are invisible to the others and parent consent
-  fails intermittently. The Dockerfile does not pass `--workers`, so uvicorn's
-  default of 1 holds — do not add more without moving that store to the database.
-- **WhatsApp delivery is not automated.** Reports are downloaded and sent
-  manually. The Meta Cloud API implementation is complete and can be switched on
-  later with `WHATSAPP_PROVIDER=meta` plus credentials; the Twilio path is a stub
-  that always fails.
+- **Run a single worker.** Report generation runs as an in-process background
+  task in the worker that received the request, and the rate limiter keeps its
+  counters in process memory. The Dockerfile does not pass `--workers`, so
+  uvicorn's default of 1 holds.
+- **Delivery and fees are offline.** There is no online payment and no WhatsApp
+  integration — both were removed, not switched off. The counsellor collects the
+  fee at the school and records it on the session page, and hands reports over in
+  person from the ZIP or the delivery checklist.
+- **Run the report batch from a laptop, not on Render.** A report takes 60-285s;
+  600 of them is hours, and the free instance has 0.1 CPU, 512 MB and sleeps when
+  idle. The batch is kept alive only by the session page polling — close the tab
+  and the container can be reclaimed mid-run. Point a local backend at the Neon
+  `DATABASE_URL` and run it there:
+
+  ```
+  cd backend && DATABASE_URL=<neon pooled url> python -m uvicorn main:app --port 8000
+  ```
+
+  then use the session page against localhost. Results land in the same database.
+- **Generated PDFs do not survive a redeploy.** `OUTPUT_DIR=/tmp/output` is
+  ephemeral. That is handled: the ZIP and per-student downloads rebuild any
+  missing PDF from the stored report, so nothing needs regenerating from the LLM.
 - **Rotate the keys in `backend/.env`.** They are gitignored and were never
   committed, but they exist in plaintext on the development machine.
 - **Migrations are the source of truth.** Startup refuses to boot if the database

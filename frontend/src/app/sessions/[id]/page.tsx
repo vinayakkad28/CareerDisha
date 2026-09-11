@@ -31,6 +31,7 @@ export default function SessionDetailPage() {
   const [consentLoading, setConsentLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [feeSaving, setFeeSaving] = useState<number | null>(null);
+  const [stalled, setStalled] = useState(false);
   const { toast } = useToast();
 
   const loadSession = () => {
@@ -77,7 +78,18 @@ export default function SessionDetailPage() {
     if (!session) return;
     const isActive = ["generating", "scoring"].includes(session.status);
     if (!isActive) return;
-    const interval = setInterval(loadSession, 3000);
+    const startedAt = Date.now();
+    const interval = setInterval(() => {
+      // A batch running on a host that can reclaim the container mid-run leaves
+      // the session "generating" with nothing behind it. This used to poll every
+      // three seconds forever, each tick reloading every student row.
+      if (Date.now() - startedAt > 10 * 60 * 1000) {
+        clearInterval(interval);
+        setStalled(true);
+        return;
+      }
+      loadSession();
+    }, 3000);
     return () => clearInterval(interval);
   }, [session?.status]);
 
@@ -85,12 +97,25 @@ export default function SessionDetailPage() {
     setLoading(action);
     try {
       const id = Number(params.id);
-      if (action === "generate") {
+      if (action === "score") {
+        await sessionsApi.score(id);
+        toast("Scoring complete", "success");
+      } else if (action === "generate") {
         await sessionsApi.generate(id);
         toast("Report generation started", "info");
       } else if (action === "qa") {
-        await sessionsApi.runQA(id);
-        toast("Scoring complete!", "success");
+        const res: any = await sessionsApi.runQA(id);
+        if (!res?.total) {
+          toast(
+            "QA found no generated reports to check. Run Generate Reports first.",
+            "warning"
+          );
+        } else {
+          toast(
+            `QA complete: ${res.passed} passed, ${res.flagged} flagged of ${res.total}.`,
+            res.flagged ? "warning" : "success"
+          );
+        }
       } else if (action === "pdf") {
         await sessionsApi.generatePDFs(id);
         toast("PDF generation started", "info");
@@ -125,10 +150,43 @@ export default function SessionDetailPage() {
 
   const students = session.students || [];
   const sessionStats = session.stats || {};
+  const lastGenerationProblem = ((session.notes || "") as string)
+    .split("\n")
+    .filter((line: string) => line.includes("Generation produced no reports"))
+    .pop() || "";
+
+  const consented = students.filter((s: any) => consentStatus[s.id]).length;
+
+  const generateWarning = (() => {
+    const n = students.length;
+    const eligible = sessionStats.scored || 0;
+    if (!n) return "This session has no students yet.";
+    if (!eligible)
+      return `None of the ${n} students are scored yet, so this run would produce nothing.`;
+    if (consented < n)
+      return `Only ${consented} of ${n} students have consent recorded. Generation skips the rest — mark consent first, or ${consented} report${consented === 1 ? "" : "s"} will be produced. This calls the LLM API and incurs costs. Continue?`;
+    return `This generates ${eligible} report${eligible === 1 ? "" : "s"} and will call the LLM API and incur costs. Continue?`;
+  })();
+
+  // A grey Download button is usually the symptom of something that failed three
+  // steps earlier. Name that step rather than leaving the user to guess.
+  const zipBlockedReason = (() => {
+    if (sessionStats.pdf_ready) return "";
+    const n = sessionStats.total || students.length;
+    if (!n) return "No students in this session yet.";
+    if (!sessionStats.scored) return `No students scored yet (0 of ${n}).`;
+    if (!sessionStats.reports_generated)
+      return `No reports generated yet (0 of ${n}). Run Generate Reports.`;
+    if (!sessionStats.qa_passed)
+      return sessionStats.qa_flagged
+        ? `QA flagged all ${sessionStats.qa_flagged} reports. Approve them in QA Review first.`
+        : `QA has not run yet on ${sessionStats.reports_generated} generated reports.`;
+    return `${sessionStats.qa_passed} reports passed QA but no PDFs exist yet. Run Generate PDFs.`;
+  })();
+
   const fees = session.fees || {
     paid_count: 0, unpaid_count: 0, collected_inr: 0, expected_inr: 0,
   };
-  const consented = students.filter((s: any) => consentStatus[s.id]).length;
 
   // Filtered students based on search
   const filteredStudents = searchQuery
@@ -176,7 +234,7 @@ export default function SessionDetailPage() {
         />
         <StatCard
           label="Reports Generated"
-          value={`${sessionStats.report_generated || sessionStats.generated || 0}/${sessionStats.total || students.length}`}
+          value={`${sessionStats.reports_generated || 0}/${sessionStats.total || students.length}`}
           icon={
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
           }
@@ -262,6 +320,35 @@ export default function SessionDetailPage() {
         </button>
       </div>
 
+      {/* Why the last batch produced nothing.
+          Every failure in the generate/QA/PDF chain used to be log-only: the
+          UI toasted "started in background" and then showed a stage that never
+          advanced. run_report_generation now records the reason on the session,
+          so the person looking at the screen can see it. */}
+      {stalled && session.status === "generating" && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+          <svg className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2z"/></svg>
+          <div>
+            <h4 className="font-bold text-red-900 text-sm">Generation has been running for over 10 minutes</h4>
+            <p className="text-xs text-red-800 mt-1">
+              Stopped checking. The batch may have been interrupted — on a host that
+              sleeps idle containers this happens if the tab is closed mid-run.
+              Reload to see the current state, or press Generate Reports again.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {lastGenerationProblem && (
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start gap-3">
+          <svg className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+          <div>
+            <h4 className="font-bold text-amber-900 text-sm">Last generation run produced no reports</h4>
+            <p className="text-xs text-amber-800 mt-1">{lastGenerationProblem}</p>
+          </div>
+        </div>
+      )}
+
       {/* Actions Toolbar */}
       <div className="flex flex-wrap items-center gap-3">
         {/* Generate Reports - Navy gradient */}
@@ -280,6 +367,23 @@ export default function SessionDetailPage() {
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5z"/></svg>
               Generate Reports
             </>
+          )}
+        </button>
+
+        {/* Score - only path to "scored", which is all generation looks at */}
+        <button
+          onClick={() => handleAction("score")}
+          disabled={loading !== null}
+          title="Score any student still waiting to be scored"
+          className="px-6 py-2.5 bg-sky-100 text-sky-800 font-bold rounded hover:bg-sky-200 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading === "score" ? (
+            <>
+              <span className="w-4 h-4 border-2 border-sky-400/30 border-t-sky-800 rounded-full animate-spin" />
+              Scoring...
+            </>
+          ) : (
+            "Score Students"
           )}
         </button>
 
@@ -325,7 +429,7 @@ export default function SessionDetailPage() {
         <button
           onClick={async () => {
             if (!session?.stats?.pdf_ready) {
-              toast("No PDFs ready yet. Generate reports first, then run QA and generate PDFs.", "warning");
+              toast(zipBlockedReason || "No PDFs ready yet.", "warning");
               return;
             }
             try {
@@ -339,8 +443,12 @@ export default function SessionDetailPage() {
               toast(err.message || "Download failed", "error");
             }
           }}
-          disabled={!session?.stats?.pdf_ready}
-          className="px-6 py-2.5 bg-slate-100 text-slate-600 font-bold rounded hover:bg-slate-200 transition-colors flex items-center gap-2 disabled:text-slate-400 disabled:cursor-not-allowed disabled:hover:bg-slate-100"
+          title={zipBlockedReason}
+          className={`px-6 py-2.5 font-bold rounded transition-colors flex items-center gap-2 ${
+            session?.stats?.pdf_ready
+              ? "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              : "bg-slate-100 text-slate-400 hover:bg-slate-200"
+          }`}
         >
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-2 6h-2v2h-2v-2h-2v-2h2V8h2v2h2v2z"/></svg>
           Download ZIP
@@ -550,7 +658,7 @@ export default function SessionDetailPage() {
       {showGenerateConfirm && (
         <ConfirmDialog
           title="Generate Reports"
-          message="This will call the LLM API and incur costs. Continue?"
+          message={generateWarning}
           confirmLabel="Generate"
           variant="primary"
           onConfirm={() => {
