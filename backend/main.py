@@ -18,6 +18,7 @@ from config import (
     DEFAULT_LLM_PROVIDER,
     IS_PRODUCTION,
     LLM_API_KEYS,
+    LLM_MODELS,
     OUTPUT_DIR,
     SENTRY_DSN,
 )
@@ -210,6 +211,7 @@ def health_check():
         "service": "CareerNeeti API",
         "db": db_status,
         "llm_provider": DEFAULT_LLM_PROVIDER,
+        "llm_model": LLM_MODELS.get(DEFAULT_LLM_PROVIDER, ""),
         "llm_key_configured": llm_key_present,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
