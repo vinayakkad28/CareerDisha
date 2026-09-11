@@ -131,7 +131,9 @@ export default function SessionTimeline({ currentStatus, stats }: Props) {
                   </p>
                 )}
                 {isFuture && stats && stats.total > 0 && (
-                  <p className="text-[10px] text-slate-400">0/{stats.total}</p>
+                  <p className="text-[10px] text-slate-400">
+                    {getStepProgress(step.key, stats) ?? `0/${stats.total}`}
+                  </p>
                 )}
               </div>
             </div>

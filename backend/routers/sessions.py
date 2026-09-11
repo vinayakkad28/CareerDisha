@@ -8,6 +8,7 @@ from typing import Optional
 import logging
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, BackgroundTasks, Request
 from fastapi.responses import StreamingResponse, FileResponse
+from sqlalchemy import func
 from sqlalchemy.orm import Session as DBSession
 from pydantic import BaseModel, field_validator
 
@@ -105,11 +106,24 @@ def list_sessions(
         sc.id: sc for sc in db.query(School).filter(School.id.in_(school_ids))
     } if school_ids else {}
 
+    # total_students is a stored counter written in exactly one place —
+    # upload_csvs — so a session filled by students redeeming access codes read
+    # "0 students" however many had actually sat the test. Count the rows
+    # instead, in one grouped query, and let the column be the stale thing it is.
+    session_ids = [s.id for s in sessions]
+    counts = dict(
+        db.query(Student.session_id, func.count(Student.id))
+        .filter(Student.session_id.in_(session_ids))
+        .group_by(Student.session_id)
+        .all()
+    ) if session_ids else {}
+
     result = []
     for s in sessions:
         school = schools.get(s.school_id)
         result.append({
             **{c.name: getattr(s, c.name) for c in s.__table__.columns},
+            "total_students": counts.get(s.id, 0),
             "school_name": school.name if school else "",
             "school_city": school.city if school else "",
         })

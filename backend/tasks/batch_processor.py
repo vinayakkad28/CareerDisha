@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from config import OUTPUT_DIR, MAX_CONCURRENT_REQUESTS, DEFAULT_LLM_PROVIDER
 from database import SessionLocal
 from models import Session, Student
+from utils.time import utcnow
 
 logger = logging.getLogger(__name__)
 
@@ -117,10 +118,25 @@ def run_report_generation(session_id: int, provider: str = ""):
         if completed:
             session.status = "generated"
         else:
+            # "Left unchanged" used to mean left at "generating" — the status the
+            # route sets before queueing this task. The page polls while a session
+            # is generating, so it span forever, and /generate refuses a retry with
+            # 409 for thirty minutes. Put it back to "scored" so the counsellor can
+            # simply press the button again, and write the reason somewhere the UI
+            # can show it, because until now it existed only in the server log.
+            reason = (
+                f"{failed} failed, {skipped_no_consent} skipped for missing consent"
+                if (failed or skipped_no_consent)
+                else "no students were ready to generate (none in 'scored' status)"
+            )
+            session.status = "scored"
+            session.notes = (
+                (session.notes or "")
+                + f"\n[{utcnow():%Y-%m-%d %H:%M}] Generation produced no reports: {reason}."
+            ).strip()
             logger.error(
-                f"Session {session_id}: produced no reports "
-                f"({failed} failed, {skipped_no_consent} skipped for missing consent). "
-                "Session status left unchanged so it can be retried."
+                f"Session {session_id}: produced no reports ({reason}). "
+                "Status reverted to 'scored' so it can be retried immediately."
             )
         db.commit()
         logger.info(
